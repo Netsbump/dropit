@@ -45,7 +45,7 @@
 
 # À propos du Projet
 
-DuckLift est une application web conçue pour optimiser le suivi et la gestion de l'entraînement en haltérophilie. Ce projet vise à fournir une solution intuitive pour les athlètes et entraîneurs, tout en consolidant mes compétences en développement logiciel.
+DropIt est une application web conçue pour optimiser le suivi et la gestion de l'entraînement en haltérophilie. Ce projet vise à fournir une solution intuitive pour les athlètes et entraîneurs, tout en consolidant mes compétences en développement logiciel.
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
@@ -108,8 +108,8 @@ Assurez-vous d'avoir installé les éléments suivants avant de commencer :
 ### Cloner le projet
 
 ```bash
-git clone https://github.com/Netsbump/DuckLift.git
-cd DuckLift
+git clone https://github.com/Netsbump/Dropit.git
+cd Dropit
 ```
 
 ### Installer les dépendances
