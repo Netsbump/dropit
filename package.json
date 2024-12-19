@@ -4,8 +4,10 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "turbo format",
+    "typecheck": "turbo typecheck",
+    "lint": "biome lint .",
+    "lint:fix": "biome lint --fix .",
+    "format": "biome format .",
     "clean": "turbo clean && rm -rf node_modules"
   },
   "devDependencies": {
