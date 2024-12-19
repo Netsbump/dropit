@@ -3,6 +3,9 @@
   "organizeImports": {
     "enabled": true
   },
+  "files": {
+    "ignore": ["**/node_modules/**", "**/dist/**", ".turbo/**", "./.vscode/**"]
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -21,5 +24,20 @@
       "quoteStyle": "single",
       "trailingComma": "es5"
     }
-  }
-} 
+  },
+  "overrides": [
+    {
+      "include": ["apps/api/**"],
+      "linter": {
+        "rules": {
+          "recommended": true
+        }
+      },
+      "javascript": {
+        "parser": {
+          "unsafeParameterDecoratorsEnabled": true
+        }
+      }
+    }
+  ]
+}

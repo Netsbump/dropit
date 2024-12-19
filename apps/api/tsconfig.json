@@ -1,12 +1,12 @@
 {
-  "extends": "tsconfig/base.json",
-  "compilerOptions": {
-    "module": "commonjs",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "target": "ES2021",
-    "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true
-  }
+	"extends": "../../packages/tsconfig/base.json",
+	"compilerOptions": {
+		"module": "commonjs",
+		"emitDecoratorMetadata": true,
+		"experimentalDecorators": true,
+		"target": "ES2021",
+		"outDir": "./dist",
+		"baseUrl": "./",
+		"incremental": true
+	}
 }
