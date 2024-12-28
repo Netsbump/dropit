@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { ExerciseType } from 'src/entities/exerciseType.entity';
+import { ExerciseType } from '../../entities/exerciseType.entity';
 import { ExerciseTypeService } from './exerciseType.service';
 
 @Controller('exercise-type')

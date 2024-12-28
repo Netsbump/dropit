@@ -7,7 +7,7 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { Video } from 'src/entities/video.entity';
+import { Video } from '../../entities/video.entity';
 import { VideoService } from './video.service';
 
 @Controller('video')

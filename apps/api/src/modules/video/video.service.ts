@@ -1,6 +1,6 @@
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { Video } from 'src/entities/video.entity';
+import { Video } from '../../entities/video.entity';
 
 @Injectable()
 export class VideoService {

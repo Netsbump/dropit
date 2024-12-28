@@ -10,7 +10,7 @@ export class Exercise {
   @ManyToOne(() => ExerciseType)
   exerciseType!: ExerciseType;
 
-  @ManyToOne(() => Video)
+  @ManyToOne(() => Video, { nullable: true })
   video?: Video;
 
   @Property()
