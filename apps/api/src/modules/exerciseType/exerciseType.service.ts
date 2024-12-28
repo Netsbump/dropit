@@ -1,6 +1,7 @@
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { ExerciseType } from 'src/entities/exerciseType.entity';
+import { ExerciseType } from '../../entities/exerciseType.entity';
+import { ExerciseTypeDto } from './exerciseType.dto';
 
 @Injectable()
 export class ExerciseTypeService {
@@ -14,11 +15,14 @@ export class ExerciseTypeService {
     return this.em.findOne(ExerciseType, { id });
   }
 
-  async createExerciseType(exerciseType: ExerciseType) {
-    return this.em.persistAndFlush(exerciseType);
+  async createExerciseType(exerciseType: ExerciseTypeDto) {
+    const exerciseTypeToCreate = new ExerciseType();
+    exerciseTypeToCreate.name = exerciseType.name;
+    await this.em.persistAndFlush(exerciseTypeToCreate);
+    return exerciseTypeToCreate;
   }
 
-  async updateExerciseType(id: number, exerciseType: ExerciseType) {
+  async updateExerciseType(id: number, exerciseType: ExerciseTypeDto) {
     const exerciseTypeToUpdate = await this.em.findOne(ExerciseType, { id });
 
     if (!exerciseTypeToUpdate) {
@@ -26,7 +30,9 @@ export class ExerciseTypeService {
     }
 
     wrap(exerciseTypeToUpdate).assign(exerciseType);
-    await this.em.flush();
+
+    await this.em.persistAndFlush(exerciseTypeToUpdate);
+    return exerciseTypeToUpdate;
   }
 
   async deleteExerciseType(id: number) {

@@ -8,9 +8,9 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { Exercise } from 'src/entities/exercise.entity';
-import { ExerciseService } from './exercise.service';
 
+import { ExerciseDto } from './exercice.dto';
+import { ExerciseService } from './exercise.service';
 @Controller('exercise')
 export class ExerciseController {
   constructor(private readonly exerciseService: ExerciseService) {}
@@ -26,12 +26,12 @@ export class ExerciseController {
   }
 
   @Post()
-  async createExercise(@Body() exercise: Exercise) {
+  async createExercise(@Body() exercise: ExerciseDto) {
     return this.exerciseService.createExercise(exercise);
   }
 
   @Put(':id')
-  async updateExercise(@Param('id') id: number, @Body() exercise: Exercise) {
+  async updateExercise(@Param('id') id: number, @Body() exercise: ExerciseDto) {
     return this.exerciseService.updateExercise(id, exercise);
   }
 
