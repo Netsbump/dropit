@@ -220,7 +220,7 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": false,
+          "nullable": true,
           "mappedType": "integer"
         },
         "name": {
@@ -322,6 +322,7 @@
             "id"
           ],
           "referencedTableName": "public.video",
+          "deleteRule": "set null",
           "updateRule": "cascade"
         }
       },
