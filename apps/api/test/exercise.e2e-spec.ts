@@ -5,7 +5,10 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { Exercise } from '../src/entities/exercise.entity';
 import { ExerciseType } from '../src/entities/exerciseType.entity';
-import { ExerciseDto } from '../src/modules/exercise/exercice.dto';
+import {
+  CreateExerciseDto,
+  ExerciseDto,
+} from '../src/modules/exercise/exercice.dto';
 import { ExerciseService } from '../src/modules/exercise/exercise.service';
 import { ExerciseTypeService } from '../src/modules/exerciseType/exerciseType.service';
 
@@ -16,7 +19,7 @@ describe('ExerciseController (e2e)', () => {
 
   // Déclaration des fonctions utilitaires
   let createExerciseType: (name: string) => Promise<ExerciseType>;
-  let createExercise: (dto: ExerciseDto) => Promise<Exercise>;
+  let createExercise: (exercise: CreateExerciseDto) => Promise<ExerciseDto>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -39,8 +42,20 @@ describe('ExerciseController (e2e)', () => {
       return await exerciseTypeService.createExerciseType({ name });
     };
 
-    createExercise = async (dto: ExerciseDto): Promise<Exercise> => {
-      return await exerciseService.createExercise(dto);
+    createExercise = async (
+      exercise: CreateExerciseDto
+    ): Promise<ExerciseDto> => {
+      const exerciseCreated = await exerciseService.createExercise(exercise);
+
+      return {
+        id: exerciseCreated.id,
+        name: exerciseCreated.name,
+        exerciseType: exerciseCreated.exerciseType,
+        video: exerciseCreated.video,
+        description: exerciseCreated.description,
+        englishName: exerciseCreated.englishName,
+        shortName: exerciseCreated.shortName,
+      };
     };
 
     // Seed de la base de données avec au moinsun type d'exercice
@@ -58,11 +73,13 @@ describe('ExerciseController (e2e)', () => {
 
   describe('/exercise', () => {
     it('POST - should create an exercise', async () => {
-      const exercise = {
+      const exercise: CreateExerciseDto = {
         name: 'Squat',
         description: 'Basic squat exercise',
         exerciseType: exerciseType.id,
       };
+
+      console.log('Sending exercise:', exercise); // Debug
 
       const response = await request(app.getHttpServer())
         .post('/exercise')
@@ -71,6 +88,7 @@ describe('ExerciseController (e2e)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.name).toBe(exercise.name);
+      expect(response.body.exerciseType.name).toBe(exerciseType.name);
       expect(response.body.exerciseType.id).toBe(exerciseType.id);
     });
 
@@ -109,7 +127,7 @@ describe('ExerciseController (e2e)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.name).toBe('Deadlift');
-      expect(response.body.exerciseType).toBe(exerciseType.id);
+      expect(response.body.exerciseType.id).toBe(exerciseType.id);
     });
 
     it('PUT :id - should update an exercise', async () => {
