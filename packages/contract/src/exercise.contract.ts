@@ -51,6 +51,9 @@ export const exerciseContract = c.router({
       400: z.object({
         message: z.string(),
       }),
+      404: z.object({
+        message: z.string(),
+      }),
       500: z.object({
         message: z.string(),
       }),
@@ -58,7 +61,7 @@ export const exerciseContract = c.router({
   },
 
   updateExercise: {
-    method: 'PUT',
+    method: 'PATCH',
     path: '/exercise/:id',
     summary: 'Update an exercise',
     pathParams: z.object({

@@ -1,6 +1,10 @@
 import { exerciseContract } from '@dropit/contract';
 import { UpdateExercise } from '@dropit/schemas';
-import { Controller } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   NestControllerInterface,
   NestRequestShapes,
@@ -20,100 +24,77 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
 
   @TsRest(c.getExercises)
   async getExercises(@TsRestRequest() request: RequestShapes['getExercises']) {
-    const exercises = await this.exerciseService.getExercises();
+    try {
+      const exercises = await this.exerciseService.getExercises();
 
-    if (!exercises) {
       return {
-        status: 404 as const,
-        body: {
-          message: 'Exercises not found',
-        },
+        status: 200 as const,
+        body: exercises,
       };
-    }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: {
+            message: error.message,
+          },
+        };
+      }
 
-    return {
-      status: 200 as const,
-      body: exercises.map((exercise) => ({
-        id: exercise.id,
-        name: exercise.name,
-        exerciseType: {
-          id: exercise.exerciseType.id,
-          name: exercise.exerciseType.name,
-        },
-        video: exercise.video ?? undefined,
-        description: exercise.description ?? '',
-        englishName: exercise.englishName ?? '',
-        shortName: exercise.shortName ?? '',
-      })),
-    };
+      throw error;
+    }
   }
 
   @TsRest(c.getExercise)
   async getExercise(@TsRestRequest() { params }: RequestShapes['getExercise']) {
     // Dans le contrat, pathParams = { id: z.string() }
     // => on cast en number (ou on utilise z.coerce.number() dans le contrat)
-    const id = parseInt(params.id, 10);
+    try {
+      const id = parseInt(params.id, 10);
 
-    const exercise = await this.exerciseService.getExercise(id);
+      const exercise = await this.exerciseService.getExercise(id);
 
-    if (!exercise) {
       return {
-        status: 404 as const,
-        body: {
-          message: 'Exercise not found',
-        },
+        status: 200 as const,
+        body: exercise,
       };
-    }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
 
-    // Contrat : 200 => un objet unique, pas de champ "data" ici
-    return {
-      status: 200 as const,
-      body: {
-        id: exercise.id,
-        name: exercise.name,
-        exerciseType: {
-          id: exercise.exerciseType.id,
-          name: exercise.exerciseType.name,
-        },
-        video: exercise.video ?? undefined,
-        description: exercise.description ?? '',
-        englishName: exercise.englishName ?? '',
-        shortName: exercise.shortName ?? '',
-      },
-    };
+      throw error;
+    }
   }
 
   @TsRest(c.createExercise)
   async createExercise(
     @TsRestRequest() { body }: RequestShapes['createExercise']
   ) {
-    // body = { name: string; description?: string; exerciseType: number; ... }
-    // Contrat : 201 => un objet { id, name, exerciseType, ... }
-    //           400 => { message } si besoin
-    //           500 => { message } en cas d'erreur interne ?
-
     try {
       const newExercise = await this.exerciseService.createExercise(body);
       return {
         status: 201 as const,
-        body: {
-          id: newExercise.id,
-          name: newExercise.name,
-          description: newExercise.description ?? '',
-          exerciseType: {
-            id: newExercise.exerciseType.id,
-            name: newExercise.exerciseType.name,
-          },
-          video: newExercise.video ?? undefined,
-          englishName: newExercise.englishName ?? '',
-          shortName: newExercise.shortName ?? '',
-        },
+        body: newExercise,
       };
     } catch (error) {
-      return {
-        status: 400 as const,
-        body: { message: 'Could not create exercise' },
-      };
+      if (error instanceof BadRequestException) {
+        return {
+          status: 400 as const,
+          body: { message: error.message },
+        };
+      }
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
+
+      throw error;
     }
   }
 
@@ -122,101 +103,78 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     @TsRestRequest() { params, body }: RequestShapes['updateExercise']
   ) {
     // Todo: revoir si je passe en number ou string dans le contrat
-    const id = parseInt(params.id, 10);
+    try {
+      const id = parseInt(params.id, 10);
 
-    const dataToUpdate: UpdateExercise = {};
+      const updatedExercise = await this.exerciseService.updateExercise(
+        id,
+        body
+      );
 
-    //Todo : déplacer dans le service ?
-    if (body.name !== undefined) {
-      dataToUpdate.name = body.name;
-    }
-    if (body.description !== undefined) {
-      dataToUpdate.description = body.description;
-    }
-    if (body.exerciseType !== undefined) {
-      // exemple : le contrat déclare exerciseType: z.string().optional()
-      // on cast en number
-      dataToUpdate.exerciseType = body.exerciseType;
-    }
-    if (body.video !== undefined) {
-      dataToUpdate.video = body.video;
-    }
-    if (body.englishName !== undefined) {
-      dataToUpdate.englishName = body.englishName;
-    }
-    if (body.shortName !== undefined) {
-      dataToUpdate.shortName = body.shortName;
-    }
-
-    const updated = await this.exerciseService.updateExercise(id, dataToUpdate);
-
-    if (!updated) {
       return {
-        status: 404 as const,
-        body: { message: 'Exercise not found' },
+        status: 200 as const,
+        body: updatedExercise,
       };
-    }
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
 
-    return {
-      status: 200 as const,
-      body: {
-        id: updated.id,
-        name: updated.name,
-        exerciseType: {
-          id: updated.exerciseType.id,
-          name: updated.exerciseType.name,
-        },
-        video: updated.video ?? undefined,
-        description: updated.description ?? '',
-        englishName: updated.englishName ?? '',
-        shortName: updated.shortName ?? '',
-      },
-    };
+      throw error;
+    }
   }
 
   @TsRest(c.deleteExercise)
   async deleteExercise(
     @TsRestRequest() { params }: RequestShapes['deleteExercise']
   ) {
-    const id = parseInt(params.id, 10);
+    try {
+      const id = parseInt(params.id, 10);
 
-    const deleted = await this.exerciseService.deleteExercise(id);
+      await this.exerciseService.deleteExercise(id);
 
-    if (!deleted) {
-      return { status: 404 as const, body: { message: 'Exercise not found' } };
+      return {
+        status: 200 as const,
+        body: { message: 'Exercise deleted successfully' },
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
+
+      throw error;
     }
-
-    return {
-      status: 200 as const,
-      body: { message: 'Exercise deleted successfully' },
-    };
   }
 
   @TsRestHandler(c.searchExercises)
   async searchExercises(
     @TsRestRequest() { query }: RequestShapes['searchExercises']
   ) {
-    // Contrat : query = { like: z.string() }
-    const found = await this.exerciseService.searchExercises(query.like);
+    try {
+      // Contrat : query = { like: z.string() }
+      const exerciseFound = await this.exerciseService.searchExercises(
+        query.like
+      );
 
-    if (!found || found.length === 0) {
-      return { status: 404 as const, body: { message: 'No exercises found' } };
+      return {
+        status: 200 as const,
+        body: exerciseFound,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
+
+      throw error;
     }
-
-    return {
-      status: 200 as const,
-      body: found.map((exercise) => ({
-        id: exercise.id,
-        name: exercise.name,
-        exerciseType: {
-          id: exercise.exerciseType.id,
-          name: exercise.exerciseType.name,
-        },
-        video: exercise.video,
-        description: exercise.description ?? '',
-        englishName: exercise.englishName ?? '',
-        shortName: exercise.shortName ?? '',
-      })),
-    };
   }
 }
