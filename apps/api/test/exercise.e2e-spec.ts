@@ -126,7 +126,7 @@ describe('ExerciseController (e2e)', () => {
       expect(response.body.exerciseType.id).toBe(exerciseType.id);
     });
 
-    it('PUT :id - should update an exercise', async () => {
+    it('PATCH :id - should update an exercise', async () => {
       const newExercise = await createExercise({
         name: 'Old name',
         description: 'Old description',
@@ -139,7 +139,7 @@ describe('ExerciseController (e2e)', () => {
       };
 
       const response = await request(app.getHttpServer())
-        .put(`/exercise/${newExercise.id}`)
+        .patch(`/exercise/${newExercise.id}`)
         .send(updateData)
         .expect(200);
 
@@ -172,14 +172,14 @@ describe('ExerciseController (e2e)', () => {
         await request(app.getHttpServer()).get('/exercise/99999').expect(404);
       });
 
-      it('PUT :id - should return 404 for non-existent exercise', async () => {
+      it('PATCH :id - should return 404 for non-existent exercise', async () => {
         const updateData = {
           name: 'New name',
           description: 'New description',
         };
 
         await request(app.getHttpServer())
-          .put('/exercise/99999')
+          .patch('/exercise/99999')
           .send(updateData)
           .expect(404);
       });

@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { Exercise } from '../../entities/exercise.entity';
 import { ExerciseType } from '../../entities/exerciseType.entity';
+
 @Injectable()
 export class ExerciseService {
   constructor(private readonly em: EntityManager) {}
@@ -20,6 +21,10 @@ export class ExerciseService {
       populate: ['exerciseType'],
     });
 
+    if (!exercises || exercises.length === 0) {
+      throw new NotFoundException('No exercises found');
+    }
+
     return exercises.map((exercise) => {
       return {
         id: exercise.id,
@@ -28,10 +33,10 @@ export class ExerciseService {
           id: exercise.exerciseType.id,
           name: exercise.exerciseType.name,
         },
-        video: exercise.video?.id,
-        description: exercise.description,
-        englishName: exercise.englishName,
-        shortName: exercise.shortName,
+        video: exercise.video?.id ?? undefined,
+        description: exercise.description ?? '',
+        englishName: exercise.englishName ?? '',
+        shortName: exercise.shortName ?? '',
       };
     });
   }
@@ -119,13 +124,20 @@ export class ExerciseService {
     id: number,
     exercise: UpdateExercise
   ): Promise<ExerciseResponse> {
-    const exerciseToUpdate = await this.em.findOne(Exercise, { id });
+    const exerciseToUpdate = await this.em.findOne(
+      Exercise,
+      { id },
+      {
+        populate: ['exerciseType'],
+      }
+    );
 
     if (!exerciseToUpdate) {
       throw new NotFoundException(`Exercise with ID ${id} not found`);
     }
 
-    wrap(exerciseToUpdate).assign(exercise);
+    wrap(exerciseToUpdate).assign(exercise, { mergeObjectProperties: true });
+
     await this.em.persistAndFlush(exerciseToUpdate);
 
     const exerciseUpdated = await this.em.findOne(
