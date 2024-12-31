@@ -1,5 +1,5 @@
 {
-  "name": "@dropit/contract",
+  "name": "@dropit/schemas",
   "version": "1.0.0",
   "private": true,
   "main": "dist/index.js",
@@ -7,12 +7,8 @@
   "scripts": {
     "build": "tsc -p tsconfig.json"
   },
-  "license": "ISC",
-  "peerDependencies": {
+  "dependencies": {
     "zod": "^3.24.1"
   },
-  "dependencies": {
-    "@ts-rest/core": "^3.51.0",
-    "@dropit/schemas": "workspace:*"
-  }
+  "license": "ISC"
 }

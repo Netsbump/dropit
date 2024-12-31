@@ -23,6 +23,9 @@ importers:
       '@dropit/contract':
         specifier: workspace:*
         version: link:../../packages/contract
+      '@dropit/schemas':
+        specifier: workspace:*
+        version: link:../../packages/schemas
       '@mikro-orm/core':
         specifier: ^6.4.2
         version: 6.4.2
@@ -172,9 +175,18 @@ importers:
 
   packages/contract:
     dependencies:
+      '@dropit/schemas':
+        specifier: workspace:*
+        version: link:../schemas
       '@ts-rest/core':
         specifier: ^3.51.0
         version: 3.51.0(@types/node@20.17.10)(zod@3.24.1)
+      zod:
+        specifier: ^3.24.1
+        version: 3.24.1
+
+  packages/schemas:
+    dependencies:
       zod:
         specifier: ^3.24.1
         version: 3.24.1

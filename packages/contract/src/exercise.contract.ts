@@ -1,6 +1,10 @@
+import {
+  createExerciseSchema,
+  exerciseTypeSchema,
+  updateExerciseSchema,
+} from '@dropit/schemas';
 import { initContract } from '@ts-rest/core';
 import { z } from 'zod';
-
 const c = initContract();
 
 export const exerciseContract = c.router({
@@ -9,20 +13,7 @@ export const exerciseContract = c.router({
     path: '/exercise',
     summary: 'Get all exercises',
     responses: {
-      200: z.array(
-        z.object({
-          id: z.number(),
-          name: z.string(),
-          exerciseType: z.object({
-            id: z.number(),
-            name: z.string(),
-          }),
-          video: z.string().optional(),
-          description: z.string(),
-          englishName: z.string(),
-          shortName: z.string(),
-        })
-      ),
+      200: z.array(exerciseTypeSchema),
       404: z.object({
         message: z.string(),
       }),
@@ -40,18 +31,7 @@ export const exerciseContract = c.router({
       id: z.string(),
     }),
     responses: {
-      200: z.object({
-        id: z.number(),
-        name: z.string(),
-        exerciseType: z.object({
-          id: z.number(),
-          name: z.string(),
-        }),
-        video: z.string().optional(),
-        description: z.string().optional(),
-        englishName: z.string().optional(),
-        shortName: z.string().optional(),
-      }),
+      200: exerciseTypeSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -65,27 +45,9 @@ export const exerciseContract = c.router({
     method: 'POST',
     path: '/exercise',
     summary: 'Create an exercise',
-    body: z.object({
-      name: z.string(),
-      description: z.string().optional(),
-      exerciseType: z.number(),
-      video: z.number().optional(),
-      englishName: z.string().optional(),
-      shortName: z.string().optional(),
-    }),
+    body: createExerciseSchema,
     responses: {
-      201: z.object({
-        id: z.number(),
-        name: z.string(),
-        description: z.string().optional(),
-        exerciseType: z.object({
-          id: z.number(),
-          name: z.string(),
-        }),
-        video: z.string().optional(),
-        englishName: z.string().optional(),
-        shortName: z.string().optional(),
-      }),
+      201: exerciseTypeSchema,
       400: z.object({
         message: z.string(),
       }),
@@ -102,27 +64,9 @@ export const exerciseContract = c.router({
     pathParams: z.object({
       id: z.string(),
     }),
-    body: z.object({
-      name: z.string().optional(),
-      description: z.string().optional(),
-      exerciseType: z.string().optional(),
-      video: z.string().optional(),
-      englishName: z.string().optional(),
-      shortName: z.string().optional(),
-    }),
+    body: updateExerciseSchema,
     responses: {
-      200: z.object({
-        id: z.number(),
-        name: z.string(),
-        exerciseType: z.object({
-          id: z.number(),
-          name: z.string(),
-        }),
-        video: z.string().optional(),
-        description: z.string().optional(),
-        englishName: z.string().optional(),
-        shortName: z.string().optional(),
-      }),
+      200: exerciseTypeSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -160,20 +104,7 @@ export const exerciseContract = c.router({
       like: z.string(),
     }),
     responses: {
-      200: z.array(
-        z.object({
-          id: z.number(),
-          name: z.string(),
-          exerciseType: z.object({
-            id: z.number(),
-            name: z.string(),
-          }),
-          video: z.string().optional(),
-          description: z.string().optional(),
-          englishName: z.string().optional(),
-          shortName: z.string().optional(),
-        })
-      ),
+      200: z.array(exerciseTypeSchema),
       404: z.object({
         message: z.string(),
       }),

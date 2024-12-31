@@ -1,14 +1,10 @@
+import { CreateExercise, ExerciseResponse } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { Exercise } from '../src/entities/exercise.entity';
 import { ExerciseType } from '../src/entities/exerciseType.entity';
-import {
-  CreateExerciseDto,
-  ExerciseDto,
-} from '../src/modules/exercise/exercice.dto';
 import { ExerciseService } from '../src/modules/exercise/exercise.service';
 import { ExerciseTypeService } from '../src/modules/exerciseType/exerciseType.service';
 
@@ -19,7 +15,7 @@ describe('ExerciseController (e2e)', () => {
 
   // Déclaration des fonctions utilitaires
   let createExerciseType: (name: string) => Promise<ExerciseType>;
-  let createExercise: (exercise: CreateExerciseDto) => Promise<ExerciseDto>;
+  let createExercise: (exercise: CreateExercise) => Promise<ExerciseResponse>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -43,8 +39,8 @@ describe('ExerciseController (e2e)', () => {
     };
 
     createExercise = async (
-      exercise: CreateExerciseDto
-    ): Promise<ExerciseDto> => {
+      exercise: CreateExercise
+    ): Promise<ExerciseResponse> => {
       const exerciseCreated = await exerciseService.createExercise(exercise);
 
       return {
@@ -73,7 +69,7 @@ describe('ExerciseController (e2e)', () => {
 
   describe('/exercise', () => {
     it('POST - should create an exercise', async () => {
-      const exercise: CreateExerciseDto = {
+      const exercise: CreateExercise = {
         name: 'Squat',
         description: 'Basic squat exercise',
         exerciseType: exerciseType.id,
