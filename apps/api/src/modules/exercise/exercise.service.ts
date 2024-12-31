@@ -1,3 +1,8 @@
+import {
+  CreateExercise,
+  ExerciseResponse,
+  UpdateExercise,
+} from '@dropit/schemas';
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
@@ -6,17 +11,11 @@ import {
 } from '@nestjs/common';
 import { Exercise } from '../../entities/exercise.entity';
 import { ExerciseType } from '../../entities/exerciseType.entity';
-import {
-  CreateExerciseDto,
-  ExerciseDto,
-  UpdateExerciseDto,
-} from './exercice.dto';
-
 @Injectable()
 export class ExerciseService {
   constructor(private readonly em: EntityManager) {}
 
-  async getExercises(): Promise<ExerciseDto[]> {
+  async getExercises(): Promise<ExerciseResponse[]> {
     const exercises = await this.em.findAll(Exercise, {
       populate: ['exerciseType'],
     });
@@ -37,7 +36,7 @@ export class ExerciseService {
     });
   }
 
-  async getExercise(id: number): Promise<ExerciseDto> {
+  async getExercise(id: number): Promise<ExerciseResponse> {
     const exercise = await this.em.findOne(
       Exercise,
       { id },
@@ -64,29 +63,27 @@ export class ExerciseService {
     };
   }
 
-  async createExercise(exercise: CreateExerciseDto): Promise<ExerciseDto> {
-    if (!exercise.name) {
+  async createExercise(newExercise: CreateExercise): Promise<ExerciseResponse> {
+    if (!newExercise.name) {
       throw new BadRequestException('Exercise name is required');
     }
 
     const exerciseType = await this.em.findOne(ExerciseType, {
-      id: exercise.exerciseType,
+      id: newExercise.exerciseType,
     });
 
     if (!exerciseType) {
       throw new NotFoundException(
-        `Exercise type with ID ${exercise.exerciseType} not found`
+        `Exercise type with ID ${newExercise.exerciseType} not found`
       );
     }
 
     const exerciseToCreate = new Exercise();
-    exerciseToCreate.name = exercise.name;
-    if (exercise.description) {
-      exerciseToCreate.description = exercise.description;
+    exerciseToCreate.name = newExercise.name;
+    if (newExercise.description) {
+      exerciseToCreate.description = newExercise.description;
     }
     exerciseToCreate.exerciseType = exerciseType;
-    exerciseToCreate.createdAt = new Date();
-    exerciseToCreate.updatedAt = new Date();
 
     await this.em.persistAndFlush(exerciseToCreate);
 
@@ -120,8 +117,8 @@ export class ExerciseService {
 
   async updateExercise(
     id: number,
-    exercise: UpdateExerciseDto
-  ): Promise<ExerciseDto> {
+    exercise: UpdateExercise
+  ): Promise<ExerciseResponse> {
     const exerciseToUpdate = await this.em.findOne(Exercise, { id });
 
     if (!exerciseToUpdate) {
@@ -173,7 +170,7 @@ export class ExerciseService {
     };
   }
 
-  async searchExercises(query: string): Promise<ExerciseDto[]> {
+  async searchExercises(query: string): Promise<ExerciseResponse[]> {
     const exercises = await this.em.find(
       Exercise,
       {

@@ -1,4 +1,5 @@
 import { exerciseContract } from '@dropit/contract';
+import { UpdateExercise } from '@dropit/schemas';
 import { Controller } from '@nestjs/common';
 import {
   NestControllerInterface,
@@ -8,7 +9,6 @@ import {
   TsRestRequest,
   nestControllerContract,
 } from '@ts-rest/nest';
-import { UpdateExerciseDto } from './exercice.dto';
 import { ExerciseService } from './exercise.service';
 
 const c = nestControllerContract(exerciseContract);
@@ -18,9 +18,6 @@ type RequestShapes = NestRequestShapes<typeof c>;
 export class ExerciseController implements NestControllerInterface<typeof c> {
   constructor(private readonly exerciseService: ExerciseService) {}
 
-  // ---------------------------------------
-  // GET /exercise
-  // ---------------------------------------
   @TsRest(c.getExercises)
   async getExercises(@TsRestRequest() request: RequestShapes['getExercises']) {
     const exercises = await this.exerciseService.getExercises();
@@ -43,7 +40,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
           id: exercise.exerciseType.id,
           name: exercise.exerciseType.name,
         },
-        video: exercise.video?.toString() ?? '',
+        video: exercise.video ?? undefined,
         description: exercise.description ?? '',
         englishName: exercise.englishName ?? '',
         shortName: exercise.shortName ?? '',
@@ -51,9 +48,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     };
   }
 
-  // ---------------------------------------
-  // GET /exercise/:id
-  // ---------------------------------------
   @TsRest(c.getExercise)
   async getExercise(@TsRestRequest() { params }: RequestShapes['getExercise']) {
     // Dans le contrat, pathParams = { id: z.string() }
@@ -81,7 +75,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
           id: exercise.exerciseType.id,
           name: exercise.exerciseType.name,
         },
-        video: exercise.video?.toString() ?? '',
+        video: exercise.video ?? undefined,
         description: exercise.description ?? '',
         englishName: exercise.englishName ?? '',
         shortName: exercise.shortName ?? '',
@@ -89,9 +83,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     };
   }
 
-  // ---------------------------------------
-  // POST /exercise
-  // ---------------------------------------
   @TsRest(c.createExercise)
   async createExercise(
     @TsRestRequest() { body }: RequestShapes['createExercise']
@@ -113,7 +104,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
             id: newExercise.exerciseType.id,
             name: newExercise.exerciseType.name,
           },
-          video: newExercise.video?.toString() ?? '',
+          video: newExercise.video ?? undefined,
           englishName: newExercise.englishName ?? '',
           shortName: newExercise.shortName ?? '',
         },
@@ -126,9 +117,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     }
   }
 
-  // ---------------------------------------
-  // PUT /exercise/:id
-  // ---------------------------------------
   @TsRest(c.updateExercise)
   async updateExercise(
     @TsRestRequest() { params, body }: RequestShapes['updateExercise']
@@ -136,7 +124,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     // Todo: revoir si je passe en number ou string dans le contrat
     const id = parseInt(params.id, 10);
 
-    const dataToUpdate: Partial<UpdateExerciseDto> = {};
+    const dataToUpdate: UpdateExercise = {};
 
     //Todo : déplacer dans le service ?
     if (body.name !== undefined) {
@@ -148,10 +136,10 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     if (body.exerciseType !== undefined) {
       // exemple : le contrat déclare exerciseType: z.string().optional()
       // on cast en number
-      dataToUpdate.exerciseType = parseInt(body.exerciseType, 10);
+      dataToUpdate.exerciseType = body.exerciseType;
     }
     if (body.video !== undefined) {
-      dataToUpdate.video = parseInt(body.video, 10);
+      dataToUpdate.video = body.video;
     }
     if (body.englishName !== undefined) {
       dataToUpdate.englishName = body.englishName;
@@ -178,7 +166,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
           id: updated.exerciseType.id,
           name: updated.exerciseType.name,
         },
-        video: updated.video?.toString() ?? '',
+        video: updated.video ?? undefined,
         description: updated.description ?? '',
         englishName: updated.englishName ?? '',
         shortName: updated.shortName ?? '',
@@ -186,9 +174,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     };
   }
 
-  // ---------------------------------------
-  // DELETE /exercise/:id
-  // ---------------------------------------
   @TsRest(c.deleteExercise)
   async deleteExercise(
     @TsRestRequest() { params }: RequestShapes['deleteExercise']
@@ -207,9 +192,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     };
   }
 
-  // ---------------------------------------
-  // GET /exercise/search?like=xxx
-  // ---------------------------------------
   @TsRestHandler(c.searchExercises)
   async searchExercises(
     @TsRestRequest() { query }: RequestShapes['searchExercises']
@@ -230,7 +212,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
           id: exercise.exerciseType.id,
           name: exercise.exerciseType.name,
         },
-        video: exercise.video?.toString() ?? '',
+        video: exercise.video,
         description: exercise.description ?? '',
         englishName: exercise.englishName ?? '',
         shortName: exercise.shortName ?? '',
