@@ -1,9 +1,10 @@
 {
   "extends": "../../packages/tsconfig/base.json",
   "compilerOptions": {
+    "composite": true,
     "outDir": "./dist",
-    "module": "CommonJS",
-    "target": "ESNext",
+    "module": "commonjs",
+    "target": "ES2021",
     "rootDir": "./src"
   },
   "include": ["src/**/*"],
