@@ -6,9 +6,6 @@
     "experimentalDecorators": true,
     "target": "ES2021",
     "outDir": "./dist",
-    "baseUrl": "./",
-    "incremental": true
+    "incremental": true,
   },
-  "include": ["src/**/*", "seeders/**/*", "test/**/*"],
-  "exclude": ["dist"]
 }
