@@ -97,9 +97,9 @@ jobs:
       - name: Build dependencies
         run: pnpm run build
 
-      - name: Run api tests
+      - name: Run api tests in Docker
         working-directory: apps/api
-        run: pnpm run test:e2e
+        run: pnpm run test:e2e:docker
 
   dev:
     name: Verify Dev Environment
