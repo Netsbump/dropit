@@ -97,12 +97,9 @@ jobs:
       - name: Build dependencies
         run: pnpm run build
 
-      - name: Install Docker Compose
-        run: sudo apt-get install -y docker-compose
-
       - name: Run api tests in Docker
         working-directory: apps/api
-        run: pnpm run test:e2e:docker
+        run: pnpm run test:e2e
 
   dev:
     name: Verify Dev Environment
