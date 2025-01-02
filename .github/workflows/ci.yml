@@ -125,9 +125,19 @@ jobs:
       - name: Build dependencies
         run: pnpm run build
 
+      - name: Install Docker Compose
+        run: sudo apt-get install -y docker-compose
+  
+      - name: Start Docker services
+        run: docker-compose -f docker-compose.yml up -d
+
       - name: Run dev server
         working-directory: .
         run: |
           pnpm run dev &
           sleep 10
           curl -f http://localhost:3001 || exit 1
+
+      - name: Stop Docker services
+        if: always()
+        run: docker-compose -f docker-compose.yml down
