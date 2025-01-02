@@ -94,7 +94,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Run tests
+
+      - name: Run api tests
+        working-directory: apps/api
         run: pnpm run test:e2e
 
   dev:
@@ -119,6 +121,7 @@ jobs:
         run: pnpm install
 
       - name: Run dev server
+        working-directory: .
         run: |
           pnpm run dev &
           sleep 10
