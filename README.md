@@ -103,13 +103,13 @@ Assurez-vous d'avoir installé les éléments suivants avant de commencer :
 
 - **Node.js** : Version 20 ou supérieure.
 - **pnpm** : Gestionnaire de paquets (installer avec `npm install -g pnpm`).
-- **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, Typesense, etc.).
+- **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, Typesense).
 
 ### Cloner le projet
 
 ```bash
-git clone https://github.com/Netsbump/Dropit.git
-cd Dropit
+git clone https://github.com/Netsbump/dropit.git
+cd dropit
 ```
 
 ### Installer les dépendances
@@ -118,15 +118,23 @@ cd Dropit
 pnpm install
 ```
 
+### Build initial
+
+Pour permettre aux packages dans packages/ d'être utilisés dans les différents services, vous devez effectuer un build initial :
+
+```bash
+pnpm build
+```
+
 ### Lancer le projet (développement)
 
-Démarrer les services via Docker Compose :
+Démarrer les services via Docker Compose (ex: PostgreSQL, Redis, Typesence):
 
 ```bash
 docker-compose up -d
 ```
 
-Démarrer le monorepo (backend + frontend + packages) :
+Lancer le monorepo (backend + frontend) en mode développement:
 
 ```bash
     pnpm dev
