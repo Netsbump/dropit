@@ -11,6 +11,7 @@
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "db:create": "mikro-orm database:create && pnpm db:migration:up",
     "db:sync": "mikro-orm schema:update --run",
     "db:fresh": "mikro-orm schema:fresh --seed --run",
     "db:migration:up": "mikro-orm migration:up",

@@ -8,13 +8,13 @@ import {
 import { Exercise } from './exercise.entity';
 
 @Entity()
-export class ExerciseType {
+export class ExerciseCategory {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
   @OneToMany(
     () => Exercise,
-    (exercise) => exercise.exerciseType
+    (exercise) => exercise.exerciseCategory
   )
   exercises = new Collection<Exercise>(this);
 

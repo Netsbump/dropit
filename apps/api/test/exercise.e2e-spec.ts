@@ -1,21 +1,21 @@
-import { CreateExercise, ExerciseResponse } from '@dropit/schemas';
+import { CreateExercise, ExerciseDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { ExerciseType } from '../src/entities/exerciseType.entity';
+import { ExerciseCategory } from '../src/entities/exerciseCategory.entity';
 import { ExerciseService } from '../src/modules/exercise/exercise.service';
-import { ExerciseTypeService } from '../src/modules/exerciseType/exerciseType.service';
+import { ExerciseCategoryService } from '../src/modules/exerciseCategory/exerciseCategory.service';
 
 describe('ExerciseController (e2e)', () => {
   let app: INestApplication;
   let orm: MikroORM;
-  let exerciseType: ExerciseType;
+  let exerciseCategory: ExerciseCategory;
 
   // Déclaration des fonctions utilitaires
-  let createExerciseType: (name: string) => Promise<ExerciseType>;
-  let createExercise: (exercise: CreateExercise) => Promise<ExerciseResponse>;
+  let createExerciseCategory: (name: string) => Promise<ExerciseCategory>;
+  let createExercise: (exercise: CreateExercise) => Promise<ExerciseDto>;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -30,23 +30,24 @@ describe('ExerciseController (e2e)', () => {
     await generator.refreshDatabase();
 
     // Initialisation des fonctions utilitaires
-    const exerciseTypeService =
-      moduleFixture.get<ExerciseTypeService>(ExerciseTypeService);
+    const exerciseCategoryService = moduleFixture.get<ExerciseCategoryService>(
+      ExerciseCategoryService
+    );
     const exerciseService = moduleFixture.get<ExerciseService>(ExerciseService);
 
-    createExerciseType = async (name: string): Promise<ExerciseType> => {
-      return await exerciseTypeService.createExerciseType({ name });
+    createExerciseCategory = async (
+      name: string
+    ): Promise<ExerciseCategory> => {
+      return await exerciseCategoryService.createExerciseCategory({ name });
     };
 
-    createExercise = async (
-      exercise: CreateExercise
-    ): Promise<ExerciseResponse> => {
+    createExercise = async (exercise: CreateExercise): Promise<ExerciseDto> => {
       const exerciseCreated = await exerciseService.createExercise(exercise);
 
       return {
         id: exerciseCreated.id,
         name: exerciseCreated.name,
-        exerciseType: exerciseCreated.exerciseType,
+        exerciseCategory: exerciseCreated.exerciseCategory,
         video: exerciseCreated.video,
         description: exerciseCreated.description,
         englishName: exerciseCreated.englishName,
@@ -55,7 +56,7 @@ describe('ExerciseController (e2e)', () => {
     };
 
     // Seed de la base de données avec au moinsun type d'exercice
-    exerciseType = await createExerciseType('Haltérophilie');
+    exerciseCategory = await createExerciseCategory('Haltérophilie');
 
     await app.init();
   });
@@ -72,7 +73,7 @@ describe('ExerciseController (e2e)', () => {
       const exercise: CreateExercise = {
         name: 'Squat',
         description: 'Basic squat exercise',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       };
 
       console.log('Sending exercise:', exercise); // Debug
@@ -84,8 +85,8 @@ describe('ExerciseController (e2e)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.name).toBe(exercise.name);
-      expect(response.body.exerciseType.name).toBe(exerciseType.name);
-      expect(response.body.exerciseType.id).toBe(exerciseType.id);
+      expect(response.body.exerciseCategory.name).toBe(exerciseCategory.name);
+      expect(response.body.exerciseCategory.id).toBe(exerciseCategory.id);
     });
 
     it('GET - should return all exercises', async () => {
@@ -93,13 +94,13 @@ describe('ExerciseController (e2e)', () => {
       await createExercise({
         name: 'Push-up',
         description: 'Basic push-up',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       });
 
       await createExercise({
         name: 'Pull-up',
         description: 'Basic pull-up',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       });
 
       const response = await request(app.getHttpServer())
@@ -114,7 +115,7 @@ describe('ExerciseController (e2e)', () => {
       const newExercise = await createExercise({
         name: 'Deadlift',
         description: 'Basic deadlift',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       });
 
       const response = await request(app.getHttpServer())
@@ -123,14 +124,14 @@ describe('ExerciseController (e2e)', () => {
 
       expect(response.body).toBeDefined();
       expect(response.body.name).toBe('Deadlift');
-      expect(response.body.exerciseType.id).toBe(exerciseType.id);
+      expect(response.body.exerciseCategory.id).toBe(exerciseCategory.id);
     });
 
     it('PATCH :id - should update an exercise', async () => {
       const newExercise = await createExercise({
         name: 'Old name',
         description: 'Old description',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       });
 
       const updateData = {
@@ -151,7 +152,7 @@ describe('ExerciseController (e2e)', () => {
       const newExercise = await createExercise({
         name: 'Burpees',
         description: 'Will be deleted',
-        exerciseType: exerciseType.id,
+        exerciseCategory: exerciseCategory.id,
       });
 
       await request(app.getHttpServer())

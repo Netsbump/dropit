@@ -47,11 +47,11 @@
           "mappedType": "datetime"
         }
       },
-      "name": "exercise_type",
+      "name": "exercise_category",
       "schema": "public",
       "indexes": [
         {
-          "keyName": "exercise_type_pkey",
+          "keyName": "exercise_category_pkey",
           "columnNames": [
             "id"
           ],
@@ -209,8 +209,8 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "exercise_type_id": {
-          "name": "exercise_type_id",
+        "exercise_category_id": {
+          "name": "exercise_category_id",
           "type": "uuid",
           "unsigned": false,
           "autoincrement": false,
@@ -304,16 +304,16 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "exercise_exercise_type_id_foreign": {
-          "constraintName": "exercise_exercise_type_id_foreign",
+        "exercise_exercise_category_id_foreign": {
+          "constraintName": "exercise_exercise_category_id_foreign",
           "columnNames": [
-            "exercise_type_id"
+            "exercise_category_id"
           ],
           "localTableName": "public.exercise",
           "referencedColumnNames": [
             "id"
           ],
-          "referencedTableName": "public.exercise_type",
+          "referencedTableName": "public.exercise_category",
           "updateRule": "cascade"
         },
         "exercise_video_id_foreign": {

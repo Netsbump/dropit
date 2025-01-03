@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 //import { devOrmConfig, testOrmConfig } from './mikro-orm.config';
 import config from './mikro-orm.config';
 import { ExerciseModule } from './modules/exercise/exercise.module';
-import { ExerciseTypeModule } from './modules/exerciseType/exerciseType.module';
+import { ExerciseCategoryModule } from './modules/exerciseCategory/exerciseCategory.module';
 import { VideoModule } from './modules/video/video.module';
 
 @Module({
@@ -15,7 +15,7 @@ import { VideoModule } from './modules/video/video.module';
     MikroOrmModule.forRoot(config),
     ExerciseModule,
     VideoModule,
-    ExerciseTypeModule,
+    ExerciseCategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

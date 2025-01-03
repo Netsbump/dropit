@@ -1,8 +1,4 @@
-import {
-  CreateExercise,
-  ExerciseResponse,
-  UpdateExercise,
-} from '@dropit/schemas';
+import { CreateExercise, ExerciseDto, UpdateExercise } from '@dropit/schemas';
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
@@ -10,15 +6,15 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Exercise } from '../../entities/exercise.entity';
-import { ExerciseType } from '../../entities/exerciseType.entity';
+import { ExerciseCategory } from '../../entities/exerciseCategory.entity';
 
 @Injectable()
 export class ExerciseService {
   constructor(private readonly em: EntityManager) {}
 
-  async getExercises(): Promise<ExerciseResponse[]> {
+  async getExercises(): Promise<ExerciseDto[]> {
     const exercises = await this.em.findAll(Exercise, {
-      populate: ['exerciseType'],
+      populate: ['exerciseCategory'],
     });
 
     if (!exercises || exercises.length === 0) {
@@ -29,9 +25,9 @@ export class ExerciseService {
       return {
         id: exercise.id,
         name: exercise.name,
-        exerciseType: {
-          id: exercise.exerciseType.id,
-          name: exercise.exerciseType.name,
+        exerciseCategory: {
+          id: exercise.exerciseCategory.id,
+          name: exercise.exerciseCategory.name,
         },
         video: exercise.video?.id ?? undefined,
         description: exercise.description ?? '',
@@ -41,12 +37,12 @@ export class ExerciseService {
     });
   }
 
-  async getExercise(id: string): Promise<ExerciseResponse> {
+  async getExercise(id: string): Promise<ExerciseDto> {
     const exercise = await this.em.findOne(
       Exercise,
       { id },
       {
-        populate: ['exerciseType'],
+        populate: ['exerciseCategory'],
       }
     );
 
@@ -57,9 +53,9 @@ export class ExerciseService {
     return {
       id: exercise.id,
       name: exercise.name,
-      exerciseType: {
-        id: exercise.exerciseType.id,
-        name: exercise.exerciseType.name,
+      exerciseCategory: {
+        id: exercise.exerciseCategory.id,
+        name: exercise.exerciseCategory.name,
       },
       video: exercise.video?.id,
       description: exercise.description,
@@ -68,18 +64,18 @@ export class ExerciseService {
     };
   }
 
-  async createExercise(newExercise: CreateExercise): Promise<ExerciseResponse> {
+  async createExercise(newExercise: CreateExercise): Promise<ExerciseDto> {
     if (!newExercise.name) {
       throw new BadRequestException('Exercise name is required');
     }
 
-    const exerciseType = await this.em.findOne(ExerciseType, {
-      id: newExercise.exerciseType,
+    const exerciseCategory = await this.em.findOne(ExerciseCategory, {
+      id: newExercise.exerciseCategory,
     });
 
-    if (!exerciseType) {
+    if (!exerciseCategory) {
       throw new NotFoundException(
-        `Exercise type with ID ${newExercise.exerciseType} not found`
+        `Exercise category with ID ${newExercise.exerciseCategory} not found`
       );
     }
 
@@ -88,7 +84,7 @@ export class ExerciseService {
     if (newExercise.description) {
       exerciseToCreate.description = newExercise.description;
     }
-    exerciseToCreate.exerciseType = exerciseType;
+    exerciseToCreate.exerciseCategory = exerciseCategory;
 
     await this.em.persistAndFlush(exerciseToCreate);
 
@@ -98,7 +94,7 @@ export class ExerciseService {
         id: exerciseToCreate.id,
       },
       {
-        populate: ['exerciseType'],
+        populate: ['exerciseCategory'],
       }
     );
 
@@ -109,9 +105,9 @@ export class ExerciseService {
     return {
       id: exerciseCreated.id,
       name: exerciseCreated.name,
-      exerciseType: {
-        id: exerciseCreated.exerciseType.id,
-        name: exerciseCreated.exerciseType.name,
+      exerciseCategory: {
+        id: exerciseCreated.exerciseCategory.id,
+        name: exerciseCreated.exerciseCategory.name,
       },
       video: exerciseCreated.video?.id,
       description: exerciseCreated.description,
@@ -123,12 +119,12 @@ export class ExerciseService {
   async updateExercise(
     id: string,
     exercise: UpdateExercise
-  ): Promise<ExerciseResponse> {
+  ): Promise<ExerciseDto> {
     const exerciseToUpdate = await this.em.findOne(
       Exercise,
       { id },
       {
-        populate: ['exerciseType'],
+        populate: ['exerciseCategory'],
       }
     );
 
@@ -146,7 +142,7 @@ export class ExerciseService {
         id: exerciseToUpdate.id,
       },
       {
-        populate: ['exerciseType'],
+        populate: ['exerciseCategory'],
       }
     );
 
@@ -157,9 +153,9 @@ export class ExerciseService {
     return {
       id: exerciseUpdated.id,
       name: exerciseUpdated.name,
-      exerciseType: {
-        id: exerciseUpdated.exerciseType.id,
-        name: exerciseUpdated.exerciseType.name,
+      exerciseCategory: {
+        id: exerciseUpdated.exerciseCategory.id,
+        name: exerciseUpdated.exerciseCategory.name,
       },
       video: exerciseUpdated.video?.id,
       description: exerciseUpdated.description,
@@ -182,14 +178,14 @@ export class ExerciseService {
     };
   }
 
-  async searchExercises(query: string): Promise<ExerciseResponse[]> {
+  async searchExercises(query: string): Promise<ExerciseDto[]> {
     const exercises = await this.em.find(
       Exercise,
       {
         name: { $ilike: `%${query}%` },
       },
       {
-        populate: ['exerciseType'],
+        populate: ['exerciseCategory'],
       }
     );
 
@@ -201,9 +197,9 @@ export class ExerciseService {
       return {
         id: exercise.id,
         name: exercise.name,
-        exerciseType: {
-          id: exercise.exerciseType.id,
-          name: exercise.exerciseType.name,
+        exerciseCategory: {
+          id: exercise.exerciseCategory.id,
+          name: exercise.exerciseCategory.name,
         },
         video: exercise.video?.id,
         description: exercise.description,
