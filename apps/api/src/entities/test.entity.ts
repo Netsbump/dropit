@@ -2,8 +2,8 @@ import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 @Entity()
 export class Test {
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
 
   @Property()
   createdAt = new Date();

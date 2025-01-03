@@ -41,7 +41,7 @@ export class ExerciseService {
     });
   }
 
-  async getExercise(id: number): Promise<ExerciseResponse> {
+  async getExercise(id: string): Promise<ExerciseResponse> {
     const exercise = await this.em.findOne(
       Exercise,
       { id },
@@ -121,7 +121,7 @@ export class ExerciseService {
   }
 
   async updateExercise(
-    id: number,
+    id: string,
     exercise: UpdateExercise
   ): Promise<ExerciseResponse> {
     const exerciseToUpdate = await this.em.findOne(
@@ -168,7 +168,7 @@ export class ExerciseService {
     };
   }
 
-  async deleteExercise(id: number): Promise<{ message: string }> {
+  async deleteExercise(id: string): Promise<{ message: string }> {
     const exerciseToDelete = await this.em.findOne(Exercise, { id });
 
     if (!exerciseToDelete) {

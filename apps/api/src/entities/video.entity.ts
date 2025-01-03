@@ -8,8 +8,8 @@ interface VideoMetadata {
 
 @Entity()
 export class Video {
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
 
   @Property()
   src!: string;

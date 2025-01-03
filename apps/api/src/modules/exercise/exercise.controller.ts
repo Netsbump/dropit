@@ -50,9 +50,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     // Dans le contrat, pathParams = { id: z.string() }
     // => on cast en number (ou on utilise z.coerce.number() dans le contrat)
     try {
-      const id = parseInt(params.id, 10);
-
-      const exercise = await this.exerciseService.getExercise(id);
+      const exercise = await this.exerciseService.getExercise(params.id);
 
       return {
         status: 200 as const,
@@ -102,12 +100,9 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
   async updateExercise(
     @TsRestRequest() { params, body }: RequestShapes['updateExercise']
   ) {
-    // Todo: revoir si je passe en number ou string dans le contrat
     try {
-      const id = parseInt(params.id, 10);
-
       const updatedExercise = await this.exerciseService.updateExercise(
-        id,
+        params.id,
         body
       );
 
@@ -132,9 +127,7 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
     @TsRestRequest() { params }: RequestShapes['deleteExercise']
   ) {
     try {
-      const id = parseInt(params.id, 10);
-
-      await this.exerciseService.deleteExercise(id);
+      await this.exerciseService.deleteExercise(params.id);
 
       return {
         status: 200 as const,

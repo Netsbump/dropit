@@ -169,7 +169,9 @@ describe('ExerciseController (e2e)', () => {
 
     describe('Error cases', () => {
       it('GET :id - should return 404 for non-existent exercise', async () => {
-        await request(app.getHttpServer()).get('/exercise/99999').expect(404);
+        await request(app.getHttpServer())
+          .get('/exercise/123e4567-e89b-12d3-a456-426614174000')
+          .expect(404);
       });
 
       it('PATCH :id - should return 404 for non-existent exercise', async () => {
@@ -179,14 +181,14 @@ describe('ExerciseController (e2e)', () => {
         };
 
         await request(app.getHttpServer())
-          .patch('/exercise/99999')
+          .patch('/exercise/123e4567-e89b-12d3-a456-426614174000')
           .send(updateData)
           .expect(404);
       });
 
       it('DELETE :id - should return 404 for non-existent exercise', async () => {
         await request(app.getHttpServer())
-          .delete('/exercise/99999')
+          .delete('/exercise/123e4567-e89b-12d3-a456-426614174000')
           .expect(404);
       });
 

@@ -11,7 +11,7 @@ export class ExerciseTypeService {
     return this.em.find(ExerciseType, {});
   }
 
-  async getExerciseType(id: number) {
+  async getExerciseType(id: string) {
     return this.em.findOne(ExerciseType, { id });
   }
 
@@ -22,7 +22,7 @@ export class ExerciseTypeService {
     return exerciseTypeToCreate;
   }
 
-  async updateExerciseType(id: number, exerciseType: ExerciseTypeDto) {
+  async updateExerciseType(id: string, exerciseType: ExerciseTypeDto) {
     const exerciseTypeToUpdate = await this.em.findOne(ExerciseType, { id });
 
     if (!exerciseTypeToUpdate) {
@@ -35,7 +35,7 @@ export class ExerciseTypeService {
     return exerciseTypeToUpdate;
   }
 
-  async deleteExerciseType(id: number) {
+  async deleteExerciseType(id: string) {
     const exerciseTypeToDelete = await this.em.findOne(ExerciseType, { id });
 
     if (!exerciseTypeToDelete) {

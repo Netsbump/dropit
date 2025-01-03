@@ -3,8 +3,8 @@ import { z } from 'zod';
 export const createExerciseSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
-  exerciseType: z.number(),
-  video: z.number().optional(),
+  exerciseType: z.string(),
+  video: z.string().optional(),
   englishName: z.string().optional(),
   shortName: z.string().optional(),
 });
@@ -16,13 +16,13 @@ export const updateExerciseSchema = createExerciseSchema.partial();
 export type UpdateExercise = z.infer<typeof updateExerciseSchema>;
 
 export const exerciseTypeSchema = z.object({
-  id: z.number(),
+  id: z.string(),
   name: z.string(),
   exerciseType: z.object({
-    id: z.number(),
+    id: z.string(),
     name: z.string(),
   }),
-  video: z.number().optional(),
+  video: z.string().optional(),
   description: z.string().optional(),
   englishName: z.string().optional(),
   shortName: z.string().optional(),

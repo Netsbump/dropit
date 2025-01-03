@@ -10,7 +10,7 @@ export class VideoService {
     return this.em.find(Video, {});
   }
 
-  async getVideo(id: number) {
+  async getVideo(id: string) {
     return this.em.findOne(Video, { id });
   }
 
@@ -18,7 +18,7 @@ export class VideoService {
     return this.em.persistAndFlush(video);
   }
 
-  async updateVideo(id: number, video: Video) {
+  async updateVideo(id: string, video: Video) {
     const videoToUpdate = await this.em.findOne(Video, { id });
 
     if (!videoToUpdate) {
@@ -29,7 +29,7 @@ export class VideoService {
     await this.em.flush();
   }
 
-  async deleteVideo(id: number) {
+  async deleteVideo(id: string) {
     const videoToDelete = await this.em.findOne(Video, { id });
 
     if (!videoToDelete) {

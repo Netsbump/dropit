@@ -8,12 +8,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "unsigned": false,
-          "autoincrement": true,
-          "primary": true,
+          "autoincrement": false,
+          "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
         },
         "name": {
           "name": "name",
@@ -68,12 +69,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "unsigned": false,
-          "autoincrement": true,
-          "primary": true,
+          "autoincrement": false,
+          "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
         },
         "created_at": {
           "name": "created_at",
@@ -128,12 +130,13 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "unsigned": false,
-          "autoincrement": true,
-          "primary": true,
+          "autoincrement": false,
+          "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
         },
         "src": {
           "name": "src",
@@ -198,30 +201,31 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
-          "unsigned": false,
-          "autoincrement": true,
-          "primary": true,
-          "nullable": false,
-          "mappedType": "integer"
-        },
-        "exercise_type_id": {
-          "name": "exercise_type_id",
-          "type": "int",
+          "type": "uuid",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "integer"
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
+        },
+        "exercise_type_id": {
+          "name": "exercise_type_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         },
         "video_id": {
           "name": "video_id",
-          "type": "int",
+          "type": "uuid",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "mappedType": "integer"
+          "mappedType": "uuid"
         },
         "name": {
           "name": "name",
