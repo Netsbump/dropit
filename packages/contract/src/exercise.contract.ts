@@ -1,6 +1,6 @@
 import {
   createExerciseSchema,
-  exerciseTypeSchema,
+  exerciseSchema,
   updateExerciseSchema,
 } from '@dropit/schemas';
 import { initContract } from '@ts-rest/core';
@@ -13,7 +13,7 @@ export const exerciseContract = c.router({
     path: '/exercise',
     summary: 'Get all exercises',
     responses: {
-      200: z.array(exerciseTypeSchema),
+      200: z.array(exerciseSchema),
       404: z.object({
         message: z.string(),
       }),
@@ -31,7 +31,7 @@ export const exerciseContract = c.router({
       id: z.string(),
     }),
     responses: {
-      200: exerciseTypeSchema,
+      200: exerciseSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -47,7 +47,7 @@ export const exerciseContract = c.router({
     summary: 'Create an exercise',
     body: createExerciseSchema,
     responses: {
-      201: exerciseTypeSchema,
+      201: exerciseSchema,
       400: z.object({
         message: z.string(),
       }),
@@ -69,7 +69,7 @@ export const exerciseContract = c.router({
     }),
     body: updateExerciseSchema,
     responses: {
-      200: exerciseTypeSchema,
+      200: exerciseSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -107,7 +107,7 @@ export const exerciseContract = c.router({
       like: z.string(),
     }),
     responses: {
-      200: z.array(exerciseTypeSchema),
+      200: z.array(exerciseSchema),
       404: z.object({
         message: z.string(),
       }),

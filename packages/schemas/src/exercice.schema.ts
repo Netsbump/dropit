@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const createExerciseSchema = z.object({
   name: z.string(),
   description: z.string().optional(),
-  exerciseType: z.string(),
+  exerciseCategory: z.string(),
   video: z.string().optional(),
   englishName: z.string().optional(),
   shortName: z.string().optional(),
@@ -15,10 +15,10 @@ export const updateExerciseSchema = createExerciseSchema.partial();
 
 export type UpdateExercise = z.infer<typeof updateExerciseSchema>;
 
-export const exerciseTypeSchema = z.object({
+export const exerciseSchema = z.object({
   id: z.string(),
   name: z.string(),
-  exerciseType: z.object({
+  exerciseCategory: z.object({
     id: z.string(),
     name: z.string(),
   }),
@@ -28,4 +28,4 @@ export const exerciseTypeSchema = z.object({
   shortName: z.string().optional(),
 });
 
-export type ExerciseResponse = z.infer<typeof exerciseTypeSchema>;
+export type ExerciseDto = z.infer<typeof exerciseSchema>;

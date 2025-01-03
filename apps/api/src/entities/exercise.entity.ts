@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { ExerciseType } from './exerciseType.entity';
+import { ExerciseCategory } from './exerciseCategory.entity';
 import { Video } from './video.entity';
 
 @Entity()
@@ -7,8 +7,8 @@ export class Exercise {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => ExerciseType)
-  exerciseType!: ExerciseType;
+  @ManyToOne(() => ExerciseCategory)
+  exerciseCategory!: ExerciseCategory;
 
   @ManyToOne(() => Video, { nullable: true })
   video?: Video;
