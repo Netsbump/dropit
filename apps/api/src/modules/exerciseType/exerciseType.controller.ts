@@ -20,7 +20,7 @@ export class ExerciseTypeController {
   }
 
   @Get(':id')
-  async getExerciseType(@Param('id') id: number) {
+  async getExerciseType(@Param('id') id: string) {
     return this.exerciseTypeService.getExerciseType(id);
   }
 
@@ -31,14 +31,14 @@ export class ExerciseTypeController {
 
   @Put(':id')
   async updateExerciseType(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() exerciseType: ExerciseType
   ) {
     return this.exerciseTypeService.updateExerciseType(id, exerciseType);
   }
 
   @Delete(':id')
-  async deleteExerciseType(@Param('id') id: number) {
+  async deleteExerciseType(@Param('id') id: string) {
     return this.exerciseTypeService.deleteExerciseType(id);
   }
 }

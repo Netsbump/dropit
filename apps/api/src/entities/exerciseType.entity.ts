@@ -9,8 +9,8 @@ import { Exercise } from './exercise.entity';
 
 @Entity()
 export class ExerciseType {
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
 
   @OneToMany(
     () => Exercise,

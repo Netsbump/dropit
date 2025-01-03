@@ -20,7 +20,7 @@ export class VideoController {
   }
 
   @Get(':id')
-  async getVideo(@Param('id') id: number) {
+  async getVideo(@Param('id') id: string) {
     return this.videoService.getVideo(id);
   }
 
@@ -30,12 +30,12 @@ export class VideoController {
   }
 
   @Put(':id')
-  async updateVideo(@Param('id') id: number, @Body() video: Video) {
+  async updateVideo(@Param('id') id: string, @Body() video: Video) {
     return this.videoService.updateVideo(id, video);
   }
 
   @Delete(':id')
-  async deleteVideo(@Param('id') id: number) {
+  async deleteVideo(@Param('id') id: string) {
     return this.videoService.deleteVideo(id);
   }
 }

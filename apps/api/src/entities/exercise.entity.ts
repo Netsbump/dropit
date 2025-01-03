@@ -4,8 +4,8 @@ import { Video } from './video.entity';
 
 @Entity()
 export class Exercise {
-  @PrimaryKey()
-  id!: number;
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
 
   @ManyToOne(() => ExerciseType)
   exerciseType!: ExerciseType;
