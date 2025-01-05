@@ -1,5 +1,4 @@
 import { exerciseContract } from '@dropit/contract';
-import { UpdateExercise } from '@dropit/schemas';
 import {
   BadRequestException,
   Controller,
