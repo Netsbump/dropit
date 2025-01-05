@@ -10,6 +10,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../ui/button';
 import {
@@ -19,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 import { Input } from '../ui/input';
+import { Separator } from '../ui/separator';
 import {
   Table,
   TableBody,
@@ -31,11 +33,13 @@ import {
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onDialogCreation: (open: boolean) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onDialogCreation,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -73,32 +77,38 @@ export function DataTable<TData, TValue>({
             className="max-w-sm"
           />
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              Columns
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
-                  >
-                    {column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-2">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto">
+                Columns
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => {
+                  return (
+                    <DropdownMenuCheckboxItem
+                      key={column.id}
+                      className="capitalize"
+                      checked={column.getIsVisible()}
+                      onCheckedChange={(value) =>
+                        column.toggleVisibility(!!value)
+                      }
+                    >
+                      {column.id}
+                    </DropdownMenuCheckboxItem>
+                  );
+                })}
+            </DropdownMenuContent>
+          </DropdownMenu>
+          <Separator orientation="vertical" className="h-6" />
+          <Button onClick={() => onDialogCreation(true)}>
+            Ajouter un exercice
+          </Button>
+        </div>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -152,25 +162,25 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="flex justify-between items-center">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{' '}
-          {table.getFilteredRowModel().rows.length} colonne(s) sectectionné.
+          {table.getFilteredSelectedRowModel().rows.length} sur{' '}
+          {table.getFilteredRowModel().rows.length} colonne(s) sectectionnée.
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Précédent
+            <ChevronLeft />
           </Button>
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={() => table.nextPage()}
             disabled={!table.getCanNextPage()}
           >
-            Suivant
+            <ChevronRight />
           </Button>
         </div>
       </div>
