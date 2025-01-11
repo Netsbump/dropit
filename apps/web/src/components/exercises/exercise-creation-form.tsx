@@ -1,10 +1,22 @@
+import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
-import { CreateExercise } from '@dropit/schemas';
+import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import { Button } from '../ui/button';
 import { FileUpload } from '../ui/file-upload';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormLabel,
+  FormMessage,
+} from '../ui/form';
+import { FormItem } from '../ui/form';
 import { Input } from '../ui/input';
-import { Label } from '../ui/label';
 import {
   Select,
   SelectContent,
@@ -14,126 +26,197 @@ import {
 } from '../ui/select';
 import { Textarea } from '../ui/textarea';
 
-interface ExerciseCreationFormProps {
+type ExerciseCreationFormProps = {
   onSuccess?: () => void;
   onCancel?: () => void;
-}
+};
 
 export function ExerciseCreationForm({
   onSuccess,
   onCancel,
 }: ExerciseCreationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<Partial<CreateExercise>>({});
+  const { toast } = useToast();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const { data: exerciseCategories, isLoading: categoriesLoading } = useQuery({
+    queryKey: ['exercise-categories'],
+    queryFn: async () => {
+      const response = await api.exerciseCategory.getExerciseCategories();
+      if (response.status !== 200) throw new Error('Failed to load categories');
+      return response.body;
+    },
+  });
+
+  const { mutate: createExerciseMutation } = useMutation({
+    mutationFn: async (data: CreateExercise) => {
+      const response = await api.exercise.createExercise({ body: data });
+      if (response.status !== 201) {
+        throw new Error("Erreur lors de la création de l'exercice");
+      }
+      return response.body;
+    },
+    onSuccess: () => {
+      toast({
+        title: 'Exercice créé avec succès',
+        description: "L'exercice a été créé avec succès",
+      });
+      onSuccess?.();
+    },
+    onError: (error) => {
+      toast({
+        title: 'Erreur',
+        description: error.message,
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const handleSubmit = (formValues: z.infer<typeof formExerciseSchema>) => {
     setIsLoading(true);
 
     try {
-      const response = await api.createExercise({
-        body: {
-          // biome-ignore lint/style/noNonNullAssertion: <explanation>
-          name: formData.name!,
-          // biome-ignore lint/style/noNonNullAssertion: <explanation>
-          exerciseCategory: formData.exerciseCategory!,
-          description: formData.description,
-          englishName: formData.englishName,
-          shortName: formData.shortName,
-          // La gestion de la vidéo nécessitera probablement une route séparée pour l'upload
-        },
-      });
-
-      if (response.status === 201) {
-        onSuccess?.();
-      }
-    } catch (error) {
-      console.error('Erreur lors de la création:', error);
+      createExerciseMutation(formValues);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleChange = (field: keyof CreateExercise, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
+  const formExerciseSchema = createExerciseSchema;
+  const form = useForm<z.infer<typeof formExerciseSchema>>({
+    resolver: zodResolver(formExerciseSchema),
+    defaultValues: {
+      name: '',
+      exerciseCategory: undefined,
+      description: '',
+      englishName: '',
+      shortName: '',
+      video: undefined,
+    },
+  });
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 py-4">
-      <div className="grid gap-2">
-        <Label htmlFor="name">Nom</Label>
-        <Input
-          id="name"
-          placeholder="Nom de l'exercice"
-          value={formData.name ?? ''}
-          onChange={(e) => handleChange('name', e.target.value)}
-          required
+    <Form {...form}>
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="grid gap-4 py-4"
+      >
+        <FormField
+          control={form.control}
+          name="name"
+          render={({ field, fieldState }) => (
+            <FormItem>
+              <FormLabel>Nom</FormLabel>
+              <FormControl>
+                <Input placeholder="Nom de l'exercice" {...field} />
+              </FormControl>
+              {fieldState.error && (
+                <FormMessage>{fieldState.error.message}</FormMessage>
+              )}
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="category">Catégorie</Label>
-        <Select
-          value={formData.exerciseCategory}
-          onValueChange={(value) => handleChange('exerciseCategory', value)}
-          required
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Sélectionner une catégorie" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="halterophilie">Haltérophilie</SelectItem>
-            <SelectItem value="musculation">Musculation</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="description">Description</Label>
-        <Textarea
-          id="description"
-          placeholder="Description de l'exercice"
-          value={formData.description ?? ''}
-          onChange={(e) => handleChange('description', e.target.value)}
+
+        <FormField
+          control={form.control}
+          name="exerciseCategory"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Catégorie</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sélectionner une catégorie" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {categoriesLoading ? (
+                    <SelectItem value="loading">Chargement...</SelectItem>
+                  ) : (
+                    exerciseCategories?.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="englishName">Nom en anglais</Label>
-        <Input
-          id="englishName"
-          placeholder="Nom en anglais"
-          value={formData.englishName ?? ''}
-          onChange={(e) => handleChange('englishName', e.target.value)}
+
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea placeholder="Description de l'exercice" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="shortName">Abbréviation</Label>
-        <Input
-          id="shortName"
-          placeholder="Abbréviation"
-          value={formData.shortName ?? ''}
-          onChange={(e) => handleChange('shortName', e.target.value)}
+
+        <FormField
+          control={form.control}
+          name="englishName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Nom en anglais</FormLabel>
+              <FormControl>
+                <Input placeholder="Nom en anglais" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="grid gap-2">
-        <Label htmlFor="video">Vidéo</Label>
-        <FileUpload
-          id="video"
-          accept="video/mp4,video/webm,video/ogg"
-          aria-label="Upload une vidéo"
+
+        <FormField
+          control={form.control}
+          name="shortName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Abbréviation</FormLabel>
+              <FormControl>
+                <Input placeholder="Abbréviation" {...field} />
+              </FormControl>
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="flex justify-end gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={onCancel}
-          disabled={isLoading}
-        >
-          Annuler
-        </Button>
-        <Button type="submit" disabled={isLoading}>
-          {isLoading ? 'Création...' : 'Créer'}
-        </Button>
-      </div>
-    </form>
+
+        <FormField
+          control={form.control}
+          name="video"
+          render={({ field: { value, onChange, ...field } }) => (
+            <FormItem>
+              <FormLabel>Vidéo</FormLabel>
+              <FormControl>
+                <FileUpload
+                  accept="video/mp4,video/webm,video/ogg"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    onChange(file);
+                  }}
+                  {...field}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <div className="flex justify-end gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onCancel}
+            disabled={isLoading}
+          >
+            Annuler
+          </Button>
+          <Button type="submit" disabled={isLoading}>
+            {isLoading ? 'Création...' : 'Créer'}
+          </Button>
+        </div>
+      </form>
+    </Form>
   );
 }
