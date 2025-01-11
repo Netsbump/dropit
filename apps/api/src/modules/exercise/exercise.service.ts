@@ -85,6 +85,13 @@ export class ExerciseService {
       exerciseToCreate.description = newExercise.description;
     }
     exerciseToCreate.exerciseCategory = exerciseCategory;
+    if (newExercise.englishName) {
+      exerciseToCreate.englishName = newExercise.englishName;
+    }
+    if (newExercise.shortName) {
+      exerciseToCreate.shortName = newExercise.shortName;
+    }
+    // TODO: add video
 
     await this.em.persistAndFlush(exerciseToCreate);
 
