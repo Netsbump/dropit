@@ -66,12 +66,14 @@ export const columns: ColumnDef<Exercise>[] = [
     },
   },
   {
-    accessorKey: 'description',
-    header: 'Description',
+    accessorKey: 'shortName',
+    header: 'Abréviation',
+    cell: ({ row }) => row.getValue('shortName') || '—',
   },
   {
     accessorKey: 'englishName',
     header: 'Nom Anglais',
+    cell: ({ row }) => row.getValue('englishName') || '—',
   },
   {
     id: 'actions',

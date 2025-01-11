@@ -7,7 +7,7 @@ import { DataTable } from '../components/exercises/data-table';
 import { DialogCreation } from '../components/exercises/dialog-creation';
 import { ExerciseCreationForm } from '../components/exercises/exercise-creation-form';
 
-export const Route = createFileRoute('/exercises/')({
+export const Route = createFileRoute('/programs/exercises')({
   component: ExercisesPage,
 });
 
@@ -35,11 +35,7 @@ function ExercisesPage() {
   };
 
   return (
-    <div className="container mx-auto py-10">
-      <h1 className="text-2xl font-bold mb-4">Exercices</h1>
-      <p className="text-sm text-muted-foreground">
-        Retrouvez et gérez tous vos exercices ici
-      </p>
+    <div className="container mx-auto py-2">
       <DataTable
         columns={columns}
         data={exercises}
