@@ -1,17 +1,17 @@
 import {
-  createExerciseSchema,
-  exerciseSchema,
-  updateExerciseSchema,
+  createExerciseCategorySchema,
+  exerciseCategorySchema,
+  updateExerciseCategorySchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
 
-export const exerciseContract = {
-  getExercises: {
+export const exerciseCategoryContract = {
+  getExerciseCategories: {
     method: 'GET',
-    path: '/exercise',
-    summary: 'Get all exercises',
+    path: '/exercise-category',
+    summary: 'Get all exercise categories',
     responses: {
-      200: z.array(exerciseSchema),
+      200: z.array(exerciseCategorySchema),
       404: z.object({
         message: z.string(),
       }),
@@ -21,15 +21,15 @@ export const exerciseContract = {
     },
   },
 
-  getExercise: {
+  getExerciseCategory: {
     method: 'GET',
-    path: '/exercise/:id',
-    summary: 'Get an exercise by id',
+    path: '/exercise-category/:id',
+    summary: 'Get an exercise category by id',
     pathParams: z.object({
       id: z.string(),
     }),
     responses: {
-      200: exerciseSchema,
+      200: exerciseCategorySchema,
       404: z.object({
         message: z.string(),
       }),
@@ -39,13 +39,13 @@ export const exerciseContract = {
     },
   },
 
-  createExercise: {
+  createExerciseCategory: {
     method: 'POST',
-    path: '/exercise',
-    summary: 'Create an exercise',
-    body: createExerciseSchema,
+    path: '/exercise-category',
+    summary: 'Create an exercise category',
+    body: createExerciseCategorySchema,
     responses: {
-      201: exerciseSchema,
+      201: exerciseCategorySchema,
       400: z.object({
         message: z.string(),
       }),
@@ -58,16 +58,16 @@ export const exerciseContract = {
     },
   },
 
-  updateExercise: {
+  updateExerciseCategory: {
     method: 'PATCH',
-    path: '/exercise/:id',
-    summary: 'Update an exercise',
+    path: '/exercise-category/:id',
+    summary: 'Update an exercise category',
     pathParams: z.object({
       id: z.string(),
     }),
-    body: updateExerciseSchema,
+    body: updateExerciseCategorySchema,
     responses: {
-      200: exerciseSchema,
+      200: exerciseCategorySchema,
       404: z.object({
         message: z.string(),
       }),
@@ -77,10 +77,10 @@ export const exerciseContract = {
     },
   },
 
-  deleteExercise: {
+  deleteExerciseCategory: {
     method: 'DELETE',
-    path: '/exercise/:id',
-    summary: 'Delete an exercise',
+    path: '/exercise-category/:id',
+    summary: 'Delete an exercise category',
     pathParams: z.object({
       id: z.string(),
     }),
@@ -88,24 +88,6 @@ export const exerciseContract = {
       200: z.object({
         message: z.string(),
       }),
-      404: z.object({
-        message: z.string(),
-      }),
-      500: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-
-  searchExercises: {
-    method: 'GET',
-    path: '/exercise/search',
-    summary: 'Search for exercises',
-    query: z.object({
-      like: z.string(),
-    }),
-    responses: {
-      200: z.array(exerciseSchema),
       404: z.object({
         message: z.string(),
       }),
