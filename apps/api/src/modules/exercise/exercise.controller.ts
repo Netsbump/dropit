@@ -46,8 +46,6 @@ export class ExerciseController implements NestControllerInterface<typeof c> {
 
   @TsRest(c.getExercise)
   async getExercise(@TsRestRequest() { params }: RequestShapes['getExercise']) {
-    // Dans le contrat, pathParams = { id: z.string() }
-    // => on cast en number (ou on utilise z.coerce.number() dans le contrat)
     try {
       const exercise = await this.exerciseService.getExercise(params.id);
 

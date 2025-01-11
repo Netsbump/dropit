@@ -1,20 +1,23 @@
-import { CreateExercise, ExerciseDto } from '@dropit/schemas';
+import {
+  CreateExercise,
+  ExerciseCategoryDto,
+  ExerciseDto,
+} from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../src/app.module';
-import { ExerciseCategory } from '../src/entities/exerciseCategory.entity';
 import { ExerciseService } from '../src/modules/exercise/exercise.service';
 import { ExerciseCategoryService } from '../src/modules/exerciseCategory/exerciseCategory.service';
 
 describe('ExerciseController (e2e)', () => {
   let app: INestApplication;
   let orm: MikroORM;
-  let exerciseCategory: ExerciseCategory;
+  let exerciseCategory: ExerciseCategoryDto;
 
   // Déclaration des fonctions utilitaires
-  let createExerciseCategory: (name: string) => Promise<ExerciseCategory>;
+  let createExerciseCategory: (name: string) => Promise<ExerciseCategoryDto>;
   let createExercise: (exercise: CreateExercise) => Promise<ExerciseDto>;
 
   beforeAll(async () => {
@@ -37,7 +40,7 @@ describe('ExerciseController (e2e)', () => {
 
     createExerciseCategory = async (
       name: string
-    ): Promise<ExerciseCategory> => {
+    ): Promise<ExerciseCategoryDto> => {
       return await exerciseCategoryService.createExerciseCategory({ name });
     };
 
