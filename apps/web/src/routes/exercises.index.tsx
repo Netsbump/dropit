@@ -1,4 +1,5 @@
-import { useQueryClient } from '@tanstack/react-query';
+import { api } from '@/lib/api';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 import { columns } from '../components/exercises/columns';
@@ -13,38 +14,19 @@ export const Route = createFileRoute('/exercises/')({
 function ExercisesPage() {
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
   const queryClient = useQueryClient();
-  const data = [
-    {
-      id: '1',
-      name: 'Squat',
-      description: 'Exercise de jambes',
-      category: {
-        id: '1',
-        name: 'Haltérophilie',
-      },
-      englishName: 'Squat',
+
+  const { data: exercises, isLoading: exercisesLoading } = useQuery({
+    queryKey: ['exercises'],
+    queryFn: async () => {
+      const response = await api.exercise.getExercises();
+      if (response.status !== 200) throw new Error('Failed to load exercises');
+      return response.body;
     },
-    {
-      id: '2',
-      name: 'Soulevé de terre',
-      description: 'Exercise de jambes',
-      category: {
-        id: '1',
-        name: 'Haltérophilie',
-      },
-      englishName: 'Deadlift',
-    },
-    {
-      id: '3',
-      name: 'Développé couché',
-      description: 'Exercise de pectoraux',
-      category: {
-        id: '1',
-        name: 'Musculation',
-      },
-      englishName: 'Bench Press',
-    },
-  ];
+  });
+
+  if (exercisesLoading) return <div>Loading...</div>;
+
+  if (!exercises) return <div>No exercises found</div>;
 
   const handleCreationSuccess = () => {
     setCreateExerciseModalOpen(false);
@@ -60,7 +42,7 @@ function ExercisesPage() {
       </p>
       <DataTable
         columns={columns}
-        data={data}
+        data={exercises}
         onDialogCreation={setCreateExerciseModalOpen}
       />
       <DialogCreation

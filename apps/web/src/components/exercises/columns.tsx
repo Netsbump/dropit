@@ -1,3 +1,4 @@
+import { ExerciseDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import { ArrowUpDown } from 'lucide-react';
@@ -11,18 +12,7 @@ import {
   DropdownMenuTrigger,
 } from '../ui/dropdown-menu';
 
-export type Exercise = {
-  id: string;
-  name: string;
-  description?: string;
-  category: {
-    id: string;
-    name: string;
-  };
-  video?: string;
-  englishName?: string;
-  shortName?: string;
-};
+type Exercise = ExerciseDto;
 
 export const columns: ColumnDef<Exercise>[] = [
   {
@@ -62,7 +52,7 @@ export const columns: ColumnDef<Exercise>[] = [
     },
   },
   {
-    accessorKey: 'category.name',
+    accessorKey: 'exerciseCategory.name',
     header: ({ column }) => {
       return (
         <Button
