@@ -5,8 +5,8 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { ExerciseCategory } from '../../entities/exercise-category.entity';
 import { Exercise } from '../../entities/exercise.entity';
-import { ExerciseCategory } from '../../entities/exerciseCategory.entity';
 
 @Injectable()
 export class ExerciseService {
