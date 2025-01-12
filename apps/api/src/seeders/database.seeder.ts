@@ -1,7 +1,7 @@
 //import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/core';
 import { Factory, Seeder } from '@mikro-orm/seeder';
-import { ExerciseCategory } from '../entities/exerciseCategory.entity';
+import { ExerciseCategory } from '../entities/exercise-category.entity';
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {

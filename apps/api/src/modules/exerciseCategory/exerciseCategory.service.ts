@@ -9,7 +9,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { ExerciseCategory } from '../../entities/exerciseCategory.entity';
+import { ExerciseCategory } from '../../entities/exercise-category.entity';
 
 @Injectable()
 export class ExerciseCategoryService {

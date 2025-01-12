@@ -6,38 +6,28 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { ExerciseCategory } from './exercise-category.entity';
+import { ComplexCategory } from './complex-category.entity';
 import { ExerciseComplex } from './exercise-complex';
-import { Video } from './video.entity';
 
 @Entity()
-export class Exercise {
+export class Complex {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => ExerciseCategory)
-  exerciseCategory!: ExerciseCategory;
-
-  @ManyToOne(() => Video, { nullable: true })
-  video?: Video;
+  @ManyToOne(() => ComplexCategory)
+  complexCategory!: ComplexCategory;
 
   @OneToMany(
     () => ExerciseComplex,
-    (exerciseComplex) => exerciseComplex.exercise
+    (exerciseComplex) => exerciseComplex.complex
   )
-  complexes = new Collection<ExerciseComplex>(this);
+  exercises = new Collection<ExerciseComplex>(this);
 
   @Property()
   name!: string;
 
   @Property({ nullable: true })
   description?: string;
-
-  @Property({ nullable: true })
-  englishName?: string;
-
-  @Property({ nullable: true })
-  shortName?: string;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
