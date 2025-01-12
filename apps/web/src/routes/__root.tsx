@@ -1,29 +1,29 @@
-import { Link, Outlet, createRootRoute } from '@tanstack/react-router';
+import { Separator } from '@/components/ui/separator';
+import { Outlet, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
+import { AppSidebar } from '../components/app-sidebar';
+import { Breadcrumbs } from '../components/breadcrumbs';
+import { SidebarProvider, SidebarTrigger } from '../components/ui/sidebar';
 
 export const Route = createRootRoute({
   component: () => (
-    <>
-      <div className="p-2 flex gap-2">
-        <Link to="/" className="[&.active]:font-bold">
-          Dropit
-        </Link>
-        <Link to="/programs" className="[&.active]:font-bold">
-          Programmation
-        </Link>
-        <Link to="/planning" className="[&.active]:font-bold">
-          Calendrier
-        </Link>
-        <Link to="/athletes" className="[&.active]:font-bold">
-          Athlètes
-        </Link>
-        <Link to="/about" className="[&.active]:font-bold">
-          Aide & Support
-        </Link>
+    <SidebarProvider className="w-full">
+      <div className="flex min-h-screen w-full">
+        <AppSidebar />
+        <main className="flex-1 overflow-auto w-full">
+          <div className="h-full w-full">
+            <div className="flex items-center p-2 border-b gap-2">
+              <SidebarTrigger />
+              <Separator orientation="vertical" className="h-6" />
+              <Breadcrumbs />
+            </div>
+            <div className="p-4">
+              <Outlet />
+            </div>
+          </div>
+        </main>
       </div>
-      <hr />
-      <Outlet />
       <TanStackRouterDevtools />
-    </>
+    </SidebarProvider>
   ),
 });
