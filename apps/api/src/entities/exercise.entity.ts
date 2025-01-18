@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { ExerciseCategory } from './exercise-category.entity';
-import { ExerciseComplex } from './exercise-complex';
+import { ExerciseComplex } from './exercise-complex.entity';
 import { Video } from './video.entity';
 
 @Entity()
