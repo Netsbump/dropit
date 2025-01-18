@@ -79,8 +79,6 @@ describe('ExerciseController (e2e)', () => {
         exerciseCategory: exerciseCategory.id,
       };
 
-      console.log('Sending exercise:', exercise); // Debug
-
       const response = await request(app.getHttpServer())
         .post('/exercise')
         .send(exercise)
