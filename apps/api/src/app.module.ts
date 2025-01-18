@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 //import { devOrmConfig, testOrmConfig } from './mikro-orm.config';
 import config from './mikro-orm.config';
+import { ComplexModule } from './modules/complex/complex.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { ExerciseCategoryModule } from './modules/exerciseCategory/exerciseCategory.module';
 import { VideoModule } from './modules/video/video.module';
@@ -16,6 +17,7 @@ import { VideoModule } from './modules/video/video.module';
     ExerciseModule,
     VideoModule,
     ExerciseCategoryModule,
+    ComplexModule,
   ],
   controllers: [AppController],
   providers: [AppService],
