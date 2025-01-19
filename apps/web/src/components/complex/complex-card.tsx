@@ -1,3 +1,4 @@
+import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ComplexDto } from '@dropit/schemas';
 import { MoreHorizontal } from 'lucide-react';
@@ -38,8 +39,13 @@ export function ComplexCard({ complex }: ComplexCardProps) {
         <div className="text-sm text-muted-foreground">
           {complex.description || 'Pas de description'}
         </div>
-        <div className="mt-2 text-xs text-muted-foreground">
-          {complex.exercises?.length || 0} exercices
+        <div className="mt-4 flex items-center justify-between">
+          <Badge variant="secondary" className="text-xs">
+            {complex.complexCategory?.name || 'Sans catégorie'}
+          </Badge>
+          <span className="text-xs text-muted-foreground">
+            {complex.exercises?.length || 0} exercices
+          </span>
         </div>
       </CardContent>
     </Card>

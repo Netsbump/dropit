@@ -14,6 +14,7 @@ export const Route = createFileRoute('/programs/complex')({
 function ComplexPage() {
   const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
   const [filter, setFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const queryClient = useQueryClient();
 
   const { data: complexes, isLoading } = useQuery({
@@ -25,9 +26,24 @@ function ComplexPage() {
     },
   });
 
-  const filteredComplexes = complexes?.filter((complex) =>
-    complex.name.toLowerCase().includes(filter.toLowerCase())
-  );
+  const { data: categories } = useQuery({
+    queryKey: ['complexCategories'],
+    queryFn: async () => {
+      const response = await api.complexCategory.getComplexCategories();
+      if (response.status !== 200) throw new Error('Failed to load categories');
+      return response.body;
+    },
+  });
+
+  const filteredComplexes = complexes?.filter((complex) => {
+    const matchesSearch = complex.name
+      .toLowerCase()
+      .includes(filter.toLowerCase());
+    const matchesCategory =
+      categoryFilter === 'all' ||
+      complex.complexCategory?.id === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleCreationSuccess = () => {
     setCreateComplexModalOpen(false);
@@ -38,7 +54,9 @@ function ComplexPage() {
     <div className="space-y-4">
       <ComplexFilters
         onFilterChange={setFilter}
+        onCategoryChange={setCategoryFilter}
         onCreateClick={() => setCreateComplexModalOpen(true)}
+        categories={categories}
         disabled={isLoading || !complexes?.length}
       />
 
