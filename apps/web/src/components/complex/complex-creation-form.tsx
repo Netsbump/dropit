@@ -17,8 +17,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { CreateComplex, createComplexSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { PlusCircle, Trash2 } from 'lucide-react';
-import { GripVertical } from 'lucide-react';
+import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -238,7 +237,6 @@ export function ComplexCreationForm({
   };
 
   const handleSubmit = (formValues: z.infer<typeof createComplexSchema>) => {
-    console.log(formValues);
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',
