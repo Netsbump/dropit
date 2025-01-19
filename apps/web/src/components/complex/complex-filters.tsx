@@ -37,7 +37,7 @@ export function ComplexFilters({
       </div>
       <div className="flex items-center gap-2">
         <Select onValueChange={onCategoryChange} defaultValue="all">
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-fit bg-card font-medium">
             <SelectValue placeholder="Toutes les catégories" />
           </SelectTrigger>
           <SelectContent>

@@ -13,11 +13,15 @@ import {
 
 interface ComplexCardProps {
   complex: ComplexDto;
+  onClick?: () => void;
 }
 
-export function ComplexCard({ complex }: ComplexCardProps) {
+export function ComplexCard({ complex, onClick }: ComplexCardProps) {
   return (
-    <Card>
+    <Card
+      className="cursor-pointer hover:bg-accent transition-colors"
+      onClick={onClick}
+    >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">{complex.name}</CardTitle>
         <DropdownMenu>
