@@ -93,4 +93,29 @@ export class ComplexController implements NestControllerInterface<typeof c> {
       throw error;
     }
   }
+
+  @TsRest(c.updateComplex)
+  async updateComplex(
+    @TsRestRequest() { params, body }: RequestShapes['updateComplex']
+  ) {
+    try {
+      const updatedComplex = await this.complexService.updateComplex(
+        params.id,
+        body
+      );
+      return {
+        status: 200 as const,
+        body: updatedComplex,
+      };
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return {
+          status: 404 as const,
+          body: { message: error.message },
+        };
+      }
+
+      throw error;
+    }
+  }
 }
