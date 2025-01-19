@@ -16,6 +16,15 @@ export const createComplexSchema = z.object({
 
 export type CreateComplex = z.infer<typeof createComplexSchema>;
 
+export const updateComplexSchema = z.object({
+  name: z.string().optional(),
+  complexCategory: z.string().optional(),
+  exercises: z.array(complexExerciseSchema).optional(),
+  description: z.string().optional(),
+});
+
+export type UpdateComplex = z.infer<typeof updateComplexSchema>;
+
 export const complexSchema = z.object({
   id: z.string(),
   name: z.string(),

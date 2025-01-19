@@ -1,4 +1,8 @@
-import { complexSchema, createComplexSchema } from '@dropit/schemas';
+import {
+  complexSchema,
+  createComplexSchema,
+  updateComplexSchema,
+} from '@dropit/schemas';
 import { z } from 'zod';
 
 export const complexContract = {
@@ -45,6 +49,25 @@ export const complexContract = {
       400: z.object({
         message: z.string(),
       }),
+      404: z.object({
+        message: z.string(),
+      }),
+      500: z.object({
+        message: z.string(),
+      }),
+    },
+  },
+
+  updateComplex: {
+    method: 'PUT',
+    path: '/complex/:id',
+    summary: 'Update a complex',
+    pathParams: z.object({
+      id: z.string(),
+    }),
+    body: updateComplexSchema,
+    responses: {
+      200: complexSchema,
       404: z.object({
         message: z.string(),
       }),
