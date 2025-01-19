@@ -46,6 +46,7 @@ export class ComplexService {
             shortName: exercise.shortName,
           };
         }),
+        description: complex.description,
       };
     });
   }
@@ -85,6 +86,7 @@ export class ComplexService {
           shortName: exercise.shortName,
         };
       }),
+      description: complex.description,
     };
   }
 
@@ -151,6 +153,7 @@ export class ComplexService {
     return {
       id: complexCreated.id,
       name: complexCreated.name,
+      description: complexCreated.description,
       complexCategory: {
         id: complexCreated.complexCategory.id,
         name: complexCreated.complexCategory.name,

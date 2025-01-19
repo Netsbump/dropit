@@ -27,7 +27,7 @@ import {
 import { Textarea } from '../ui/textarea';
 
 type ExerciseCreationFormProps = {
-  onSuccess?: () => void;
+  onSuccess?: (exerciseId: string) => void;
   onCancel?: () => void;
 };
 
@@ -55,12 +55,12 @@ export function ExerciseCreationForm({
       }
       return response.body;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: 'Exercice créé avec succès',
         description: "L'exercice a été créé avec succès",
       });
-      onSuccess?.();
+      onSuccess?.(data.id);
     },
     onError: (error) => {
       toast({
