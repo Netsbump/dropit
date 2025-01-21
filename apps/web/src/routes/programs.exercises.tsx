@@ -7,6 +7,7 @@ import { columns } from '../components/exercises/columns';
 import { DataTable } from '../components/exercises/data-table';
 import { DialogCreation } from '../components/exercises/dialog-creation';
 import { ExerciseCreationForm } from '../components/exercises/exercise-creation-form';
+import { Button } from '../components/ui/button';
 import { DetailsPanel } from '../components/ui/details-panel';
 
 export const Route = createFileRoute('/programs/exercises')({
@@ -56,12 +57,26 @@ function ExercisesPage() {
           selectedExercise ? 'mr-[400px]' : ''
         }`}
       >
-        <DataTable
-          columns={columns}
-          data={exercises}
-          onDialogCreation={setCreateExerciseModalOpen}
-          onRowClick={(exerciseId) => setSelectedExercise(exerciseId)}
-        />
+        {exercisesLoading ? (
+          <div className="flex items-center justify-center h-32">
+            Loading...
+          </div>
+        ) : !exercises?.length ? (
+          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+            <p>Aucun exercice trouvé</p>
+            <p className="text-sm">Commencez par en créer un !</p>
+            <Button onClick={() => setCreateExerciseModalOpen(true)}>
+              Créer un exercice
+            </Button>
+          </div>
+        ) : (
+          <DataTable
+            columns={columns}
+            data={exercises}
+            onDialogCreation={setCreateExerciseModalOpen}
+            onRowClick={(exerciseId) => setSelectedExercise(exerciseId)}
+          />
+        )}
       </div>
 
       <DetailsPanel
