@@ -137,7 +137,7 @@ docker-compose up -d
 Lancer le monorepo (backend + frontend) en mode développement:
 
 ```bash
-    pnpm dev
+pnpm dev
 ```
 
 <p align="right">(<a href="#readme-top">retour en haut/a>)</p>
