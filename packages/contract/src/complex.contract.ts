@@ -12,13 +12,13 @@ export const complexContract = {
     summary: 'Get all complexes',
     responses: {
       200: z.array(complexSchema),
+      404: z.object({
+        message: z.string(),
+      }),
+      500: z.object({
+        message: z.string(),
+      }),
     },
-    404: z.object({
-      message: z.string(),
-    }),
-    500: z.object({
-      message: z.string(),
-    }),
   },
 
   getComplex: {
