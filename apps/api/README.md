@@ -90,5 +90,19 @@ src/
 
 ## API Documentation
 
-Todo
+The API documentation is automatically generated from ts-rest contracts and is available at `http://localhost:3001/api`. 
+
+### Features
+- Interactive Swagger/OpenAPI documentation
+- Generated from shared ts-rest contracts (`packages/contract`)
+- Type-safe endpoints and responses
+- Request/response schema validation
+- Try-it-out functionality
+
+### Accessing the Documentation
+1. Start the API server: `pnpm dev`
+2. Navigate to `http://localhost:3001/api` in your browser
+3. Explore available endpoints, schemas, and test API calls directly
+
+The documentation is automatically kept in sync with the API contracts defined in the shared packages, ensuring that it's always up-to-date with the latest API changes.
 
