@@ -1,30 +1,30 @@
-import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
-import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { Button } from '../ui/button';
-import { FileUpload } from '../ui/file-upload';
+import { Button } from '@/shared/components/ui/button';
+import { FileUpload } from '@/shared/components/ui/file-upload';
 import {
   Form,
   FormControl,
   FormField,
+  FormItem,
   FormLabel,
   FormMessage,
-} from '../ui/form';
-import { FormItem } from '../ui/form';
-import { Input } from '../ui/input';
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../ui/select';
-import { Textarea } from '../ui/textarea';
+} from '@/shared/components/ui/select';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { useToast } from '@/shared/hooks/use-toast';
+import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 type ExerciseCreationFormProps = {
   onSuccess?: (exerciseId: string) => void;

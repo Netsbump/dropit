@@ -3,17 +3,17 @@ import {
   Outlet,
   createFileRoute,
   useMatches,
-} from '@tanstack/react-router';
+} from '@tanstack/react-router'
 
 export const Route = createFileRoute('/programs')({
   component: ProgramsPage,
-});
+})
 
 function ProgramsPage() {
   // Récupérer la route active pour définir l'onglet actif
-  const matches = useMatches();
+  const matches = useMatches()
   const activeTab =
-    matches[matches.length - 1].pathname.split('/').pop() || 'workouts';
+    matches[matches.length - 1].pathname.split('/').pop() || 'workouts'
 
   return (
     <div className="container mx-auto py-10">
@@ -62,5 +62,5 @@ function ProgramsPage() {
         <Outlet />
       </div>
     </div>
-  );
+  )
 }

@@ -1,15 +1,20 @@
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ComplexDto } from '@dropit/schemas';
-import { MoreHorizontal } from 'lucide-react';
-import { Button } from '../ui/button';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/shared/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+} from '@/shared/components/ui/dropdown-menu';
+import { ComplexDto } from '@dropit/schemas';
+import { MoreHorizontal } from 'lucide-react';
 
 interface ComplexCardProps {
   complex: ComplexDto;

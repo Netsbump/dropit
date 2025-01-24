@@ -1,9 +1,12 @@
-import { Separator } from '@/components/ui/separator';
 import { Outlet, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { AppSidebar } from '../components/app-sidebar';
-import { Breadcrumbs } from '../components/breadcrumbs';
-import { SidebarProvider, SidebarTrigger } from '../components/ui/sidebar';
+import { AppSidebar } from '../shared/components/layout/app-sidebar';
+import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
+import { Separator } from '../shared/components/ui/separator';
+import {
+  SidebarProvider,
+  SidebarTrigger,
+} from '../shared/components/ui/sidebar';
 
 export const Route = createRootRoute({
   component: () => (

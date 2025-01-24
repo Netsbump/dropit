@@ -1,5 +1,15 @@
-import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { useToast } from '@/shared/hooks/use-toast';
 import {
   CreateComplexCategory,
   createComplexCategorySchema,
@@ -9,16 +19,6 @@ import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
 
 type ComplexCategoryCreationFormProps = {
   onSuccess?: (categoryId: string) => void;

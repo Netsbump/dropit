@@ -1,13 +1,13 @@
 import { api } from '@/lib/api';
+import { DetailsPanel } from '@/shared/components/ui/details-panel';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { ComplexCreationForm } from '../components/complex/complex-creation-form';
-import { ComplexDetail } from '../components/complex/complex-detail';
-import { ComplexFilters } from '../components/complex/complex-filters';
-import { ComplexGrid } from '../components/complex/complex-grid';
-import { DialogCreation } from '../components/exercises/dialog-creation';
-import { DetailsPanel } from '../components/ui/details-panel';
+import { ComplexCreationForm } from '../features/complex/complex-creation-form';
+import { ComplexDetail } from '../features/complex/complex-detail';
+import { ComplexFilters } from '../features/complex/complex-filters';
+import { ComplexGrid } from '../features/complex/complex-grid';
+import { DialogCreation } from '../features/exercises/dialog-creation';
 
 export const Route = createFileRoute('/programs/complex')({
   component: ComplexPage,

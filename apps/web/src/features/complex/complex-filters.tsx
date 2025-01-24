@@ -1,13 +1,13 @@
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Button } from '@/shared/components/ui/button';
+import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
+} from '@/shared/components/ui/select';
+import { Separator } from '@/shared/components/ui/separator';
 import { ComplexCategoryDto } from '@dropit/schemas';
 
 interface ComplexFiltersProps {
