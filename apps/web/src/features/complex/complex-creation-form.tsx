@@ -1,5 +1,23 @@
-import { useToast } from '@/hooks/use-toast';
 import { api } from '@/lib/api';
+import { Button } from '@/shared/components/ui/button';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { useToast } from '@/shared/hooks/use-toast';
 import {
   DndContext,
   DragEndEvent,
@@ -23,24 +41,6 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
-import { Input } from '../ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { Textarea } from '../ui/textarea';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
 
 type ComplexCreationFormProps = {

@@ -1,11 +1,11 @@
-import { ReactNode } from 'react';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '../ui/dialog';
+} from '@/shared/components/ui/dialog';
+import { ReactNode } from 'react';
 
 interface DialogCreationProps {
   title: string;

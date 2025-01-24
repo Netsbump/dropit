@@ -1,14 +1,14 @@
-import { ExerciseDetail } from '@/components/exercises/exercise-detail';
+import { ExerciseDetail } from '@/features/exercises/exercise-detail';
 import { api } from '@/lib/api';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
-import { columns } from '../components/exercises/columns';
-import { DataTable } from '../components/exercises/data-table';
-import { DialogCreation } from '../components/exercises/dialog-creation';
-import { ExerciseCreationForm } from '../components/exercises/exercise-creation-form';
-import { Button } from '../components/ui/button';
-import { DetailsPanel } from '../components/ui/details-panel';
+import { columns } from '../features/exercises/columns';
+import { DataTable } from '../features/exercises/data-table';
+import { DialogCreation } from '../features/exercises/dialog-creation';
+import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form';
+import { Button } from '../shared/components/ui/button';
+import { DetailsPanel } from '../shared/components/ui/details-panel';
 
 export const Route = createFileRoute('/programs/exercises')({
   component: ExercisesPage,

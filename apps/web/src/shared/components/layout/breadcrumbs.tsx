@@ -5,7 +5,7 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from '@/components/ui/breadcrumb';
+} from '@/shared/components/ui/breadcrumb';
 import { Link, useMatches } from '@tanstack/react-router';
 
 const routeNames: Record<string, string> = {

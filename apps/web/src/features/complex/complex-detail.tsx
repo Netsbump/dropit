@@ -1,17 +1,27 @@
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { api } from '@/lib/api';
+import { Badge } from '@/shared/components/ui/badge';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
-import { Textarea } from '@/components/ui/textarea';
-import { useToast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
+} from '@/shared/components/ui/select';
+import { Separator } from '@/shared/components/ui/separator';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { useToast } from '@/shared/hooks/use-toast';
 import {
   DndContext,
   DragEndEvent,
@@ -39,19 +49,9 @@ import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { ComplexCategoryCreationForm } from '../complex/complex-category-creation-form';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
-import { Badge } from '../ui/badge';
-import { Button } from '../ui/button';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '../ui/form';
+import { ComplexCategoryCreationForm } from './complex-category-creation-form';
 
 interface ComplexDetailProps {
   complex: ComplexDto;

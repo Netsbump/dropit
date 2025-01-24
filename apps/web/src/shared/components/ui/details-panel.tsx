@@ -1,5 +1,5 @@
-import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { Button } from '@/shared/components/ui/button';
 import { X } from 'lucide-react';
 
 interface DetailsPanelProps {

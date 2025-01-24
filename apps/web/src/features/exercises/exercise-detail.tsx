@@ -1,7 +1,6 @@
-// apps/web/src/components/exercises/exercise-detail.tsx
-
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
+import { api } from '@/lib/api';
+import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -9,12 +8,19 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Separator } from '@/components/ui/separator';
-import { toast } from '@/hooks/use-toast';
-import { api } from '@/lib/api';
+} from '@/shared/components/ui/form';
+import { Input } from '@/shared/components/ui/input';
+import { Label } from '@/shared/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
+import { Separator } from '@/shared/components/ui/separator';
+import { Textarea } from '@/shared/components/ui/textarea';
+import { toast } from '@/shared/hooks/use-toast';
 import { UpdateExercise, updateExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -23,14 +29,6 @@ import { fr } from 'date-fns/locale';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '../ui/select';
-import { Textarea } from '../ui/textarea';
 
 interface ExerciseDetailProps {
   exercise: {

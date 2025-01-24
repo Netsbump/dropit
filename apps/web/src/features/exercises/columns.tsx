@@ -1,16 +1,16 @@
-import { ExerciseDto } from '@dropit/schemas';
-import { ColumnDef } from '@tanstack/react-table';
-import { MoreHorizontal } from 'lucide-react';
-import { ArrowUpDown } from 'lucide-react';
-import { Button } from '../ui/button';
-import { Checkbox } from '../ui/checkbox';
+import { Button } from '@/shared/components/ui/button';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '../ui/dropdown-menu';
+} from '@/shared/components/ui/dropdown-menu';
+import { ExerciseDto } from '@dropit/schemas';
+import { ColumnDef } from '@tanstack/react-table';
+import { MoreHorizontal } from 'lucide-react';
+import { ArrowUpDown } from 'lucide-react';
 
 type Exercise = ExerciseDto;
 

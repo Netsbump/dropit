@@ -1,21 +1,10 @@
-import { Link } from '@tanstack/react-router';
-import {
-  BicepsFlexed,
-  Calendar,
-  ChevronUp,
-  GraduationCap,
-  Home,
-  LayoutDashboard,
-  LifeBuoy,
-  User,
-} from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { Separator } from './ui/separator';
+} from '@/shared/components/ui/dropdown-menu';
+import { Separator } from '@/shared/components/ui/separator';
 import {
   Sidebar,
   SidebarContent,
@@ -28,7 +17,18 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
-} from './ui/sidebar';
+} from '@/shared/components/ui/sidebar';
+import { Link } from '@tanstack/react-router';
+import {
+  BicepsFlexed,
+  Calendar,
+  ChevronUp,
+  GraduationCap,
+  Home,
+  LayoutDashboard,
+  LifeBuoy,
+  User,
+} from 'lucide-react';
 
 const items = [
   {
