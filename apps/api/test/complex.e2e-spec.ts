@@ -2,7 +2,6 @@ import {
   ComplexCategoryDto,
   ComplexDto,
   CreateComplex,
-  CreateComplexCategory,
   CreateExercise,
   ExerciseCategoryDto,
   ExerciseDto,
@@ -106,7 +105,7 @@ describe('ComplexController (e2e)', () => {
   });
 
   describe('/complex', () => {
-    it('POST - should create a complex category', async () => {
+    it('POST - should create a complex', async () => {
       try {
         const exercise1 = await createExercise({
           name: 'Squat',
@@ -131,9 +130,36 @@ describe('ComplexController (e2e)', () => {
           name: 'Arraché simple',
           complexCategory: complexCategory.id,
           exercises: [
-            { exerciseId: exercise1.id, order: 1 },
-            { exerciseId: exercise2.id, order: 2 },
-            { exerciseId: exercise3.id, order: 3 },
+            {
+              exerciseId: exercise1.id,
+              order: 1,
+              trainingParams: {
+                sets: 3,
+                reps: 10,
+                rest: 10,
+                startWeight_percent: 80,
+              },
+            },
+            {
+              exerciseId: exercise2.id,
+              order: 2,
+              trainingParams: {
+                sets: 3,
+                reps: 10,
+                rest: 10,
+                startWeight_percent: 80,
+              },
+            },
+            {
+              exerciseId: exercise3.id,
+              order: 3,
+              trainingParams: {
+                sets: 3,
+                reps: 10,
+                rest: 10,
+                startWeight_percent: 80,
+              },
+            },
           ],
           description: 'Pour monter en gamme tranquillement',
         };

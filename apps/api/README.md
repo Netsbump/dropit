@@ -51,7 +51,7 @@ When making changes to entities, follow these steps to create and apply migratio
 
 2. Generate a migration (replace `<MigrationName>` with a descriptive name):
 ```bash
-pnpm db:migration:create <MigrationName>
+pnpm db:migration:create --name <MigrationName>
 ```
 
 3. Review the generated migration in `src/migrations`
@@ -67,7 +67,7 @@ The application includes seeders to populate the database with initial data:
 - Exercise categories (Haltérophilie, Endurance, Cardio, Musculation)
 - Exercises with English names and short names
 - Complex categories (EMOM, TABATA, etc.)
-- Sample complexes with ordered exercises
+- Sample complexes with ordered exercises and training parameters
 
 To reset and seed the database:
 ```bash

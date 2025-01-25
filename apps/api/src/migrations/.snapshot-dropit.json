@@ -292,6 +292,113 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
+        "sets": {
+          "name": "sets",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
+        },
+        "reps": {
+          "name": "reps",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "1",
+          "mappedType": "integer"
+        },
+        "rest": {
+          "name": "rest",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "duration": {
+          "name": "duration",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "start_weight_percent": {
+          "name": "start_weight_percent",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "end_weight_percent": {
+          "name": "end_weight_percent",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "integer"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "training_params",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "training_params_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
+        },
         "src": {
           "name": "src",
           "type": "varchar(255)",
@@ -515,6 +622,15 @@
           "nullable": false,
           "mappedType": "integer"
         },
+        "training_params_id": {
+          "name": "training_params_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz",
@@ -575,6 +691,325 @@
             "id"
           ],
           "referencedTableName": "public.exercise",
+          "updateRule": "cascade"
+        },
+        "exercise_complex_training_params_id_foreign": {
+          "constraintName": "exercise_complex_training_params_id_foreign",
+          "columnNames": [
+            "training_params_id"
+          ],
+          "localTableName": "public.exercise_complex",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.training_params",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
+        },
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "workout_category",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "workout_category_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {},
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "description": {
+          "name": "description",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "workout",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "workout_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [],
+      "foreignKeys": {
+        "workout_category_id_foreign": {
+          "constraintName": "workout_category_id_foreign",
+          "columnNames": [
+            "category_id"
+          ],
+          "localTableName": "public.workout",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.workout_category",
+          "updateRule": "cascade"
+        }
+      },
+      "nativeEnums": {}
+    },
+    {
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "default": "gen_random_uuid()",
+          "mappedType": "uuid"
+        },
+        "workout_id": {
+          "name": "workout_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "exercise_id": {
+          "name": "exercise_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "uuid"
+        },
+        "complex_id": {
+          "name": "complex_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "uuid"
+        },
+        "order": {
+          "name": "order",
+          "type": "int",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "integer"
+        },
+        "training_params_id": {
+          "name": "training_params_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamptz",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 6,
+          "mappedType": "datetime"
+        }
+      },
+      "name": "workout_element",
+      "schema": "public",
+      "indexes": [
+        {
+          "keyName": "workout_element_pkey",
+          "columnNames": [
+            "id"
+          ],
+          "composite": false,
+          "constraint": true,
+          "primary": true,
+          "unique": true
+        }
+      ],
+      "checks": [
+        {
+          "name": "check_one_element_type",
+          "expression": "\n    (CASE WHEN exercise_id IS NOT NULL THEN 1 ELSE 0 END +\n     CASE WHEN complex_id IS NOT NULL THEN 1 ELSE 0 END) = 1\n  ",
+          "definition": "check ((\n    (CASE WHEN exercise_id IS NOT NULL THEN 1 ELSE 0 END +\n     CASE WHEN complex_id IS NOT NULL THEN 1 ELSE 0 END) = 1\n  ))"
+        }
+      ],
+      "foreignKeys": {
+        "workout_element_workout_id_foreign": {
+          "constraintName": "workout_element_workout_id_foreign",
+          "columnNames": [
+            "workout_id"
+          ],
+          "localTableName": "public.workout_element",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.workout",
+          "updateRule": "cascade"
+        },
+        "workout_element_exercise_id_foreign": {
+          "constraintName": "workout_element_exercise_id_foreign",
+          "columnNames": [
+            "exercise_id"
+          ],
+          "localTableName": "public.workout_element",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.exercise",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "workout_element_complex_id_foreign": {
+          "constraintName": "workout_element_complex_id_foreign",
+          "columnNames": [
+            "complex_id"
+          ],
+          "localTableName": "public.workout_element",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.complex",
+          "deleteRule": "set null",
+          "updateRule": "cascade"
+        },
+        "workout_element_training_params_id_foreign": {
+          "constraintName": "workout_element_training_params_id_foreign",
+          "columnNames": [
+            "training_params_id"
+          ],
+          "localTableName": "public.workout_element",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.training_params",
           "updateRule": "cascade"
         }
       },
