@@ -1,10 +1,11 @@
 import { z } from 'zod';
 import { exerciseSchema } from './exercice.schema';
+import { trainingParamsSchema } from './training-params.schema';
 
-// Type pour représenter un exercice avec son ordre dans le complex
 const complexExerciseSchema = z.object({
   exerciseId: z.string(),
   order: z.number().min(0),
+  trainingParams: trainingParamsSchema,
 });
 
 export const createComplexSchema = z.object({
@@ -25,6 +26,11 @@ export const updateComplexSchema = z.object({
 
 export type UpdateComplex = z.infer<typeof updateComplexSchema>;
 
+const exerciseWithParamsSchema = exerciseSchema.extend({
+  order: z.number(),
+  trainingParams: trainingParamsSchema,
+});
+
 export const complexSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -32,7 +38,7 @@ export const complexSchema = z.object({
     id: z.string(),
     name: z.string(),
   }),
-  exercises: z.array(exerciseSchema),
+  exercises: z.array(exerciseWithParamsSchema),
   description: z.string().optional(),
 });
 

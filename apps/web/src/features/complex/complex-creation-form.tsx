@@ -28,71 +28,24 @@ import {
 } from '@dnd-kit/core';
 import {
   SortableContext,
-  useSortable,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
 import { CreateComplex, createComplexSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
+import { SortableExerciseItem } from './sortable-exercise-item';
 
 type ComplexCreationFormProps = {
   onSuccess?: () => void;
   onCancel?: () => void;
 };
-
-// Composant pour chaque item sortable
-function SortableExerciseItem({
-  id,
-  index,
-  children,
-}: {
-  id: string;
-  index: number;
-  children: React.ReactNode;
-}) {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1,
-  };
-
-  return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="flex gap-2 items-start bg-background rounded-md p-2"
-    >
-      <div
-        {...attributes}
-        {...listeners}
-        className="flex items-center justify-center w-8 h-8 rounded-md bg-muted text-muted-foreground cursor-grab active:cursor-grabbing"
-      >
-        <GripVertical className="h-4 w-4" />
-      </div>
-      <div className="flex items-center justify-center w-8 h-8 rounded-md bg-muted text-muted-foreground">
-        {index + 1}
-      </div>
-      {children}
-    </div>
-  );
-}
 
 export function ComplexCreationForm({
   onSuccess,
@@ -104,7 +57,6 @@ export function ComplexCreationForm({
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  // Récupération des exercices existants
   const { data: exercises } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
@@ -114,7 +66,6 @@ export function ComplexCreationForm({
     },
   });
 
-  // Récupération des catégories
   const { data: categories } = useQuery({
     queryKey: ['complexCategories'],
     queryFn: async () => {
@@ -148,12 +99,11 @@ export function ComplexCreationForm({
     },
   });
 
-  // Ajouter un state pour garder une trace de l'index en cours d'édition
+  // state pour garder une trace de l'index en cours d'édition
   const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(
     null
   );
 
-  // Modifier le handler de création d'exercice
   const handleExerciseCreationSuccess = async (exerciseId: string) => {
     console.log('id de exercice créé', exerciseId);
 
@@ -174,7 +124,6 @@ export function ComplexCreationForm({
     setCurrentEditingIndex(null);
   };
 
-  // Modifier le handler de création de catégorie
   const handleCategoryCreationSuccess = async (categoryId: string) => {
     // D'abord rafraîchir la liste des catégories
     await queryClient.invalidateQueries({ queryKey: ['complexCategories'] });
@@ -186,7 +135,6 @@ export function ComplexCreationForm({
       shouldTouch: true,
     });
 
-    // Fermer la modal
     setCreateCategoryModalOpen(false);
   };
 
@@ -197,8 +145,22 @@ export function ComplexCreationForm({
       description: '',
       complexCategory: '',
       exercises: [
-        { exerciseId: '', order: 0 },
-        { exerciseId: '', order: 1 },
+        {
+          exerciseId: '',
+          order: 0,
+          trainingParams: {
+            sets: 1,
+            reps: 1,
+          },
+        },
+        {
+          exerciseId: '',
+          order: 1,
+          trainingParams: {
+            sets: 1,
+            reps: 1,
+          },
+        },
       ],
     },
     mode: 'onSubmit',
@@ -233,7 +195,14 @@ export function ComplexCreationForm({
   };
 
   const handleAddExercise = () => {
-    append({ exerciseId: '', order: fields.length });
+    append({
+      exerciseId: '',
+      order: fields.length,
+      trainingParams: {
+        sets: 1,
+        reps: 1,
+      },
+    });
   };
 
   const handleSubmit = (formValues: z.infer<typeof createComplexSchema>) => {
@@ -350,85 +319,36 @@ export function ComplexCreationForm({
             </Button>
           </div>
 
-          <DndContext
-            sensors={sensors}
-            collisionDetection={closestCenter}
-            onDragEnd={handleDragEnd}
-          >
-            <SortableContext
-              items={fields.map((field) => field.id)}
-              strategy={verticalListSortingStrategy}
+          <div className="max-h-[40vh] overflow-y-auto pr-2">
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
             >
-              <div className="space-y-2">
-                {fields.map((field, index) => (
-                  <SortableExerciseItem
-                    key={field.id}
-                    id={field.id}
-                    index={index}
-                  >
-                    <FormField
+              <SortableContext
+                items={fields.map((field) => field.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-2">
+                  {fields.map((field, index) => (
+                    <SortableExerciseItem
+                      key={field.id}
+                      id={field.id}
+                      index={index}
                       control={form.control}
-                      name={`exercises.${index}.exerciseId`}
-                      render={({ field: formField }) => (
-                        <FormItem className="flex-1">
-                          <Select
-                            onValueChange={(value) => {
-                              formField.onChange(value);
-                              if (value === 'new') {
-                                setCurrentEditingIndex(index);
-                                setCreateExerciseModalOpen(true);
-                              }
-                            }}
-                            value={formField.value || ''}
-                          >
-                            <FormControl>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner un exercice" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {exercises?.map((exercise) => (
-                                <SelectItem
-                                  key={exercise.id}
-                                  value={exercise.id}
-                                  disabled={
-                                    selectedExerciseIds.includes(exercise.id) &&
-                                    formField.value !== exercise.id
-                                  }
-                                >
-                                  {exercise.name}
-                                  {selectedExerciseIds.includes(exercise.id) &&
-                                    formField.value !== exercise.id &&
-                                    ' (déjà sélectionné)'}
-                                </SelectItem>
-                              ))}
-                              <SelectItem value="new">
-                                + Créer un nouvel exercice
-                              </SelectItem>
-                            </SelectContent>
-                          </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
+                      onRemove={remove}
+                      onCreateExercise={(index) => {
+                        setCurrentEditingIndex(index);
+                        setCreateExerciseModalOpen(true);
+                      }}
+                      exercises={exercises}
+                      selectedExerciseIds={selectedExerciseIds}
                     />
-
-                    {/* Ne permettre la suppression que pour les exercices au-delà des deux premiers */}
-                    {index >= 2 && (
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => remove(index)}
-                        className="h-8 w-8"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </SortableExerciseItem>
-                ))}
-              </div>
-            </SortableContext>
-          </DndContext>
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2">
