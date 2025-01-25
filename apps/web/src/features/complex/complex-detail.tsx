@@ -169,6 +169,14 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       exercises: complex.exercises.map((e, index) => ({
         exerciseId: e.id,
         order: index,
+        trainingParams: {
+          sets: e.trainingParams.sets,
+          reps: e.trainingParams.reps,
+          rest: e.trainingParams.rest,
+          duration: e.trainingParams.duration,
+          startWeight_percent: e.trainingParams.startWeight_percent,
+          endWeight_percent: e.trainingParams.endWeight_percent,
+        },
       })),
     },
     mode: 'onSubmit',
@@ -349,7 +357,16 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
               <Button
                 type="button"
                 size="sm"
-                onClick={() => append({ exerciseId: '', order: fields.length })}
+                onClick={() =>
+                  append({
+                    exerciseId: '',
+                    order: fields.length,
+                    trainingParams: {
+                      sets: 1,
+                      reps: 1,
+                    },
+                  })
+                }
                 disabled={!exercises?.length}
               >
                 <PlusCircle className="h-4 w-4 mr-2" />
