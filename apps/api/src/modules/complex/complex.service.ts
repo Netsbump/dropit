@@ -149,6 +149,7 @@ export class ComplexService {
 
     complexToCreate.name = complex.name;
     complexToCreate.complexCategory = complexCategory;
+    complexToCreate.description = complex.description || '';
 
     for (const exercise of complex.exercises) {
       const exerciseComplex = new ExerciseComplex();
