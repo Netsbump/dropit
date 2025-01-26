@@ -68,6 +68,8 @@ The application includes seeders to populate the database with initial data:
 - Exercises with English names and short names
 - Complex categories (EMOM, TABATA, etc.)
 - Sample complexes with ordered exercises and training parameters
+- Workout categories (Saisons, Deload, etc.)
+- Sample workouts with ordered elements and training parameters
 
 To reset and seed the database:
 ```bash
