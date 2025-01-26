@@ -874,6 +874,16 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
+        "type": {
+          "name": "type",
+          "type": "varchar(255)",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "length": 255,
+          "mappedType": "string"
+        },
         "workout_id": {
           "name": "workout_id",
           "type": "uuid",

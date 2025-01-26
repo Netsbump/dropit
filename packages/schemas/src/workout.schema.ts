@@ -3,14 +3,14 @@ import { trainingParamsSchema } from './training-params.schema';
 
 const workoutExerciseElement = z.object({
   type: z.literal('exercise'),
-  exerciseId: z.string(),
+  id: z.string(),
   order: z.number().min(0),
   trainingParams: trainingParamsSchema,
 });
 
 const workoutComplexElement = z.object({
   type: z.literal('complex'),
-  complexId: z.string(),
+  id: z.string(),
   order: z.number().min(0),
   trainingParams: trainingParamsSchema,
 });

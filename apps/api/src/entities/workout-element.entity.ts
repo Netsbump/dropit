@@ -10,6 +10,14 @@ import { Exercise } from './exercise.entity';
 import { TrainingParams } from './training-params.entity';
 import { Workout } from './workout.entity';
 
+export const WORKOUT_ELEMENT_TYPES = {
+  EXERCISE: 'exercise',
+  COMPLEX: 'complex',
+} as const;
+
+export type WorkoutElementType =
+  (typeof WORKOUT_ELEMENT_TYPES)[keyof typeof WORKOUT_ELEMENT_TYPES];
+
 @Entity()
 @Check({
   name: 'check_one_element_type',
@@ -21,6 +29,9 @@ import { Workout } from './workout.entity';
 export class WorkoutElement {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
+
+  @Property()
+  type!: WorkoutElementType;
 
   @ManyToOne(() => Workout)
   workout!: Workout;
