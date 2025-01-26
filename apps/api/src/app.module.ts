@@ -10,6 +10,8 @@ import { ComplexModule } from './modules/complex/complex.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { ExerciseCategoryModule } from './modules/exerciseCategory/exerciseCategory.module';
 import { VideoModule } from './modules/video/video.module';
+import { WorkoutCategoryModule } from './modules/workout-category/workout-category.module';
+import { WorkoutModule } from './modules/workout/workout.module';
 
 @Module({
   imports: [
@@ -20,6 +22,8 @@ import { VideoModule } from './modules/video/video.module';
     ExerciseCategoryModule,
     ComplexModule,
     ComplexCategoryModule,
+    WorkoutCategoryModule,
+    WorkoutModule,
   ],
   controllers: [AppController],
   providers: [AppService],
