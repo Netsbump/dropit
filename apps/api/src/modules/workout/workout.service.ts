@@ -28,6 +28,7 @@ export class WorkoutService {
         'elements.exercise',
         'elements.exercise.exerciseCategory',
         'elements.complex',
+        'elements.complex.complexCategory',
         'elements.complex.exercises',
         'elements.complex.exercises.exercise',
         'elements.complex.exercises.exercise.exerciseCategory',
@@ -39,15 +40,14 @@ export class WorkoutService {
       throw new NotFoundException('No workouts found');
     }
 
-    return workouts.map((workout) => ({
-      id: workout.id,
-      title: workout.title,
-      workoutCategory: workout.category.name,
-      description: workout.description,
-      elements: workout.elements.getItems().map((element) => {
+    const formattedWorkouts: WorkoutDto[] = [];
+
+    for (const workout of workouts) {
+      const formattedElements = [];
+
+      for (const element of workout.elements.getItems()) {
         const baseElement = {
           id: element.id,
-          type: element.type,
           order: element.order,
           trainingParams: {
             sets: element.trainingParams.sets,
@@ -57,36 +57,75 @@ export class WorkoutService {
           },
         };
 
-        if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-          return {
+        if (
+          element.type === WORKOUT_ELEMENT_TYPES.EXERCISE &&
+          element.exercise
+        ) {
+          formattedElements.push({
             ...baseElement,
-            exercise: element.exercise,
-          };
-        }
-
-        // Si c'est un complex, on inclut ses exercices
-        if (!element.complex || !element.complex.exercises) {
-          throw new Error(
-            `Complex ${element.id} is missing or has no exercises`
-          );
-        }
-
-        // Si c'est un complex, on inclut ses exercices
-        return {
-          ...baseElement,
-          complex: {
-            ...element.complex,
-            elements: element.complex.exercises
-              .getItems()
-              .map((complexElement) => ({
-                id: complexElement.exercise.id,
-                exercise: complexElement.exercise,
-                trainingParams: complexElement.trainingParams,
+            type: 'exercise' as const,
+            exercise: {
+              id: element.exercise.id,
+              name: element.exercise.name,
+              description: element.exercise.description,
+              exerciseCategory: {
+                id: element.exercise.exerciseCategory.id,
+                name: element.exercise.exerciseCategory.name,
+              },
+              video: element.exercise.video?.id,
+              englishName: element.exercise.englishName,
+              shortName: element.exercise.shortName,
+            },
+          });
+        } else if (
+          element.type === WORKOUT_ELEMENT_TYPES.COMPLEX &&
+          element.complex
+        ) {
+          formattedElements.push({
+            ...baseElement,
+            type: 'complex' as const,
+            complex: {
+              id: element.complex.id,
+              name: element.complex.name,
+              description: element.complex.description,
+              complexCategory: {
+                id: element.complex.complexCategory.id,
+                name: element.complex.complexCategory.name,
+              },
+              exercises: element.complex.exercises.getItems().map((ex) => ({
+                id: ex.exercise.id,
+                name: ex.exercise.name,
+                description: ex.exercise.description,
+                exerciseCategory: {
+                  id: ex.exercise.exerciseCategory.id,
+                  name: ex.exercise.exerciseCategory.name,
+                },
+                video: ex.exercise.video?.id,
+                englishName: ex.exercise.englishName,
+                shortName: ex.exercise.shortName,
+                order: ex.order,
+                trainingParams: {
+                  sets: ex.trainingParams.sets,
+                  reps: ex.trainingParams.reps,
+                  rest: ex.trainingParams.rest,
+                  startWeight_percent: ex.trainingParams.startWeight_percent,
+                },
               })),
-          },
-        };
-      }),
-    }));
+            },
+          });
+        }
+      }
+
+      formattedWorkouts.push({
+        id: workout.id,
+        title: workout.title,
+        workoutCategory: workout.category.name,
+        description: workout.description,
+        elements: formattedElements,
+      });
+    }
+
+    return formattedWorkouts;
   }
 
   async getWorkout(id: string): Promise<WorkoutDto> {
@@ -101,6 +140,7 @@ export class WorkoutService {
           'elements.exercise',
           'elements.exercise.exerciseCategory',
           'elements.complex',
+          'elements.complex.complexCategory',
           'elements.complex.exercises',
           'elements.complex.exercises.exercise',
           'elements.complex.exercises.exercise.exerciseCategory',
@@ -113,52 +153,82 @@ export class WorkoutService {
       throw new NotFoundException('Workout not found');
     }
 
+    const formattedElements = [];
+
+    for (const element of workout.elements.getItems()) {
+      const baseElement = {
+        id: element.id,
+        order: element.order,
+        trainingParams: {
+          sets: element.trainingParams.sets,
+          reps: element.trainingParams.reps,
+          rest: element.trainingParams.rest,
+          startWeight_percent: element.trainingParams.startWeight_percent,
+        },
+      };
+
+      if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE && element.exercise) {
+        formattedElements.push({
+          ...baseElement,
+          type: 'exercise' as const,
+          exercise: {
+            id: element.exercise.id,
+            name: element.exercise.name,
+            description: element.exercise.description,
+            exerciseCategory: {
+              id: element.exercise.exerciseCategory.id,
+              name: element.exercise.exerciseCategory.name,
+            },
+            video: element.exercise.video?.id,
+            englishName: element.exercise.englishName,
+            shortName: element.exercise.shortName,
+          },
+        });
+      } else if (
+        element.type === WORKOUT_ELEMENT_TYPES.COMPLEX &&
+        element.complex
+      ) {
+        formattedElements.push({
+          ...baseElement,
+          type: 'complex' as const,
+          complex: {
+            id: element.complex.id,
+            name: element.complex.name,
+            description: element.complex.description,
+            complexCategory: {
+              id: element.complex.complexCategory.id,
+              name: element.complex.complexCategory.name,
+            },
+            exercises: element.complex.exercises.getItems().map((ex) => ({
+              id: ex.exercise.id,
+              name: ex.exercise.name,
+              description: ex.exercise.description,
+              exerciseCategory: {
+                id: ex.exercise.exerciseCategory.id,
+                name: ex.exercise.exerciseCategory.name,
+              },
+              video: ex.exercise.video?.id,
+              englishName: ex.exercise.englishName,
+              shortName: ex.exercise.shortName,
+              order: ex.order,
+              trainingParams: {
+                sets: ex.trainingParams.sets,
+                reps: ex.trainingParams.reps,
+                rest: ex.trainingParams.rest,
+                startWeight_percent: ex.trainingParams.startWeight_percent,
+              },
+            })),
+          },
+        });
+      }
+    }
+
     return {
       id: workout.id,
       title: workout.title,
       workoutCategory: workout.category.name,
       description: workout.description,
-      elements: workout.elements.getItems().map((element) => {
-        const baseElement = {
-          id: element.id,
-          type: element.type,
-          order: element.order,
-          trainingParams: {
-            sets: element.trainingParams.sets,
-            reps: element.trainingParams.reps,
-            rest: element.trainingParams.rest,
-            startWeight_percent: element.trainingParams.startWeight_percent,
-          },
-        };
-
-        if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-          return {
-            ...baseElement,
-            exercise: element.exercise,
-          };
-        }
-
-        // Si c'est un complex, on inclut ses exercices
-        if (!element.complex || !element.complex.exercises) {
-          throw new Error(
-            `Complex ${element.id} is missing or has no exercises`
-          );
-        }
-
-        return {
-          ...baseElement,
-          complex: {
-            ...element.complex,
-            elements: element.complex.exercises
-              .getItems()
-              .map((complexElement) => ({
-                id: complexElement.exercise.id,
-                exercise: complexElement.exercise,
-                trainingParams: complexElement.trainingParams,
-              })),
-          },
-        };
-      }),
+      elements: formattedElements,
     };
   }
 

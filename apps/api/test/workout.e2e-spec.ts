@@ -188,7 +188,7 @@ describe('WorkoutController (e2e)', () => {
 
         // Vérification du complex
         const complexElement = response.body.elements[0];
-        expect(complexElement.type).toBe(WORKOUT_ELEMENT_TYPES.COMPLEX);
+        expect(complexElement.type).toBe('complex');
         expect(complexElement.complex).toBeDefined();
         expect(complexElement.complex.exercises).toBeDefined();
         expect(complexElement.complex.exercises.length).toBeGreaterThan(0);
@@ -199,20 +199,21 @@ describe('WorkoutController (e2e)', () => {
         );
 
         // Vérification des exercices du complex
-        for (const exerciseInComplex of complexElement.complex.exercises) {
-          expect(exerciseInComplex.exercise).toBeDefined();
-          expect(exerciseInComplex.trainingParams).toBeDefined();
-          expect(exerciseInComplex.trainingParams).toHaveProperty('sets');
-          expect(exerciseInComplex.trainingParams).toHaveProperty('reps');
-          expect(exerciseInComplex.trainingParams).toHaveProperty('rest');
-          expect(exerciseInComplex.trainingParams).toHaveProperty(
-            'startWeight_percent'
-          );
+        for (const exercise of complexElement.complex.exercises) {
+          expect(exercise).toBeDefined();
+          expect(exercise.name).toBeDefined();
+          expect(exercise.exerciseCategory).toBeDefined();
+          expect(exercise.order).toBeDefined();
+          expect(exercise.trainingParams).toBeDefined();
+          expect(exercise.trainingParams).toHaveProperty('sets');
+          expect(exercise.trainingParams).toHaveProperty('reps');
+          expect(exercise.trainingParams).toHaveProperty('rest');
+          expect(exercise.trainingParams).toHaveProperty('startWeight_percent');
         }
 
         // Vérification de l'exercice simple
         const exerciseElement = response.body.elements[1];
-        expect(exerciseElement.type).toBe(WORKOUT_ELEMENT_TYPES.EXERCISE);
+        expect(exerciseElement.type).toBe('exercise');
         expect(exerciseElement.exercise).toBeDefined();
         expect(exerciseElement.trainingParams).toEqual(
           workoutToCreate.elements[1].trainingParams
