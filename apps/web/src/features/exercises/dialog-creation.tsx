@@ -13,6 +13,7 @@ interface DialogCreationProps {
   children: ReactNode;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl';
 }
 
 export function DialogCreation({
@@ -21,10 +22,19 @@ export function DialogCreation({
   children,
   open,
   onOpenChange,
+  maxWidth = 'sm',
 }: DialogCreationProps) {
+  const maxWidthClasses = {
+    sm: 'sm:max-w-[500px]',
+    md: 'sm:max-w-[600px]',
+    lg: 'sm:max-w-[800px]',
+    xl: 'sm:max-w-[1000px]',
+    '2xl': 'sm:max-w-[1200px]',
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className={maxWidthClasses[maxWidth]}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description && <DialogDescription>{description}</DialogDescription>}

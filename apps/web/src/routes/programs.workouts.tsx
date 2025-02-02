@@ -1,4 +1,5 @@
-import { WorkoutCreationForm } from '@/features/workout/workout-creation-form';
+//import { WorkoutCreationForm } from '@/features/workout/workout-creation-form';
+import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
 import { WorkoutDetail } from '@/features/workout/workout-detail';
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';
@@ -109,10 +110,11 @@ function WorkoutPage() {
       <DialogCreation
         open={createWorkoutModalOpen}
         onOpenChange={setCreateWorkoutModalOpen}
-        title="Créer un workout"
-        description="Ajoutez un nouveau workout à votre catalogue."
+        title="Créer un entraînement"
+        description="Ajoutez un nouveau entraînement à votre catalogue."
+        maxWidth="xl"
       >
-        <WorkoutCreationForm
+        <WorkoutCreationStepper
           onSuccess={handleCreationSuccess}
           onCancel={() => setCreateWorkoutModalOpen(false)}
         />
