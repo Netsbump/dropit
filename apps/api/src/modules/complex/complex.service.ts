@@ -9,7 +9,6 @@ import { ComplexCategory } from '../../entities/complex-category.entity';
 import { Complex } from '../../entities/complex.entity';
 import { ExerciseComplex } from '../../entities/exercise-complex.entity';
 import { Exercise } from '../../entities/exercise.entity';
-import { TrainingParams } from '../../entities/training-params.entity';
 
 @Injectable()
 export class ComplexService {
@@ -22,7 +21,6 @@ export class ComplexService {
         'exercises',
         'exercises.exercise',
         'exercises.exercise.exerciseCategory',
-        'exercises.trainingParams',
       ],
     });
 
@@ -52,17 +50,7 @@ export class ComplexService {
             englishName: exercise.englishName,
             shortName: exercise.shortName,
             order: exerciseComplex.order,
-            trainingParams: {
-              id: exerciseComplex.trainingParams.id,
-              sets: exerciseComplex.trainingParams.sets,
-              reps: exerciseComplex.trainingParams.reps,
-              rest: exerciseComplex.trainingParams.rest,
-              startWeight_percent:
-                exerciseComplex.trainingParams.startWeight_percent,
-              endWeight_percent:
-                exerciseComplex.trainingParams.endWeight_percent,
-              duration: exerciseComplex.trainingParams.duration,
-            },
+            reps: exerciseComplex.reps,
           };
         }),
         description: complex.description,
@@ -80,7 +68,6 @@ export class ComplexService {
           'exercises',
           'exercises.exercise',
           'exercises.exercise.exerciseCategory',
-          'exercises.trainingParams',
         ],
       }
     );
@@ -110,16 +97,7 @@ export class ComplexService {
           englishName: exercise.englishName,
           shortName: exercise.shortName,
           order: exerciseComplex.order,
-          trainingParams: {
-            id: exerciseComplex.trainingParams.id,
-            sets: exerciseComplex.trainingParams.sets,
-            reps: exerciseComplex.trainingParams.reps,
-            rest: exerciseComplex.trainingParams.rest,
-            duration: exerciseComplex.trainingParams.duration,
-            startWeight_percent:
-              exerciseComplex.trainingParams.startWeight_percent,
-            endWeight_percent: exerciseComplex.trainingParams.endWeight_percent,
-          },
+          reps: exerciseComplex.reps,
         };
       }),
       description: complex.description,
@@ -162,22 +140,10 @@ export class ComplexService {
         );
       }
 
-      // Créer les paramètres d'entraînement
-      const trainingParams = new TrainingParams();
-      trainingParams.sets = exercise.trainingParams.sets ?? 1;
-      trainingParams.reps = exercise.trainingParams.reps ?? 1;
-      trainingParams.rest = exercise.trainingParams.rest;
-      trainingParams.startWeight_percent =
-        exercise.trainingParams.startWeight_percent;
-      trainingParams.endWeight_percent =
-        exercise.trainingParams.endWeight_percent;
-
-      this.em.persist(trainingParams);
-
       exerciseComplex.order = exercise.order;
+      exerciseComplex.reps = exercise.reps;
       exerciseComplex.exercise = exerciseFound;
       exerciseComplex.complex = complexToCreate;
-      exerciseComplex.trainingParams = trainingParams;
 
       // Ajouter à la collection
       complexToCreate.exercises.add(exerciseComplex);
@@ -200,7 +166,6 @@ export class ComplexService {
           'exercises',
           'exercises.exercise',
           'exercises.exercise.exerciseCategory',
-          'exercises.trainingParams',
         ],
       }
     );
@@ -231,16 +196,7 @@ export class ComplexService {
           englishName: exercise.englishName,
           shortName: exercise.shortName,
           order: exerciseComplex.order,
-          trainingParams: {
-            id: exerciseComplex.trainingParams.id,
-            sets: exerciseComplex.trainingParams.sets,
-            reps: exerciseComplex.trainingParams.reps,
-            rest: exerciseComplex.trainingParams.rest,
-            duration: exerciseComplex.trainingParams.duration,
-            startWeight_percent:
-              exerciseComplex.trainingParams.startWeight_percent,
-            endWeight_percent: exerciseComplex.trainingParams.endWeight_percent,
-          },
+          reps: exerciseComplex.reps,
         };
       }),
     };
@@ -282,13 +238,9 @@ export class ComplexService {
       // On récupère d'abord toutes les relations existantes
       const existingExercises = complexToUpdate.exercises.getItems();
 
-      // On les supprime explicitement avec leurs trainingParams
+      // On les supprime explicitement
       for (const exerciseComplex of existingExercises) {
-        const params = exerciseComplex.trainingParams;
         this.em.remove(exerciseComplex);
-        if (params) {
-          this.em.remove(params);
-        }
       }
 
       // On flush pour s'assurer que les suppressions sont effectuées
@@ -309,23 +261,11 @@ export class ComplexService {
           );
         }
 
-        // Créer les nouveaux paramètres
-        const trainingParams = new TrainingParams();
-        trainingParams.sets = exerciseData.trainingParams.sets ?? 1;
-        trainingParams.reps = exerciseData.trainingParams.reps ?? 1;
-        trainingParams.rest = exerciseData.trainingParams.rest;
-        trainingParams.startWeight_percent =
-          exerciseData.trainingParams.startWeight_percent;
-        trainingParams.endWeight_percent =
-          exerciseData.trainingParams.endWeight_percent;
-
-        this.em.persist(trainingParams);
-
         const exerciseComplex = new ExerciseComplex();
         exerciseComplex.exercise = exercise;
         exerciseComplex.complex = complexToUpdate;
         exerciseComplex.order = exerciseData.order;
-        exerciseComplex.trainingParams = trainingParams;
+        exerciseComplex.reps = exerciseData.reps;
 
         complexToUpdate.exercises.add(exerciseComplex);
       }
@@ -343,7 +283,6 @@ export class ComplexService {
           'exercises',
           'exercises.exercise',
           'exercises.exercise.exerciseCategory',
-          'exercises.trainingParams',
         ],
       }
     );
@@ -374,16 +313,7 @@ export class ComplexService {
           englishName: exercise.englishName,
           shortName: exercise.shortName,
           order: exerciseComplex.order,
-          trainingParams: {
-            id: exerciseComplex.trainingParams.id,
-            sets: exerciseComplex.trainingParams.sets,
-            reps: exerciseComplex.trainingParams.reps,
-            rest: exerciseComplex.trainingParams.rest,
-            duration: exerciseComplex.trainingParams.duration,
-            startWeight_percent:
-              exerciseComplex.trainingParams.startWeight_percent,
-            endWeight_percent: exerciseComplex.trainingParams.endWeight_percent,
-          },
+          reps: exerciseComplex.reps,
         };
       }),
     };

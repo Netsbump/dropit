@@ -6,7 +6,6 @@ import { Complex } from '../entities/complex.entity';
 import { ExerciseCategory } from '../entities/exercise-category.entity';
 import { ExerciseComplex } from '../entities/exercise-complex.entity';
 import { Exercise } from '../entities/exercise.entity';
-import { TrainingParams } from '../entities/training-params.entity';
 import { WorkoutCategory } from '../entities/workout-category.entity';
 import { WORKOUT_ELEMENT_TYPES } from '../entities/workout-element.entity';
 import { WorkoutElement } from '../entities/workout-element.entity';
@@ -148,31 +147,15 @@ export class DatabaseSeeder extends Seeder {
         exercises: [
           {
             name: 'Arraché Debout',
-            trainingParams: {
-              sets: 1,
-              reps: 3,
-              rest: 60,
-              startWeight_percent: 70,
-              endWeight_percent: 70,
-            },
+            reps: 3,
           },
           {
             name: 'Tirage Nuque',
-            trainingParams: {
-              sets: 1,
-              reps: 5,
-              rest: 60,
-              startWeight_percent: 80,
-            },
+            reps: 5,
           },
           {
             name: 'Squat Clavicule',
-            trainingParams: {
-              sets: 1,
-              reps: 2,
-              rest: 60,
-              startWeight_percent: 75,
-            },
+            reps: 2,
           },
         ],
       },
@@ -183,41 +166,19 @@ export class DatabaseSeeder extends Seeder {
         exercises: [
           {
             name: 'Épaulé Debout',
-            trainingParams: {
-              sets: 4,
-              reps: 3,
-              rest: 120,
-              startWeight_percent: 70,
-              endWeight_percent: 80,
-            },
+            reps: 3,
           },
           {
             name: 'Jeté Fente',
-            trainingParams: {
-              sets: 4,
-              reps: 2,
-              rest: 120,
-              startWeight_percent: 70,
-              endWeight_percent: 80,
-            },
+            reps: 2,
           },
           {
             name: 'Squat Clavicule',
-            trainingParams: {
-              sets: 3,
-              reps: 5,
-              rest: 90,
-              startWeight_percent: 80,
-            },
+            reps: 3,
           },
           {
             name: 'Développé Militaire',
-            trainingParams: {
-              sets: 3,
-              reps: 8,
-              rest: 90,
-              startWeight_percent: 60,
-            },
+            reps: 8,
           },
         ],
       },
@@ -228,30 +189,15 @@ export class DatabaseSeeder extends Seeder {
         exercises: [
           {
             name: 'Squat Nuque',
-            trainingParams: {
-              sets: 8,
-              reps: 6,
-              rest: 10, // TABATA: 20s effort / 10s repos
-              startWeight_percent: 65,
-            },
+            reps: 6,
           },
           {
             name: 'Développé Militaire',
-            trainingParams: {
-              sets: 8,
-              reps: 8,
-              rest: 10,
-              startWeight_percent: 50,
-            },
+            reps: 8,
           },
           {
             name: 'Soulevé de Terre',
-            trainingParams: {
-              sets: 8,
-              reps: 4,
-              rest: 10,
-              startWeight_percent: 70,
-            },
+            reps: 4,
           },
         ],
       },
@@ -262,31 +208,15 @@ export class DatabaseSeeder extends Seeder {
         exercises: [
           {
             name: 'Arraché Debout',
-            trainingParams: {
-              sets: 5,
-              reps: 2,
-              rest: 180, // Repos long pour la technique
-              startWeight_percent: 65,
-              endWeight_percent: 75,
-            },
+            reps: 2,
           },
           {
             name: 'Tirage Nuque',
-            trainingParams: {
-              sets: 4,
-              reps: 4,
-              rest: 120,
-              startWeight_percent: 80,
-            },
+            reps: 4,
           },
           {
             name: 'Squat Nuque',
-            trainingParams: {
-              sets: 3,
-              reps: 5,
-              rest: 120,
-              startWeight_percent: 85,
-            },
+            reps: 5,
           },
         ],
       },
@@ -297,30 +227,15 @@ export class DatabaseSeeder extends Seeder {
         exercises: [
           {
             name: 'Épaulé Debout',
-            trainingParams: {
-              sets: 1,
-              reps: 2,
-              rest: 60, // EMOM: 1 minute par round
-              startWeight_percent: 75,
-            },
+            reps: 2,
           },
           {
             name: 'Squat Clavicule',
-            trainingParams: {
-              sets: 1,
-              reps: 3,
-              rest: 60,
-              startWeight_percent: 70,
-            },
+            reps: 3,
           },
           {
             name: 'Développé Militaire',
-            trainingParams: {
-              sets: 1,
-              reps: 5,
-              rest: 60,
-              startWeight_percent: 60,
-            },
+            reps: 5,
           },
         ],
       },
@@ -337,23 +252,11 @@ export class DatabaseSeeder extends Seeder {
       for (let i = 0; i < complexData.exercises.length; i++) {
         const exerciseData = complexData.exercises[i];
 
-        // Créer les paramètres d'entraînement
-        const trainingParams = new TrainingParams();
-        trainingParams.sets = exerciseData.trainingParams.sets;
-        trainingParams.reps = exerciseData.trainingParams.reps;
-        trainingParams.rest = exerciseData.trainingParams.rest;
-        trainingParams.startWeight_percent =
-          exerciseData.trainingParams.startWeight_percent;
-        trainingParams.endWeight_percent =
-          exerciseData.trainingParams.endWeight_percent;
-
-        await em.persist(trainingParams);
-
         const exerciseComplex = new ExerciseComplex();
         exerciseComplex.complex = complex;
         exerciseComplex.exercise = exercisesMap[exerciseData.name];
         exerciseComplex.order = i;
-        exerciseComplex.trainingParams = trainingParams;
+        exerciseComplex.reps = exerciseData.reps;
 
         await em.persistAndFlush(exerciseComplex);
       }
@@ -397,45 +300,38 @@ export class DatabaseSeeder extends Seeder {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
             id: complexesToCreate[0].name, // EMOM Technique Arraché
             order: 0,
-            trainingParams: {
-              sets: 4,
-              reps: 1,
-              rest: 180,
-              startWeight_percent: 80,
-            },
+            sets: 4,
+            reps: 1,
+            rest: 180,
+            startWeight_percent: 80,
+            endWeight_percent: 92,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
             id: 'Squat Nuque',
             order: 1,
-            trainingParams: {
-              sets: 5,
-              reps: 3,
-              rest: 180,
-              startWeight_percent: 85,
-            },
+            sets: 5,
+            reps: 3,
+            rest: 180,
+            startWeight_percent: 85,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
             id: complexesToCreate[1].name, // Complex Épaulé-Jeté
             order: 2,
-            trainingParams: {
-              sets: 3,
-              reps: 1,
-              rest: 180,
-              startWeight_percent: 75,
-            },
+            sets: 3,
+            reps: 1,
+            rest: 180,
+            startWeight_percent: 75,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
             id: 'Développé Militaire',
             order: 3,
-            trainingParams: {
-              sets: 3,
-              reps: 8,
-              rest: 120,
-              startWeight_percent: 65,
-            },
+            sets: 3,
+            reps: 8,
+            rest: 120,
+            startWeight_percent: 65,
           },
         ],
       },
@@ -448,96 +344,71 @@ export class DatabaseSeeder extends Seeder {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
             id: complexesToCreate[3].name, // Technique Arraché Complet
             order: 0,
-            trainingParams: {
-              sets: 3,
-              reps: 2,
-              rest: 120,
-              startWeight_percent: 65,
-            },
+            sets: 3,
+            reps: 2,
+            rest: 120,
+            startWeight_percent: 65,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
             id: 'Squat Clavicule',
             order: 1,
-            trainingParams: {
-              sets: 3,
-              reps: 5,
-              rest: 120,
-              startWeight_percent: 70,
-            },
+            sets: 3,
+            reps: 5,
+            rest: 120,
+            startWeight_percent: 70,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
             id: complexesToCreate[4].name, // EMOM Épaulé
             order: 2,
-            trainingParams: {
-              sets: 3,
-              reps: 2,
-              rest: 120,
-              startWeight_percent: 65,
-            },
+            sets: 3,
+            reps: 2,
+            rest: 120,
+            startWeight_percent: 65,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
             id: 'Tirage Planche',
             order: 3,
-            trainingParams: {
-              sets: 3,
-              reps: 10,
-              rest: 90,
-              startWeight_percent: 60,
-            },
+            sets: 3,
+            reps: 10,
+            rest: 90,
+            startWeight_percent: 60,
           },
         ],
       },
       {
-        title: 'Volume Général',
+        title: 'Préparation Physique',
         category: 'Fond',
-        description: 'Développement de la capacité de travail',
+        description: 'Développement des qualités physiques',
         elements: [
           {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
             id: complexesToCreate[2].name, // TABATA Force
             order: 0,
-            trainingParams: {
-              sets: 4,
-              reps: 1,
-              rest: 120,
-              startWeight_percent: 60,
-            },
-          },
-          {
-            type: WORKOUT_ELEMENT_TYPES.EXERCISE,
-            id: 'Soulevé de Terre',
-            order: 1,
-            trainingParams: {
-              sets: 5,
-              reps: 5,
-              rest: 150,
-              startWeight_percent: 75,
-            },
-          },
-          {
-            type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-            id: complexesToCreate[4].name, // EMOM Épaulé
-            order: 2,
-            trainingParams: {
-              sets: 4,
-              reps: 1,
-              rest: 120,
-              startWeight_percent: 65,
-            },
+            sets: 4,
+            reps: 1,
+            rest: 60,
+            startWeight_percent: 60,
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
             id: 'Développé Couché',
-            order: 3,
-            trainingParams: {
-              sets: 4,
-              reps: 8,
-              rest: 120,
-              startWeight_percent: 70,
-            },
+            order: 1,
+            sets: 4,
+            reps: 8,
+            rest: 90,
+            startWeight_percent: 70,
+          },
+          {
+            type: WORKOUT_ELEMENT_TYPES.EXERCISE,
+            id: 'Tirage Planche',
+            order: 2,
+            sets: 4,
+            reps: 10,
+            rest: 90,
+            startWeight_percent: 65,
           },
         ],
       },
@@ -556,16 +427,9 @@ export class DatabaseSeeder extends Seeder {
         workoutElement.type = element.type;
         workoutElement.order = element.order;
         workoutElement.workout = workout;
-
-        const trainingParams = new TrainingParams();
-        trainingParams.sets = element.trainingParams.sets;
-        trainingParams.reps = element.trainingParams.reps;
-        trainingParams.rest = element.trainingParams.rest;
-        trainingParams.startWeight_percent =
-          element.trainingParams.startWeight_percent;
-
-        em.persist(trainingParams);
-        workoutElement.trainingParams = trainingParams;
+        workoutElement.sets = element.sets;
+        workoutElement.reps = element.reps;
+        workoutElement.startWeight_percent = element.startWeight_percent;
 
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
           workoutElement.exercise = exercisesMap[element.id];

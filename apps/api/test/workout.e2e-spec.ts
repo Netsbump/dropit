@@ -115,22 +115,12 @@ describe('WorkoutController (e2e)', () => {
         {
           exerciseId: exercise1.id,
           order: 1,
-          trainingParams: {
-            sets: 3,
-            reps: 10,
-            rest: 60,
-            startWeight_percent: 70,
-          },
+          reps: 10,
         },
         {
           exerciseId: exercise2.id,
           order: 2,
-          trainingParams: {
-            sets: 3,
-            reps: 10,
-            rest: 60,
-            startWeight_percent: 70,
-          },
+          reps: 10,
         },
       ],
     });
@@ -155,23 +145,19 @@ describe('WorkoutController (e2e)', () => {
               type: WORKOUT_ELEMENT_TYPES.COMPLEX,
               id: complex.id,
               order: 0,
-              trainingParams: {
-                sets: 4,
-                reps: 1,
-                rest: 120,
-                startWeight_percent: 75,
-              },
+              reps: 1,
+              sets: 1,
+              rest: 120,
+              startWeight_percent: 75,
             },
             {
               type: WORKOUT_ELEMENT_TYPES.EXERCISE,
               id: exercise2.id,
               order: 1,
-              trainingParams: {
-                sets: 3,
-                reps: 8,
-                rest: 90,
-                startWeight_percent: 70,
-              },
+              reps: 8,
+              sets: 3,
+              rest: 90,
+              startWeight_percent: 70,
             },
           ],
         };
@@ -193,30 +179,24 @@ describe('WorkoutController (e2e)', () => {
         expect(complexElement.complex.exercises).toBeDefined();
         expect(complexElement.complex.exercises.length).toBeGreaterThan(0);
 
-        // Vérification des trainingParams du complex dans le workout
-        expect(complexElement.trainingParams).toEqual(
-          workoutToCreate.elements[0].trainingParams
-        );
-
         // Vérification des exercices du complex
         for (const exercise of complexElement.complex.exercises) {
           expect(exercise).toBeDefined();
           expect(exercise.name).toBeDefined();
           expect(exercise.exerciseCategory).toBeDefined();
           expect(exercise.order).toBeDefined();
-          expect(exercise.trainingParams).toBeDefined();
-          expect(exercise.trainingParams).toHaveProperty('sets');
-          expect(exercise.trainingParams).toHaveProperty('reps');
-          expect(exercise.trainingParams).toHaveProperty('rest');
-          expect(exercise.trainingParams).toHaveProperty('startWeight_percent');
+          expect(exercise.reps).toBeDefined();
         }
 
         // Vérification de l'exercice simple
         const exerciseElement = response.body.elements[1];
         expect(exerciseElement.type).toBe('exercise');
         expect(exerciseElement.exercise).toBeDefined();
-        expect(exerciseElement.trainingParams).toEqual(
-          workoutToCreate.elements[1].trainingParams
+        expect(exerciseElement.reps).toEqual(workoutToCreate.elements[1].reps);
+        expect(exerciseElement.sets).toEqual(workoutToCreate.elements[1].sets);
+        expect(exerciseElement.rest).toEqual(workoutToCreate.elements[1].rest);
+        expect(exerciseElement.startWeight_percent).toEqual(
+          workoutToCreate.elements[1].startWeight_percent
         );
       } catch (error) {
         console.error('Test failed:', error);

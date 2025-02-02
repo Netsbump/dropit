@@ -7,7 +7,6 @@ import {
 } from '@mikro-orm/core';
 import { Complex } from './complex.entity';
 import { Exercise } from './exercise.entity';
-import { TrainingParams } from './training-params.entity';
 import { Workout } from './workout.entity';
 
 export const WORKOUT_ELEMENT_TYPES = {
@@ -45,8 +44,23 @@ export class WorkoutElement {
   @Property()
   order!: number;
 
-  @ManyToOne(() => TrainingParams)
-  trainingParams!: TrainingParams;
+  @Property({ default: 1 })
+  sets!: number;
+
+  @Property({ default: 1 })
+  reps!: number;
+
+  @Property({ nullable: true })
+  rest?: number;
+
+  @Property({ nullable: true })
+  duration?: number;
+
+  @Property({ nullable: true })
+  startWeight_percent?: number;
+
+  @Property({ nullable: true })
+  endWeight_percent?: number;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

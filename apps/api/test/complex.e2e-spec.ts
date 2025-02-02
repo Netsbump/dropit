@@ -133,32 +133,17 @@ describe('ComplexController (e2e)', () => {
             {
               exerciseId: exercise1.id,
               order: 1,
-              trainingParams: {
-                sets: 3,
-                reps: 10,
-                rest: 10,
-                startWeight_percent: 80,
-              },
+              reps: 10,
             },
             {
               exerciseId: exercise2.id,
               order: 2,
-              trainingParams: {
-                sets: 3,
-                reps: 10,
-                rest: 10,
-                startWeight_percent: 80,
-              },
+              reps: 10,
             },
             {
               exerciseId: exercise3.id,
               order: 3,
-              trainingParams: {
-                sets: 3,
-                reps: 10,
-                rest: 10,
-                startWeight_percent: 80,
-              },
+              reps: 10,
             },
           ],
           description: 'Pour monter en gamme tranquillement',
