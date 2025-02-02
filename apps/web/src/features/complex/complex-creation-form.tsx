@@ -148,18 +148,12 @@ export function ComplexCreationForm({
         {
           exerciseId: '',
           order: 0,
-          trainingParams: {
-            sets: 1,
-            reps: 1,
-          },
+          reps: 1,
         },
         {
           exerciseId: '',
           order: 1,
-          trainingParams: {
-            sets: 1,
-            reps: 1,
-          },
+          reps: 1,
         },
       ],
     },
@@ -198,10 +192,7 @@ export function ComplexCreationForm({
     append({
       exerciseId: '',
       order: fields.length,
-      trainingParams: {
-        sets: 1,
-        reps: 1,
-      },
+      reps: 1,
     });
   };
 

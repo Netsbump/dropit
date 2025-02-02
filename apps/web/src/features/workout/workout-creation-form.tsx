@@ -156,12 +156,10 @@ export function WorkoutCreationForm({
           : WORKOUT_ELEMENT_TYPES.COMPLEX,
       id: '',
       order: fields.length,
-      trainingParams: {
-        sets: 1,
-        reps: 1,
-        rest: 60,
-        startWeight_percent: 70,
-      },
+      reps: 1,
+      sets: 1,
+      rest: 60,
+      startWeight_percent: 70,
     });
   };
 
