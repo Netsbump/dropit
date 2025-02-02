@@ -1,17 +1,16 @@
 import { z } from 'zod';
 import { exerciseSchema } from './exercice.schema';
-import { trainingParamsSchema } from './training-params.schema';
 
-const complexExerciseSchema = z.object({
+const createExerciseComplexSchema = z.object({
   exerciseId: z.string(),
   order: z.number().min(0),
-  trainingParams: trainingParamsSchema,
+  reps: z.number().min(1),
 });
 
 export const createComplexSchema = z.object({
   name: z.string(),
   complexCategory: z.string(),
-  exercises: z.array(complexExerciseSchema),
+  exercises: z.array(createExerciseComplexSchema),
   description: z.string().optional(),
 });
 
@@ -20,15 +19,15 @@ export type CreateComplex = z.infer<typeof createComplexSchema>;
 export const updateComplexSchema = z.object({
   name: z.string().optional(),
   complexCategory: z.string().optional(),
-  exercises: z.array(complexExerciseSchema).optional(),
+  exercises: z.array(createExerciseComplexSchema).optional(),
   description: z.string().optional(),
 });
 
 export type UpdateComplex = z.infer<typeof updateComplexSchema>;
 
-const exerciseWithParamsSchema = exerciseSchema.extend({
+const exerciseComplexSchema = exerciseSchema.extend({
   order: z.number(),
-  trainingParams: trainingParamsSchema,
+  reps: z.number(),
 });
 
 export const complexSchema = z.object({
@@ -38,7 +37,7 @@ export const complexSchema = z.object({
     id: z.string(),
     name: z.string(),
   }),
-  exercises: z.array(exerciseWithParamsSchema),
+  exercises: z.array(exerciseComplexSchema),
   description: z.string().optional(),
 });
 

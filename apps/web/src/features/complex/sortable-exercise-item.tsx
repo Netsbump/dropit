@@ -126,32 +126,10 @@ export function SortableExerciseItem({
 
         {/* Paramètres d'entraînement en ligne */}
         <div className="grid grid-cols-4 gap-3">
-          {/* Séries */}
-          <FormField
-            control={control}
-            name={`exercises.${index}.trainingParams.sets`}
-            render={({ field }) => (
-              <FormItem className="space-y-1.5">
-                <FormLabel className="text-xs text-muted-foreground">
-                  Séries
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    min={1}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    className="h-8 text-sm"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
           {/* Répétitions */}
           <FormField
             control={control}
-            name={`exercises.${index}.trainingParams.reps`}
+            name={`exercises.${index}.reps`}
             render={({ field }) => (
               <FormItem className="space-y-1.5">
                 <FormLabel className="text-xs text-muted-foreground">
@@ -162,53 +140,6 @@ export function SortableExerciseItem({
                     type="number"
                     {...field}
                     min={1}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    className="h-8 text-sm"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* Repos */}
-          <FormField
-            control={control}
-            name={`exercises.${index}.trainingParams.rest`}
-            render={({ field }) => (
-              <FormItem className="space-y-1.5">
-                <FormLabel className="text-xs text-muted-foreground whitespace-nowrap">
-                  Repos (sec)
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ''}
-                    min={0}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    className="h-8 text-sm"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-
-          {/* % Max */}
-          <FormField
-            control={control}
-            name={`exercises.${index}.trainingParams.startWeight_percent`}
-            render={({ field }) => (
-              <FormItem className="space-y-1.5">
-                <FormLabel className="text-xs text-muted-foreground whitespace-nowrap">
-                  % Max
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    value={field.value ?? ''}
-                    min={0}
-                    max={100}
                     onChange={(e) => field.onChange(e.target.valueAsNumber)}
                     className="h-8 text-sm"
                   />

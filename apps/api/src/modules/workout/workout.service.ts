@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { Complex } from '../../entities/complex.entity';
 import { Exercise } from '../../entities/exercise.entity';
-import { TrainingParams } from '../../entities/training-params.entity';
 import { WorkoutCategory } from '../../entities/workout-category.entity';
 import {
   WORKOUT_ELEMENT_TYPES,
@@ -24,7 +23,6 @@ export class WorkoutService {
       populate: [
         'category',
         'elements',
-        'elements.trainingParams',
         'elements.exercise',
         'elements.exercise.exerciseCategory',
         'elements.complex',
@@ -32,7 +30,6 @@ export class WorkoutService {
         'elements.complex.exercises',
         'elements.complex.exercises.exercise',
         'elements.complex.exercises.exercise.exerciseCategory',
-        'elements.complex.exercises.trainingParams',
       ],
     });
 
@@ -49,12 +46,10 @@ export class WorkoutService {
         const baseElement = {
           id: element.id,
           order: element.order,
-          trainingParams: {
-            sets: element.trainingParams.sets,
-            reps: element.trainingParams.reps,
-            rest: element.trainingParams.rest,
-            startWeight_percent: element.trainingParams.startWeight_percent,
-          },
+          reps: element.reps,
+          sets: element.sets,
+          rest: element.rest,
+          startWeight_percent: element.startWeight_percent,
         };
 
         if (
@@ -104,12 +99,7 @@ export class WorkoutService {
                 englishName: ex.exercise.englishName,
                 shortName: ex.exercise.shortName,
                 order: ex.order,
-                trainingParams: {
-                  sets: ex.trainingParams.sets,
-                  reps: ex.trainingParams.reps,
-                  rest: ex.trainingParams.rest,
-                  startWeight_percent: ex.trainingParams.startWeight_percent,
-                },
+                reps: ex.reps,
               })),
             },
           });
@@ -136,7 +126,6 @@ export class WorkoutService {
         populate: [
           'category',
           'elements',
-          'elements.trainingParams',
           'elements.exercise',
           'elements.exercise.exerciseCategory',
           'elements.complex',
@@ -144,7 +133,6 @@ export class WorkoutService {
           'elements.complex.exercises',
           'elements.complex.exercises.exercise',
           'elements.complex.exercises.exercise.exerciseCategory',
-          'elements.complex.exercises.trainingParams',
         ],
       }
     );
@@ -159,12 +147,10 @@ export class WorkoutService {
       const baseElement = {
         id: element.id,
         order: element.order,
-        trainingParams: {
-          sets: element.trainingParams.sets,
-          reps: element.trainingParams.reps,
-          rest: element.trainingParams.rest,
-          startWeight_percent: element.trainingParams.startWeight_percent,
-        },
+        reps: element.reps,
+        sets: element.sets,
+        rest: element.rest,
+        startWeight_percent: element.startWeight_percent,
       };
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE && element.exercise) {
@@ -211,12 +197,7 @@ export class WorkoutService {
               englishName: ex.exercise.englishName,
               shortName: ex.exercise.shortName,
               order: ex.order,
-              trainingParams: {
-                sets: ex.trainingParams.sets,
-                reps: ex.trainingParams.reps,
-                rest: ex.trainingParams.rest,
-                startWeight_percent: ex.trainingParams.startWeight_percent,
-              },
+              reps: ex.reps,
             })),
           },
         });
@@ -261,17 +242,12 @@ export class WorkoutService {
       const workoutElement = new WorkoutElement();
       workoutElement.type = element.type;
       workoutElement.order = element.order;
-
-      // Créer les paramètres d'entraînement
-      const trainingParams = new TrainingParams();
-      trainingParams.sets = element.trainingParams.sets;
-      trainingParams.reps = element.trainingParams.reps;
-      trainingParams.rest = element.trainingParams.rest;
-      trainingParams.startWeight_percent =
-        element.trainingParams.startWeight_percent;
-
-      this.em.persist(trainingParams);
-      workoutElement.trainingParams = trainingParams;
+      workoutElement.reps = element.reps;
+      workoutElement.sets = element.sets;
+      workoutElement.rest = element.rest;
+      workoutElement.duration = element.duration;
+      workoutElement.startWeight_percent = element.startWeight_percent;
+      workoutElement.endWeight_percent = element.endWeight_percent;
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
         const exercise = await this.em.findOne(Exercise, {
@@ -338,11 +314,7 @@ export class WorkoutService {
       // Supprimer les anciens éléments
       const existingElements = workoutToUpdate.elements.getItems();
       for (const element of existingElements) {
-        const params = element.trainingParams;
         this.em.remove(element);
-        if (params) {
-          this.em.remove(params);
-        }
       }
 
       await this.em.flush();
@@ -353,18 +325,13 @@ export class WorkoutService {
         const workoutElement = new WorkoutElement();
         workoutElement.type = element.type;
         workoutElement.order = element.order;
+        workoutElement.sets = element.sets;
+        workoutElement.reps = element.reps;
+        workoutElement.rest = element.rest;
+        workoutElement.duration = element.duration;
+        workoutElement.startWeight_percent = element.startWeight_percent;
+        workoutElement.endWeight_percent = element.endWeight_percent;
         workoutElement.workout = workoutToUpdate;
-
-        // Créer les paramètres d'entraînement
-        const trainingParams = new TrainingParams();
-        trainingParams.sets = element.trainingParams.sets;
-        trainingParams.reps = element.trainingParams.reps;
-        trainingParams.rest = element.trainingParams.rest;
-        trainingParams.startWeight_percent =
-          element.trainingParams.startWeight_percent;
-
-        this.em.persist(trainingParams);
-        workoutElement.trainingParams = trainingParams;
 
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
           const exercise = await this.em.findOne(Exercise, {
@@ -410,11 +377,7 @@ export class WorkoutService {
     // Supprimer d'abord les éléments et leurs paramètres
     const elements = workoutToDelete.elements.getItems();
     for (const element of elements) {
-      const params = element.trainingParams;
-      await this.em.remove(element);
-      if (params) {
-        await this.em.remove(params);
-      }
+      this.em.remove(element);
     }
 
     await this.em.removeAndFlush(workoutToDelete);

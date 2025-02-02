@@ -101,7 +101,7 @@ export function SortableWorkoutElement({
       return (
         <FormField
           control={control}
-          name={`elements.${index}.trainingParams.${fieldName}` as const}
+          name={`elements.${index}.${fieldName}` as const}
           render={({ field }) => (
             <FormItem className="m-0 p-0">
               <FormControl>
@@ -155,7 +155,7 @@ export function SortableWorkoutElement({
       return (
         <FormField
           control={control}
-          name={`elements.${index}.trainingParams.${fieldName}` as const}
+          name={`elements.${index}.${fieldName}` as const}
           render={({ field }) => (
             <FormItem className="m-0 p-0">
               <FormControl>
@@ -284,7 +284,7 @@ export function SortableWorkoutElement({
               <div className="flex-1 ml-2 flex flex-col gap-2">
                 <div className="flex flex-1 gap-2">
                   {renderEditableBadge(
-                    control._formValues.elements[index].trainingParams.reps,
+                    control._formValues.elements[index].reps,
                     editingReps,
                     setEditingReps,
                     'reps',
@@ -294,7 +294,7 @@ export function SortableWorkoutElement({
                 </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams.sets,
+                    control._formValues.elements[index].sets,
                     editingSets,
                     setEditingSets,
                     'sets',
@@ -303,8 +303,7 @@ export function SortableWorkoutElement({
                   )}
                   <span>à</span>
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams
-                      .startWeight_percent,
+                    control._formValues.elements[index].startWeight_percent,
                     editingWeight,
                     setEditingWeight,
                     'startWeight_percent',
@@ -314,8 +313,7 @@ export function SortableWorkoutElement({
                   )}
                   <span>•</span>
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams.rest ||
-                      0,
+                    control._formValues.elements[index].rest || 0,
                     editingRest,
                     setEditingRest,
                     'rest',
@@ -333,7 +331,7 @@ export function SortableWorkoutElement({
               <div className="flex-1 ml-2 flex flex-col gap-2">
                 <div className="flex flex-1 gap-2">
                   {renderEditableBadge(
-                    control._formValues.elements[index].trainingParams.reps,
+                    control._formValues.elements[index].reps,
                     editingReps,
                     setEditingReps,
                     'reps',
@@ -343,7 +341,7 @@ export function SortableWorkoutElement({
                 </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams.sets,
+                    control._formValues.elements[index].sets,
                     editingSets,
                     setEditingSets,
                     'sets',
@@ -352,8 +350,7 @@ export function SortableWorkoutElement({
                   )}
                   <span>à</span>
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams
-                      .startWeight_percent,
+                    control._formValues.elements[index].startWeight_percent,
                     editingWeight,
                     setEditingWeight,
                     'startWeight_percent',
@@ -363,8 +360,7 @@ export function SortableWorkoutElement({
                   )}
                   <span>•</span>
                   {renderEditableText(
-                    control._formValues.elements[index].trainingParams.rest ||
-                      0,
+                    control._formValues.elements[index].rest || 0,
                     editingRest,
                     setEditingRest,
                     'rest',
@@ -387,9 +383,7 @@ export function SortableWorkoutElement({
                   >
                     <div className="flex-1 ml-2 flex flex-col gap-2">
                       <div className="flex flex-1 gap-2">
-                        <Badge variant="outline">
-                          {exercise.trainingParams.reps}
-                        </Badge>
+                        <Badge variant="outline">{exercise.reps}</Badge>
                         <div className="font-sm">{exercise.name}</div>
                       </div>
                     </div>
