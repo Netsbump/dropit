@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { complexSchema } from './complex.schema';
 import { exerciseSchema } from './exercice.schema';
-import { trainingParamsSchema } from './training-params.schema';
 
 export const WORKOUT_ELEMENT_TYPES = {
   EXERCISE: 'exercise',
@@ -15,14 +14,24 @@ const createWorkoutExerciseElement = z.object({
   type: z.literal('exercise'),
   id: z.string(),
   order: z.number().min(0),
-  trainingParams: trainingParamsSchema,
+  sets: z.number().min(1),
+  reps: z.number().min(1),
+  rest: z.number().optional(),
+  duration: z.number().optional(),
+  startWeight_percent: z.number().optional(),
+  endWeight_percent: z.number().optional(),
 });
 
 const createWorkoutComplexElement = z.object({
   type: z.literal('complex'),
   id: z.string(),
   order: z.number().min(0),
-  trainingParams: trainingParamsSchema,
+  sets: z.number().min(1),
+  reps: z.number().min(1),
+  rest: z.number().optional(),
+  duration: z.number().optional(),
+  startWeight_percent: z.number().optional(),
+  endWeight_percent: z.number().optional(),
 });
 
 const createWorkoutElementSchema = z.discriminatedUnion('type', [
