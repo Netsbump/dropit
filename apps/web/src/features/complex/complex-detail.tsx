@@ -47,7 +47,7 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
 import { useState } from 'react';
-import { useFieldArray, useForm } from 'react-hook-form';
+import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
@@ -61,10 +61,14 @@ function SortableExerciseItem({
   id,
   index,
   children,
+  form,
+  remove,
 }: {
   id: string;
   index: number;
   children: React.ReactNode;
+  form: UseFormReturn<z.infer<typeof updateComplexSchema>>;
+  remove: (index: number) => void;
 }) {
   const {
     attributes,
@@ -94,10 +98,38 @@ function SortableExerciseItem({
       >
         <GripVertical className="h-4 w-4" />
       </div>
-      <div className="flex items-center justify-center w-8 h-8 rounded-md bg-muted text-muted-foreground">
-        {index + 1}
-      </div>
+
+      <FormField
+        control={form.control}
+        name={`exercises.${index}.reps`}
+        render={({ field }) => (
+          <FormItem>
+            <FormControl>
+              <Input
+                type="number"
+                min={1}
+                className="w-16 h-8 text-center rounded-md bg-muted text-muted-foreground"
+                {...field}
+                onChange={(e) => field.onChange(parseInt(e.target.value))}
+              />
+            </FormControl>
+          </FormItem>
+        )}
+      />
+
       {children}
+
+      {index >= 2 && (
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon"
+          onClick={() => remove(index)}
+          className="h-8 w-8"
+        >
+          <Trash2 className="h-4 w-4" />
+        </Button>
+      )}
     </div>
   );
 }
@@ -380,6 +412,8 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                         key={field.id}
                         id={field.id}
                         index={index}
+                        form={form}
+                        remove={remove}
                       >
                         <FormField
                           control={form.control}
@@ -429,19 +463,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                             </FormItem>
                           )}
                         />
-
-                        {/* Ne permettre la suppression que pour les exercices au-delà des deux premiers */}
-                        {index >= 2 && (
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => remove(index)}
-                            className="h-8 w-8"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        )}
                       </SortableExerciseItem>
                     ))}
                   </div>
@@ -535,13 +556,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           <Label>Exercices ({complex.exercises?.length || 0})</Label>
         </CardHeader>
         <CardContent className="space-y-2">
-          {complex.exercises?.map((exercise, index) => (
+          {complex.exercises?.map((exercise) => (
             <div
               key={exercise.id}
               className="flex items-center gap-4 p-2 rounded-md bg-muted"
             >
               <div className="flex items-center justify-center w-8 h-8 rounded-md bg-background text-foreground">
-                {index + 1}
+                {exercise.reps}
               </div>
               <span className="text-sm">{exercise.name}</span>
             </div>

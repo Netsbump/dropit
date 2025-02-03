@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { WORKOUT_ELEMENT_TYPES, WorkoutDto } from '@dropit/schemas';
-import { Dumbbell, ListTree, MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal } from 'lucide-react';
 
 interface WorkoutCardProps {
   workout: WorkoutDto;
@@ -29,7 +29,12 @@ export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
       onClick={() => onWorkoutClick(workout.id)}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{workout.title}</CardTitle>
+        <div className="flex items-center gap-2">
+          <CardTitle className="text-sm font-medium">{workout.title}</CardTitle>
+          <Badge variant="outline" className="h-6">
+            {workout.workoutCategory}
+          </Badge>
+        </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">
@@ -46,31 +51,54 @@ export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
         </DropdownMenu>
       </CardHeader>
       <CardContent>
-        {workout.description && (
-          <p className="text-sm text-muted-foreground mb-4">
-            {workout.description}
-          </p>
-        )}
-        <div className="space-y-2">
-          {workout.elements.map((element, index) => (
-            <div key={element.id} className="flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">{index + 1}.</span>
+        <div className="space-y-4">
+          {workout.elements.map((element) => (
+            <div
+              key={element.id}
+              className="flex items-start gap-2 text-sm bg-muted/30 rounded-lg p-3"
+            >
               {element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? (
-                <div className="flex items-center gap-2">
-                  <Dumbbell className="h-4 w-4" />
-                  <span>{element.exercise.name}</span>
+                <div className="flex flex-col gap-1 w-full">
+                  <div className="flex items-center gap-2">
+                    <Badge
+                      variant="secondary"
+                      className="h-6 min-w-[24px] flex items-center justify-center"
+                    >
+                      {element.sets}
+                    </Badge>
+                    <span className="font-medium">{element.exercise.name}</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground ml-9">
+                    {element.sets} séries à {element.startWeight_percent}%
+                  </p>
                 </div>
               ) : (
-                <div className="flex flex-col gap-1">
+                <div className="flex flex-col gap-2 w-full">
                   <div className="flex items-center gap-2">
-                    <ListTree className="h-4 w-4" />
+                    <Badge
+                      variant="secondary"
+                      className="h-6 min-w-[24px] flex items-center justify-center"
+                    >
+                      {element.sets}
+                    </Badge>
                     <span className="font-medium">{element.complex.name}</span>
                   </div>
-                  <div className="text-xs text-muted-foreground pl-6 space-y-1">
-                    {element.complex.exercises.map((ex, i) => (
-                      <div key={ex.id} className="flex items-center gap-1">
-                        <span>{i + 1}.</span>
-                        <span>{ex.name}</span>
+                  <p className="text-xs text-muted-foreground ml-9">
+                    {element.sets} séries à {element.startWeight_percent}%
+                  </p>
+                  <div className="ml-9 space-y-2">
+                    {element.complex.exercises.map((ex) => (
+                      <div
+                        key={ex.id}
+                        className="flex items-center gap-2 bg-muted/50 rounded-md p-2"
+                      >
+                        <Badge
+                          variant="outline"
+                          className="h-5 min-w-[20px] flex items-center justify-center bg-background"
+                        >
+                          {ex.reps}
+                        </Badge>
+                        <div className="text-xs">{ex.name}</div>
                       </div>
                     ))}
                   </div>
@@ -78,12 +106,6 @@ export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
               )}
             </div>
           ))}
-        </div>
-        <div className="mt-4 flex items-center justify-between">
-          <Badge variant="outline">{workout.workoutCategory}</Badge>
-          <span className="text-xs text-muted-foreground">
-            {workout.elements?.length || 0} éléments
-          </span>
         </div>
       </CardContent>
     </Card>
