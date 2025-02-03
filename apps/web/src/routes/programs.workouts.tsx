@@ -1,12 +1,10 @@
 //import { WorkoutCreationForm } from '@/features/workout/workout-creation-form';
 import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
-import { WorkoutDetail } from '@/features/workout/workout-detail';
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';
 import { api } from '@/lib/api';
-import { DetailsPanel } from '@/shared/components/ui/details-panel';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DialogCreation } from '../features/exercises/dialog-creation';
 
@@ -19,7 +17,11 @@ function WorkoutPage() {
   const [filter, setFilter] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const queryClient = useQueryClient();
-  const [selectedWorkout, setSelectedWorkout] = useState<string | null>(null);
+  const navigate = Route.useNavigate();
+  const matches = useMatches();
+  const isWorkoutDetail = matches.some(
+    (match) => match.routeId === '/programs/workouts/$workoutId'
+  );
 
   const { data: workouts, isLoading } = useQuery({
     queryKey: ['workouts'],
@@ -39,20 +41,6 @@ function WorkoutPage() {
     },
   });
 
-  const { data: workoutDetails } = useQuery({
-    queryKey: ['workout', selectedWorkout],
-    queryFn: async () => {
-      if (!selectedWorkout) return null;
-      const response = await api.workout.getWorkout({
-        params: { id: selectedWorkout },
-      });
-      if (response.status !== 200)
-        throw new Error('Failed to load workout details');
-      return response.body;
-    },
-    enabled: !!selectedWorkout,
-  });
-
   const filteredWorkouts = workouts?.filter((workout) => {
     const matchesSearch = workout.title
       .toLowerCase()
@@ -67,45 +55,39 @@ function WorkoutPage() {
     queryClient.invalidateQueries({ queryKey: ['workouts'] });
   };
 
+  const handleWorkoutClick = (workoutId: string) => {
+    navigate({ to: `/programs/workouts/${workoutId}` });
+  };
+
+  // Si on est sur un détail de workout, on affiche directement le contenu
+  if (isWorkoutDetail) {
+    return <Outlet />;
+  }
+
+  // Sinon on affiche la grille des workouts
   return (
     <div className="relative flex-1">
-      <div
-        className={`transition-all duration-200 ${
-          selectedWorkout ? 'mr-[400px]' : ''
-        }`}
-      >
-        <WorkoutFilters
-          onFilterChange={setFilter}
-          onCategoryChange={setCategoryFilter}
-          onCreateClick={() => setCreateWorkoutModalOpen(true)}
-          categories={categories}
-          disabled={isLoading || !workouts?.length}
+      <WorkoutFilters
+        onFilterChange={setFilter}
+        onCategoryChange={setCategoryFilter}
+        onCreateClick={() => setCreateWorkoutModalOpen(true)}
+        categories={categories}
+        disabled={isLoading || !workouts?.length}
+      />
+
+      {isLoading ? (
+        <div className="flex items-center justify-center h-32">Loading...</div>
+      ) : !workouts?.length ? (
+        <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+          <p>Aucun workout trouvé</p>
+          <p className="text-sm">Commencez par en créer un !</p>
+        </div>
+      ) : (
+        <WorkoutGrid
+          workouts={filteredWorkouts || []}
+          onWorkoutClick={handleWorkoutClick}
         />
-
-        {isLoading ? (
-          <div className="flex items-center justify-center h-32">
-            Loading...
-          </div>
-        ) : !workouts?.length ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>Aucun workout trouvé</p>
-            <p className="text-sm">Commencez par en créer un !</p>
-          </div>
-        ) : (
-          <WorkoutGrid
-            workouts={filteredWorkouts || []}
-            onWorkoutClick={(workoutId) => setSelectedWorkout(workoutId)}
-          />
-        )}
-      </div>
-
-      <DetailsPanel
-        open={!!selectedWorkout}
-        onClose={() => setSelectedWorkout(null)}
-        title="Détails du workout"
-      >
-        {workoutDetails && <WorkoutDetail workout={workoutDetails} />}
-      </DetailsPanel>
+      )}
 
       <DialogCreation
         open={createWorkoutModalOpen}

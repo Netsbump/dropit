@@ -3,20 +3,21 @@ import {
   Outlet,
   createFileRoute,
   useMatches,
-} from '@tanstack/react-router'
+} from '@tanstack/react-router';
 
 export const Route = createFileRoute('/programs')({
   component: ProgramsPage,
-})
+});
 
 function ProgramsPage() {
+  const matches = useMatches();
+
   // Récupérer la route active pour définir l'onglet actif
-  const matches = useMatches()
   const activeTab =
-    matches[matches.length - 1].pathname.split('/').pop() || 'workouts'
+    matches[matches.length - 1].pathname.split('/').pop() || 'workouts';
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="w-full px-8 py-10">
       <h1 className="text-2xl font-bold mb-4">Programmation</h1>
       <p className="text-sm text-muted-foreground mb-6">
         Retrouvez et gérez tous vos entrainements, blocs de complex et exercices
@@ -62,5 +63,5 @@ function ProgramsPage() {
         <Outlet />
       </div>
     </div>
-  )
+  );
 }
