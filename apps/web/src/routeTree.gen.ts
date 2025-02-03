@@ -20,6 +20,7 @@ import { Route as programsImport } from './routes/__programs'
 import { Route as ProgramsWorkoutsImport } from './routes/programs.workouts'
 import { Route as ProgramsExercisesImport } from './routes/programs.exercises'
 import { Route as ProgramsComplexImport } from './routes/programs.complex'
+import { Route as ProgramsWorkoutsWorkoutIdImport } from './routes/programs.workouts.$workoutId'
 
 // Create Virtual Routes
 
@@ -79,6 +80,12 @@ const ProgramsComplexRoute = ProgramsComplexImport.update({
   id: '/complex',
   path: '/complex',
   getParentRoute: () => ProgramsRoute,
+} as any)
+
+const ProgramsWorkoutsWorkoutIdRoute = ProgramsWorkoutsWorkoutIdImport.update({
+  id: '/$workoutId',
+  path: '/$workoutId',
+  getParentRoute: () => ProgramsWorkoutsRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -148,21 +155,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProgramsWorkoutsImport
       parentRoute: typeof ProgramsImport
     }
+    '/programs/workouts/$workoutId': {
+      id: '/programs/workouts/$workoutId'
+      path: '/$workoutId'
+      fullPath: '/programs/workouts/$workoutId'
+      preLoaderRoute: typeof ProgramsWorkoutsWorkoutIdImport
+      parentRoute: typeof ProgramsWorkoutsImport
+    }
   }
 }
 
 // Create and export the route tree
 
+interface ProgramsWorkoutsRouteChildren {
+  ProgramsWorkoutsWorkoutIdRoute: typeof ProgramsWorkoutsWorkoutIdRoute
+}
+
+const ProgramsWorkoutsRouteChildren: ProgramsWorkoutsRouteChildren = {
+  ProgramsWorkoutsWorkoutIdRoute: ProgramsWorkoutsWorkoutIdRoute,
+}
+
+const ProgramsWorkoutsRouteWithChildren =
+  ProgramsWorkoutsRoute._addFileChildren(ProgramsWorkoutsRouteChildren)
+
 interface ProgramsRouteChildren {
   ProgramsComplexRoute: typeof ProgramsComplexRoute
   ProgramsExercisesRoute: typeof ProgramsExercisesRoute
-  ProgramsWorkoutsRoute: typeof ProgramsWorkoutsRoute
+  ProgramsWorkoutsRoute: typeof ProgramsWorkoutsRouteWithChildren
 }
 
 const ProgramsRouteChildren: ProgramsRouteChildren = {
   ProgramsComplexRoute: ProgramsComplexRoute,
   ProgramsExercisesRoute: ProgramsExercisesRoute,
-  ProgramsWorkoutsRoute: ProgramsWorkoutsRoute,
+  ProgramsWorkoutsRoute: ProgramsWorkoutsRouteWithChildren,
 }
 
 const ProgramsRouteWithChildren = ProgramsRoute._addFileChildren(
@@ -178,7 +203,8 @@ export interface FileRoutesByFullPath {
   '/about': typeof AboutLazyRoute
   '/programs/complex': typeof ProgramsComplexRoute
   '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRoute
+  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
+  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesByTo {
@@ -190,7 +216,8 @@ export interface FileRoutesByTo {
   '/about': typeof AboutLazyRoute
   '/programs/complex': typeof ProgramsComplexRoute
   '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRoute
+  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
+  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesById {
@@ -203,7 +230,8 @@ export interface FileRoutesById {
   '/about': typeof AboutLazyRoute
   '/programs/complex': typeof ProgramsComplexRoute
   '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRoute
+  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
+  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
 }
 
 export interface FileRouteTypes {
@@ -218,6 +246,7 @@ export interface FileRouteTypes {
     | '/programs/complex'
     | '/programs/exercises'
     | '/programs/workouts'
+    | '/programs/workouts/$workoutId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -229,6 +258,7 @@ export interface FileRouteTypes {
     | '/programs/complex'
     | '/programs/exercises'
     | '/programs/workouts'
+    | '/programs/workouts/$workoutId'
   id:
     | '__root__'
     | '/'
@@ -240,6 +270,7 @@ export interface FileRouteTypes {
     | '/programs/complex'
     | '/programs/exercises'
     | '/programs/workouts'
+    | '/programs/workouts/$workoutId'
   fileRoutesById: FileRoutesById
 }
 
@@ -312,7 +343,14 @@ export const routeTree = rootRoute
     },
     "/programs/workouts": {
       "filePath": "programs.workouts.tsx",
-      "parent": "/programs"
+      "parent": "/programs",
+      "children": [
+        "/programs/workouts/$workoutId"
+      ]
+    },
+    "/programs/workouts/$workoutId": {
+      "filePath": "programs.workouts.$workoutId.tsx",
+      "parent": "/programs/workouts"
     }
   }
 }

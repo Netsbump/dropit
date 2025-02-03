@@ -20,9 +20,7 @@ export const Route = createRootRoute({
               <Separator orientation="vertical" className="h-6" />
               <Breadcrumbs />
             </div>
-            <div className="p-4">
-              <Outlet />
-            </div>
+            <Outlet />
           </div>
         </main>
       </div>
