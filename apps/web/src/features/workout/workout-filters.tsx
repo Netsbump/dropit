@@ -26,18 +26,16 @@ export function WorkoutFilters({
   disabled,
 }: WorkoutFiltersProps) {
   return (
-    <div className="flex justify-between items-center">
-      <div className="flex items-center gap-4 py-4">
-        <Input
-          placeholder="Rechercher un workout..."
-          onChange={(e) => onFilterChange(e.target.value)}
-          className="max-w-sm"
-          disabled={disabled}
-        />
-      </div>
+    <div className="flex justify-between items-center py-4">
+      <Input
+        placeholder="Rechercher un entraînement..."
+        onChange={(e) => onFilterChange(e.target.value)}
+        className="max-w-xs"
+        disabled={disabled}
+      />
       <div className="flex items-center gap-2">
         <Select onValueChange={onCategoryChange} defaultValue="all">
-          <SelectTrigger className="w-[180px] bg-card font-medium">
+          <SelectTrigger className="w-fit bg-card font-medium">
             <SelectValue placeholder="Toutes les catégories" />
           </SelectTrigger>
           <SelectContent>
@@ -51,7 +49,7 @@ export function WorkoutFilters({
         </Select>
         <Separator orientation="vertical" className="h-6" />
         <Button onClick={onCreateClick} disabled={disabled}>
-          Créer un workout
+          Créer un entraînement
         </Button>
       </div>
     </div>

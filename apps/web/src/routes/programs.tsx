@@ -20,8 +20,7 @@ function ProgramsPage() {
     <div className="w-full px-8 py-10">
       <h1 className="text-2xl font-bold mb-4">Programmation</h1>
       <p className="text-sm text-muted-foreground mb-6">
-        Retrouvez et gérez tous vos entrainements, blocs de complex et exercices
-        ici
+        Retrouvez et gérez tous vos entrainements, combinés et exercices ici
       </p>
 
       <div className="border-b">
@@ -44,7 +43,7 @@ function ProgramsPage() {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Complex
+            Combinés
           </Link>
           <Link
             to="/programs/exercises"

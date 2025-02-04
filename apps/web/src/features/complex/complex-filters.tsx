@@ -29,7 +29,7 @@ export function ComplexFilters({
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-4 py-4">
         <Input
-          placeholder="Filter complexes..."
+          placeholder="Filter les combinés..."
           onChange={(e) => onFilterChange(e.target.value)}
           className="max-w-sm"
           disabled={disabled}
@@ -50,7 +50,7 @@ export function ComplexFilters({
           </SelectContent>
         </Select>
         <Separator orientation="vertical" className="h-6" />
-        <Button onClick={onCreateClick}>Ajouter un complex</Button>
+        <Button onClick={onCreateClick}>Ajouter un combiné</Button>
       </div>
     </div>
   );
