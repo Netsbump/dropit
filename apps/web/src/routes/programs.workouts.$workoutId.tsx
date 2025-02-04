@@ -3,16 +3,11 @@ import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { ArrowLeft, Pencil, Plus, X } from 'lucide-react';
+import { ArrowLeft, Pencil, X } from 'lucide-react';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/programs/workouts/$workoutId')({
@@ -41,21 +36,16 @@ function WorkoutDetailPage() {
     },
   });
 
-  const handleSave = async () => {
-    // TODO: Implémenter la sauvegarde
-    setIsEditing(false);
-  };
-
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        Loading...
+        Chargement...
       </div>
     );
   }
 
   if (!workout) {
-    return <div>Workout not found</div>;
+    return <div>Entrainement non trouvé</div>;
   }
 
   if (isEditing) {
@@ -91,47 +81,41 @@ function WorkoutDetailPage() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto">
-        <div className="h-full grid grid-cols-6 divide-x">
+        <div className="grid grid-cols-6 divide-x">
           {/* Left Column - Info */}
-          <div className="col-span-1 py-6 pr-6 space-y-6">
+          <div className="col-span-1 py-6 pr-6 space-y-4">
+            <h2 className="text-lg font-semibold">Informations</h2>
+
+            {/* Catégorie */}
             <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Informations</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1">
-                    Catégorie
-                  </div>
-                  <Badge variant="outline">{workout.workoutCategory}</Badge>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground mb-1">
-                    Description
-                  </div>
-                  <p className="text-sm">
-                    {workout.description || 'Aucune description'}
-                  </p>
-                </div>
+              <CardContent className="pt-6">
+                <h3 className="text-md font-medium text-muted-foreground mb-2">
+                  Catégorie
+                </h3>
+                <Badge variant="outline">{workout.workoutCategory}</Badge>
+              </CardContent>
+            </Card>
+
+            {/* Description */}
+            <Card>
+              <CardContent className="pt-6">
+                <h3 className="text-md font-medium text-muted-foreground mb-2">
+                  Description
+                </h3>
+                <p className="text-sm">
+                  {workout.description || 'Aucune description'}
+                </p>
               </CardContent>
             </Card>
           </div>
 
           {/* Middle Column - Elements */}
-          <div className="col-span-4 p-6">
+          <div className="col-span-4 p-6 space-y-4">
+            <h2 className="text-lg font-semibold">Éléments</h2>
             <Card>
-              <CardHeader className="flex flex-row items-center justify-between">
-                <CardTitle className="text-lg">Éléments</CardTitle>
-                {isEditing && (
-                  <Button variant="outline" size="sm">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Ajouter un élément
-                  </Button>
-                )}
-              </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <div
-                  className="grid grid-cols-2 gap-2"
+                  className="grid grid-cols-2 gap-4"
                   style={{ gridAutoFlow: 'dense' }}
                 >
                   {workout.elements.map((element, index) => (
@@ -210,71 +194,51 @@ function WorkoutDetailPage() {
           </div>
 
           {/* Right Column - Stats & Info */}
-          <div className="col-span-1 py-6 pl-6">
-            {/* Quick Stats */}
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="text-lg">Statistiques</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">
-                    Dernière utilisation
+          <div className="col-span-1 py-6 pl-6 space-y-6">
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Statistiques</h2>
+              <Card className="flex-1">
+                <CardContent className="space-y-4 pt-6">
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">
+                      Dernière utilisation
+                    </div>
+                    <div className="text-lg font-semibold">-</div>
                   </div>
-                  <div className="text-lg font-semibold">-</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">
-                    Nombre d'athlètes
+                  <div>
+                    <div className="text-sm font-medium text-muted-foreground">
+                      Nombre d'athlètes
+                    </div>
+                    <div className="text-lg font-semibold">0</div>
                   </div>
-                  <div className="text-lg font-semibold">0</div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* Recent History */}
-            <Card className="mb-6">
-              <CardHeader>
-                <CardTitle className="text-lg">Historique</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  Aucune séance programmée
-                </div>
-              </CardContent>
-            </Card>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Historique</h2>
+              <Card className="flex-1">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-muted-foreground">
+                    Aucune séance programmée
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-            {/* Athletes */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Athlètes</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-sm text-muted-foreground">
-                  Aucun athlète n'a encore réalisé ce workout
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-      </div>
-
-      {/* Barre d'édition */}
-      {isEditing && (
-        <div className="fixed bottom-0 inset-x-0 border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-          <div className="container flex items-center justify-between">
-            <div className="text-sm text-muted-foreground">Mode édition</div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setIsEditing(false)}>
-                Annuler
-              </Button>
-              <Button onClick={handleSave}>
-                Sauvegarder les modifications
-              </Button>
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold">Athlètes</h2>
+              <Card className="flex-1">
+                <CardContent className="pt-6">
+                  <div className="text-sm text-muted-foreground">
+                    Aucun athlète n'a encore réalisé ce workout
+                  </div>
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

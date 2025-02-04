@@ -76,10 +76,12 @@ function WorkoutPage() {
       />
 
       {isLoading ? (
-        <div className="flex items-center justify-center h-32">Loading...</div>
+        <div className="flex items-center justify-center h-32">
+          Chargement...
+        </div>
       ) : !workouts?.length ? (
         <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-          <p>Aucun workout trouvé</p>
+          <p>Aucun entraînement trouvé</p>
           <p className="text-sm">Commencez par en créer un !</p>
         </div>
       ) : (

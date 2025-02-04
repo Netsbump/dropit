@@ -88,7 +88,7 @@ function ComplexPage() {
           </div>
         ) : !complexes?.length ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>Aucun complex trouvé</p>
+            <p>Aucun combiné trouvé</p>
             <p className="text-sm">Commencez par en créer un !</p>
           </div>
         ) : (
@@ -102,7 +102,7 @@ function ComplexPage() {
       <DetailsPanel
         open={!!selectedComplex}
         onClose={() => setSelectedComplex(null)}
-        title="Détails du complex"
+        title="Détails du combiné"
       >
         {complexDetails && <ComplexDetail complex={complexDetails} />}
       </DetailsPanel>
@@ -110,8 +110,8 @@ function ComplexPage() {
       <DialogCreation
         open={createComplexModalOpen}
         onOpenChange={setCreateComplexModalOpen}
-        title="Créer un complex"
-        description="Ajoutez un nouveau complex à votre catalogue."
+        title="Créer un combiné"
+        description="Ajoutez un nouveau combiné à votre catalogue."
       >
         <ComplexCreationForm
           onSuccess={handleCreationSuccess}

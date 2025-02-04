@@ -15,7 +15,7 @@ const routeNames: Record<string, string> = {
   '/programs': 'Programmation',
   '/programs/workouts': 'Entrainements',
   '/programs/exercises': 'Exercices',
-  '/programs/complex': 'Complexes',
+  '/programs/complex': 'Combinés',
   '/programs/workouts/$workoutId': 'Nom Entrainement',
   '/planning': 'Calendrier',
   '/athletes': 'Athlètes',
