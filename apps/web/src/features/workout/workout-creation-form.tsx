@@ -49,6 +49,18 @@ import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { SortableWorkoutElement } from './sortable-workout-element';
 
+// Définir le schéma étendu pour le formulaire qui inclut le champ session
+const extendedWorkoutSchema = createWorkoutSchema.extend({
+  session: z
+    .object({
+      athleteIds: z.array(z.string()),
+      scheduledDate: z.string(),
+    })
+    .optional(),
+});
+
+type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
+
 interface WorkoutCreationFormProps {
   onSuccess?: () => void;
   onCancel?: () => void;
@@ -113,13 +125,17 @@ export function WorkoutCreationForm({
     },
   });
 
-  const form = useForm<z.infer<typeof createWorkoutSchema>>({
-    resolver: zodResolver(createWorkoutSchema),
+  const form = useForm<ExtendedWorkoutSchema>({
+    resolver: zodResolver(extendedWorkoutSchema),
     defaultValues: {
       title: '',
       description: '',
       workoutCategory: '',
       elements: [],
+      session: {
+        athleteIds: [],
+        scheduledDate: '',
+      },
     },
   });
 
@@ -163,10 +179,13 @@ export function WorkoutCreationForm({
     });
   };
 
-  const handleSubmit = (values: z.infer<typeof createWorkoutSchema>) => {
+  const handleSubmit = (values: ExtendedWorkoutSchema) => {
     setIsLoading(true);
     try {
-      createWorkoutMutation(values);
+      // Si le formulaire contient des données de session, on les supprime avant de soumettre
+      // car l'API createWorkout n'accepte pas encore ce champ
+      const { session, ...workoutData } = values;
+      createWorkoutMutation(workoutData as CreateWorkout);
     } finally {
       setIsLoading(false);
     }
