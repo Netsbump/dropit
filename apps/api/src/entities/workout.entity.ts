@@ -6,6 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { Session } from './session.entity';
 import { WorkoutCategory } from './workout-category.entity';
 import { WorkoutElement } from './workout-element.entity';
 
@@ -28,6 +29,12 @@ export class Workout {
     (workoutElement) => workoutElement.workout
   )
   elements = new Collection<WorkoutElement>(this);
+
+  @OneToMany(
+    () => Session,
+    (session) => session.workout
+  )
+  sessions = new Collection<Session>(this);
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
