@@ -21,8 +21,20 @@ import { useQuery } from '@tanstack/react-query';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
+// Importer le schéma étendu depuis le stepper parent
+const extendedWorkoutSchema = createWorkoutSchema.extend({
+  session: z
+    .object({
+      athleteIds: z.array(z.string()),
+      scheduledDate: z.string(),
+    })
+    .optional(),
+});
+
+type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
+
 interface WorkoutInfoStepProps {
-  form: UseFormReturn<z.infer<typeof createWorkoutSchema>>;
+  form: UseFormReturn<ExtendedWorkoutSchema>;
   onNext: () => void;
   onCancel: () => void;
 }

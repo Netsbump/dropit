@@ -5,10 +5,13 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 //import { devOrmConfig, testOrmConfig } from './mikro-orm.config';
 import config from './mikro-orm.config';
+import { AthleteSessionModule } from './modules/athlete-session/athlete-session.module';
+import { AthleteModule } from './modules/athlete/athlete.module';
 import { ComplexCategoryModule } from './modules/complex-category/complex-category.module';
 import { ComplexModule } from './modules/complex/complex.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { ExerciseCategoryModule } from './modules/exerciseCategory/exerciseCategory.module';
+import { SessionModule } from './modules/session/session.module';
 import { VideoModule } from './modules/video/video.module';
 import { WorkoutCategoryModule } from './modules/workout-category/workout-category.module';
 import { WorkoutModule } from './modules/workout/workout.module';
@@ -17,11 +20,14 @@ import { WorkoutModule } from './modules/workout/workout.module';
   imports: [
     ConfigModule.forRoot(),
     MikroOrmModule.forRoot(config),
+    AthleteModule,
+    AthleteSessionModule,
     ExerciseModule,
     VideoModule,
     ExerciseCategoryModule,
     ComplexModule,
     ComplexCategoryModule,
+    SessionModule,
     WorkoutCategoryModule,
     WorkoutModule,
   ],

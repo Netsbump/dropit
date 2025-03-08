@@ -28,10 +28,22 @@ import { useEffect, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { z } from 'zod';
 
+// Définir le schéma étendu pour le formulaire qui inclut le champ session
+const extendedWorkoutSchema = createWorkoutSchema.extend({
+  session: z
+    .object({
+      athleteIds: z.array(z.string()),
+      scheduledDate: z.string(),
+    })
+    .optional(),
+});
+
+type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
+
 interface SortableWorkoutElementProps {
   id: string;
   index: number;
-  control: Control<z.infer<typeof createWorkoutSchema>>;
+  control: Control<ExtendedWorkoutSchema>;
   onRemove: (index: number) => void;
   exercises?: ExerciseDto[];
   complexes?: ComplexDto[];

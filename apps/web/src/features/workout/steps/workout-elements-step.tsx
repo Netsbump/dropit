@@ -24,8 +24,20 @@ import { UseFormReturn, useFieldArray } from 'react-hook-form';
 import { z } from 'zod';
 import { SortableWorkoutElement } from '../sortable-workout-element';
 
+// Importer le schéma étendu depuis le stepper parent
+const extendedWorkoutSchema = createWorkoutSchema.extend({
+  session: z
+    .object({
+      athleteIds: z.array(z.string()),
+      scheduledDate: z.string(),
+    })
+    .optional(),
+});
+
+type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
+
 interface WorkoutElementsStepProps {
-  form: UseFormReturn<z.infer<typeof createWorkoutSchema>>;
+  form: UseFormReturn<ExtendedWorkoutSchema>;
   onBack: () => void;
   onNext: () => void;
   onCancel: () => void;

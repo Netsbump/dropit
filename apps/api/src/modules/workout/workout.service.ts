@@ -5,8 +5,11 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { AthleteSession } from '../../entities/athlete-session.entity';
+import { Athlete } from '../../entities/athlete.entity';
 import { Complex } from '../../entities/complex.entity';
 import { Exercise } from '../../entities/exercise.entity';
+import { Session } from '../../entities/session.entity';
 import { WorkoutCategory } from '../../entities/workout-category.entity';
 import {
   WORKOUT_ELEMENT_TYPES,
@@ -234,16 +237,15 @@ export class WorkoutService {
 
     const workoutToCreate = new Workout();
     workoutToCreate.title = workout.title;
-    workoutToCreate.category = category;
     workoutToCreate.description = workout.description || '';
+    workoutToCreate.category = category;
 
-    // Créer les éléments du workout
     for (const element of workout.elements) {
       const workoutElement = new WorkoutElement();
       workoutElement.type = element.type;
       workoutElement.order = element.order;
-      workoutElement.reps = element.reps;
       workoutElement.sets = element.sets;
+      workoutElement.reps = element.reps;
       workoutElement.rest = element.rest;
       workoutElement.duration = element.duration;
       workoutElement.startWeight_percent = element.startWeight_percent;
@@ -276,6 +278,35 @@ export class WorkoutService {
     }
 
     await this.em.persistAndFlush(workoutToCreate);
+
+    // Si une session est demandée, la créer
+    if (workout.session) {
+      // Vérifier que tous les athlètes existent
+      const athletes: Athlete[] = [];
+      for (const athleteId of workout.session.athleteIds) {
+        const athlete = await this.em.findOne(Athlete, { id: athleteId });
+        if (!athlete) {
+          throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+        }
+        athletes.push(athlete);
+      }
+
+      const session = new Session();
+      session.workout = workoutToCreate;
+      session.scheduledDate = new Date(workout.session.scheduledDate);
+
+      await this.em.persistAndFlush(session);
+
+      // Créer les liens avec les athlètes
+      for (const athlete of athletes) {
+        const athleteSession = new AthleteSession();
+        athleteSession.athlete = athlete;
+        athleteSession.session = session;
+        this.em.persist(athleteSession);
+      }
+
+      await this.em.flush();
+    }
 
     return this.getWorkout(workoutToCreate.id);
   }
