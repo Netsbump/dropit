@@ -39,11 +39,18 @@ const createWorkoutElementSchema = z.discriminatedUnion('type', [
   createWorkoutComplexElement,
 ]);
 
+// Schéma pour la création d'une session en même temps qu'un workout
+const createSessionWithWorkoutSchema = z.object({
+  athleteIds: z.array(z.string()),
+  scheduledDate: z.string().or(z.date()),
+});
+
 export const createWorkoutSchema = z.object({
   title: z.string(),
   workoutCategory: z.string(),
   description: z.string().optional(),
   elements: z.array(createWorkoutElementSchema),
+  session: createSessionWithWorkoutSchema.optional(),
 });
 
 export type CreateWorkout = z.infer<typeof createWorkoutSchema>;
