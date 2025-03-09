@@ -1,5 +1,6 @@
 import { Options, defineConfig } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
+
 const config: Options = defineConfig({
   host: process.env.DB_HOST || 'localhost',
   port:
@@ -13,6 +14,13 @@ const config: Options = defineConfig({
   entities: ['./dist/entities'],
   entitiesTs: ['./src/entities'],
   extensions: [SeedManager],
+  seeder: {
+    path: './dist/seeders',
+    pathTs: './src/seeders',
+    defaultSeeder: 'MainSeeder',
+    glob: '!(*.d).{js,ts}',
+    emit: 'ts',
+  },
   debug: process.env.NODE_ENV !== 'production',
   schemaGenerator:
     process.env.NODE_ENV === 'test'

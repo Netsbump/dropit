@@ -19,9 +19,6 @@ export class Club {
   @ManyToOne(() => Media, { nullable: true })
   logo?: Media;
 
-  @Property()
-  endDate?: Date;
-
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
 
