@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { Athlete } from './athlete.entity';
 import { Exercise } from './exercise.entity';
-import { Member } from './member.entity';
 
 @Entity()
 export class PersonalRecord {
@@ -13,8 +13,8 @@ export class PersonalRecord {
   @Property({ type: 'float' })
   weight!: number;
 
-  @ManyToOne(() => Member)
-  athlete!: Member;
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
 
   @Property()
   date: Date = new Date();
