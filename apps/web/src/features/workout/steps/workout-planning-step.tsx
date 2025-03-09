@@ -26,7 +26,8 @@ type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
 
 interface Athlete {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
 }
 
 interface WorkoutPlanningStepProps {
@@ -54,9 +55,9 @@ export function WorkoutPlanningStep({
         // Dans une implémentation réelle, vous utiliseriez votre client API
         setTimeout(() => {
           setAthletes([
-            { id: '1', name: 'Athlète 1' },
-            { id: '2', name: 'Athlète 2' },
-            { id: '3', name: 'Athlète 3' },
+            { id: '1', firstName: 'John', lastName: 'Doe' },
+            { id: '2', firstName: 'Jane', lastName: 'Smith' },
+            { id: '3', firstName: 'Mike', lastName: 'Johnson' },
           ]);
           setLoading(false);
         }, 500);
@@ -125,7 +126,7 @@ export function WorkoutPlanningStep({
                     htmlFor={`athlete-${athlete.id}`}
                     className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {athlete.name}
+                    {athlete.firstName} {athlete.lastName}
                   </label>
                 </div>
               ))

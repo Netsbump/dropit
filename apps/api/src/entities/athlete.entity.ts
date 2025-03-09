@@ -1,11 +1,15 @@
 import {
   Collection,
   Entity,
+  ManyToOne,
   OneToMany,
+  OneToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { AthleteSession } from './athlete-session.entity';
+import { Club } from './club.entity';
+import { User } from './user.entity';
 
 @Entity()
 export class Athlete {
@@ -13,10 +17,22 @@ export class Athlete {
   id!: string;
 
   @Property()
-  name!: string;
+  firstName!: string;
+
+  @Property()
+  lastName!: string;
+
+  @Property()
+  birthday!: Date;
 
   @Property({ nullable: true })
-  email?: string;
+  country?: string;
+
+  @OneToOne(() => User, { owner: true, nullable: true })
+  user?: User;
+
+  @ManyToOne(() => Club)
+  club!: Club;
 
   @OneToMany(
     () => AthleteSession,

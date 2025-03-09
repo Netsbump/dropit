@@ -1,13 +1,13 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Member } from './member.entity';
+import { Athlete } from './athlete.entity';
 
 @Entity()
 export class CoachAthlete {
-  @ManyToOne(() => Member, { primary: true })
-  coach!: Member;
+  @ManyToOne(() => Athlete, { primary: true })
+  coach!: Athlete;
 
-  @ManyToOne(() => Member, { primary: true })
-  athlete!: Member;
+  @ManyToOne(() => Athlete, { primary: true })
+  athlete!: Athlete;
 
   @Property()
   startDate: Date = new Date();

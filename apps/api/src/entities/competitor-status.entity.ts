@@ -1,5 +1,5 @@
 import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Member } from './member.entity';
+import { Athlete } from './athlete.entity';
 
 export enum CompetitorLevel {
   ROOKIE = 'rookie',
@@ -19,8 +19,8 @@ export class CompetitorStatus {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => Member)
-  member!: Member;
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
 
   @Enum(() => CompetitorLevel)
   level!: CompetitorLevel;

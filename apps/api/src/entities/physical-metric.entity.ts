@@ -1,13 +1,13 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Member } from './member.entity';
+import { Athlete } from './athlete.entity';
 
 @Entity()
 export class PhysicalMetric {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => Member)
-  member!: Member;
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
 
   @Property({ nullable: true })
   weight?: number;

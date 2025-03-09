@@ -165,8 +165,12 @@ export class SessionService {
   private mapToDto(session: Session): SessionDto {
     const athletes = session.athletes.getItems().map((link) => ({
       id: link.athlete.id,
-      name: link.athlete.name,
-      email: link.athlete.email,
+      firstName: link.athlete.firstName,
+      lastName: link.athlete.lastName,
+      birthday: link.athlete.birthday,
+      country: link.athlete.country,
+      clubId: link.athlete.club?.id,
+      userId: link.athlete.user?.id,
       createdAt: link.athlete.createdAt,
       updatedAt: link.athlete.updatedAt,
     }));
