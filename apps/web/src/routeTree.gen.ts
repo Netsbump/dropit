@@ -13,14 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as ProgramsImport } from './routes/programs'
 import { Route as PlanningImport } from './routes/planning'
 import { Route as AthletesImport } from './routes/athletes'
 import { Route as programsImport } from './routes/__programs'
-import { Route as ProgramsWorkoutsImport } from './routes/programs.workouts'
-import { Route as ProgramsExercisesImport } from './routes/programs.exercises'
-import { Route as ProgramsComplexImport } from './routes/programs.complex'
-import { Route as ProgramsWorkoutsWorkoutIdImport } from './routes/programs.workouts.$workoutId'
+import { Route as WorkoutsWorkoutIdImport } from './routes/workouts.$workoutId'
+import { Route as programsWorkoutsImport } from './routes/__programs.workouts'
+import { Route as programsExercisesImport } from './routes/__programs.exercises'
+import { Route as programsComplexImport } from './routes/__programs.complex'
 
 // Create Virtual Routes
 
@@ -34,12 +33,6 @@ const AboutLazyRoute = AboutLazyImport.update({
   path: '/about',
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/about.lazy').then((d) => d.Route))
-
-const ProgramsRoute = ProgramsImport.update({
-  id: '/programs',
-  path: '/programs',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const PlanningRoute = PlanningImport.update({
   id: '/planning',
@@ -64,28 +57,28 @@ const IndexLazyRoute = IndexLazyImport.update({
   getParentRoute: () => rootRoute,
 } as any).lazy(() => import('./routes/index.lazy').then((d) => d.Route))
 
-const ProgramsWorkoutsRoute = ProgramsWorkoutsImport.update({
+const WorkoutsWorkoutIdRoute = WorkoutsWorkoutIdImport.update({
+  id: '/workouts/$workoutId',
+  path: '/workouts/$workoutId',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const programsWorkoutsRoute = programsWorkoutsImport.update({
   id: '/workouts',
   path: '/workouts',
-  getParentRoute: () => ProgramsRoute,
+  getParentRoute: () => programsRoute,
 } as any)
 
-const ProgramsExercisesRoute = ProgramsExercisesImport.update({
+const programsExercisesRoute = programsExercisesImport.update({
   id: '/exercises',
   path: '/exercises',
-  getParentRoute: () => ProgramsRoute,
+  getParentRoute: () => programsRoute,
 } as any)
 
-const ProgramsComplexRoute = ProgramsComplexImport.update({
+const programsComplexRoute = programsComplexImport.update({
   id: '/complex',
   path: '/complex',
-  getParentRoute: () => ProgramsRoute,
-} as any)
-
-const ProgramsWorkoutsWorkoutIdRoute = ProgramsWorkoutsWorkoutIdImport.update({
-  id: '/$workoutId',
-  path: '/$workoutId',
-  getParentRoute: () => ProgramsWorkoutsRoute,
+  getParentRoute: () => programsRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -120,13 +113,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlanningImport
       parentRoute: typeof rootRoute
     }
-    '/programs': {
-      id: '/programs'
-      path: '/programs'
-      fullPath: '/programs'
-      preLoaderRoute: typeof ProgramsImport
-      parentRoute: typeof rootRoute
-    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -134,104 +120,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AboutLazyImport
       parentRoute: typeof rootRoute
     }
-    '/programs/complex': {
-      id: '/programs/complex'
+    '/__programs/complex': {
+      id: '/__programs/complex'
       path: '/complex'
-      fullPath: '/programs/complex'
-      preLoaderRoute: typeof ProgramsComplexImport
-      parentRoute: typeof ProgramsImport
+      fullPath: '/complex'
+      preLoaderRoute: typeof programsComplexImport
+      parentRoute: typeof programsImport
     }
-    '/programs/exercises': {
-      id: '/programs/exercises'
+    '/__programs/exercises': {
+      id: '/__programs/exercises'
       path: '/exercises'
-      fullPath: '/programs/exercises'
-      preLoaderRoute: typeof ProgramsExercisesImport
-      parentRoute: typeof ProgramsImport
+      fullPath: '/exercises'
+      preLoaderRoute: typeof programsExercisesImport
+      parentRoute: typeof programsImport
     }
-    '/programs/workouts': {
-      id: '/programs/workouts'
+    '/__programs/workouts': {
+      id: '/__programs/workouts'
       path: '/workouts'
-      fullPath: '/programs/workouts'
-      preLoaderRoute: typeof ProgramsWorkoutsImport
-      parentRoute: typeof ProgramsImport
+      fullPath: '/workouts'
+      preLoaderRoute: typeof programsWorkoutsImport
+      parentRoute: typeof programsImport
     }
-    '/programs/workouts/$workoutId': {
-      id: '/programs/workouts/$workoutId'
-      path: '/$workoutId'
-      fullPath: '/programs/workouts/$workoutId'
-      preLoaderRoute: typeof ProgramsWorkoutsWorkoutIdImport
-      parentRoute: typeof ProgramsWorkoutsImport
+    '/workouts/$workoutId': {
+      id: '/workouts/$workoutId'
+      path: '/workouts/$workoutId'
+      fullPath: '/workouts/$workoutId'
+      preLoaderRoute: typeof WorkoutsWorkoutIdImport
+      parentRoute: typeof rootRoute
     }
   }
 }
 
 // Create and export the route tree
 
-interface ProgramsWorkoutsRouteChildren {
-  ProgramsWorkoutsWorkoutIdRoute: typeof ProgramsWorkoutsWorkoutIdRoute
+interface programsRouteChildren {
+  programsComplexRoute: typeof programsComplexRoute
+  programsExercisesRoute: typeof programsExercisesRoute
+  programsWorkoutsRoute: typeof programsWorkoutsRoute
 }
 
-const ProgramsWorkoutsRouteChildren: ProgramsWorkoutsRouteChildren = {
-  ProgramsWorkoutsWorkoutIdRoute: ProgramsWorkoutsWorkoutIdRoute,
+const programsRouteChildren: programsRouteChildren = {
+  programsComplexRoute: programsComplexRoute,
+  programsExercisesRoute: programsExercisesRoute,
+  programsWorkoutsRoute: programsWorkoutsRoute,
 }
 
-const ProgramsWorkoutsRouteWithChildren =
-  ProgramsWorkoutsRoute._addFileChildren(ProgramsWorkoutsRouteChildren)
-
-interface ProgramsRouteChildren {
-  ProgramsComplexRoute: typeof ProgramsComplexRoute
-  ProgramsExercisesRoute: typeof ProgramsExercisesRoute
-  ProgramsWorkoutsRoute: typeof ProgramsWorkoutsRouteWithChildren
-}
-
-const ProgramsRouteChildren: ProgramsRouteChildren = {
-  ProgramsComplexRoute: ProgramsComplexRoute,
-  ProgramsExercisesRoute: ProgramsExercisesRoute,
-  ProgramsWorkoutsRoute: ProgramsWorkoutsRouteWithChildren,
-}
-
-const ProgramsRouteWithChildren = ProgramsRoute._addFileChildren(
-  ProgramsRouteChildren,
+const programsRouteWithChildren = programsRoute._addFileChildren(
+  programsRouteChildren,
 )
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexLazyRoute
-  '': typeof programsRoute
+  '': typeof programsRouteWithChildren
   '/athletes': typeof AthletesRoute
   '/planning': typeof PlanningRoute
-  '/programs': typeof ProgramsRouteWithChildren
   '/about': typeof AboutLazyRoute
-  '/programs/complex': typeof ProgramsComplexRoute
-  '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
-  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
+  '/complex': typeof programsComplexRoute
+  '/exercises': typeof programsExercisesRoute
+  '/workouts': typeof programsWorkoutsRoute
+  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexLazyRoute
-  '': typeof programsRoute
+  '': typeof programsRouteWithChildren
   '/athletes': typeof AthletesRoute
   '/planning': typeof PlanningRoute
-  '/programs': typeof ProgramsRouteWithChildren
   '/about': typeof AboutLazyRoute
-  '/programs/complex': typeof ProgramsComplexRoute
-  '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
-  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
+  '/complex': typeof programsComplexRoute
+  '/exercises': typeof programsExercisesRoute
+  '/workouts': typeof programsWorkoutsRoute
+  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesById {
   __root__: typeof rootRoute
   '/': typeof IndexLazyRoute
-  '/__programs': typeof programsRoute
+  '/__programs': typeof programsRouteWithChildren
   '/athletes': typeof AthletesRoute
   '/planning': typeof PlanningRoute
-  '/programs': typeof ProgramsRouteWithChildren
   '/about': typeof AboutLazyRoute
-  '/programs/complex': typeof ProgramsComplexRoute
-  '/programs/exercises': typeof ProgramsExercisesRoute
-  '/programs/workouts': typeof ProgramsWorkoutsRouteWithChildren
-  '/programs/workouts/$workoutId': typeof ProgramsWorkoutsWorkoutIdRoute
+  '/__programs/complex': typeof programsComplexRoute
+  '/__programs/exercises': typeof programsExercisesRoute
+  '/__programs/workouts': typeof programsWorkoutsRoute
+  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
 }
 
 export interface FileRouteTypes {
@@ -241,55 +213,52 @@ export interface FileRouteTypes {
     | ''
     | '/athletes'
     | '/planning'
-    | '/programs'
     | '/about'
-    | '/programs/complex'
-    | '/programs/exercises'
-    | '/programs/workouts'
-    | '/programs/workouts/$workoutId'
+    | '/complex'
+    | '/exercises'
+    | '/workouts'
+    | '/workouts/$workoutId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | ''
     | '/athletes'
     | '/planning'
-    | '/programs'
     | '/about'
-    | '/programs/complex'
-    | '/programs/exercises'
-    | '/programs/workouts'
-    | '/programs/workouts/$workoutId'
+    | '/complex'
+    | '/exercises'
+    | '/workouts'
+    | '/workouts/$workoutId'
   id:
     | '__root__'
     | '/'
     | '/__programs'
     | '/athletes'
     | '/planning'
-    | '/programs'
     | '/about'
-    | '/programs/complex'
-    | '/programs/exercises'
-    | '/programs/workouts'
-    | '/programs/workouts/$workoutId'
+    | '/__programs/complex'
+    | '/__programs/exercises'
+    | '/__programs/workouts'
+    | '/workouts/$workoutId'
   fileRoutesById: FileRoutesById
 }
 
 export interface RootRouteChildren {
   IndexLazyRoute: typeof IndexLazyRoute
-  programsRoute: typeof programsRoute
+  programsRoute: typeof programsRouteWithChildren
   AthletesRoute: typeof AthletesRoute
   PlanningRoute: typeof PlanningRoute
-  ProgramsRoute: typeof ProgramsRouteWithChildren
   AboutLazyRoute: typeof AboutLazyRoute
+  WorkoutsWorkoutIdRoute: typeof WorkoutsWorkoutIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexLazyRoute: IndexLazyRoute,
-  programsRoute: programsRoute,
+  programsRoute: programsRouteWithChildren,
   AthletesRoute: AthletesRoute,
   PlanningRoute: PlanningRoute,
-  ProgramsRoute: ProgramsRouteWithChildren,
   AboutLazyRoute: AboutLazyRoute,
+  WorkoutsWorkoutIdRoute: WorkoutsWorkoutIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -306,15 +275,20 @@ export const routeTree = rootRoute
         "/__programs",
         "/athletes",
         "/planning",
-        "/programs",
-        "/about"
+        "/about",
+        "/workouts/$workoutId"
       ]
     },
     "/": {
       "filePath": "index.lazy.tsx"
     },
     "/__programs": {
-      "filePath": "__programs.tsx"
+      "filePath": "__programs.tsx",
+      "children": [
+        "/__programs/complex",
+        "/__programs/exercises",
+        "/__programs/workouts"
+      ]
     },
     "/athletes": {
       "filePath": "athletes.tsx"
@@ -322,35 +296,23 @@ export const routeTree = rootRoute
     "/planning": {
       "filePath": "planning.tsx"
     },
-    "/programs": {
-      "filePath": "programs.tsx",
-      "children": [
-        "/programs/complex",
-        "/programs/exercises",
-        "/programs/workouts"
-      ]
-    },
     "/about": {
       "filePath": "about.lazy.tsx"
     },
-    "/programs/complex": {
-      "filePath": "programs.complex.tsx",
-      "parent": "/programs"
+    "/__programs/complex": {
+      "filePath": "__programs.complex.tsx",
+      "parent": "/__programs"
     },
-    "/programs/exercises": {
-      "filePath": "programs.exercises.tsx",
-      "parent": "/programs"
+    "/__programs/exercises": {
+      "filePath": "__programs.exercises.tsx",
+      "parent": "/__programs"
     },
-    "/programs/workouts": {
-      "filePath": "programs.workouts.tsx",
-      "parent": "/programs",
-      "children": [
-        "/programs/workouts/$workoutId"
-      ]
+    "/__programs/workouts": {
+      "filePath": "__programs.workouts.tsx",
+      "parent": "/__programs"
     },
-    "/programs/workouts/$workoutId": {
-      "filePath": "programs.workouts.$workoutId.tsx",
-      "parent": "/programs/workouts"
+    "/workouts/$workoutId": {
+      "filePath": "workouts.$workoutId.tsx"
     }
   }
 }

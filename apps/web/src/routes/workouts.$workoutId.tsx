@@ -1,57 +1,57 @@
-import { WorkoutEditor } from '@/features/workout/workout-editor';
-import { api } from '@/lib/api';
-import { cn } from '@/lib/utils';
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
-import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { ArrowLeft, Pencil, X } from 'lucide-react';
-import { useState } from 'react';
+import { WorkoutEditor } from '@/features/workout/workout-editor'
+import { api } from '@/lib/api'
+import { cn } from '@/lib/utils'
+import { Badge } from '@/shared/components/ui/badge'
+import { Button } from '@/shared/components/ui/button'
+import { Card, CardContent } from '@/shared/components/ui/card'
+import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas'
+import { useQuery } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { ArrowLeft, Pencil, X } from 'lucide-react'
+import { useState } from 'react'
 
-export const Route = createFileRoute('/programs/workouts/$workoutId')({
+export const Route = createFileRoute('/workouts/$workoutId')({
   component: WorkoutDetailPage,
   loader: ({ params }) => {
     return {
       workoutId: params.workoutId,
-    };
+    }
   },
-});
+})
 
 function WorkoutDetailPage() {
-  const { workoutId } = Route.useParams();
-  const navigate = Route.useNavigate();
-  const [isEditing, setIsEditing] = useState(false);
+  const { workoutId } = Route.useParams()
+  const navigate = Route.useNavigate()
+  const [isEditing, setIsEditing] = useState(false)
 
   const { data: workout, isLoading } = useQuery({
     queryKey: ['workout', workoutId],
     queryFn: async () => {
       const response = await api.workout.getWorkout({
         params: { id: workoutId },
-      });
+      })
       if (response.status !== 200)
-        throw new Error('Failed to load workout details');
-      return response.body;
+        throw new Error('Failed to load workout details')
+      return response.body
     },
-  });
+  })
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
         Chargement...
       </div>
-    );
+    )
   }
 
   if (!workout) {
-    return <div>Entrainement non trouvé</div>;
+    return <div>Entrainement non trouvé</div>
   }
 
   if (isEditing) {
     return (
       <WorkoutEditor workout={workout} onCancel={() => setIsEditing(false)} />
-    );
+    )
   }
 
   return (
@@ -62,7 +62,7 @@ function WorkoutDetailPage() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate({ to: '/programs/workouts' })}
+            onClick={() => navigate({ to: '/workouts' })}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -123,7 +123,7 @@ function WorkoutDetailPage() {
                       key={element.id}
                       className={cn(
                         'bg-muted/30 rounded-lg p-4 space-y-2',
-                        isEditing && 'relative group'
+                        isEditing && 'relative group',
                       )}
                       style={{
                         gridColumnStart: index % 2 === 0 ? 1 : 2,
@@ -240,5 +240,5 @@ function WorkoutDetailPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }
