@@ -44,13 +44,13 @@ function ExercisesPage() {
     enabled: !!selectedExercise,
   })
 
-  if (exercisesLoading) return <div>{t('common.loading')}</div>
-  if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
-
   const handleCreationSuccess = () => {
     setCreateExerciseModalOpen(false)
     queryClient.invalidateQueries({ queryKey: ['exercises'] })
   }
+
+  if (exercisesLoading) return <div>{t('common.loading')}</div>
+  if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
 
   return (
     <div className="relative flex-1">
