@@ -38,7 +38,7 @@ const items = [
   },
   {
     title: 'Programmation',
-    url: '/programs',
+    url: '/workouts',
     icon: LayoutDashboard,
   },
   {

@@ -1,54 +1,54 @@
-import { ExerciseDetail } from '@/features/exercises/exercise-detail';
-import { api } from '@/lib/api';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
-import { columns } from '../features/exercises/columns';
-import { DataTable } from '../features/exercises/data-table';
-import { DialogCreation } from '../features/exercises/dialog-creation';
-import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form';
-import { Button } from '../shared/components/ui/button';
-import { DetailsPanel } from '../shared/components/ui/details-panel';
+import { ExerciseDetail } from '@/features/exercises/exercise-detail'
+import { api } from '@/lib/api'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { columns } from '../features/exercises/columns'
+import { DataTable } from '../features/exercises/data-table'
+import { DialogCreation } from '../features/exercises/dialog-creation'
+import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form'
+import { Button } from '../shared/components/ui/button'
+import { DetailsPanel } from '../shared/components/ui/details-panel'
 
-export const Route = createFileRoute('/programs/exercises')({
+export const Route = createFileRoute('/__programs/exercises')({
   component: ExercisesPage,
-});
+})
 
 function ExercisesPage() {
-  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
-  const queryClient = useQueryClient();
+  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false)
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
+  const queryClient = useQueryClient()
 
   const { data: exercises, isLoading: exercisesLoading } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
-      const response = await api.exercise.getExercises();
-      if (response.status !== 200) throw new Error('Failed to load exercises');
-      return response.body;
+      const response = await api.exercise.getExercises()
+      if (response.status !== 200) throw new Error('Failed to load exercises')
+      return response.body
     },
-  });
+  })
 
   const { data: exerciseDetails } = useQuery({
     queryKey: ['exercise', selectedExercise],
     queryFn: async () => {
-      if (!selectedExercise) return null;
+      if (!selectedExercise) return null
       const response = await api.exercise.getExercise({
         params: { id: selectedExercise },
-      });
+      })
       if (response.status !== 200)
-        throw new Error('Failed to load exercise details');
-      return response.body;
+        throw new Error('Failed to load exercise details')
+      return response.body
     },
     enabled: !!selectedExercise,
-  });
+  })
 
-  if (exercisesLoading) return <div>Loading...</div>;
-  if (!exercises) return <div>No exercises found</div>;
+  if (exercisesLoading) return <div>Loading...</div>
+  if (!exercises) return <div>No exercises found</div>
 
   const handleCreationSuccess = () => {
-    setCreateExerciseModalOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['exercises'] });
-  };
+    setCreateExerciseModalOpen(false)
+    queryClient.invalidateQueries({ queryKey: ['exercises'] })
+  }
 
   return (
     <div className="relative flex-1">
@@ -99,5 +99,5 @@ function ExercisesPage() {
         />
       </DialogCreation>
     </div>
-  );
+  )
 }

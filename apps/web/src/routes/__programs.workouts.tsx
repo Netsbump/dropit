@@ -1,67 +1,67 @@
 //import { WorkoutCreationForm } from '@/features/workout/workout-creation-form';
-import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
-import { WorkoutFilters } from '@/features/workout/workout-filters';
-import { WorkoutGrid } from '@/features/workout/workout-grid';
-import { api } from '@/lib/api';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
-import { useState } from 'react';
-import { DialogCreation } from '../features/exercises/dialog-creation';
+import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper'
+import { WorkoutFilters } from '@/features/workout/workout-filters'
+import { WorkoutGrid } from '@/features/workout/workout-grid'
+import { api } from '@/lib/api'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router'
+import { useState } from 'react'
+import { DialogCreation } from '../features/exercises/dialog-creation'
 
-export const Route = createFileRoute('/programs/workouts')({
+export const Route = createFileRoute('/__programs/workouts')({
   component: WorkoutPage,
-});
+})
 
 function WorkoutPage() {
-  const [createWorkoutModalOpen, setCreateWorkoutModalOpen] = useState(false);
-  const [filter, setFilter] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
-  const queryClient = useQueryClient();
-  const navigate = Route.useNavigate();
-  const matches = useMatches();
+  const [createWorkoutModalOpen, setCreateWorkoutModalOpen] = useState(false)
+  const [filter, setFilter] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
+  const queryClient = useQueryClient()
+  const navigate = Route.useNavigate()
+  const matches = useMatches()
   const isWorkoutDetail = matches.some(
-    (match) => match.routeId === '/programs/workouts/$workoutId'
-  );
+    (match) => match.routeId === '/workouts/$workoutId',
+  )
 
   const { data: workouts, isLoading } = useQuery({
     queryKey: ['workouts'],
     queryFn: async () => {
-      const response = await api.workout.getWorkouts();
-      if (response.status !== 200) throw new Error('Failed to load workouts');
-      return response.body;
+      const response = await api.workout.getWorkouts()
+      if (response.status !== 200) throw new Error('Failed to load workouts')
+      return response.body
     },
-  });
+  })
 
   const { data: categories } = useQuery({
     queryKey: ['workoutCategories'],
     queryFn: async () => {
-      const response = await api.workoutCategory.getWorkoutCategories();
-      if (response.status !== 200) throw new Error('Failed to load categories');
-      return response.body;
+      const response = await api.workoutCategory.getWorkoutCategories()
+      if (response.status !== 200) throw new Error('Failed to load categories')
+      return response.body
     },
-  });
+  })
 
   const filteredWorkouts = workouts?.filter((workout) => {
     const matchesSearch = workout.title
       .toLowerCase()
-      .includes(filter.toLowerCase());
+      .includes(filter.toLowerCase())
     const matchesCategory =
-      categoryFilter === 'all' || workout.workoutCategory === categoryFilter;
-    return matchesSearch && matchesCategory;
-  });
+      categoryFilter === 'all' || workout.workoutCategory === categoryFilter
+    return matchesSearch && matchesCategory
+  })
 
   const handleCreationSuccess = () => {
-    setCreateWorkoutModalOpen(false);
-    queryClient.invalidateQueries({ queryKey: ['workouts'] });
-  };
+    setCreateWorkoutModalOpen(false)
+    queryClient.invalidateQueries({ queryKey: ['workouts'] })
+  }
 
   const handleWorkoutClick = (workoutId: string) => {
-    navigate({ to: `/programs/workouts/${workoutId}` });
-  };
+    navigate({ to: `/workouts/${workoutId}` })
+  }
 
   // Si on est sur un détail de workout, on affiche directement le contenu
   if (isWorkoutDetail) {
-    return <Outlet />;
+    return <Outlet />
   }
 
   // Sinon on affiche la grille des workouts
@@ -104,5 +104,5 @@ function WorkoutPage() {
         />
       </DialogCreation>
     </div>
-  );
+  )
 }

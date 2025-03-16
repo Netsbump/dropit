@@ -13,10 +13,10 @@ import { Link, useMatches } from '@tanstack/react-router';
 const routeNames: Record<string, string> = {
   '/': 'Tableau de bord',
   '/programs': 'Programmation',
-  '/programs/workouts': 'Entrainements',
-  '/programs/exercises': 'Exercices',
-  '/programs/complex': 'Combinés',
-  '/programs/workouts/$workoutId': 'Nom Entrainement',
+  '/workouts': 'Entrainements',
+  '/exercises': 'Exercices',
+  '/complex': 'Combinés',
+  '/workouts/$workoutId': 'Nom Entrainement',
   '/planning': 'Calendrier',
   '/athletes': 'Athlètes',
   '/about': 'Aide & Support',
@@ -27,7 +27,7 @@ export function Breadcrumbs() {
 
   // Trouver le match pour la route workoutId si elle existe
   const workoutMatch = matches.find(
-    (match) => match.routeId === '/programs/workouts/$workoutId'
+    (match) => match.routeId === '/workouts/$workoutId'
   );
 
   // Si on est sur une page de détail workout, récupérer les infos
@@ -47,7 +47,7 @@ export function Breadcrumbs() {
   const breadcrumbs = matches.map((match) => ({
     title:
       // Si c'est la route de détail workout et qu'on a les infos
-      match.routeId === '/programs/workouts/$workoutId' && workout
+      match.routeId === '/workouts/$workoutId' && workout
         ? workout.title // Utiliser le titre du workout
         : routeNames[match.pathname] || match.pathname,
     path: match.pathname,
