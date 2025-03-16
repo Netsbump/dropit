@@ -12,7 +12,6 @@ import { Link, useMatches } from '@tanstack/react-router';
 
 const routeNames: Record<string, string> = {
   '/': 'Tableau de bord',
-  '/programs': 'Programmation',
   '/workouts': 'Entrainements',
   '/exercises': 'Exercices',
   '/complex': 'Combinés',
@@ -44,14 +43,29 @@ export function Breadcrumbs() {
     enabled: !!workoutMatch?.params.workoutId,
   });
 
-  const breadcrumbs = matches.map((match) => ({
+  // Filtrer les doublons basés sur le pathname
+  const uniqueMatches = matches.filter((match, index, self) =>
+    index === self.findIndex((m) => m.pathname === match.pathname)
+  );
+
+  // Construire le breadcrumb
+  let breadcrumbs = uniqueMatches.map((match) => ({
     title:
-      // Si c'est la route de détail workout et qu'on a les infos
       match.routeId === '/workouts/$workoutId' && workout
-        ? workout.title // Utiliser le titre du workout
+        ? workout.title
         : routeNames[match.pathname] || match.pathname,
     path: match.pathname,
   }));
+
+  // Si on est sur un détail de workout, insérer l'étape "Entrainements"
+  if (workoutMatch) {
+    const dashboardCrumb = breadcrumbs[0]; // Garder "Tableau de bord"
+    breadcrumbs = [
+      dashboardCrumb,
+      { title: 'Entrainements', path: '/workouts' },
+      { title: workout?.title || 'Chargement...', path: workoutMatch.pathname },
+    ];
+  }
 
   return (
     <Breadcrumb>
