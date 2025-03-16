@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/ui/select';
 import { Separator } from '@/shared/components/ui/separator';
 import { ComplexCategoryDto } from '@dropit/schemas';
+import { useTranslation } from '@dropit/i18n';
 
 interface ComplexFiltersProps {
   onFilterChange: (value: string) => void;
@@ -25,11 +26,13 @@ export function ComplexFilters({
   categories = [],
   disabled,
 }: ComplexFiltersProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex justify-between items-center">
       <div className="flex items-center gap-4 py-4">
         <Input
-          placeholder="Filter les combinés..."
+          placeholder={t('complex.filters.search_placeholder')}
           onChange={(e) => onFilterChange(e.target.value)}
           className="max-w-sm"
           disabled={disabled}
@@ -38,10 +41,10 @@ export function ComplexFilters({
       <div className="flex items-center gap-2">
         <Select onValueChange={onCategoryChange} defaultValue="all">
           <SelectTrigger className="w-fit bg-card font-medium">
-            <SelectValue placeholder="Toutes les catégories" />
+            <SelectValue placeholder={t('complex.filters.all_categories')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
+            <SelectItem value="all">{t('complex.filters.all_categories')}</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -50,7 +53,7 @@ export function ComplexFilters({
           </SelectContent>
         </Select>
         <Separator orientation="vertical" className="h-6" />
-        <Button onClick={onCreateClick}>Ajouter un combiné</Button>
+        <Button onClick={onCreateClick}>{t('complex.filters.create_complex')}</Button>
       </div>
     </div>
   );

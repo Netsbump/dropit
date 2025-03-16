@@ -18,6 +18,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/shared/components/ui/sidebar';
+import { useTranslation } from '@dropit/i18n';
 import { Link } from '@tanstack/react-router';
 import {
   BicepsFlexed,
@@ -30,35 +31,37 @@ import {
   User,
 } from 'lucide-react';
 
-const items = [
-  {
-    title: 'Tableau de bord',
-    url: '/',
-    icon: Home,
-  },
-  {
-    title: 'Programmation',
-    url: '/workouts',
-    icon: LayoutDashboard,
-  },
-  {
-    title: 'Calendrier',
-    url: '/planning',
-    icon: Calendar,
-  },
-  {
-    title: 'Athlètes',
-    url: '/athletes',
-    icon: GraduationCap,
-  },
-  {
-    title: 'Aide & Support',
-    url: '/about',
-    icon: LifeBuoy,
-  },
-];
-
 export function AppSidebar() {
+  const { t } = useTranslation();
+
+  const items = [
+    {
+      title: t('sidebar.menu.dashboard'),
+      url: '/',
+      icon: Home,
+    },
+    {
+      title: t('sidebar.menu.programming'),
+      url: '/workouts',
+      icon: LayoutDashboard,
+    },
+    {
+      title: t('sidebar.menu.calendar'),
+      url: '/planning',
+      icon: Calendar,
+    },
+    {
+      title: t('sidebar.menu.athletes'),
+      url: '/athletes',
+      icon: GraduationCap,
+    },
+    {
+      title: t('sidebar.menu.help'),
+      url: '/about',
+      icon: LifeBuoy,
+    },
+  ];
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -75,7 +78,7 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Application</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('sidebar.sections.application')}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -108,17 +111,17 @@ export function AppSidebar() {
                 className="w-[--radix-popper-anchor-width]"
               >
                 <DropdownMenuItem>
-                  <span>Profil</span>
+                  <span>{t('sidebar.user.profile')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span>Réglages</span>
+                  <span>{t('sidebar.user.settings')}</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span>Aide</span>
+                  <span>{t('sidebar.user.help')}</span>
                 </DropdownMenuItem>
                 <Separator />
                 <DropdownMenuItem>
-                  <span>Déconnexion</span>
+                  <span>{t('sidebar.user.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
