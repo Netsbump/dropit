@@ -9,6 +9,7 @@ import {
 } from '@/shared/components/ui/select';
 import { Separator } from '@/shared/components/ui/separator';
 import { WorkoutCategoryDto } from '@dropit/schemas';
+import { useTranslation } from '@dropit/i18n';
 
 interface WorkoutFiltersProps {
   onFilterChange: (value: string) => void;
@@ -25,10 +26,12 @@ export function WorkoutFilters({
   categories = [],
   disabled,
 }: WorkoutFiltersProps) {
+  const { t } = useTranslation();
+
   return (
     <div className="flex justify-between items-center py-4">
       <Input
-        placeholder="Rechercher un entraînement..."
+        placeholder={t('workout.filters.search_placeholder')}
         onChange={(e) => onFilterChange(e.target.value)}
         className="max-w-xs"
         disabled={disabled}
@@ -36,10 +39,10 @@ export function WorkoutFilters({
       <div className="flex items-center gap-2">
         <Select onValueChange={onCategoryChange} defaultValue="all">
           <SelectTrigger className="w-fit bg-card font-medium">
-            <SelectValue placeholder="Toutes les catégories" />
+            <SelectValue placeholder={t('workout.filters.all_categories')} />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
+            <SelectItem value="all">{t('workout.filters.all_categories')}</SelectItem>
             {categories?.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.name}
@@ -49,7 +52,7 @@ export function WorkoutFilters({
         </Select>
         <Separator orientation="vertical" className="h-6" />
         <Button onClick={onCreateClick} disabled={disabled}>
-          Créer un entraînement
+          {t('workout.filters.create_workout')}
         </Button>
       </div>
     </div>

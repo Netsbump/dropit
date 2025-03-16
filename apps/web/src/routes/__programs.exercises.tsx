@@ -1,5 +1,6 @@
 import { ExerciseDetail } from '@/features/exercises/exercise-detail'
 import { api } from '@/lib/api'
+import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -15,6 +16,7 @@ export const Route = createFileRoute('/__programs/exercises')({
 })
 
 function ExercisesPage() {
+  const { t } = useTranslation();
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false)
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
   const queryClient = useQueryClient()
@@ -42,8 +44,8 @@ function ExercisesPage() {
     enabled: !!selectedExercise,
   })
 
-  if (exercisesLoading) return <div>Loading...</div>
-  if (!exercises) return <div>No exercises found</div>
+  if (exercisesLoading) return <div>{t('common.loading')}</div>
+  if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
 
   const handleCreationSuccess = () => {
     setCreateExerciseModalOpen(false)
@@ -59,14 +61,14 @@ function ExercisesPage() {
       >
         {exercisesLoading ? (
           <div className="flex items-center justify-center h-32">
-            Loading...
+            {t('common.loading')}
           </div>
         ) : !exercises?.length ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>Aucun exercice trouvé</p>
-            <p className="text-sm">Commencez par en créer un !</p>
+            <p>{t('exercise.filters.no_results')}</p>
+            <p className="text-sm">{t('common.start_create')}</p>
             <Button onClick={() => setCreateExerciseModalOpen(true)}>
-              Créer un exercice
+              {t('exercise.filters.create_exercise')}
             </Button>
           </div>
         ) : (
@@ -82,7 +84,7 @@ function ExercisesPage() {
       <DetailsPanel
         open={!!selectedExercise}
         onClose={() => setSelectedExercise(null)}
-        title="Détails de l'exercice"
+        title={t('exercise.details.title')}
       >
         {exerciseDetails && <ExerciseDetail exercise={exerciseDetails} />}
       </DetailsPanel>
@@ -90,8 +92,8 @@ function ExercisesPage() {
       <DialogCreation
         open={createExerciseModalOpen}
         onOpenChange={setCreateExerciseModalOpen}
-        title="Créer un exercice"
-        description="Ajoutez un nouvel exercice à votre catalogue."
+        title={t('exercise.creation.title')}
+        description={t('exercise.creation.description')}
       >
         <ExerciseCreationForm
           onSuccess={handleCreationSuccess}

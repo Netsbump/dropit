@@ -1,10 +1,13 @@
 import { Link, Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
+import { useTranslation } from '@dropit/i18n';
 import { HeaderPage } from '../shared/components/layout/header-page';
+
 export const Route = createFileRoute('/__programs')({
   component: ProgramsLayout,
 });
 
 function ProgramsLayout() {
+  const { t } = useTranslation();
   const matches = useMatches();
 
   // Si c'est pas un complex ou exercice, on affiche les workouts par défaut
@@ -15,7 +18,10 @@ function ProgramsLayout() {
 
   return (
     <>
-      <HeaderPage title="Programmation" description="Retrouvez et gérez tous vos entrainements, combinés et exercices ici" />
+      <HeaderPage 
+        title="programs.title"
+        description="programs.description"
+      />
       <div className="border-b">
         <nav className="flex gap-8">
           <Link
@@ -26,7 +32,7 @@ function ProgramsLayout() {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Entrainements
+            {t('programs.tabs.workouts')}
           </Link>
           <Link
             to="/complex"
@@ -36,7 +42,7 @@ function ProgramsLayout() {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Combinés
+            {t('programs.tabs.complex')}
           </Link>
           <Link
             to="/exercises"
@@ -46,7 +52,7 @@ function ProgramsLayout() {
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            Exercices
+            {t('programs.tabs.exercises')}
           </Link>
         </nav>
       </div>

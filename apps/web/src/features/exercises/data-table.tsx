@@ -15,6 +15,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/table';
+import { useTranslation } from '@dropit/i18n';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -43,6 +44,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   onDialogCreation,
   onRowClick,
 }: DataTableProps<TData, TValue>) {
+  const { t } = useTranslation();
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -71,7 +73,7 @@ export function DataTable<TData extends { id: string }, TValue>({
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder="Filter exercices..."
+            placeholder={t('exercise.filters.search_placeholder')}
             value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
             onChange={(event) =>
               table.getColumn('name')?.setFilterValue(event.target.value)
@@ -83,7 +85,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto bg-card">
-                Columns
+                {t('exercise.table.columns')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -108,7 +110,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           </DropdownMenu>
           <Separator orientation="vertical" className="h-6" />
           <Button onClick={() => onDialogCreation(true)}>
-            Ajouter un exercice
+            {t('exercise.filters.create_exercise')}
           </Button>
         </div>
       </div>
@@ -157,7 +159,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  Aucun résultat.
+                  {t('exercise.table.no_results')}
                 </TableCell>
               </TableRow>
             )}
@@ -166,8 +168,10 @@ export function DataTable<TData extends { id: string }, TValue>({
       </div>
       <div className="flex justify-between items-center">
         <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} sur{' '}
-          {table.getFilteredRowModel().rows.length} colonne(s) sectectionnée.
+          {t('exercise.table.selected_rows', {
+            count: table.getFilteredSelectedRowModel().rows.length,
+            total: table.getFilteredRowModel().rows.length
+          })}
         </div>
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button

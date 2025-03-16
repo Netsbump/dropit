@@ -7,6 +7,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router'
 import { useState } from 'react'
 import { DialogCreation } from '../features/exercises/dialog-creation'
+import { useTranslation } from '@dropit/i18n'
 
 export const Route = createFileRoute('/__programs/workouts')({
   component: WorkoutPage,
@@ -22,6 +23,7 @@ function WorkoutPage() {
   const isWorkoutDetail = matches.some(
     (match) => match.routeId === '/workouts/$workoutId',
   )
+  const { t } = useTranslation();
 
   const { data: workouts, isLoading } = useQuery({
     queryKey: ['workouts'],
@@ -77,12 +79,12 @@ function WorkoutPage() {
 
       {isLoading ? (
         <div className="flex items-center justify-center h-32">
-          Chargement...
+          {t('common.loading')}
         </div>
       ) : !workouts?.length ? (
         <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-          <p>Aucun entraînement trouvé</p>
-          <p className="text-sm">Commencez par en créer un !</p>
+          <p>{t('workout.filters.no_results')}</p>
+          <p className="text-sm">{t('common.start_create')}</p>
         </div>
       ) : (
         <WorkoutGrid
@@ -94,8 +96,8 @@ function WorkoutPage() {
       <DialogCreation
         open={createWorkoutModalOpen}
         onOpenChange={setCreateWorkoutModalOpen}
-        title="Créer un entraînement"
-        description="Ajoutez un nouveau entraînement à votre catalogue."
+        title={t('workout.creation.title')}
+        description={t('workout.creation.description')}
         maxWidth="xl"
       >
         <WorkoutCreationStepper

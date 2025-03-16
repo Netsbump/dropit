@@ -1,0 +1,104 @@
+{
+  "welcome": "Welcome to Dropit",
+  "common": {
+    "loading": "Loading...",
+    "start_create": "Start by creating one!",
+    "error": {
+      "generic": "An error occurred",
+      "not_found": "Not found"
+    },
+    "breadcrumb": {
+      "more": "More",
+      "aria_label": "breadcrumb"
+    }
+  },
+  "routes": {
+    "/": "Dashboard",
+    "/workouts": "Workouts",
+    "/exercises": "Exercises",
+    "/complex": "Complex",
+    "/workouts/$workoutId": "Workout Name",
+    "/planning": "Calendar",
+    "/athletes": "Athletes",
+    "/about": "Help & Support"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout"
+  },
+  "sidebar": {
+    "menu": {
+      "dashboard": "Dashboard",
+      "programming": "Programming",
+      "calendar": "Calendar",
+      "athletes": "Athletes",
+      "help": "Help & Support"
+    },
+    "user": {
+      "profile": "Profile",
+      "settings": "Settings",
+      "help": "Help",
+      "logout": "Logout"
+    },
+    "sections": {
+      "application": "Application"
+    }
+  },
+  "programs": {
+    "title": "Programming",
+    "description": "Find and manage all your workouts, complexes and exercises here",
+    "tabs": {
+      "workouts": "Workouts",
+      "complex": "Complex",
+      "exercises": "Exercises"
+    }
+  },
+  "workout": {
+    "filters": {
+      "search_placeholder": "Search for a workout...",
+      "all_categories": "All categories",
+      "create_workout": "Create workout",
+      "no_results": "No workout found"
+    },
+    "creation": {
+      "title": "Create workout",
+      "description": "Add a new workout to your catalog."
+    }
+  },
+  "complex": {
+    "filters": {
+      "search_placeholder": "Search for a complex...",
+      "all_categories": "All categories",
+      "create_complex": "Create complex",
+      "no_results": "No complex found"
+    },
+    "details": {
+      "title": "Complex details"
+    },
+    "creation": {
+      "title": "Create complex",
+      "description": "Add a new complex to your catalog."
+    }
+  },
+  "exercise": {
+    "filters": {
+      "search_placeholder": "Search for an exercise...",
+      "all_categories": "All categories",
+      "create_exercise": "Create exercise",
+      "no_results": "No exercise found"
+    },
+    "details": {
+      "title": "Exercise details"
+    },
+    "creation": {
+      "title": "Create exercise",
+      "description": "Add a new exercise to your catalog."
+    },
+    "table": {
+      "no_results": "No results.",
+      "columns": "Columns",
+      "selected_rows": "{{count}} of {{total}} column(s) selected."
+    }
+  }
+} 

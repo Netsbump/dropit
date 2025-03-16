@@ -7,21 +7,12 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from '@/shared/components/ui/breadcrumb';
+import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Link, useMatches } from '@tanstack/react-router';
 
-const routeNames: Record<string, string> = {
-  '/': 'Tableau de bord',
-  '/workouts': 'Entrainements',
-  '/exercises': 'Exercices',
-  '/complex': 'Combinés',
-  '/workouts/$workoutId': 'Nom Entrainement',
-  '/planning': 'Calendrier',
-  '/athletes': 'Athlètes',
-  '/about': 'Aide & Support',
-};
-
 export function Breadcrumbs() {
+  const { t } = useTranslation();
   const matches = useMatches();
 
   // Trouver le match pour la route workoutId si elle existe
@@ -53,7 +44,7 @@ export function Breadcrumbs() {
     title:
       match.routeId === '/workouts/$workoutId' && workout
         ? workout.title
-        : routeNames[match.pathname] || match.pathname,
+        : t(`routes.${match.pathname}`),
     path: match.pathname,
   }));
 
@@ -62,8 +53,8 @@ export function Breadcrumbs() {
     const dashboardCrumb = breadcrumbs[0]; // Garder "Tableau de bord"
     breadcrumbs = [
       dashboardCrumb,
-      { title: 'Entrainements', path: '/workouts' },
-      { title: workout?.title || 'Chargement...', path: workoutMatch.pathname },
+      { title: t('routes./workouts'), path: '/workouts' },
+      { title: workout?.title || t('common.loading'), path: workoutMatch.pathname },
     ];
   }
 

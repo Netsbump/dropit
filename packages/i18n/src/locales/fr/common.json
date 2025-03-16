@@ -1,0 +1,104 @@
+{
+  "welcome": "Bienvenue sur Dropit",
+  "common": {
+    "loading": "Chargement...",
+    "start_create": "Commencez par en créer un !",
+    "error": {
+      "generic": "Une erreur est survenue",
+      "not_found": "Non trouvé"
+    },
+    "breadcrumb": {
+      "more": "Plus",
+      "aria_label": "fil d'ariane"
+    }
+  },
+  "routes": {
+    "/": "Tableau de bord",
+    "/workouts": "Entrainements",
+    "/exercises": "Exercices",
+    "/complex": "Combinés",
+    "/workouts/$workoutId": "Nom Entrainement",
+    "/planning": "Calendrier",
+    "/athletes": "Athlètes",
+    "/about": "Aide & Support"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "register": "S'inscrire",
+    "logout": "Se déconnecter"
+  },
+  "sidebar": {
+    "menu": {
+      "dashboard": "Tableau de bord",
+      "programming": "Programmation",
+      "calendar": "Calendrier",
+      "athletes": "Athlètes",
+      "help": "Aide & Support"
+    },
+    "user": {
+      "profile": "Profil",
+      "settings": "Réglages",
+      "help": "Aide",
+      "logout": "Déconnexion"
+    },
+    "sections": {
+      "application": "Application"
+    }
+  },
+  "programs": {
+    "title": "Programmation",
+    "description": "Retrouvez et gérez tous vos entrainements, combinés et exercices ici",
+    "tabs": {
+      "workouts": "Entrainements",
+      "complex": "Combinés",
+      "exercises": "Exercices"
+    }
+  },
+  "workout": {
+    "filters": {
+      "search_placeholder": "Rechercher un entraînement...",
+      "all_categories": "Toutes les catégories",
+      "create_workout": "Créer un entraînement",
+      "no_results": "Aucun entraînement trouvé"
+    },
+    "creation": {
+      "title": "Créer un entraînement",
+      "description": "Ajoutez un nouvel entraînement à votre catalogue."
+    }
+  },
+  "complex": {
+    "filters": {
+      "search_placeholder": "Rechercher un combiné...",
+      "all_categories": "Toutes les catégories",
+      "create_complex": "Créer un combiné",
+      "no_results": "Aucun combiné trouvé"
+    },
+    "details": {
+      "title": "Détails du combiné"
+    },
+    "creation": {
+      "title": "Créer un combiné",
+      "description": "Ajoutez un nouveau combiné à votre catalogue."
+    }
+  },
+  "exercise": {
+    "filters": {
+      "search_placeholder": "Rechercher un exercice...",
+      "all_categories": "Toutes les catégories",
+      "create_exercise": "Créer un exercice",
+      "no_results": "Aucun exercice trouvé"
+    },
+    "details": {
+      "title": "Détails de l'exercice"
+    },
+    "creation": {
+      "title": "Créer un exercice",
+      "description": "Ajoutez un nouvel exercice à votre catalogue."
+    },
+    "table": {
+      "no_results": "Aucun résultat.",
+      "columns": "Colonnes",
+      "selected_rows": "{{count}} sur {{total}} colonne(s) sélectionnée(s)."
+    }
+  }
+} 

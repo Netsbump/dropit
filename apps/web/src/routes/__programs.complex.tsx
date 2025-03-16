@@ -1,5 +1,6 @@
 import { api } from '@/lib/api'
 import { DetailsPanel } from '@/shared/components/ui/details-panel'
+import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState } from 'react'
@@ -14,6 +15,7 @@ export const Route = createFileRoute('/__programs/complex')({
 })
 
 function ComplexPage() {
+  const { t } = useTranslation();
   const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false)
   const [filter, setFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
@@ -83,12 +85,12 @@ function ComplexPage() {
 
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
-            Loading...
+            {t('common.loading')}
           </div>
         ) : !complexes?.length ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>Aucun combiné trouvé</p>
-            <p className="text-sm">Commencez par en créer un !</p>
+            <p>{t('complex.filters.no_results')}</p>
+            <p className="text-sm">{t('common.start_create')}</p>
           </div>
         ) : (
           <ComplexGrid
@@ -101,7 +103,7 @@ function ComplexPage() {
       <DetailsPanel
         open={!!selectedComplex}
         onClose={() => setSelectedComplex(null)}
-        title="Détails du combiné"
+        title={t('complex.details.title')}
       >
         {complexDetails && <ComplexDetail complex={complexDetails} />}
       </DetailsPanel>
@@ -109,8 +111,8 @@ function ComplexPage() {
       <DialogCreation
         open={createComplexModalOpen}
         onOpenChange={setCreateComplexModalOpen}
-        title="Créer un combiné"
-        description="Ajoutez un nouveau combiné à votre catalogue."
+        title={t('complex.creation.title')}
+        description={t('complex.creation.description')}
       >
         <ComplexCreationForm
           onSuccess={handleCreationSuccess}
