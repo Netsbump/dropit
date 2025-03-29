@@ -1,119 +1,43 @@
 import { AthleteDto, CreateAthlete, UpdateAthlete } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../entities/athlete.entity';
-import { Club } from '../../entities/club.entity';
-import { User } from '../../entities/user.entity';
+import { AthleteRepository } from './athlete.repository';
+import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
+import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
+import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
+import { GetAthletesUseCase } from './use-cases/get-athletes.use-case';
+import { UpdateAthleteUseCase } from './use-cases/update-athlete.use-case';
 
+// athlete.service.ts
 @Injectable()
 export class AthleteService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly athleteRepository: AthleteRepository,
+    private readonly em: EntityManager
+  ) {}
 
   async getAthletes(): Promise<AthleteDto[]> {
-    const athletes = await this.em.find(Athlete, {});
-    return athletes.map((athlete) => this.mapToDto(athlete));
+    const useCase = new GetAthletesUseCase(this.athleteRepository);
+    return await useCase.execute();
   }
 
   async getAthlete(id: string): Promise<AthleteDto> {
-    const athlete = await this.em.findOne(Athlete, { id });
-    if (!athlete) {
-      throw new NotFoundException('Athlete not found');
-    }
-    return this.mapToDto(athlete);
+    const useCase = new GetAthleteUseCase(this.athleteRepository);
+    return await useCase.execute(id);
   }
 
   async createAthlete(data: CreateAthlete): Promise<AthleteDto> {
-    const athlete = new Athlete();
-    athlete.firstName = data.firstName;
-    athlete.lastName = data.lastName;
-    athlete.birthday = new Date(data.birthday);
-
-    if (data.country) {
-      athlete.country = data.country;
-    }
-
-    if (data.clubId) {
-      const club = await this.em.findOne(Club, { id: data.clubId });
-      if (club) {
-        athlete.club = club;
-      }
-    }
-
-    if (data.userId) {
-      const user = await this.em.findOne(User, { id: data.userId });
-      if (user) {
-        athlete.user = user;
-      }
-    }
-
-    await this.em.persistAndFlush(athlete);
-    return this.mapToDto(athlete);
+    const useCase = new CreateAthleteUseCase(this.athleteRepository, this.em);
+    return await useCase.execute(data);
   }
 
   async updateAthlete(id: string, data: UpdateAthlete): Promise<AthleteDto> {
-    const athlete = await this.em.findOne(Athlete, { id });
-    if (!athlete) {
-      throw new NotFoundException('Athlete not found');
-    }
-
-    if (data.firstName !== undefined) {
-      athlete.firstName = data.firstName;
-    }
-
-    if (data.lastName !== undefined) {
-      athlete.lastName = data.lastName;
-    }
-
-    if (data.birthday !== undefined) {
-      athlete.birthday = new Date(data.birthday);
-    }
-
-    if (data.country !== undefined) {
-      athlete.country = data.country;
-    }
-
-    if (data.clubId !== undefined) {
-      if (data.clubId) {
-        const club = await this.em.findOne(Club, { id: data.clubId });
-        if (club) {
-          athlete.club = club;
-        }
-      }
-    }
-
-    if (data.userId !== undefined) {
-      if (data.userId) {
-        const user = await this.em.findOne(User, { id: data.userId });
-        if (user) {
-          athlete.user = user;
-        }
-      }
-    }
-
-    await this.em.persistAndFlush(athlete);
-    return this.mapToDto(athlete);
+    const useCase = new UpdateAthleteUseCase(this.athleteRepository, this.em);
+    return await useCase.execute(id, data);
   }
 
   async deleteAthlete(id: string): Promise<void> {
-    const athlete = await this.em.findOne(Athlete, { id });
-    if (!athlete) {
-      throw new NotFoundException('Athlete not found');
-    }
-
-    await this.em.removeAndFlush(athlete);
-  }
-
-  private mapToDto(athlete: Athlete): AthleteDto {
-    return {
-      id: athlete.id,
-      firstName: athlete.firstName,
-      lastName: athlete.lastName,
-      birthday: athlete.birthday,
-      country: athlete.country,
-      clubId: athlete.club?.id,
-      userId: athlete.user?.id,
-      createdAt: athlete.createdAt,
-      updatedAt: athlete.updatedAt,
-    };
+    const useCase = new DeleteAthleteUseCase(this.athleteRepository);
+    await useCase.execute(id);
   }
 }

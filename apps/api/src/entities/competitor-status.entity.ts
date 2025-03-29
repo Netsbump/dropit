@@ -29,7 +29,7 @@ export class CompetitorStatus {
   sexCategory!: SexCategory;
 
   @Property({ nullable: true })
-  weightCategory?: string;
+  weightCategory?: number;
 
   @Property()
   startDate: Date = new Date();

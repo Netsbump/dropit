@@ -1,20 +1,9 @@
-import { ColumnDef } from '@tanstack/react-table';
-import { useTranslation } from '@dropit/i18n';
 import { Checkbox } from '@/shared/components/ui/checkbox';
+import { useTranslation } from '@dropit/i18n';
+import { AthleteDto } from '@dropit/schemas';
+import { ColumnDef } from '@tanstack/react-table';
 
-export interface Athlete {
-  id: string;
-  firstName: string;
-  lastName: string;
-  birthday: string | Date;
-  createdAt: string | Date;
-  updatedAt: string | Date;
-  country?: string;
-  clubId?: string;
-  userId?: string;
-}
-
-export const columns: ColumnDef<Athlete>[] = [
+export const columns: ColumnDef<AthleteDto>[] = [
   {
     id: 'select',
     header: ({ table }) => (
@@ -52,6 +41,13 @@ export const columns: ColumnDef<Athlete>[] = [
     },
   },
   {
+    accessorKey: 'email',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.email');
+    },
+  },
+  {
     accessorKey: 'birthday',
     header: () => {
       const { t } = useTranslation(['athletes']);
@@ -69,23 +65,39 @@ export const columns: ColumnDef<Athlete>[] = [
     },
   },
   {
-    accessorKey: 'createdAt',
+    accessorKey: 'metrics.weight',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.created_at');
+      return t('athletes:columns.weight');
     },
     cell: ({ row }) => {
-      return new Date(row.getValue('createdAt')).toLocaleDateString();
+      const weight = row.getValue('metrics.weight');
+      return weight ? `${weight} kg` : '-';
     },
   },
   {
-    accessorKey: 'updatedAt',
+    accessorKey: 'competitorStatus.level',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.updated_at');
-    },
-    cell: ({ row }) => {
-      return new Date(row.getValue('updatedAt')).toLocaleDateString();
+      return t('athletes:columns.level');
     },
   },
-]; 
+  {
+    accessorKey: 'competitorStatus.sexCategory',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.sex_category');
+    },
+  },
+  {
+    accessorKey: 'competitorStatus.weightCategory',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.weight_category');
+    },
+    cell: ({ row }) => {
+      const weightCategory = row.getValue('competitorStatus.weightCategory');
+      return weightCategory ? `${weightCategory} kg` : '-';
+    },
+  },
+];

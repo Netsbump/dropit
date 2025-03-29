@@ -10,8 +10,9 @@ import {
 import { AthleteSession } from './athlete-session.entity';
 import { Club } from './club.entity';
 import { User } from './user.entity';
+import { AthleteRepository } from '../modules/athlete/athlete.repository';
 
-@Entity()
+@Entity({ repository: () => AthleteRepository })
 export class Athlete {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;

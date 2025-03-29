@@ -6,6 +6,13 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { Input } from '@/shared/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/shared/components/ui/select';
 import { Separator } from '@/shared/components/ui/separator';
 import {
   Table,
@@ -15,13 +22,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/shared/components/ui/table';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/shared/components/ui/select';
 import { useTranslation } from '@dropit/i18n';
 import {
   ColumnDef,
@@ -59,7 +59,7 @@ export function DataTable<TData extends { id: string }, TValue>({
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState('');
   const [pageSize, setPageSize] = useState(10);
-  
+
   const table = useReactTable({
     data,
     columns,
@@ -86,15 +86,25 @@ export function DataTable<TData extends { id: string }, TValue>({
       fuzzy: (row, _columnId, value) => {
         const firstName = String(row.getValue('firstName')).toLowerCase();
         const lastName = String(row.getValue('lastName')).toLowerCase();
+        const email = String(row.getValue('email')).toLowerCase();
         const searchValue = value.toLowerCase();
-        return firstName.includes(searchValue) || lastName.includes(searchValue);
+        return (
+          firstName.includes(searchValue) ||
+          lastName.includes(searchValue) ||
+          email.includes(searchValue)
+        );
       },
     },
     globalFilterFn: (row, _columnId, filterValue) => {
       const firstName = String(row.getValue('firstName')).toLowerCase();
       const lastName = String(row.getValue('lastName')).toLowerCase();
+      const email = String(row.getValue('email')).toLowerCase();
       const searchValue = filterValue.toLowerCase();
-      return firstName.includes(searchValue) || lastName.includes(searchValue);
+      return (
+        firstName.includes(searchValue) ||
+        lastName.includes(searchValue) ||
+        email.includes(searchValue)
+      );
     },
     onGlobalFilterChange: setGlobalFilter,
   });
@@ -200,7 +210,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           <div>
             {t('table.selected_rows', {
               count: table.getFilteredSelectedRowModel().rows.length,
-              total: table.getFilteredRowModel().rows.length
+              total: table.getFilteredRowModel().rows.length,
             })}
           </div>
           <div className="flex items-center gap-2">
@@ -243,4 +253,4 @@ export function DataTable<TData extends { id: string }, TValue>({
       </div>
     </div>
   );
-} 
+}

@@ -8,10 +8,13 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { AthleteSession } from '../../entities/athlete-session.entity';
 import { Athlete } from '../../entities/athlete.entity';
 import { Session } from '../../entities/session.entity';
-
+import { AthleteRepository } from '../athlete/athlete.repository';
 @Injectable()
 export class AthleteSessionService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly athleteRepository: AthleteRepository
+  ) {}
 
   async getAthleteSessions(): Promise<AthleteSessionDto[]> {
     const athleteSessions = await this.em.find(
@@ -68,9 +71,9 @@ export class AthleteSessionService {
   async createAthleteSession(
     athleteSession: CreateAthleteSession
   ): Promise<AthleteSessionDto> {
-    const athlete = await this.em.findOne(Athlete, {
-      id: athleteSession.athleteId,
-    });
+    const athlete = await this.athleteRepository.findById(
+      athleteSession.athleteId
+    );
     if (!athlete) {
       throw new NotFoundException(
         `Athlete with ID ${athleteSession.athleteId} not found`
