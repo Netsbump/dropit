@@ -12,6 +12,11 @@
       "aria_label": "fil d'ariane"
     }
   },
+  "table": {
+    "columns": "Colonnes",
+    "selected_rows": "{{count}} sur {{total}} ligne(s) sélectionnée(s)",
+    "rows_per_page": "Lignes par page"
+  },
   "routes": {
     "/": "Tableau de bord",
     "/workouts": "Entrainements",
@@ -98,7 +103,7 @@
     "table": {
       "no_results": "Aucun résultat.",
       "columns": "Colonnes",
-      "selected_rows": "{{count}} sur {{total}} colonne(s) sélectionnée(s)."
+      "selected_rows": "{{count}} sur {{total}} ligne(s) sélectionnée(s)"
     }
   },
   "athletes": {

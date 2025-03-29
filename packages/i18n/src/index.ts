@@ -4,14 +4,18 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 
 import en from './locales/en/common.json';
 import fr from './locales/fr/common.json';
+import enAthletes from './locales/en/athletes.json';
+import frAthletes from './locales/fr/athletes.json';
 
 export const defaultNS = 'common';
 export const resources = {
   en: {
     common: en,
+    athletes: enAthletes,
   },
   fr: {
     common: fr,
+    athletes: frAthletes,
   },
 } as const;
 

@@ -1,0 +1,32 @@
+{
+  "title": "Athletes",
+  "description": "Manage your athletes",
+  "filters": {
+    "no_results": "No athletes found",
+    "search_placeholder": "Search an athlete..."
+  },
+  "columns": {
+    "first_name": "First name",
+    "last_name": "Last name",
+    "birthday": "Birthday",
+    "country": "Country",
+    "created_at": "Created at",
+    "updated_at": "Updated at"
+  },
+  "form": {
+    "first_name": "First name",
+    "first_name_placeholder": "Enter first name",
+    "last_name": "Last name",
+    "last_name_placeholder": "Enter last name",
+    "birthday": "Birthday",
+    "country": "Country",
+    "country_placeholder": "Enter country"
+  },
+  "creation": {
+    "title": "Create an athlete",
+    "description": "Add a new athlete to your database"
+  },
+  "details": {
+    "title": "Athlete details"
+  }
+} 

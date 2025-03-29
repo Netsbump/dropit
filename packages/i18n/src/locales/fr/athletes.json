@@ -1,0 +1,32 @@
+{
+  "title": "Athlètes",
+  "description": "Gérez vos athlètes",
+  "filters": {
+    "no_results": "Aucun athlète trouvé",
+    "search_placeholder": "Rechercher un athlète..."
+  },
+  "columns": {
+    "first_name": "Prénom",
+    "last_name": "Nom",
+    "birthday": "Date de naissance",
+    "country": "Pays",
+    "created_at": "Créé le",
+    "updated_at": "Mis à jour le"
+  },
+  "form": {
+    "first_name": "Prénom",
+    "first_name_placeholder": "Entrez le prénom",
+    "last_name": "Nom",
+    "last_name_placeholder": "Entrez le nom",
+    "birthday": "Date de naissance",
+    "country": "Pays",
+    "country_placeholder": "Entrez le pays"
+  },
+  "creation": {
+    "title": "Créer un athlète",
+    "description": "Ajoutez un nouvel athlète à votre base de données"
+  },
+  "details": {
+    "title": "Détails de l'athlète"
+  }
+} 
