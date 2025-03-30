@@ -7,14 +7,8 @@ export class PersonalRecord {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => Exercise)
-  exercise!: Exercise;
-
   @Property({ type: 'float' })
   weight!: number;
-
-  @ManyToOne(() => Athlete)
-  athlete!: Athlete;
 
   @Property()
   date: Date = new Date();
@@ -24,4 +18,10 @@ export class PersonalRecord {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
+
+  @ManyToOne(() => Exercise)
+  exercise!: Exercise;
 }

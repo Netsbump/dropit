@@ -1,0 +1,35 @@
+{
+  "title": "Athlètes",
+  "description": "Gérez vos athlètes",
+  "filters": {
+    "no_results": "Aucun athlète trouvé",
+    "search_placeholder": "Rechercher un athlète..."
+  },
+  "columns": {
+    "name": "Nom",
+    "sex_category": "Sexe",
+    "weight_category": "Catégorie",
+    "weight": "Poids",
+    "snatch": "Arraché",
+    "clean_and_jerk": "Epaulé jetté",
+    "level": "Niveau",
+    "birthday": "Année",
+    "country": "Pays"
+  },
+  "form": {
+    "first_name": "Prénom",
+    "first_name_placeholder": "Entrez le prénom",
+    "last_name": "Nom",
+    "last_name_placeholder": "Entrez le nom",
+    "birthday": "Date de naissance",
+    "country": "Pays",
+    "country_placeholder": "Entrez le pays"
+  },
+  "creation": {
+    "title": "Créer un athlète",
+    "description": "Ajoutez un nouvel athlète à votre base de données"
+  },
+  "details": {
+    "title": "Détails de l'athlète"
+  }
+}

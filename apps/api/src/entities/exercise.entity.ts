@@ -8,24 +8,13 @@ import {
 } from '@mikro-orm/core';
 import { ExerciseCategory } from './exercise-category.entity';
 import { ExerciseComplex } from './exercise-complex.entity';
+import { PersonalRecord } from './personal-record.entity';
 import { Video } from './video.entity';
 
 @Entity()
 export class Exercise {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
-
-  @ManyToOne(() => ExerciseCategory)
-  exerciseCategory!: ExerciseCategory;
-
-  @ManyToOne(() => Video, { nullable: true })
-  video?: Video;
-
-  @OneToMany(
-    () => ExerciseComplex,
-    (exerciseComplex) => exerciseComplex.exercise
-  )
-  complexes = new Collection<ExerciseComplex>(this);
 
   @Property()
   name!: string;
@@ -44,4 +33,22 @@ export class Exercise {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => ExerciseCategory)
+  exerciseCategory!: ExerciseCategory;
+
+  @ManyToOne(() => Video, { nullable: true })
+  video?: Video;
+
+  @OneToMany(
+    () => ExerciseComplex,
+    (exerciseComplex) => exerciseComplex.exercise
+  )
+  complexes = new Collection<ExerciseComplex>(this);
+
+  @OneToMany(
+    () => PersonalRecord,
+    (personalRecord) => personalRecord.exercise
+  )
+  personalRecords = new Collection<PersonalRecord>(this);
 }

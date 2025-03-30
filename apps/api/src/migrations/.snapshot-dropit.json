@@ -411,16 +411,6 @@
           "nullable": true,
           "mappedType": "uuid"
         },
-        "end_date": {
-          "name": "end_date",
-          "type": "timestamptz",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz",
@@ -767,24 +757,6 @@
           "length": 255,
           "mappedType": "string"
         },
-        "user_id": {
-          "name": "user_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "uuid"
-        },
-        "club_id": {
-          "name": "club_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "created_at": {
           "name": "created_at",
           "type": "timestamptz",
@@ -804,6 +776,24 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "uuid"
+        },
+        "club_id": {
+          "name": "club_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         }
       },
       "name": "athlete",
@@ -872,15 +862,6 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "athlete_id": {
-          "name": "athlete_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "weight": {
           "name": "weight",
           "type": "int",
@@ -938,6 +919,15 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "athlete_id": {
+          "name": "athlete_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         }
       },
       "name": "physical_metric",
@@ -983,15 +973,6 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "athlete_id": {
-          "name": "athlete_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "level": {
           "name": "level",
           "type": "text",
@@ -1023,13 +1004,12 @@
         },
         "weight_category": {
           "name": "weight_category",
-          "type": "varchar(255)",
+          "type": "int",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": true,
-          "length": 255,
-          "mappedType": "string"
+          "mappedType": "integer"
         },
         "start_date": {
           "name": "start_date",
@@ -1070,6 +1050,15 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "athlete_id": {
+          "name": "athlete_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         }
       },
       "name": "competitor_status",
@@ -1291,24 +1280,6 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "exercise_category_id": {
-          "name": "exercise_category_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
-        "video_id": {
-          "name": "video_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": true,
-          "mappedType": "uuid"
-        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -1368,6 +1339,24 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "exercise_category_id": {
+          "name": "exercise_category_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "video_id": {
+          "name": "video_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "mappedType": "uuid"
         }
       },
       "name": "exercise",
@@ -1426,15 +1415,6 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "exercise_id": {
-          "name": "exercise_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
-        },
         "weight": {
           "name": "weight",
           "type": "real",
@@ -1443,15 +1423,6 @@
           "primary": false,
           "nullable": false,
           "mappedType": "float"
-        },
-        "athlete_id": {
-          "name": "athlete_id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "mappedType": "uuid"
         },
         "date": {
           "name": "date",
@@ -1482,6 +1453,24 @@
           "nullable": false,
           "length": 6,
           "mappedType": "datetime"
+        },
+        "athlete_id": {
+          "name": "athlete_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
+        },
+        "exercise_id": {
+          "name": "exercise_id",
+          "type": "uuid",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "mappedType": "uuid"
         }
       },
       "name": "personal_record",
@@ -1500,18 +1489,6 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "personal_record_exercise_id_foreign": {
-          "constraintName": "personal_record_exercise_id_foreign",
-          "columnNames": [
-            "exercise_id"
-          ],
-          "localTableName": "public.personal_record",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.exercise",
-          "updateRule": "cascade"
-        },
         "personal_record_athlete_id_foreign": {
           "constraintName": "personal_record_athlete_id_foreign",
           "columnNames": [
@@ -1522,6 +1499,18 @@
             "id"
           ],
           "referencedTableName": "public.athlete",
+          "updateRule": "cascade"
+        },
+        "personal_record_exercise_id_foreign": {
+          "constraintName": "personal_record_exercise_id_foreign",
+          "columnNames": [
+            "exercise_id"
+          ],
+          "localTableName": "public.personal_record",
+          "referencedColumnNames": [
+            "id"
+          ],
+          "referencedTableName": "public.exercise",
           "updateRule": "cascade"
         }
       },

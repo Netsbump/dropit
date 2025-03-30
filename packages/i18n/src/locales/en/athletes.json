@@ -1,0 +1,35 @@
+{
+  "title": "Athletes",
+  "description": "Manage your athletes",
+  "filters": {
+    "no_results": "No athletes found",
+    "search_placeholder": "Search an athlete..."
+  },
+  "columns": {
+    "name": "Name",
+    "country": "Country",
+    "sex_category": "Sex",
+    "weight_category": "Category",
+    "weight": "Weight",
+    "snatch": "Snatch",
+    "clean_and_jerk": "Clean and Jerk",
+    "level": "Level",
+    "birthday": "Year"
+  },
+  "form": {
+    "first_name": "First name",
+    "first_name_placeholder": "Enter first name",
+    "last_name": "Last name",
+    "last_name_placeholder": "Enter last name",
+    "birthday": "Birthday",
+    "country": "Country",
+    "country_placeholder": "Enter country"
+  },
+  "creation": {
+    "title": "Create an athlete",
+    "description": "Add a new athlete to your database"
+  },
+  "details": {
+    "title": "Athlete details"
+  }
+}

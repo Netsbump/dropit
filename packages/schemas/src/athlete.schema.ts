@@ -19,12 +19,28 @@ export const athleteSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.string().or(z.date()),
+  email: z.string().email(),
+  avatar: z.string().optional(),
+  birthday: z.date(),
   country: z.string().optional(),
-  clubId: z.string().optional(),
-  userId: z.string().optional(),
-  createdAt: z.string().or(z.date()),
-  updatedAt: z.string().or(z.date()),
+  metrics: z
+    .object({
+      weight: z.number().optional(),
+    })
+    .optional(),
+  personalRecords: z
+    .object({
+      snatch: z.number().optional(),
+      cleanAndJerk: z.number().optional(),
+    })
+    .optional(),
+  competitorStatus: z
+    .object({
+      level: z.string(),
+      sexCategory: z.string(),
+      weightCategory: z.number().optional(),
+    })
+    .optional(),
 });
 
 export type AthleteDto = z.infer<typeof athleteSchema>;

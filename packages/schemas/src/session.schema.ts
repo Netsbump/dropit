@@ -23,7 +23,15 @@ export type UpdateSession = z.infer<typeof updateSessionSchema>;
 export const sessionSchema = z.object({
   id: z.string(),
   workout: workoutSchema,
-  athletes: z.array(athleteSchema).optional(),
+  athletes: z
+    .array(
+      z.object({
+        id: z.string(),
+        firstName: z.string(),
+        lastName: z.string(),
+      })
+    )
+    .optional(),
   athleteSessions: z.array(athleteSessionSchema).optional(),
   scheduledDate: z.string().or(z.date()),
   completedDate: z.string().or(z.date()).optional(),
