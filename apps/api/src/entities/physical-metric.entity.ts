@@ -6,9 +6,6 @@ export class PhysicalMetric {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => Athlete)
-  athlete!: Athlete;
-
   @Property({ nullable: true })
   weight?: number;
 
@@ -26,4 +23,7 @@ export class PhysicalMetric {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
 }

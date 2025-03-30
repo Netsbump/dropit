@@ -19,9 +19,6 @@ export class CompetitorStatus {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => Athlete)
-  athlete!: Athlete;
-
   @Enum(() => CompetitorLevel)
   level!: CompetitorLevel;
 
@@ -42,4 +39,7 @@ export class CompetitorStatus {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => Athlete)
+  athlete!: Athlete;
 }

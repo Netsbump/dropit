@@ -23,20 +23,28 @@ export class GetAthleteUseCase {
       email: athlete.user?.email ?? '',
       avatar: athlete.user?.avatar?.url,
       country: athlete.country,
-      metrics: {
-        weight: athlete.pm?.weight,
-      },
-      personalRecords: {
-        snatch: athlete.pr?.find((pr) => pr.e.englishName === 'snatch')?.weight,
-        cleanAndJerk: athlete.pr?.find(
-          (pr) => pr.e.englishName === 'cleanAndJerk'
-        )?.weight,
-      },
-      competitorStatus: {
-        level: athlete.cs?.level ?? '',
-        sexCategory: athlete.cs?.sexCategory ?? '',
-        weightCategory: athlete.cs?.weightCategory,
-      },
+      metrics: athlete.pm
+        ? {
+            weight: athlete.pm.weight,
+          }
+        : undefined,
+      personalRecords: athlete.pr?.length
+        ? {
+            snatch: athlete.pr.find(
+              (pr) => pr.exercise.englishName === 'snatch'
+            )?.weight,
+            cleanAndJerk: athlete.pr.find(
+              (pr) => pr.exercise.englishName === 'cleanAndJerk'
+            )?.weight,
+          }
+        : undefined,
+      competitorStatus: athlete.cs
+        ? {
+            level: athlete.cs.level,
+            sexCategory: athlete.cs.sexCategory,
+            weightCategory: athlete.cs.weightCategory,
+          }
+        : undefined,
     };
   }
 }

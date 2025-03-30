@@ -7,10 +7,13 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { AthleteRepository } from '../modules/athlete/athlete.repository';
 import { AthleteSession } from './athlete-session.entity';
 import { Club } from './club.entity';
+import { CompetitorStatus } from './competitor-status.entity';
+import { PersonalRecord } from './personal-record.entity';
+import { PhysicalMetric } from './physical-metric.entity';
 import { User } from './user.entity';
-import { AthleteRepository } from '../modules/athlete/athlete.repository';
 
 @Entity({ repository: () => AthleteRepository })
 export class Athlete {
@@ -29,6 +32,12 @@ export class Athlete {
   @Property({ nullable: true })
   country?: string;
 
+  @Property({ onCreate: () => new Date() })
+  createdAt: Date = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
+
   @OneToOne(() => User, { owner: true, nullable: true })
   user?: User;
 
@@ -41,9 +50,21 @@ export class Athlete {
   )
   sessions = new Collection<AthleteSession>(this);
 
-  @Property({ onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @OneToMany(
+    () => PhysicalMetric,
+    (physicalMetric) => physicalMetric.athlete
+  )
+  physicalMetrics = new Collection<PhysicalMetric>(this);
 
-  @Property({ onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  @OneToMany(
+    () => PersonalRecord,
+    (personalRecord) => personalRecord.athlete
+  )
+  personalRecords = new Collection<PersonalRecord>(this);
+
+  @OneToMany(
+    () => CompetitorStatus,
+    (competitorStatus) => competitorStatus.athlete
+  )
+  competitorStatuses = new Collection<CompetitorStatus>(this);
 }

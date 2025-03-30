@@ -4,38 +4,11 @@ import {
   EntityRepository,
   QueryBuilder,
 } from '@mikro-orm/postgresql';
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
-
-interface PhysicalMetric {
-  weight?: number;
-}
-
-interface PersonalRecord {
-  weight: number;
-  e: {
-    englishName: string;
-  };
-}
-
-interface CompetitorStatus {
-  level: string;
-  sexCategory: string;
-  weightCategory?: number;
-}
-
-interface TransformedAthlete extends Athlete {
-  metrics?: { weight?: number };
-  personalRecords?: {
-    snatch?: number;
-    cleanAndJerk?: number;
-  };
-  competitorStatus?: {
-    level: string;
-    sexCategory: string;
-    weightCategory?: number;
-  };
-}
+import { CompetitorStatus } from '../../entities/competitor-status.entity';
+import { PersonalRecord } from '../../entities/personal-record.entity';
+import { PhysicalMetric } from '../../entities/physical-metric.entity';
 
 export interface AthleteWithDetails extends Athlete {
   pm?: PhysicalMetric;
@@ -43,155 +16,70 @@ export interface AthleteWithDetails extends Athlete {
   cs?: CompetitorStatus;
 }
 
+@Injectable()
 export class AthleteRepository extends EntityRepository<Athlete> {
-  constructor(protected readonly em: EntityManager) {
+  constructor(public readonly em: EntityManager) {
     super(em, Athlete);
   }
 
-  private async getAthleteDetailsQuery(
-    id: string
-  ): Promise<QueryBuilder<Athlete>> {
-    const qb = this.createQueryBuilder('a');
-    return qb
-      .select([
-        'a.id',
-        'a.firstName',
-        'a.lastName',
-        'a.birthday',
-        'a.country',
-        'pm.weight',
-        'pr.weight',
-        'e.englishName',
-        'cs.level',
-        'cs.sexCategory',
-        'cs.weightCategory',
-      ])
-      .leftJoinAndSelect('a.user', 'u')
-      .leftJoin('physical_metric', 'pm', { 'pm.athlete_id': 'a.id' })
-      .leftJoin('personal_record', 'pr', { 'pr.athlete_id': 'a.id' })
-      .leftJoin('exercise', 'e', { 'e.id': 'pr.exercise_id' })
-      .leftJoin('competitor_status', 'cs', { 'cs.athlete_id': 'a.id' })
-      .where({
-        'a.id': id,
-        'pm.endDate': null,
-        'cs.endDate': null,
-      })
-      .andWhere({
-        $or: [
-          { 'e.englishName': 'snatch' },
-          { 'e.englishName': 'cleanAndJerk' },
-        ],
-      });
+  private getBaseQuery(): QueryBuilder<AthleteWithDetails> {
+    const qb = this.em.createQueryBuilder(Athlete, 'a');
+
+    qb.select([
+      'a.id',
+      'a.firstName',
+      'a.lastName',
+      'a.birthday',
+      'a.country',
+      'u.email',
+      'pm.weight',
+      'pr.weight as pr_weight',
+      'e.name',
+      'e.englishName',
+      'e.shortName',
+      'cs.level',
+      'cs.sexCategory',
+      'cs.weightCategory',
+    ]);
+
+    // Si 'user' est vraiment une relation déclarée dans l'entité Athlete, ok :
+    qb.leftJoin('a.user', 'u');
+
+    // Pour les "tables brutes" non mappées comme relation, on fait :
+    qb.leftJoin('physicalMetrics', 'pm').andWhere(
+      'pm.end_date is null or pm.end_date is not null'
+    );
+    qb.leftJoin('personalRecords', 'pr')
+      .leftJoin('pr.exercise', 'e')
+      .andWhere(
+        '(e.english_name = ? or e.english_name = ? or e.english_name is null)',
+        ['snatch', 'cleanAndJerk']
+      );
+    qb.leftJoin('competitorStatuses', 'cs').andWhere(
+      'cs.end_date is null or cs.end_date is not null'
+    );
+
+    return qb;
   }
 
-  async findAllWithDetails(): Promise<TransformedAthlete[]> {
-    const qb = this.createQueryBuilder('a');
-
-    const athletes = await qb
-      .select([
-        'a.id',
-        'a.firstName',
-        'a.lastName',
-        'a.birthday',
-        'a.country',
-        'pm.weight',
-        'pr.weight',
-        'e.englishName',
-        'cs.level',
-        'cs.sexCategory',
-        'cs.weightCategory',
-      ])
-      .leftJoinAndSelect('a.user', 'u')
-      .leftJoin('physical_metric', 'pm', { 'pm.athlete_id': 'a.id' })
-      .leftJoin('personal_record', 'pr', { 'pr.athlete_id': 'a.id' })
-      .leftJoin('exercise', 'e', { 'e.id': 'pr.exercise_id' })
-      .leftJoin('competitor_status', 'cs', { 'cs.athlete_id': 'a.id' })
-      .where({
-        'pm.endDate': null,
-        'cs.endDate': null,
-      })
-      .andWhere({
-        $or: [
-          { 'e.englishName': 'snatch' },
-          { 'e.englishName': 'cleanAndJerk' },
-        ],
-      })
-      .getResult();
-
-    // Transform the results to match the expected format
-    return athletes.map((athlete) => {
-      const { pm, pr, cs, ...rest } = athlete as unknown as AthleteWithDetails;
-
-      // Transform personal records into a single object
-      const personalRecords = pr
-        ? pr.reduce(
-            (acc, record) => {
-              if (record.e.englishName === 'snatch') {
-                acc.snatch = record.weight;
-              } else if (record.e.englishName === 'cleanAndJerk') {
-                acc.cleanAndJerk = record.weight;
-              }
-              return acc;
-            },
-            {} as { snatch?: number; cleanAndJerk?: number }
-          )
-        : undefined;
-
-      return {
-        ...rest,
-        metrics: pm ? { weight: pm.weight } : undefined,
-        personalRecords,
-        competitorStatus: cs
-          ? {
-              level: cs.level,
-              sexCategory: cs.sexCategory,
-              weightCategory: cs.weightCategory,
-            }
-          : undefined,
-      };
-    });
+  async findAllWithDetails(): Promise<AthleteWithDetails[]> {
+    const athletes = await this.getBaseQuery().getResult();
+    return athletes;
   }
 
-  async findById(id: string): Promise<TransformedAthlete> {
-    const qb = await this.getAthleteDetailsQuery(id);
-    const athlete = await qb.getSingleResult();
+  async findById(id: string): Promise<AthleteWithDetails> {
+    const athlete = await this.getBaseQuery()
+      .where({ 'a.id': id })
+      .getSingleResult();
 
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
     }
 
-    const { pm, pr, cs, ...rest } = athlete as unknown as AthleteWithDetails;
-
-    // Transform personal records into a single object
-    const personalRecords = pr
-      ? pr.reduce(
-          (acc, record) => {
-            if (record.e.englishName === 'snatch') {
-              acc.snatch = record.weight;
-            } else if (record.e.englishName === 'cleanAndJerk') {
-              acc.cleanAndJerk = record.weight;
-            }
-            return acc;
-          },
-          {} as { snatch?: number; cleanAndJerk?: number }
-        )
-      : undefined;
-
-    return {
-      ...rest,
-      metrics: pm ? { weight: pm.weight } : undefined,
-      personalRecords,
-      competitorStatus: cs
-        ? {
-            level: cs.level,
-            sexCategory: cs.sexCategory,
-            weightCategory: cs.weightCategory,
-          }
-        : undefined,
-    };
+    return athlete;
   }
 
-  async createAthlete(data: CreateAthlete): Promise<Athlete> {
+  async createAthlete(data: CreateAthlete): Promise<AthleteWithDetails> {
     const athlete = new Athlete();
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
@@ -199,16 +87,14 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     athlete.country = data.country;
 
     await this.em.persistAndFlush(athlete);
-
-    const qb = await this.getAthleteDetailsQuery(athlete.id);
-    return await qb.getSingleResult();
+    return this.findById(athlete.id);
   }
 
   async updateAthlete(
     id: string,
     data: Partial<CreateAthlete>
-  ): Promise<Athlete> {
-    const athlete = await this.findOne({ id });
+  ): Promise<AthleteWithDetails> {
+    const athlete = await this.em.findOne(Athlete, { id });
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
     }
@@ -230,13 +116,11 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     }
 
     await this.em.persistAndFlush(athlete);
-
-    const qb = await this.getAthleteDetailsQuery(athlete.id);
-    return await qb.getSingleResult();
+    return this.findById(athlete.id);
   }
 
   async deleteAthlete(id: string): Promise<void> {
-    const athlete = await this.findOne({ id });
+    const athlete = await this.em.findOne(Athlete, { id });
     if (athlete) {
       await this.em.removeAndFlush(athlete);
     }
