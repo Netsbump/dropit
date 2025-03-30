@@ -23,6 +23,7 @@ import {
   TableRow,
 } from '@/shared/components/ui/table';
 import { useTranslation } from '@dropit/i18n';
+import { AthleteDto } from '@dropit/schemas';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -38,20 +39,20 @@ import {
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
-interface DataTableProps<TData extends { id: string }, TValue> {
-  columns: ColumnDef<TData, TValue>[];
-  data: TData[];
+interface DataTableProps<TValue> {
+  columns: ColumnDef<AthleteDto, TValue>[];
+  data: AthleteDto[];
   onDialogCreation: (open: boolean) => void;
   onRowClick?: (id: string) => void;
   searchColumn?: string;
 }
 
-export function DataTable<TData extends { id: string }, TValue>({
+export function DataTable<TValue>({
   columns,
   data,
   onDialogCreation,
   onRowClick,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<TValue>) {
   const { t } = useTranslation(['common']);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
@@ -84,27 +85,19 @@ export function DataTable<TData extends { id: string }, TValue>({
     },
     filterFns: {
       fuzzy: (row, _columnId, value) => {
-        const firstName = String(row.getValue('firstName')).toLowerCase();
-        const lastName = String(row.getValue('lastName')).toLowerCase();
-        const email = String(row.getValue('email')).toLowerCase();
+        const firstName = String(row.original.firstName).toLowerCase();
+        const lastName = String(row.original.lastName).toLowerCase();
+        const fullName = `${firstName} ${lastName}`.toLowerCase();
         const searchValue = value.toLowerCase();
-        return (
-          firstName.includes(searchValue) ||
-          lastName.includes(searchValue) ||
-          email.includes(searchValue)
-        );
+        return fullName.includes(searchValue);
       },
     },
     globalFilterFn: (row, _columnId, filterValue) => {
-      const firstName = String(row.getValue('firstName')).toLowerCase();
-      const lastName = String(row.getValue('lastName')).toLowerCase();
-      const email = String(row.getValue('email')).toLowerCase();
+      const firstName = String(row.original.firstName).toLowerCase();
+      const lastName = String(row.original.lastName).toLowerCase();
+      const fullName = `${firstName} ${lastName}`.toLowerCase();
       const searchValue = filterValue.toLowerCase();
-      return (
-        firstName.includes(searchValue) ||
-        lastName.includes(searchValue) ||
-        email.includes(searchValue)
-      );
+      return fullName.includes(searchValue);
     },
     onGlobalFilterChange: setGlobalFilter,
   });

@@ -1,3 +1,8 @@
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/shared/components/ui/avatar';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
 import { AthleteDto } from '@dropit/schemas';
@@ -27,24 +32,96 @@ export const columns: ColumnDef<AthleteDto>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: 'firstName',
+    id: 'name',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.first_name');
+      return t('athletes:columns.name');
+    },
+    cell: ({ row }) => {
+      const firstName = row.original.firstName;
+      const lastName = row.original.lastName;
+      const email = row.original.email;
+      const avatar = row.original.avatar;
+
+      return (
+        <div className="flex items-center gap-3">
+          <Avatar>
+            <AvatarImage src={avatar} />
+            <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <div className="font-medium">{`${firstName} ${lastName}`}</div>
+            <div className="text-sm text-muted-foreground">{email}</div>
+          </div>
+        </div>
+      );
     },
   },
   {
-    accessorKey: 'lastName',
+    id: 'sexCategory',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.last_name');
+      return t('athletes:columns.sex_category');
+    },
+    cell: ({ row }) => {
+      return row.original.competitorStatus?.sexCategory || '-';
     },
   },
   {
-    accessorKey: 'email',
+    id: 'weightCategory',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.email');
+      return t('athletes:columns.weight_category');
+    },
+    cell: ({ row }) => {
+      const category = row.original.competitorStatus?.weightCategory;
+      return category ? `${category} kg` : '-';
+    },
+  },
+  {
+    id: 'weight',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.weight');
+    },
+    cell: ({ row }) => {
+      const metrics = row.original.metrics;
+      const weight = metrics?.weight;
+      return weight ? `${weight} kg` : '-';
+    },
+  },
+  {
+    id: 'snatch',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.snatch');
+    },
+    cell: ({ row }) => {
+      const records = row.original.personalRecords;
+      const snatch = records?.snatch;
+      return snatch ? `${snatch}kg` : '-';
+    },
+  },
+  {
+    id: 'cleanAndJerk',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.clean_and_jerk');
+    },
+    cell: ({ row }) => {
+      const records = row.original.personalRecords;
+      const cleanAndJerk = records?.cleanAndJerk;
+      return cleanAndJerk ? `${cleanAndJerk}kg` : '-';
+    },
+  },
+  {
+    id: 'level',
+    header: () => {
+      const { t } = useTranslation(['athletes']);
+      return t('athletes:columns.level');
+    },
+    cell: ({ row }) => {
+      return row.original.competitorStatus?.level || '-';
     },
   },
   {
@@ -54,7 +131,8 @@ export const columns: ColumnDef<AthleteDto>[] = [
       return t('athletes:columns.birthday');
     },
     cell: ({ row }) => {
-      return new Date(row.getValue('birthday')).toLocaleDateString();
+      const value = row.original.birthday;
+      return value ? new Date(value).getFullYear().toString() : '-';
     },
   },
   {
@@ -63,41 +141,9 @@ export const columns: ColumnDef<AthleteDto>[] = [
       const { t } = useTranslation(['athletes']);
       return t('athletes:columns.country');
     },
-  },
-  {
-    accessorKey: 'metrics.weight',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.weight');
-    },
     cell: ({ row }) => {
-      const weight = row.getValue('metrics.weight');
-      return weight ? `${weight} kg` : '-';
-    },
-  },
-  {
-    accessorKey: 'competitorStatus.level',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.level');
-    },
-  },
-  {
-    accessorKey: 'competitorStatus.sexCategory',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.sex_category');
-    },
-  },
-  {
-    accessorKey: 'competitorStatus.weightCategory',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.weight_category');
-    },
-    cell: ({ row }) => {
-      const weightCategory = row.getValue('competitorStatus.weightCategory');
-      return weightCategory ? `${weightCategory} kg` : '-';
+      const value = row.getValue('country');
+      return value || '-';
     },
   },
 ];

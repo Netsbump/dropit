@@ -6,12 +6,15 @@
     "search_placeholder": "Rechercher un athlète..."
   },
   "columns": {
-    "first_name": "Prénom",
-    "last_name": "Nom",
-    "birthday": "Date de naissance",
-    "country": "Pays",
-    "created_at": "Créé le",
-    "updated_at": "Mis à jour le"
+    "name": "Nom",
+    "sex_category": "Sexe",
+    "weight_category": "Catégorie",
+    "weight": "Poids",
+    "snatch": "Arraché",
+    "clean_and_jerk": "Epaulé jetté",
+    "level": "Niveau",
+    "birthday": "Année",
+    "country": "Pays"
   },
   "form": {
     "first_name": "Prénom",
@@ -29,4 +32,4 @@
   "details": {
     "title": "Détails de l'athlète"
   }
-} 
+}
