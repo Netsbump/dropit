@@ -1,6 +1,6 @@
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AthleteRepository } from '../athlete.repository';
-
+@Injectable()
 export class DeleteAthleteUseCase {
   constructor(private readonly athleteRepository: AthleteRepository) {}
 

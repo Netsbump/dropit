@@ -1,10 +1,11 @@
 // update-athlete.use-case.ts
 import { AthleteDto, UpdateAthlete } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
 import { Club } from '../../../entities/club.entity';
 import { User } from '../../../entities/user.entity';
 import { AthleteRepository, AthleteWithDetails } from '../athlete.repository';
-
+@Injectable()
 export class UpdateAthleteUseCase {
   constructor(
     private readonly athleteRepository: AthleteRepository,

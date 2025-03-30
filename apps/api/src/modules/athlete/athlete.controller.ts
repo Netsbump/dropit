@@ -11,8 +11,11 @@ import {
   TsRestRequest,
   nestControllerContract,
 } from '@ts-rest/nest';
-import { AthleteService } from './athlete.service';
-
+import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
+import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
+import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
+import { GetAthletesUseCase } from './use-cases/get-athletes.use-case';
+import { UpdateAthleteUseCase } from './use-cases/update-athlete.use-case';
 const c = nestControllerContract(apiContract.athlete);
 type RequestShapes = NestRequestShapes<typeof c>;
 
@@ -20,12 +23,18 @@ type RequestShapes = NestRequestShapes<typeof c>;
 export class AthleteController
   implements NestControllerInterface<typeof apiContract.athlete>
 {
-  constructor(private readonly athleteService: AthleteService) {}
+  constructor(
+    private readonly getAthletesUseCase: GetAthletesUseCase,
+    private readonly getAthleteUseCase: GetAthleteUseCase,
+    private readonly createAthleteUseCase: CreateAthleteUseCase,
+    private readonly updateAthleteUseCase: UpdateAthleteUseCase,
+    private readonly deleteAthleteUseCase: DeleteAthleteUseCase
+  ) {}
 
   @TsRest(c.getAthletes)
   async getAthletes(@TsRestRequest() request: RequestShapes['getAthletes']) {
     try {
-      const athletes = await this.athleteService.getAthletes();
+      const athletes = await this.getAthletesUseCase.execute();
 
       return { status: 200 as const, body: athletes };
     } catch (error) {
@@ -40,7 +49,7 @@ export class AthleteController
   @TsRest(c.getAthlete)
   async getAthlete(@TsRestRequest() { params }: RequestShapes['getAthlete']) {
     try {
-      const athlete = await this.athleteService.getAthlete(params.id);
+      const athlete = await this.getAthleteUseCase.execute(params.id);
 
       return {
         status: 200 as const,
@@ -63,7 +72,7 @@ export class AthleteController
     @TsRestRequest() { body }: RequestShapes['createAthlete']
   ) {
     try {
-      const newAthlete = await this.athleteService.createAthlete(body);
+      const newAthlete = await this.createAthleteUseCase.execute(body);
       return {
         status: 201 as const,
         body: newAthlete,
@@ -91,7 +100,7 @@ export class AthleteController
     @TsRestRequest() { params, body }: RequestShapes['updateAthlete']
   ) {
     try {
-      const updatedAthlete = await this.athleteService.updateAthlete(
+      const updatedAthlete = await this.updateAthleteUseCase.execute(
         params.id,
         body
       );
@@ -116,7 +125,7 @@ export class AthleteController
     @TsRestRequest() { params }: RequestShapes['deleteAthlete']
   ) {
     try {
-      await this.athleteService.deleteAthlete(params.id);
+      await this.deleteAthleteUseCase.execute(params.id);
 
       return {
         status: 200 as const,
