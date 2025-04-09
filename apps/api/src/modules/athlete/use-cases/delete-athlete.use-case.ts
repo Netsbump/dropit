@@ -9,6 +9,7 @@ export class DeleteAthleteUseCase {
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
     }
+    // Todo: vérifier tous les on delete cascade quand on supprime un athlète
     await this.athleteRepository.deleteAthlete(athlete.id);
   }
 }

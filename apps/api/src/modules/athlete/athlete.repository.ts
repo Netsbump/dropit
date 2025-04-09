@@ -5,6 +5,7 @@ import {
   QueryBuilder,
 } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import e from 'express';
 import { Athlete } from '../../entities/athlete.entity';
 import { CompetitorStatus } from '../../entities/competitor-status.entity';
 import { PersonalRecord } from '../../entities/personal-record.entity';
@@ -42,21 +43,20 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'cs.weightCategory',
     ]);
 
-    // Si 'user' est vraiment une relation déclarée dans l'entité Athlete, ok :
     qb.leftJoin('a.user', 'u');
 
-    // Pour les "tables brutes" non mappées comme relation, on fait :
     qb.leftJoin('physicalMetrics', 'pm').andWhere(
-      'pm.end_date is null or pm.end_date is not null'
+      'pm.end_date IS NULL OR pm.end_date IS NOT NULL'
     );
     qb.leftJoin('personalRecords', 'pr')
       .leftJoin('pr.exercise', 'e')
       .andWhere(
-        '(e.english_name = ? or e.english_name = ? or e.english_name is null)',
+        '(e.english_name = ? OR e.english_name = ? OR e.english_name IS NULL)',
         ['snatch', 'cleanAndJerk']
       );
+
     qb.leftJoin('competitorStatuses', 'cs').andWhere(
-      'cs.end_date is null or cs.end_date is not null'
+      'cs.end_date IS NULL OR cs.end_date IS NOT NULL'
     );
 
     return qb;

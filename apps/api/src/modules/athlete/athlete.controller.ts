@@ -11,6 +11,7 @@ import {
   TsRestRequest,
   nestControllerContract,
 } from '@ts-rest/nest';
+import { AthletePresenter } from './athlete.presenter';
 import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
 import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
 import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
@@ -36,7 +37,10 @@ export class AthleteController
     try {
       const athletes = await this.getAthletesUseCase.execute();
 
-      return { status: 200 as const, body: athletes };
+      return {
+        status: 200 as const,
+        body: AthletePresenter.toDtoList(athletes),
+      };
     } catch (error) {
       if (error instanceof NotFoundException) {
         return { status: 404 as const, body: { message: error.message } };
@@ -53,7 +57,7 @@ export class AthleteController
 
       return {
         status: 200 as const,
-        body: athlete,
+        body: AthletePresenter.toDto(athlete),
       };
     } catch (error) {
       if (error instanceof NotFoundException) {
@@ -75,7 +79,7 @@ export class AthleteController
       const newAthlete = await this.createAthleteUseCase.execute(body);
       return {
         status: 201 as const,
-        body: newAthlete,
+        body: AthletePresenter.toDto(newAthlete),
       };
     } catch (error) {
       if (error instanceof BadRequestException) {
