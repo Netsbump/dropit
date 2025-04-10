@@ -36,7 +36,10 @@ export class AthleteController
     try {
       const athletes = await this.getAthletesUseCase.execute();
 
-      return { status: 200 as const, body: athletes };
+      return {
+        status: 200 as const,
+        body: athletes,
+      };
     } catch (error) {
       if (error instanceof NotFoundException) {
         return { status: 404 as const, body: { message: error.message } };
