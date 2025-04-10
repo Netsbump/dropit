@@ -1,8 +1,6 @@
-// get-athlete.use-case.ts
 import { AthleteDto } from '@dropit/schemas';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { AthleteRepository } from '../athlete.repository';
-import { AthleteDto } from '@dropit/schemas';
 import { AthletePresenter } from '../athlete.presenter';
 @Injectable()
 export class GetAthleteUseCase {

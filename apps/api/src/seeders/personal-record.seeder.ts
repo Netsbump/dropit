@@ -102,9 +102,9 @@ function getRandomWeight(exerciseName: string): number {
     'Squat Clavicule': [80, 150],
     'Développé Militaire': [50, 90],
     'Soulevé de Terre': [120, 200],
-    'default': [40, 100],
+    default: [40, 100],
   };
 
-  const [min, max] = weightRanges[exerciseName] || weightRanges['default'];
+  const [min, max] = weightRanges[exerciseName] || weightRanges.default;
   return Math.floor(Math.random() * (max - min) + min);
 }
