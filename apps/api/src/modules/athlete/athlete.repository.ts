@@ -6,15 +6,6 @@ import {
 } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
-import { CompetitorStatus } from '../../entities/competitor-status.entity';
-import { PersonalRecord } from '../../entities/personal-record.entity';
-import { PhysicalMetric } from '../../entities/physical-metric.entity';
-
-export interface AthleteWithDetails extends Athlete {
-  pm?: PhysicalMetric;
-  pr?: PersonalRecord[];
-  cs?: CompetitorStatus;
-}
 
 @Injectable()
 export class AthleteRepository extends EntityRepository<Athlete> {
@@ -22,7 +13,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     super(em, Athlete);
   }
 
-  private getBaseQuery(): QueryBuilder<AthleteWithDetails> {
+  private getBaseQuery(): QueryBuilder<Athlete> {
     const qb = this.em.createQueryBuilder(Athlete, 'a');
 
     qb.select([
@@ -42,32 +33,30 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'cs.weightCategory',
     ]);
 
-    // Si 'user' est vraiment une relation déclarée dans l'entité Athlete, ok :
-    qb.leftJoin('a.user', 'u');
+    qb.leftJoinAndSelect('a.user', 'u');
 
-    // Pour les "tables brutes" non mappées comme relation, on fait :
-    qb.leftJoin('physicalMetrics', 'pm').andWhere(
-      'pm.end_date is null or pm.end_date is not null'
-    );
-    qb.leftJoin('personalRecords', 'pr')
-      .leftJoin('pr.exercise', 'e')
+    qb.leftJoinAndSelect('a.physicalMetrics', 'pm')
+    
+    qb.leftJoinAndSelect('a.personalRecords', 'pr')
+      .leftJoinAndSelect('pr.exercise', 'e')
       .andWhere(
         '(e.english_name = ? or e.english_name = ? or e.english_name is null)',
         ['snatch', 'cleanAndJerk']
       );
-    qb.leftJoin('competitorStatuses', 'cs').andWhere(
-      'cs.end_date is null or cs.end_date is not null'
-    );
+
+    qb.leftJoinAndSelect('a.competitorStatuses', 'cs')
 
     return qb;
   }
 
-  async findAllWithDetails(): Promise<AthleteWithDetails[]> {
+  async findAllWithDetails(): Promise<Athlete[]> {
+
     const athletes = await this.getBaseQuery().getResult();
+
     return athletes;
   }
 
-  async findById(id: string): Promise<AthleteWithDetails> {
+  async findById(id: string): Promise<Athlete> {
     const athlete = await this.getBaseQuery()
       .where({ 'a.id': id })
       .getSingleResult();
@@ -79,7 +68,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     return athlete;
   }
 
-  async createAthlete(data: CreateAthlete): Promise<AthleteWithDetails> {
+  async createAthlete(data: CreateAthlete): Promise<Athlete> {
     const athlete = new Athlete();
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
@@ -93,7 +82,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
   async updateAthlete(
     id: string,
     data: Partial<CreateAthlete>
-  ): Promise<AthleteWithDetails> {
+  ): Promise<Athlete> {
     const athlete = await this.em.findOne(Athlete, { id });
     if (!athlete) {
       throw new NotFoundException('Athlete not found');

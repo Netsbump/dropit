@@ -73,6 +73,12 @@ export async function seedExercises(
       shortName: 'SJ',
     },
     {
+      name: 'Arraché',
+      category: 'Haltérophilie',
+      englishName: 'snatch',
+      shortName: 'SN',
+    },
+    {
       name: 'Squat Nuque',
       category: 'Haltérophilie',
       englishName: 'Back Squat',
@@ -111,7 +117,7 @@ export async function seedExercises(
     {
       name: 'Épaulé-Jeté',
       category: 'Haltérophilie',
-      englishName: 'Clean & Jerk',
+      englishName: 'cleanAndJerk',
       shortName: 'C&J',
     },
     {
