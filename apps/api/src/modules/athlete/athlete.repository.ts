@@ -3,10 +3,24 @@ import {
   EntityManager,
   EntityRepository,
   QueryBuilder,
+  raw
 } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
+import { PersonalRecord } from '../../entities/personal-record.entity';
 
+export type AthleteBasics = Pick<Athlete, 'id' | 'firstName' | 'lastName' | 'birthday' | 'country' | 'club'>;
+
+export type AthleteDetails = AthleteBasics & {
+  email: string;
+  avatar: string;
+  weight: number;
+  level: string;
+  sexCategory: string;
+  weightCategory: string;
+  pr_snatch?: number;
+  pr_cleanAndJerk?: number;
+};
 @Injectable()
 export class AthleteRepository extends EntityRepository<Athlete> {
   constructor(public readonly em: EntityManager) {
@@ -14,6 +28,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
   }
 
   private getBaseQuery(): QueryBuilder<Athlete> {
+
     const qb = this.em.createQueryBuilder(Athlete, 'a');
 
     qb.select([
@@ -22,53 +37,71 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'a.lastName',
       'a.birthday',
       'a.country',
+      'c.id',
       'u.email',
+      'u.avatar',
       'pm.weight',
-      'pr.weight as pr_weight',
-      'e.name',
-      'e.englishName',
-      'e.shortName',
       'cs.level',
       'cs.sexCategory',
       'cs.weightCategory',
     ]);
 
-    qb.leftJoinAndSelect('a.user', 'u');
+    qb.leftJoin('a.user', 'u')
+    qb.leftJoin('a.club', 'c')
+    qb.leftJoin('a.physicalMetrics', 'pm', { 'pm.endDate': null })
 
-    qb.leftJoinAndSelect('a.physicalMetrics', 'pm')
-    
-    qb.leftJoinAndSelect('a.personalRecords', 'pr')
-      .leftJoinAndSelect('pr.exercise', 'e')
-      .andWhere(
-        '(e.english_name = ? or e.english_name = ? or e.english_name is null)',
-        ['snatch', 'cleanAndJerk']
-      );
+    // Sous-requête pour le dernier PR de Snatch
+    qb.addSelect(
+      this.em.createQueryBuilder(PersonalRecord, 'pr_snatch')
+        .select('pr_snatch.weight')
+        .leftJoin('pr_snatch.exercise', 'e_snatch')
+        .where({
+          'pr_snatch.athlete': raw('a.id'),
+          'e_snatch.english_name': 'snatch'
+        })
+        .orderBy({ 'pr_snatch.createdAt': 'DESC' })
+        .limit(1)
+        .as('pr_snatch')
+    );
 
-    qb.leftJoinAndSelect('a.competitorStatuses', 'cs')
+    // Sous-requête pour le dernier PR de Clean & Jerk
+    qb.addSelect(
+      this.em.createQueryBuilder(PersonalRecord, 'pr_cj') 
+        .select('pr_cj.weight')                            
+        .leftJoin('pr_cj.exercise', 'e_cj')           
+        .where({   
+          'pr_cj.athlete': raw('a.id'),         
+          'e_cj.english_name': 'cleanAndJerk'          
+        })
+        .orderBy({ 'pr_cj.createdAt': 'DESC' })         
+        .limit(1)
+        .as('pr_cleanAndJerk')
+    );
+
+    qb.leftJoin('a.competitorStatuses', 'cs')
 
     return qb;
   }
 
-  async findAllWithDetails(): Promise<Athlete[]> {
-
-    const athletes = await this.getBaseQuery().getResult();
-
-    return athletes;
+  async findAllWithDetails(): Promise<AthleteDetails[]> {
+    // Récupère les résultats bruts (format "table", non-hydratés) via execute('all'). durée 4ms.
+    const athletes = await this.getBaseQuery().execute('all');
+    return athletes as AthleteDetails[];
   }
 
-  async findById(id: string): Promise<Athlete> {
+  async findById(id: string): Promise<AthleteDetails> {
     const athlete = await this.getBaseQuery()
-      .where({ 'a.id': id })
-      .getSingleResult();
+    .where({ 'a.id': id })
+    .execute('all');
 
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
     }
 
-    return athlete;
+    return athlete[0] as AthleteDetails;
   }
 
-  async createAthlete(data: CreateAthlete): Promise<Athlete> {
+  async createAthlete(data: CreateAthlete): Promise<AthleteDetails> {
     const athlete = new Athlete();
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
@@ -82,7 +115,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
   async updateAthlete(
     id: string,
     data: Partial<CreateAthlete>
-  ): Promise<Athlete> {
+  ): Promise<AthleteDetails> {
     const athlete = await this.em.findOne(Athlete, { id });
     if (!athlete) {
       throw new NotFoundException('Athlete not found');

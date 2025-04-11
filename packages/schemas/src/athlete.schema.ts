@@ -23,6 +23,9 @@ export const athleteSchema = z.object({
   avatar: z.string().optional(),
   birthday: z.date(),
   country: z.string().optional(),
+  club: z.object({
+    id: z.string(),
+  }).optional(),
   metrics: z
     .object({
       weight: z.number().optional(),

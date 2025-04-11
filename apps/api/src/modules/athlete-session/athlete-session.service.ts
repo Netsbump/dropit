@@ -71,9 +71,10 @@ export class AthleteSessionService {
   async createAthleteSession(
     athleteSession: CreateAthleteSession
   ): Promise<AthleteSessionDto> {
-    const athlete = await this.athleteRepository.findById(
-      athleteSession.athleteId
-    );
+    const athlete = await this.em.findOne(Athlete, {
+      id: athleteSession.athleteId,
+    });
+
     if (!athlete) {
       throw new NotFoundException(
         `Athlete with ID ${athleteSession.athleteId} not found`

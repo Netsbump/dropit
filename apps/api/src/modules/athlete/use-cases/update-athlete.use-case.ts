@@ -29,7 +29,7 @@ export class UpdateAthleteUseCase {
       if (data.userId) {
         const user = await this.em.findOne(User, { id: data.userId });
         if (user) {
-          athlete.user = user;
+          athlete.id = user.id;
         }
       }
     }
