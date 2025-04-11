@@ -1,53 +1,37 @@
 import { AthleteDto } from '@dropit/schemas';
 import { Athlete } from '../../entities/athlete.entity';
+import { AthleteDetails } from './athlete.repository';
 
 export const AthletePresenter = {
-  toDto(athlete: Athlete): AthleteDto {
-    const latestPm = athlete.physicalMetrics?.toArray().sort(
-      (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-    )[0];
-
-    const latestCs = athlete.competitorStatuses?.toArray().sort(
-      (a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()
-    )[0];
-
-    const prArray = athlete.personalRecords?.toArray();
-
-    const snatchPr = prArray?.find(
-      (pr) => pr.exercise?.englishName === 'snatch'
-    );
-
-    const cleanAndJerkPr = prArray?.find(
-      (pr) => pr.exercise?.englishName === 'cleanAndJerk'
-    );
-
+  toDto(athlete: AthleteDetails): AthleteDto {
     return {
       id: athlete.id,
       firstName: athlete.firstName,
       lastName: athlete.lastName,
       birthday: new Date(athlete.birthday),
-      email: athlete.user?.email ?? '',
-      avatar: athlete.user?.avatar?.url,
+      email: athlete.email ?? '',
+      avatar: athlete.avatar ?? '',
       country: athlete.country,
-      metrics: latestPm ? { weight: latestPm.weight } : undefined,
+      club: athlete.club ? { id: athlete.club.id } : undefined,
+      metrics: athlete.weight ? { weight: athlete.weight } : undefined,
       personalRecords:
-        snatchPr || cleanAndJerkPr
+        athlete.pr_snatch || athlete.pr_cleanAndJerk
           ? {
-              snatch: snatchPr?.weight,
-              cleanAndJerk: cleanAndJerkPr?.weight,
+              snatch: athlete.pr_snatch,
+              cleanAndJerk: athlete.pr_cleanAndJerk,
             }
           : undefined,
-      competitorStatus: latestCs
+      competitorStatus: athlete.level || athlete.sexCategory || athlete.weightCategory
         ? {
-            level: latestCs.level,
-            sexCategory: latestCs.sexCategory,
-            weightCategory: latestCs.weightCategory,
+            level: athlete.level ?? '',
+            sexCategory: athlete.sexCategory ?? '',
+            weightCategory: athlete.weightCategory ? parseInt(athlete.weightCategory) : undefined,
           }
         : undefined,
     };
   },
 
-  toDtoList(athletes: Athlete[]): AthleteDto[] {
+  toDtoList(athletes: AthleteDetails[]): AthleteDto[] {
     return athletes.map(this.toDto);
   },
 };
