@@ -105,22 +105,5 @@
       "columns": "Colonnes",
       "selected_rows": "{{count}} sur {{total}} ligne(s) sélectionnée(s)"
     }
-  },
-  "athletes": {
-    "title": "Athlètes",
-    "description": "Retrouvez et gérez tous vos athlètes ici",
-    "filters": {
-      "search_placeholder": "Rechercher un athlète...",
-      "all_categories": "Toutes les catégories",
-      "create_athlete": "Créer un athlète",
-      "no_results": "Aucun athlète trouvé"
-    },
-    "details": {
-      "title": "Détails de l'athlète"
-    },
-    "creation": {
-      "title": "Créer un athlète",
-      "description": "Ajoutez un nouveau athlète à votre catalogue."
-    }
   }
 } 

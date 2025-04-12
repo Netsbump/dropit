@@ -3,7 +3,12 @@
   "description": "Manage your athletes",
   "filters": {
     "no_results": "No athletes found",
-    "search_placeholder": "Search an athlete..."
+    "search_placeholder": "Search an athlete...",
+    "all_categories": "All categories",
+    "create_athlete": "Create an athlete"
+  },
+  "details": {
+    "title": "Athlete details"
   },
   "columns": {
     "name": "Name",
@@ -17,19 +22,20 @@
     "birthday": "Year"
   },
   "form": {
+    "title": "Create an athlete",
+    "description": "Add a new athlete to your database",
     "first_name": "First name",
     "first_name_placeholder": "Enter first name",
     "last_name": "Last name",
     "last_name_placeholder": "Enter last name",
     "birthday": "Birthday",
     "country": "Country",
-    "country_placeholder": "Enter country"
+    "country_placeholder": "Enter country",
+    "button_create": "Create",
+    "button_cancel": "Cancel"
   },
   "creation": {
     "title": "Create an athlete",
     "description": "Add a new athlete to your database"
-  },
-  "details": {
-    "title": "Athlete details"
   }
 }
