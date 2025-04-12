@@ -21,11 +21,11 @@ export const AthletePresenter = {
               cleanAndJerk: athlete.pr_cleanAndJerk,
             }
           : undefined,
-      competitorStatus: athlete.level || athlete.sexCategory || athlete.weightCategory
+      competitorStatus: athlete.level || athlete.sex_category || athlete.weight_category
         ? {
             level: athlete.level ?? '',
-            sexCategory: athlete.sexCategory ?? '',
-            weightCategory: athlete.weightCategory ? parseInt(athlete.weightCategory) : undefined,
+            sexCategory: athlete.sex_category ?? '',
+            weightCategory: athlete.weight_category ? parseInt(athlete.weight_category) : undefined,
           }
         : undefined,
     };

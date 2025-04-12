@@ -35,7 +35,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'name',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.name');
+      return t('athletes.columns.name');
     },
     cell: ({ row }) => {
       const firstName = row.original.firstName;
@@ -61,7 +61,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'sexCategory',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.sex_category');
+      return t('columns.sex_category');
     },
     cell: ({ row }) => {
       return row.original.competitorStatus?.sexCategory || '-';
@@ -71,7 +71,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'weightCategory',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.weight_category');
+      return t('columns.weight_category');
     },
     cell: ({ row }) => {
       const category = row.original.competitorStatus?.weightCategory;
@@ -82,7 +82,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'weight',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.weight');
+      return t('columns.weight');
     },
     cell: ({ row }) => {
       const metrics = row.original.metrics;
@@ -94,7 +94,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'snatch',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.snatch');
+      return t('columns.snatch');
     },
     cell: ({ row }) => {
       const records = row.original.personalRecords;
@@ -106,7 +106,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'cleanAndJerk',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.clean_and_jerk');
+      return t('columns.clean_and_jerk');
     },
     cell: ({ row }) => {
       const records = row.original.personalRecords;
@@ -118,7 +118,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     id: 'level',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.level');
+      return t('columns.level');
     },
     cell: ({ row }) => {
       return row.original.competitorStatus?.level || '-';
@@ -128,7 +128,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     accessorKey: 'birthday',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.birthday');
+      return t('columns.birthday');
     },
     cell: ({ row }) => {
       const value = row.original.birthday;
@@ -139,7 +139,7 @@ export const columns: ColumnDef<AthleteDto>[] = [
     accessorKey: 'country',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes:columns.country');
+      return t('columns.country');
     },
     cell: ({ row }) => {
       const value = row.getValue('country');

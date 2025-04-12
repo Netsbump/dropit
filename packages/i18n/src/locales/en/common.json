@@ -12,6 +12,11 @@
       "aria_label": "breadcrumb"
     }
   },
+  "table": {
+    "columns": "Columns",
+    "selected_rows": "{{count}} of {{total}} column(s) selected",
+    "rows_per_page": "Rows per page"
+  },
   "routes": {
     "/": "Dashboard",
     "/workouts": "Workouts",
@@ -99,23 +104,6 @@
       "no_results": "No results.",
       "columns": "Columns",
       "selected_rows": "{{count}} of {{total}} column(s) selected."
-    }
-  },
-  "athletes": {
-    "title": "Athletes",
-    "description": "Find and manage all your athletes here",
-    "filters": {
-      "search_placeholder": "Search for an athlete...",
-      "all_categories": "All categories",
-      "create_athlete": "Create athlete",
-      "no_results": "No athlete found"
-    },
-    "details": {
-      "title": "Athlete details"
-    },
-    "creation": {
-      "title": "Create athlete",
-      "description": "Add a new athlete to your catalog."
     }
   }
 } 

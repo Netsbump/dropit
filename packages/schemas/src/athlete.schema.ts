@@ -5,8 +5,6 @@ export const createAthleteSchema = z.object({
   lastName: z.string(),
   birthday: z.string().or(z.date()),
   country: z.string().optional(),
-  clubId: z.string().optional(),
-  userId: z.string().optional(),
 });
 
 export type CreateAthlete = z.infer<typeof createAthleteSchema>;
