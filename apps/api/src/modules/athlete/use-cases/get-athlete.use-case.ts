@@ -7,7 +7,7 @@ export class GetAthleteUseCase {
   constructor(private readonly athleteRepository: AthleteRepository) {}
 
   async execute(id: string): Promise<AthleteDto> {
-    const athlete = await this.athleteRepository.findById(id);
+    const athlete = await this.athleteRepository.findOneWithDetails(id);
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
     }

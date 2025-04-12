@@ -16,8 +16,8 @@ export type AthleteDetails = AthleteBasics & {
   avatar: string;
   weight: number;
   level: string;
-  sexCategory: string;
-  weightCategory: string;
+  sex_category: string;
+  weight_category: string;
   pr_snatch?: number;
   pr_cleanAndJerk?: number;
 };
@@ -89,7 +89,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     return athletes as AthleteDetails[];
   }
 
-  async findById(id: string): Promise<AthleteDetails> {
+  async findOneWithDetails(id: string): Promise<AthleteDetails> {
     const athlete = await this.getBaseQuery()
     .where({ 'a.id': id })
     .execute('all');
@@ -109,7 +109,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     athlete.country = data.country;
 
     await this.em.persistAndFlush(athlete);
-    return this.findById(athlete.id);
+    return this.findOneWithDetails(athlete.id);
   }
 
   async updateAthlete(
@@ -138,7 +138,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     }
 
     await this.em.persistAndFlush(athlete);
-    return this.findById(athlete.id);
+    return this.findOneWithDetails(athlete.id);
   }
 
   async deleteAthlete(id: string): Promise<void> {
