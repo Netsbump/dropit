@@ -53,7 +53,7 @@ export function DataTable<TValue>({
   onDialogCreation,
   onRowClick,
 }: DataTableProps<TValue>) {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'athletes']);
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -107,7 +107,7 @@ export function DataTable<TValue>({
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
-            placeholder={t('athletes.filters.search_placeholder')}
+            placeholder={t('athletes:filters.search_placeholder')}
             value={globalFilter ?? ''}
             onChange={(event) => setGlobalFilter(event.target.value)}
             className="max-w-sm"
@@ -117,7 +117,7 @@ export function DataTable<TValue>({
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" className="ml-auto bg-card">
-                {t('table.columns')}
+                {t('common:table.columns')}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -142,7 +142,7 @@ export function DataTable<TValue>({
           </DropdownMenu>
           <Separator orientation="vertical" className="h-6" />
           <Button onClick={() => onDialogCreation(true)}>
-            {t('athletes.filters.create_athlete')}
+            {t('athletes:filters.create_athlete')}
           </Button>
         </div>
       </div>
@@ -191,7 +191,7 @@ export function DataTable<TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center"
                 >
-                  {t('athletes.filters.no_results')}
+                  {t('athletes:filters.no_results')}
                 </TableCell>
               </TableRow>
             )}
@@ -201,13 +201,13 @@ export function DataTable<TValue>({
       <div className="flex justify-between items-center py-4">
         <div className="flex items-center gap-4 text-sm text-muted-foreground">
           <div>
-            {t('table.selected_rows', {
+            {t('common:table.selected_rows', {
               count: table.getFilteredSelectedRowModel().rows.length,
               total: table.getFilteredRowModel().rows.length,
             })}
           </div>
           <div className="flex items-center gap-2">
-            <span>{t('table.rows_per_page')}</span>
+            <span>{t('common:table.rows_per_page')}</span>
             <Select
               value={pageSize.toString()}
               onValueChange={(value) => setPageSize(Number(value))}

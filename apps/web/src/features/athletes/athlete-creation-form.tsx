@@ -29,7 +29,7 @@ export function AthleteCreationForm({
   onSuccess,
   onCancel,
 }: AthleteCreationFormProps) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['athletes']);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -58,9 +58,9 @@ export function AthleteCreationForm({
           name="firstName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('athlete.form.first_name')}</FormLabel>
+              <FormLabel>{t('form.first_name')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('athlete.form.first_name_placeholder')} {...field} />
+                <Input placeholder={t('form.first_name_placeholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -71,9 +71,9 @@ export function AthleteCreationForm({
           name="lastName"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('athlete.form.last_name')}</FormLabel>
+              <FormLabel>{t('form.last_name')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('athlete.form.last_name_placeholder')} {...field} />
+                <Input placeholder={t('form.last_name_placeholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -84,7 +84,7 @@ export function AthleteCreationForm({
           name="birthday"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('athlete.form.birthday')}</FormLabel>
+              <FormLabel>{t('form.birthday')}</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -97,9 +97,9 @@ export function AthleteCreationForm({
           name="country"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('athlete.form.country')}</FormLabel>
+              <FormLabel>{t('form.country')}</FormLabel>
               <FormControl>
-                <Input placeholder={t('athlete.form.country_placeholder')} {...field} />
+                <Input placeholder={t('form.country_placeholder')} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -107,9 +107,9 @@ export function AthleteCreationForm({
         />
         <div className="flex justify-end gap-2">
           <Button type="button" variant="outline" onClick={onCancel}>
-            {t('common.cancel')}
+            {t('form.button_cancel')}
           </Button>
-          <Button type="submit">{t('common.create')}</Button>
+          <Button type="submit">{t('form.button_create')}</Button>
         </div>
       </form>
     </Form>

@@ -16,7 +16,7 @@ export const Route = createFileRoute('/athletes')({
 })
 
 function AthletesPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['common', 'athletes']);
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false)
   const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null)
   const queryClient = useQueryClient()
@@ -49,8 +49,8 @@ function AthletesPage() {
     queryClient.invalidateQueries({ queryKey: ['athletes'] })
   }
 
-  if (athletesLoading) return <div>{t('loading')}</div>
-  if (!athletes) return <div>{t('no_results')}</div>
+  if (athletesLoading) return <div>{t('common:loading')}</div>
+  if (!athletes) return <div>{t('common:no_results')}</div>
 
   return (
     <div className="relative flex-1">
@@ -63,14 +63,14 @@ function AthletesPage() {
       >
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
-            {t('loading')}
+            {t('common:loading')}
           </div>
         ) : !athletes?.length ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>{t('no_results')}</p>
-            <p className="text-sm">{t('start_create')}</p>
+            <p>{t('common:no_results')}</p>
+            <p className="text-sm">{t('common:start_create')}</p>
             <Button onClick={() => setCreateAthleteModalOpen(true)}>
-              {t('create')}
+              {t('athletes:filters.create_athlete')}
             </Button>
           </div>
         ) : (
@@ -86,7 +86,7 @@ function AthletesPage() {
       <DetailsPanel
         open={!!selectedAthlete}
         onClose={() => setSelectedAthlete(null)}
-        title={t('details')}
+        title={t('athletes:details.title')}
       >
         {athleteDetails && (
           <div className="p-4">
@@ -99,8 +99,8 @@ function AthletesPage() {
       <DialogCreation
         open={createAthleteModalOpen}
         onOpenChange={setCreateAthleteModalOpen}
-        title={t('create')}
-        description={t('create_description')}
+        title={t('athletes:creation.title')}
+        description={t('athletes:creation.description')}
       >
         <AthleteCreationForm
           onSuccess={handleCreationSuccess}
