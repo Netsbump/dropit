@@ -95,7 +95,6 @@ export class AthleteRepository extends EntityRepository<Athlete> {
   async findAllWithDetails(): Promise<AthleteDetails[]> {
     // Récupère les résultats bruts (format "table", non-hydratés) via execute('all'). durée 4ms.
     const athletes = await this.getBaseQuery().execute('all');
-    console.log('Query result:', athletes);
     return athletes as AthleteDetails[];
   }
 

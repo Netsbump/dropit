@@ -51,7 +51,7 @@ export function AthleteDetail({ athlete }: AthleteDetailProps) {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
-  console.log(athlete);
+
   // Mutation for updating athlete
   const { mutate: updateAthleteMutation } = useMutation({
     mutationFn: async (data: UpdateAthleteData) => {

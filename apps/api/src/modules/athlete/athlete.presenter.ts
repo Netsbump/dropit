@@ -4,7 +4,6 @@ import { AthleteDetails } from './athlete.repository';
 
 export const AthletePresenter = {
   toDto(athlete: AthleteDetails): AthleteDto {
-    console.log('athlete dans le presenter', athlete);
     return {
       id: athlete.id,
       firstName: athlete.firstName,

@@ -25,6 +25,7 @@
     "/workouts/$workoutId": "Workout Name",
     "/planning": "Calendar",
     "/athletes": "Athletes",
+    "/athletes/$athleteId": "Athlete",
     "/about": "Help & Support"
   },
   "auth": {
@@ -106,4 +107,4 @@
       "selected_rows": "{{count}} of {{total}} column(s) selected."
     }
   }
-} 
+}

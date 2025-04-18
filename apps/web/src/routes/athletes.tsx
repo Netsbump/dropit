@@ -1,8 +1,7 @@
-import { AthleteDetail } from '@/features/athletes/athlete-detail';
 import { api } from '@/lib/api';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
 import { AthleteCreationForm } from '../features/athletes/athlete-creation-form';
 import { columns } from '../features/athletes/columns';
@@ -10,7 +9,6 @@ import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
 import { HeaderPage } from '../shared/components/layout/header-page';
 import { Button } from '../shared/components/ui/button';
-import { DetailsPanel } from '../shared/components/ui/details-panel';
 
 export const Route = createFileRoute('/athletes')({
   component: AthletesPage,
@@ -19,8 +17,12 @@ export const Route = createFileRoute('/athletes')({
 function AthletesPage() {
   const { t } = useTranslation(['common', 'athletes']);
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
-  const [selectedAthlete, setSelectedAthlete] = useState<string | null>(null);
   const queryClient = useQueryClient();
+  const navigate = Route.useNavigate();
+  const matches = useMatches();
+  const isAthleteDetail = matches.some(
+    (match) => match.routeId === '/athletes/$athleteId'
+  );
 
   const { data: athletes, isLoading: athletesLoading } = useQuery({
     queryKey: ['athletes'],
@@ -31,24 +33,15 @@ function AthletesPage() {
     },
   });
 
-  const { data: athleteDetails } = useQuery({
-    queryKey: ['athlete', selectedAthlete],
-    queryFn: async () => {
-      if (!selectedAthlete) return null;
-      const response = await api.athlete.getAthlete({
-        params: { id: selectedAthlete },
-      });
-      if (response.status !== 200)
-        throw new Error('Failed to load athlete details');
-      return response.body;
-    },
-    enabled: !!selectedAthlete,
-  });
-
   const handleCreationSuccess = () => {
     setCreateAthleteModalOpen(false);
     queryClient.invalidateQueries({ queryKey: ['athletes'] });
   };
+
+  // Si on est sur un détail d'athlète, on affiche directement le contenu
+  if (isAthleteDetail) {
+    return <Outlet />;
+  }
 
   if (athletesLoading) return <div>{t('common:loading')}</div>;
   if (!athletes) return <div>{t('common:no_results')}</div>;
@@ -57,11 +50,7 @@ function AthletesPage() {
     <div className="relative flex-1">
       <HeaderPage title="athletes:title" description="athletes:description" />
 
-      <div
-        className={`transition-all duration-200 ${
-          selectedAthlete ? 'mr-[400px]' : ''
-        }`}
-      >
+      <div>
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common:loading')}
@@ -79,18 +68,12 @@ function AthletesPage() {
             columns={columns}
             data={athletes}
             onDialogCreation={setCreateAthleteModalOpen}
-            onRowClick={(athleteId) => setSelectedAthlete(athleteId)}
+            onRowClick={(athleteId) =>
+              navigate({ to: `/athletes/${athleteId}` })
+            }
           />
         )}
       </div>
-
-      <DetailsPanel
-        open={!!selectedAthlete}
-        onClose={() => setSelectedAthlete(null)}
-        title={t('athletes:details.title')}
-      >
-        {athleteDetails && <AthleteDetail athlete={athleteDetails} />}
-      </DetailsPanel>
 
       <DialogCreation
         open={createAthleteModalOpen}
