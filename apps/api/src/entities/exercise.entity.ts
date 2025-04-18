@@ -8,8 +8,8 @@ import {
 } from '@mikro-orm/core';
 import { ExerciseCategory } from './exercise-category.entity';
 import { ExerciseComplex } from './exercise-complex.entity';
+import { Media } from './media.entity';
 import { PersonalRecord } from './personal-record.entity';
-import { Video } from './video.entity';
 
 @Entity()
 export class Exercise {
@@ -37,8 +37,8 @@ export class Exercise {
   @ManyToOne(() => ExerciseCategory)
   exerciseCategory!: ExerciseCategory;
 
-  @ManyToOne(() => Video, { nullable: true })
-  video?: Video;
+  @ManyToOne(() => Media, { nullable: true })
+  video?: Media;
 
   @OneToMany(
     () => ExerciseComplex,

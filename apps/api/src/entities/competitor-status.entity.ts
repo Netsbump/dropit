@@ -28,9 +28,6 @@ export class CompetitorStatus {
   @Property({ nullable: true })
   weightCategory?: number;
 
-  @Property()
-  startDate: Date = new Date();
-
   @Property({ nullable: true })
   endDate?: Date;
 

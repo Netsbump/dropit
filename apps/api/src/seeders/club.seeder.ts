@@ -1,28 +1,24 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ClubName } from '../entities/club-name.entity';
 import { Club } from '../entities/club.entity';
 
 export async function seedClubs(em: EntityManager): Promise<Club[]> {
   console.log('Seeding clubs...');
 
-  // Récupérer les noms de clubs existants
-  const clubNames = await em.find(ClubName, {});
-
-  if (clubNames.length === 0) {
-    console.log('No club names found. Please run seedClubNames first.');
-    return [];
-  }
+  const clubNamesData = [
+    { name: 'CrossFit Paris' },
+    { name: 'Weightlifting Club Lyon' },
+    { name: 'Strength Academy Marseille' },
+  ];
 
   const createdClubs: Club[] = [];
 
-  // Créer un club pour chaque nom de club
-  for (const clubName of clubNames) {
+  for (const clubNameData of clubNamesData) {
     // Vérifier si un club existe déjà avec ce nom
-    const existingClub = await em.findOne(Club, { clubName });
+    const existingClub = await em.findOne(Club, { name: clubNameData.name });
 
     if (!existingClub) {
       const club = new Club();
-      club.clubName = clubName;
+      club.name = clubNameData.name;
 
       em.persist(club);
       createdClubs.push(club);

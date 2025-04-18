@@ -67,7 +67,7 @@ export async function seedAthletes(
   }
 
   const club = clubs[0]; // Utiliser le premier club trouvé
-  console.log(`Using club: ${club.clubName.name} for all athletes`);
+  console.log(`Using club: ${club.name} for all athletes`);
 
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;

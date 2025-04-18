@@ -1,6 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from '../entities/athlete.entity';
-import { CompetitorLevel, CompetitorStatus, SexCategory } from '../entities/competitor-status.entity';
+import {
+  CompetitorLevel,
+  CompetitorStatus,
+  SexCategory,
+} from '../entities/competitor-status.entity';
 
 export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
   console.log('Seeding competitor statuses...');
@@ -41,7 +45,6 @@ export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
     status.level = competitorData[i].level;
     status.sexCategory = competitorData[i].sexCategory;
     status.weightCategory = competitorData[i].weightCategory;
-    status.startDate = new Date();
     status.athlete = athletes[i];
 
     em.persist(status);
