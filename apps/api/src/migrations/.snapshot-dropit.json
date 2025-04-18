@@ -47,77 +47,6 @@
           "mappedType": "datetime"
         }
       },
-      "name": "club_name",
-      "schema": "public",
-      "indexes": [
-        {
-          "columnNames": [
-            "name"
-          ],
-          "composite": false,
-          "keyName": "club_name_name_unique",
-          "constraint": true,
-          "primary": false,
-          "unique": true
-        },
-        {
-          "keyName": "club_name_pkey",
-          "columnNames": [
-            "id"
-          ],
-          "composite": false,
-          "constraint": true,
-          "primary": true,
-          "unique": true
-        }
-      ],
-      "checks": [],
-      "foreignKeys": {},
-      "nativeEnums": {}
-    },
-    {
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "uuid",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "default": "gen_random_uuid()",
-          "mappedType": "uuid"
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(255)",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 255,
-          "mappedType": "string"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamptz",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "timestamptz",
-          "unsigned": false,
-          "autoincrement": false,
-          "primary": false,
-          "nullable": false,
-          "length": 6,
-          "mappedType": "datetime"
-        }
-      },
       "name": "complex_category",
       "schema": "public",
       "indexes": [
@@ -393,14 +322,15 @@
           "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
-        "club_name_id": {
-          "name": "club_name_id",
-          "type": "uuid",
+        "name": {
+          "name": "name",
+          "type": "varchar(255)",
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "mappedType": "uuid"
+          "length": 255,
+          "mappedType": "string"
         },
         "logo_id": {
           "name": "logo_id",
@@ -437,10 +367,10 @@
       "indexes": [
         {
           "columnNames": [
-            "club_name_id"
+            "name"
           ],
           "composite": false,
-          "keyName": "club_club_name_id_unique",
+          "keyName": "club_name_unique",
           "constraint": true,
           "primary": false,
           "unique": true
@@ -458,18 +388,6 @@
       ],
       "checks": [],
       "foreignKeys": {
-        "club_club_name_id_foreign": {
-          "constraintName": "club_club_name_id_foreign",
-          "columnNames": [
-            "club_name_id"
-          ],
-          "localTableName": "public.club",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.club_name",
-          "updateRule": "cascade"
-        },
         "club_logo_id_foreign": {
           "constraintName": "club_logo_id_foreign",
           "columnNames": [

@@ -1,13 +1,12 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { seedAthletes } from './athlete.seeder';
-import { seedClubNames } from './club-name.seeder';
 import { seedClubs } from './club.seeder';
 import { seedCoachAthleteRelationships } from './coach-athlete.seeder';
-import { seedWorkouts } from './workout.seeder';
 import { seedCompetitorStatuses } from './competitor-status.seeder';
 import { seedPersonalRecords } from './personal-record.seeder';
-import { seedPhysicalMetrics } from './physical-metric.seeder'; 
+import { seedPhysicalMetrics } from './physical-metric.seeder';
+import { seedWorkouts } from './workout.seeder';
 
 export class MainSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
@@ -17,7 +16,6 @@ export class MainSeeder extends Seeder {
     await seedWorkouts(em);
 
     // 2. Seed des entités utilisateur (clubs, athlètes, relations)
-    await seedClubNames(em);
     await seedClubs(em);
     const athletes = await seedAthletes(em);
     await seedCoachAthleteRelationships(em);

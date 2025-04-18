@@ -14,7 +14,6 @@ export * from './workout-element.entity';
 export * from './user.entity';
 export * from './media.entity';
 export * from './athlete.entity';
-export * from './club-name.entity';
 export * from './club.entity';
 export * from './coach-athlete.entity';
 export * from './physical-metric.entity';
