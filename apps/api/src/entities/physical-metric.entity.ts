@@ -12,9 +12,6 @@ export class PhysicalMetric {
   @Property({ type: 'float', nullable: true })
   height?: number;
 
-  @Property()
-  startDate: Date = new Date();
-
   @Property({ nullable: true })
   endDate?: Date;
 

@@ -13,21 +13,16 @@ export async function seedPhysicalMetrics(em: EntityManager): Promise<void> {
     for (let i = 0; i < 3; i++) {
       const metric = new PhysicalMetric();
       metric.athlete = athlete;
-      
+
       // Poids entre 50 et 100kg
       metric.weight = Math.floor(Math.random() * (100 - 50) + 50);
       // Taille entre 1.60m et 1.90m
-      metric.height = Number((Math.random() * (1.90 - 1.60) + 1.60).toFixed(2));
-      
-      // Dates espacées de 2 mois
-      const date = new Date();
-      date.setMonth(date.getMonth() - (i * 2));
-      metric.startDate = date;
-      
+      metric.height = Number((Math.random() * (1.9 - 1.6) + 1.6).toFixed(2));
+
       // La date de fin est définie pour les anciennes mesures
       if (i > 0) {
-        const endDate = new Date(date);
-        endDate.setMonth(endDate.getMonth() + 2);
+        const endDate = new Date();
+        endDate.setMonth(endDate.getMonth() - i * 2 + 2);
         metric.endDate = endDate;
       }
 
