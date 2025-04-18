@@ -85,7 +85,7 @@ src/
 ├── modules/         # Feature modules
 │   ├── exercise/    # Exercise module
 │   ├── complex/     # Complex module
-│   └── video/       # Video module
+│   └── media/       # Media module
 ├── seeders/         # Database seeders
 └── main.ts          # Application entry point
 ```

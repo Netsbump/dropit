@@ -7,7 +7,6 @@ export * from './exercise-category.entity';
 export * from './exercise-complex.entity';
 export * from './session.entity';
 export * from './test.entity';
-export * from './video.entity';
 export * from './workout.entity';
 export * from './workout-category.entity';
 export * from './workout-element.entity';
