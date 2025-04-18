@@ -4,145 +4,139 @@ import {
   Controller,
   NotFoundException,
 } from '@nestjs/common';
-import { NestRequestShapes, TsRest, TsRestRequest } from '@ts-rest/nest';
-import { NestControllerInterface } from '@ts-rest/nest';
-import { nestControllerContract } from '@ts-rest/nest';
+import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { WorkoutCategoryService } from './workout-category.service';
 
-const c = nestControllerContract(workoutCategoryContract);
-type RequestShapes = NestRequestShapes<typeof c>;
+const c = workoutCategoryContract;
 
 @Controller()
-export class WorkoutCategoryController
-  implements NestControllerInterface<typeof c>
-{
+export class WorkoutCategoryController {
   constructor(
     private readonly workoutCategoryService: WorkoutCategoryService
   ) {}
 
-  @TsRest(c.getWorkoutCategories)
-  async getWorkoutCategories(
-    @TsRestRequest() request: RequestShapes['getWorkoutCategories']
-  ) {
-    try {
-      const workoutCategories =
-        await this.workoutCategoryService.getWorkoutCategories();
-      return {
-        status: 200 as const,
-        body: workoutCategories,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
+  @TsRestHandler(c.getWorkoutCategories)
+  async getWorkoutCategories() {
+    return tsRestHandler(c.getWorkoutCategories, async () => {
+      try {
+        const workoutCategories =
+          await this.workoutCategoryService.getWorkoutCategories();
         return {
-          status: 404 as const,
-          body: {
-            message: error.message,
-          },
+          status: 200,
+          body: workoutCategories,
         };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return {
+            status: 404,
+            body: {
+              message: error.message,
+            },
+          };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.getWorkoutCategory)
-  async getWorkoutCategory(
-    @TsRestRequest()
-    { params }: RequestShapes['getWorkoutCategory']
-  ) {
-    try {
-      const workoutCategory =
-        await this.workoutCategoryService.getWorkoutCategory(params.id);
-      return {
-        status: 200 as const,
-        body: workoutCategory,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
+  @TsRestHandler(c.getWorkoutCategory)
+  async getWorkoutCategory() {
+    return tsRestHandler(c.getWorkoutCategory, async ({ params }) => {
+      try {
+        const workoutCategory =
+          await this.workoutCategoryService.getWorkoutCategory(params.id);
         return {
-          status: 404 as const,
-          body: {
-            message: error.message,
-          },
+          status: 200,
+          body: workoutCategory,
         };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return {
+            status: 404,
+            body: {
+              message: error.message,
+            },
+          };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.createWorkoutCategory)
-  async createWorkoutCategory(
-    @TsRestRequest() { body }: RequestShapes['createWorkoutCategory']
-  ) {
-    try {
-      const workoutCategory =
-        await this.workoutCategoryService.createWorkoutCategory(body);
-      return {
-        status: 201 as const,
-        body: workoutCategory,
-      };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
+  @TsRestHandler(c.createWorkoutCategory)
+  async createWorkoutCategory() {
+    return tsRestHandler(c.createWorkoutCategory, async ({ body }) => {
+      try {
+        const workoutCategory =
+          await this.workoutCategoryService.createWorkoutCategory(body);
         return {
-          status: 400 as const,
-          body: {
-            message: error.message,
-          },
+          status: 201,
+          body: workoutCategory,
         };
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          return {
+            status: 400,
+            body: {
+              message: error.message,
+            },
+          };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.updateWorkoutCategory)
-  async updateWorkoutCategory(
-    @TsRestRequest() { params, body }: RequestShapes['updateWorkoutCategory']
-  ) {
-    try {
-      const workoutCategory =
-        await this.workoutCategoryService.updateWorkoutCategory(
-          params.id,
-          body
-        );
-      return {
-        status: 200 as const,
-        body: workoutCategory,
-      };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
+  @TsRestHandler(c.updateWorkoutCategory)
+  async updateWorkoutCategory() {
+    return tsRestHandler(c.updateWorkoutCategory, async ({ params, body }) => {
+      try {
+        const workoutCategory =
+          await this.workoutCategoryService.updateWorkoutCategory(
+            params.id,
+            body
+          );
         return {
-          status: 400 as const,
-          body: {
-            message: error.message,
-          },
+          status: 200,
+          body: workoutCategory,
         };
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          return {
+            status: 400,
+            body: {
+              message: error.message,
+            },
+          };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.deleteWorkoutCategory)
-  async deleteWorkoutCategory(
-    @TsRestRequest() { params }: RequestShapes['deleteWorkoutCategory']
-  ) {
-    try {
-      await this.workoutCategoryService.deleteWorkoutCategory(params.id);
+  @TsRestHandler(c.deleteWorkoutCategory)
+  async deleteWorkoutCategory() {
+    return tsRestHandler(c.deleteWorkoutCategory, async ({ params }) => {
+      try {
+        await this.workoutCategoryService.deleteWorkoutCategory(params.id);
 
-      return {
-        status: 200 as const,
-        body: {
-          message: 'Workout category deleted successfully',
-        },
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
         return {
-          status: 404 as const,
+          status: 200,
           body: {
-            message: error.message,
+            message: 'Workout category deleted successfully',
           },
         };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return {
+            status: 404,
+            body: {
+              message: error.message,
+            },
+          };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 }

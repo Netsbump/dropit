@@ -4,25 +4,18 @@ import {
   Controller,
   NotFoundException,
 } from '@nestjs/common';
-import {
-  NestControllerInterface,
-  NestRequestShapes,
-  TsRest,
-  TsRestRequest,
-  nestControllerContract,
-} from '@ts-rest/nest';
+import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
+
 import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
 import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
 import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
 import { GetAthletesUseCase } from './use-cases/get-athletes.use-case';
 import { UpdateAthleteUseCase } from './use-cases/update-athlete.use-case';
-const c = nestControllerContract(apiContract.athlete);
-type RequestShapes = NestRequestShapes<typeof c>;
+
+const c = apiContract.athlete;
 
 @Controller()
-export class AthleteController
-  implements NestControllerInterface<typeof apiContract.athlete>
-{
+export class AthleteController {
   constructor(
     private readonly getAthletesUseCase: GetAthletesUseCase,
     private readonly getAthleteUseCase: GetAthleteUseCase,
@@ -31,117 +24,92 @@ export class AthleteController
     private readonly deleteAthleteUseCase: DeleteAthleteUseCase
   ) {}
 
-  @TsRest(c.getAthletes)
-  async getAthletes(@TsRestRequest() request: RequestShapes['getAthletes']) {
-    try {
-      const athletes = await this.getAthletesUseCase.execute();
-
-      return {
-        status: 200 as const,
-        body: athletes,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return { status: 404 as const, body: { message: error.message } };
+  // ──────────────────────────────── GET /athlete
+  @TsRestHandler(c.getAthletes)
+  async getAthletes() {
+    return tsRestHandler(c.getAthletes, async () => {
+      try {
+        const athletes = await this.getAthletesUseCase.execute();
+        return { status: 200, body: athletes };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return { status: 404, body: { message: error.message } };
+        }
+        throw error;
       }
-
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.getAthlete)
-  async getAthlete(@TsRestRequest() { params }: RequestShapes['getAthlete']) {
-    try {
-      const athlete = await this.getAthleteUseCase.execute(params.id);
-
-      return {
-        status: 200 as const,
-        body: athlete,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return {
-          status: 404 as const,
-          body: { message: error.message },
-        };
+  // ──────────────────────────────── GET /athlete/:id
+  @TsRestHandler(c.getAthlete)
+  async getAthlete() {
+    return tsRestHandler(c.getAthlete, async ({ params }) => {
+      try {
+        const athlete = await this.getAthleteUseCase.execute(params.id);
+        return { status: 200, body: athlete };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return { status: 404, body: { message: error.message } };
+        }
+        throw error;
       }
-
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.createAthlete)
-  async createAthlete(
-    @TsRestRequest() { body }: RequestShapes['createAthlete']
-  ) {
-    try {
-      const newAthlete = await this.createAthleteUseCase.execute(body);
-      return {
-        status: 201 as const,
-        body: newAthlete,
-      };
-    } catch (error) {
-      if (error instanceof BadRequestException) {
-        return {
-          status: 400 as const,
-          body: { message: error.message },
-        };
+  // ──────────────────────────────── POST /athlete
+  @TsRestHandler(c.createAthlete)
+  async createAthlete() {
+    return tsRestHandler(c.createAthlete, async ({ body }) => {
+      try {
+        const newAthlete = await this.createAthleteUseCase.execute(body);
+        return { status: 201, body: newAthlete };
+      } catch (error) {
+        if (error instanceof BadRequestException) {
+          return { status: 400, body: { message: error.message } };
+        }
+        if (error instanceof NotFoundException) {
+          return { status: 404, body: { message: error.message } };
+        }
+        throw error;
       }
-      if (error instanceof NotFoundException) {
-        return {
-          status: 404 as const,
-          body: { message: error.message },
-        };
-      }
-
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.updateAthlete)
-  async updateAthlete(
-    @TsRestRequest() { params, body }: RequestShapes['updateAthlete']
-  ) {
-    try {
-      const updatedAthlete = await this.updateAthleteUseCase.execute(
-        params.id,
-        body
-      );
-
-      return {
-        status: 200 as const,
-        body: updatedAthlete,
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
-        return {
-          status: 404 as const,
-          body: { message: error.message },
-        };
+  // ──────────────────────────────── PATCH /athlete/:id
+  @TsRestHandler(c.updateAthlete)
+  async updateAthlete() {
+    return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
+      try {
+        const updated = await this.updateAthleteUseCase.execute(
+          params.id,
+          body
+        );
+        return { status: 200, body: updated };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return { status: 404, body: { message: error.message } };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 
-  @TsRest(c.deleteAthlete)
-  async deleteAthlete(
-    @TsRestRequest() { params }: RequestShapes['deleteAthlete']
-  ) {
-    try {
-      await this.deleteAthleteUseCase.execute(params.id);
-
-      return {
-        status: 200 as const,
-        body: { message: 'Athlete deleted successfully' },
-      };
-    } catch (error) {
-      if (error instanceof NotFoundException) {
+  // ──────────────────────────────── DELETE /athlete/:id
+  @TsRestHandler(c.deleteAthlete)
+  async deleteAthlete() {
+    return tsRestHandler(c.deleteAthlete, async ({ params }) => {
+      try {
+        await this.deleteAthleteUseCase.execute(params.id);
         return {
-          status: 404 as const,
-          body: { message: error.message },
+          status: 200,
+          body: { message: 'Athlete deleted successfully' },
         };
+      } catch (error) {
+        if (error instanceof NotFoundException) {
+          return { status: 404, body: { message: error.message } };
+        }
+        throw error;
       }
-      throw error;
-    }
+    });
   }
 }
