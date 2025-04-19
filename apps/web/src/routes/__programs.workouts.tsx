@@ -29,7 +29,7 @@ function WorkoutPage() {
   const { toast } = useToast();
 
   // Mutation pour créer un workout
-  const { mutate: createWorkoutMutation, isLoading: isCreating } = useMutation({
+  const { mutate: createWorkoutMutation } = useMutation({
     mutationFn: async (data: CreateWorkout) => {
       const response = await api.workout.createWorkout({ body: data });
       if (response.status !== 201) {
