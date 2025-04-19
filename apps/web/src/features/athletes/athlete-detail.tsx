@@ -1,3 +1,8 @@
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import {
@@ -8,11 +13,19 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { Skeleton } from '@/shared/components/ui/skeleton';
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from '@/shared/components/ui/tabs';
 import { useTranslation } from '@dropit/i18n';
 import {
   AthleteDto,
   CompetitorLevel,
   CreateCompetitorStatus,
+  PersonalRecordDto,
   SexCategory,
   UpdateCompetitorStatus,
 } from '@dropit/schemas';
@@ -26,11 +39,13 @@ import {
 } from '@radix-ui/react-select';
 import { format as formatDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Pencil, Plus } from 'lucide-react';
+import { Dumbbell, Pencil, Plus } from 'lucide-react';
 import { Form, useForm } from 'react-hook-form';
 
 type AthleteDetailProps = {
   athlete: AthleteDto;
+  personalRecords?: PersonalRecordDto[];
+  personalRecordsLoading?: boolean;
   isEditingCompetitorStatus: boolean;
   setIsEditingCompetitorStatus: (isEditing: boolean) => void;
   isCreatingCompetitorStatus: boolean;
@@ -46,8 +61,15 @@ type AthleteDetailProps = {
   onCreateCompetitorStatus: (data: CreateCompetitorStatus) => void;
 };
 
+// Helper function to generate initials from name
+function getInitials(firstName: string, lastName: string): string {
+  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
+}
+
 export function AthleteDetail({
   athlete,
+  personalRecords,
+  personalRecordsLoading,
   isEditingCompetitorStatus,
   setIsEditingCompetitorStatus,
   isCreatingCompetitorStatus,
@@ -61,10 +83,35 @@ export function AthleteDetail({
   const { t } = useTranslation(['athletes']);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
+      {/* Profile Header with Avatar */}
+      <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
+        <Avatar className="h-28 w-28 border-2 border-primary">
+          <AvatarImage
+            src={athlete.avatar}
+            alt={`${athlete.firstName} ${athlete.lastName}`}
+          />
+          <AvatarFallback className="text-xl bg-primary/10">
+            {getInitials(athlete.firstName, athlete.lastName)}
+          </AvatarFallback>
+        </Avatar>
+
+        <div className="flex flex-col items-center md:items-start">
+          <h1 className="text-2xl font-bold mb-1">
+            {athlete.firstName} {athlete.lastName}
+          </h1>
+          {athlete.club && (
+            <p className="text-muted-foreground mb-2">{athlete.club}</p>
+          )}
+          {athlete.country && (
+            <p className="text-sm text-muted-foreground">{athlete.country}</p>
+          )}
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
-        <Card className="bg-background rounded-md shadow-none">
+        <Card className="bg-background rounded-md border shadow-sm">
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold mb-4">
               {t('athletes:details.personal_info')}
@@ -110,7 +157,7 @@ export function AthleteDetail({
         {/* Stats & Club */}
         <div className="space-y-6">
           {/* Stats */}
-          <Card className="bg-background rounded-md shadow-none">
+          <Card className="bg-background rounded-md border shadow-sm">
             <CardContent className="space-y-4 pt-6">
               <h2 className="text-lg font-semibold mb-4">
                 {t('athletes:details.statistics')}
@@ -133,33 +180,8 @@ export function AthleteDetail({
             </CardContent>
           </Card>
 
-          {/* Personal Records */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardContent className="space-y-4 pt-6">
-              <h2 className="text-lg font-semibold mb-4">
-                {t('athletes:details.personal_records')}
-              </h2>
-              {athlete.personalRecords ? (
-                <>
-                  <div className="text-sm text-muted-foreground">
-                    {t('athletes:details.snatch')}:{' '}
-                    {athlete.personalRecords.snatch ?? '-'}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {t('athletes:details.clean_and_jerk')}:{' '}
-                    {athlete.personalRecords.cleanAndJerk ?? '-'}
-                  </div>
-                </>
-              ) : (
-                <div className="text-sm text-muted-foreground">
-                  {t('athletes:details.no_personal_records')}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Competitor Status */}
-          <Card className="bg-background rounded-md shadow-none">
+          <Card className="bg-background rounded-md border shadow-sm">
             <CardContent className="space-y-4 pt-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -456,8 +478,116 @@ export function AthleteDetail({
         </div>
       </div>
 
+      {/* Personal Records Section */}
+      <Card className="bg-background rounded-md border shadow-sm">
+        <CardContent className="space-y-4 pt-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">
+              {t('athletes:details.personal_records')}
+            </h2>
+          </div>
+
+          {personalRecordsLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </div>
+          ) : personalRecords && personalRecords.length > 0 ? (
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList>
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="all">All Records</TabsTrigger>
+              </TabsList>
+              <TabsContent value="overview" className="space-y-4 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {athlete.personalRecords ? (
+                    <>
+                      <Card className="bg-primary/5">
+                        <CardContent className="pt-6 text-center">
+                          <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
+                          <div className="text-sm font-medium">
+                            {t('athletes:details.snatch')}
+                          </div>
+                          <div className="text-2xl font-bold">
+                            {athlete.personalRecords.snatch ?? '-'} kg
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-primary/5">
+                        <CardContent className="pt-6 text-center">
+                          <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
+                          <div className="text-sm font-medium">
+                            {t('athletes:details.clean_and_jerk')}
+                          </div>
+                          <div className="text-2xl font-bold">
+                            {athlete.personalRecords.cleanAndJerk ?? '-'} kg
+                          </div>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-primary/5">
+                        <CardContent className="pt-6 text-center">
+                          <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
+                          <div className="text-sm font-medium">
+                            {t('athletes:details.total')}
+                          </div>
+                          <div className="text-2xl font-bold">
+                            {athlete.personalRecords.snatch &&
+                            athlete.personalRecords.cleanAndJerk
+                              ? Number(athlete.personalRecords.snatch) +
+                                Number(athlete.personalRecords.cleanAndJerk)
+                              : '-'}{' '}
+                            kg
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </>
+                  ) : (
+                    <div className="col-span-3 text-center py-4 text-muted-foreground">
+                      {t('athletes:details.no_personal_records')}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+              <TabsContent value="all" className="space-y-4 pt-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {personalRecords ? (
+                    personalRecords.map((record) => (
+                      <Card key={record.id} className="bg-primary/5">
+                        <CardContent className="pt-6">
+                          <div className="text-sm font-medium">
+                            {record.exerciseName ||
+                              `Exercise ${record.exerciseId.slice(0, 4)}`}
+                          </div>
+                          <div className="text-xl font-bold">
+                            {record.weight} kg
+                          </div>
+                          <div className="text-xs text-muted-foreground">
+                            {formatDate(new Date(record.date), 'PPP', {
+                              locale: fr,
+                            })}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))
+                  ) : (
+                    <div className="col-span-3 text-center py-4 text-muted-foreground">
+                      {t('athletes:details.no_personal_records')}
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          ) : (
+            <div className="text-sm text-muted-foreground py-4">
+              {t('athletes:details.no_personal_records')}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
       {/* History */}
-      <Card className="bg-background rounded-md shadow-none">
+      <Card className="bg-background rounded-md border shadow-sm">
         <CardContent className="space-y-4 pt-6">
           <h2 className="text-lg font-semibold mb-4">
             {t('athletes:details.training_history')}

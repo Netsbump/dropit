@@ -11,6 +11,7 @@ import { ComplexCategoryModule } from './modules/complex-category/complex-catego
 import { ComplexModule } from './modules/complex/complex.module';
 import { ExerciseModule } from './modules/exercise/exercise.module';
 import { ExerciseCategoryModule } from './modules/exerciseCategory/exerciseCategory.module';
+import { PersonalRecordModule } from './modules/personal-record/personal-record.module';
 import { SessionModule } from './modules/session/session.module';
 import { WorkoutCategoryModule } from './modules/workout-category/workout-category.module';
 import { WorkoutModule } from './modules/workout/workout.module';
@@ -28,6 +29,7 @@ import { WorkoutModule } from './modules/workout/workout.module';
     SessionModule,
     WorkoutCategoryModule,
     WorkoutModule,
+    PersonalRecordModule,
   ],
   controllers: [AppController],
   providers: [AppService],

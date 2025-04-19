@@ -8,3 +8,4 @@ export * from './session.schema';
 export * from './workout-category.schema';
 export * from './workout.schema';
 export * from './competitor-status.schema';
+export * from './personal-record.schema';

@@ -45,6 +45,27 @@ function AthleteDetailPage() {
     },
   });
 
+  // Fetch all personal records for the athlete
+  const { data: personalRecords, isLoading: personalRecordsLoading } = useQuery(
+    {
+      queryKey: ['personalRecords', athleteId],
+      queryFn: async () => {
+        // Don't execute if athlete is not loaded yet
+        if (!athlete?.id) return null;
+
+        // This is a placeholder API call - you'll need to implement this endpoint
+        const response = await api.personalRecord.getAthletePersonalRecords({
+          params: { id: athlete.id },
+        });
+
+        if (response.status !== 200)
+          throw new Error('Failed to load personal records');
+        return response.body;
+      },
+      enabled: !!athlete?.id, // Only run if athlete.id exists
+    }
+  );
+
   // L'erreur de linter indique que ces variables ne sont pas utilisées, mais gardons
   // la requête pour s'assurer que les données sont chargées - potentiel usage futur
   useQuery({
@@ -235,9 +256,11 @@ function AthleteDetailPage() {
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-6">
-        <div className="max-w-5xl mx-auto">
+        <div className="w-full">
           <AthleteDetail
             athlete={athlete}
+            personalRecords={personalRecords || []}
+            personalRecordsLoading={personalRecordsLoading}
             isEditingCompetitorStatus={isEditingCompetitorStatus}
             setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
             isCreatingCompetitorStatus={isCreatingCompetitorStatus}
