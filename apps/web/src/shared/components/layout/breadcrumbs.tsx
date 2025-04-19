@@ -20,6 +20,10 @@ export function Breadcrumbs() {
     (match) => match.routeId === '/workouts/$workoutId'
   );
 
+  const athleteMatch = matches.find(
+    (match) => match.routeId === '/athletes/$athleteId'
+  );
+
   // Si on est sur une page de détail workout, récupérer les infos
   const { data: workout } = useQuery({
     queryKey: ['workout', workoutMatch?.params.workoutId],
@@ -34,9 +38,23 @@ export function Breadcrumbs() {
     enabled: !!workoutMatch?.params.workoutId,
   });
 
+  // Si on est sur une page de détail athlete, récupérer les infos
+  const { data: athlete } = useQuery({
+    queryKey: ['athlete', athleteMatch?.params.athleteId],
+    queryFn: async () => {
+      if (!athleteMatch?.params.athleteId) return null;
+      const response = await api.athlete.getAthlete({
+        params: { id: athleteMatch.params.athleteId },
+      });
+      if (response.status !== 200) return null;
+      return response.body;
+    },
+  });
+
   // Filtrer les doublons basés sur le pathname
-  const uniqueMatches = matches.filter((match, index, self) =>
-    index === self.findIndex((m) => m.pathname === match.pathname)
+  const uniqueMatches = matches.filter(
+    (match, index, self) =>
+      index === self.findIndex((m) => m.pathname === match.pathname)
   );
 
   // Construire le breadcrumb
@@ -54,7 +72,25 @@ export function Breadcrumbs() {
     breadcrumbs = [
       dashboardCrumb,
       { title: t('routes./workouts'), path: '/workouts' },
-      { title: workout?.title || t('common.loading'), path: workoutMatch.pathname },
+      {
+        title: workout?.title || t('common.loading'),
+        path: workoutMatch.pathname,
+      },
+    ];
+  }
+
+  // Si on est sur un détail de athlete, insérer l'étape "Athlètes"
+  if (athleteMatch) {
+    const dashboardCrumb = breadcrumbs[0]; // Garder "Tableau de bord"
+    breadcrumbs = [
+      dashboardCrumb,
+      { title: t('routes./athletes'), path: '/athletes' },
+      {
+        title: athlete
+          ? `${athlete.firstName} ${athlete.lastName}`
+          : t('common.loading'),
+        path: athleteMatch.pathname,
+      },
     ];
   }
 

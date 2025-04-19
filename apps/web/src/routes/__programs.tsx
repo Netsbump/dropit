@@ -1,5 +1,10 @@
-import { Link, Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
+import {
+  Link,
+  Outlet,
+  createFileRoute,
+  useMatches,
+} from '@tanstack/react-router';
 import { HeaderPage } from '../shared/components/layout/header-page';
 
 export const Route = createFileRoute('/__programs')({
@@ -12,16 +17,11 @@ function ProgramsLayout() {
 
   // Si c'est pas un complex ou exercice, on affiche les workouts par défaut
   const activeTab =
-    matches[matches.length - 1].pathname.split('/').pop() || 'workouts';  
-
-  console.log(matches);
+    matches[matches.length - 1].pathname.split('/').pop() || 'workouts';
 
   return (
     <>
-      <HeaderPage 
-        title="programs.title"
-        description="programs.description"
-      />
+      <HeaderPage title="programs.title" description="programs.description" />
       <div className="border-b">
         <nav className="flex gap-8">
           <Link
@@ -59,7 +59,7 @@ function ProgramsLayout() {
 
       <div className="mt-6">
         <Outlet />
-      </div>    
+      </div>
     </>
   );
 }

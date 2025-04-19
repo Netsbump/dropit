@@ -3,15 +3,19 @@ import {
   EntityManager,
   EntityRepository,
   QueryBuilder,
-  raw
+  raw,
 } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
 import { PersonalRecord } from '../../entities/personal-record.entity';
 
-export type AthleteBasics = Pick<Athlete, 'id' | 'firstName' | 'lastName' | 'birthday' | 'country' | 'club'>;
+export type AthleteBasics = Pick<
+  Athlete,
+  'id' | 'firstName' | 'lastName' | 'birthday' | 'country'
+>;
 
 export type AthleteDetails = AthleteBasics & {
+  club: string;
   email: string;
   avatar: string;
   weight: number;
@@ -27,17 +31,16 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     super(em, Athlete);
   }
 
-  private getBaseQuery(): QueryBuilder<Athlete> {
-
+  private getBaseQuery(id?: string): QueryBuilder<Athlete> {
     const qb = this.em.createQueryBuilder(Athlete, 'a');
 
     qb.select([
-      'a.id',
+      'a.id AS id',
       'a.firstName',
       'a.lastName',
       'a.birthday',
       'a.country',
-      'c.id',
+      'c.name AS club',
       'u.email',
       'u.avatar',
       'pm.weight',
@@ -46,18 +49,24 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'cs.weightCategory',
     ]);
 
-    qb.leftJoin('a.user', 'u')
-    qb.leftJoin('a.club', 'c')
-    qb.leftJoin('a.physicalMetrics', 'pm', { 'pm.endDate': null })
+    if (id) {
+      console.log('on rentre dans le if avec id', id);
+      qb.where({ 'a.id': id });
+    }
+
+    qb.leftJoin('a.user', 'u');
+    qb.leftJoin('a.club', 'c');
+    qb.leftJoin('a.physicalMetrics', 'pm', { 'pm.endDate': null });
 
     // Sous-requête pour le dernier PR de Snatch
     qb.addSelect(
-      this.em.createQueryBuilder(PersonalRecord, 'pr_snatch')
+      this.em
+        .createQueryBuilder(PersonalRecord, 'pr_snatch')
         .select('pr_snatch.weight')
         .leftJoin('pr_snatch.exercise', 'e_snatch')
         .where({
           'pr_snatch.athlete': raw('a.id'),
-          'e_snatch.english_name': 'snatch'
+          'e_snatch.english_name': 'snatch',
         })
         .orderBy({ 'pr_snatch.createdAt': 'DESC' })
         .limit(1)
@@ -66,19 +75,20 @@ export class AthleteRepository extends EntityRepository<Athlete> {
 
     // Sous-requête pour le dernier PR de Clean & Jerk
     qb.addSelect(
-      this.em.createQueryBuilder(PersonalRecord, 'pr_cj') 
-        .select('pr_cj.weight')                            
-        .leftJoin('pr_cj.exercise', 'e_cj')           
-        .where({   
-          'pr_cj.athlete': raw('a.id'),         
-          'e_cj.english_name': 'cleanAndJerk'          
+      this.em
+        .createQueryBuilder(PersonalRecord, 'pr_cj')
+        .select('pr_cj.weight')
+        .leftJoin('pr_cj.exercise', 'e_cj')
+        .where({
+          'pr_cj.athlete': raw('a.id'),
+          'e_cj.english_name': 'cleanAndJerk',
         })
-        .orderBy({ 'pr_cj.createdAt': 'DESC' })         
+        .orderBy({ 'pr_cj.createdAt': 'DESC' })
         .limit(1)
         .as('pr_cleanAndJerk')
     );
 
-    qb.leftJoin('a.competitorStatuses', 'cs')
+    qb.leftJoin('a.competitorStatuses', 'cs');
 
     return qb;
   }
@@ -90,15 +100,13 @@ export class AthleteRepository extends EntityRepository<Athlete> {
   }
 
   async findOneWithDetails(id: string): Promise<AthleteDetails> {
-    const athlete = await this.getBaseQuery()
-    .where({ 'a.id': id })
-    .execute('all');
+    const athletes = await this.getBaseQuery(id).execute('all');
 
-    if (!athlete) {
+    if (!athletes || athletes.length === 0) {
       throw new NotFoundException('Athlete not found');
     }
 
-    return athlete[0] as AthleteDetails;
+    return athletes[0] as AthleteDetails;
   }
 
   async createAthlete(data: CreateAthlete): Promise<AthleteDetails> {

@@ -1,18 +1,6 @@
+import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Athlete } from './athlete.entity';
-
-export enum CompetitorLevel {
-  ROOKIE = 'rookie',
-  REGIONAL = 'regional',
-  NATIONAL = 'national',
-  INTERNATIONAL = 'international',
-  ELITE = 'elite',
-}
-
-export enum SexCategory {
-  MEN = 'men',
-  WOMEN = 'women',
-}
 
 @Entity()
 export class CompetitorStatus {
