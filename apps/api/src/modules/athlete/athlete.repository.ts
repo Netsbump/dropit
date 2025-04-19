@@ -11,10 +11,11 @@ import { PersonalRecord } from '../../entities/personal-record.entity';
 
 export type AthleteBasics = Pick<
   Athlete,
-  'id' | 'firstName' | 'lastName' | 'birthday' | 'country' | 'club'
+  'id' | 'firstName' | 'lastName' | 'birthday' | 'country'
 >;
 
 export type AthleteDetails = AthleteBasics & {
+  club: string;
   email: string;
   avatar: string;
   weight: number;
@@ -39,7 +40,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'a.lastName',
       'a.birthday',
       'a.country',
-      'c.id AS club_id',
+      'c.name AS club',
       'u.email',
       'u.avatar',
       'pm.weight',

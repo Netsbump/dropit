@@ -1,63 +1,35 @@
+import { AthleteDetail } from '@/features/athletes/athlete-detail';
 import { api } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
-import { Label } from '@/shared/components/ui/label';
 import { toast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
+import {
+  CompetitorLevel,
+  CreateCompetitorStatus,
+  SexCategory,
+  UpdateCompetitorStatus,
+  createCompetitorStatusSchema,
+  updateCompetitorStatusSchema,
+} from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { format } from 'date-fns';
-import { fr } from 'date-fns/locale';
-import { ArrowLeft, Pencil } from 'lucide-react';
-import React from 'react';
-import { useState } from 'react';
+import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-
-// Define the Athlete type to replace any
-interface Athlete {
-  id: string;
-  firstName: string;
-  lastName: string;
-  birthday: Date | string;
-  email: string;
-  country?: string;
-  avatar?: string;
-  club?: { id: string };
-  metrics?: unknown;
-  personalRecords?: unknown;
-  competitorStatus?: unknown;
-}
 
 export const Route = createFileRoute('/athletes/$athleteId')({
   component: AthleteDetailPage,
 });
 
-// Validation schema for updating an athlete
-const updateAthleteSchema = z.object({
-  firstName: z.string().min(1, 'Le prénom est requis'),
-  lastName: z.string().min(1, 'Le nom est requis'),
-  birthday: z.string(),
-  country: z.string().optional(),
-});
-
-type UpdateAthleteData = z.infer<typeof updateAthleteSchema>;
-
 function AthleteDetailPage() {
   const { athleteId } = Route.useParams();
   const navigate = Route.useNavigate();
   const { t } = useTranslation(['common', 'athletes']);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditingCompetitorStatus, setIsEditingCompetitorStatus] =
+    useState(false);
+  const [isCreatingCompetitorStatus, setIsCreatingCompetitorStatus] =
+    useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const queryClient = useQueryClient();
 
@@ -69,26 +41,59 @@ function AthleteDetailPage() {
       });
       if (response.status !== 200)
         throw new Error('Failed to load athlete details');
-      return response.body as Athlete;
+      return response.body;
     },
   });
 
-  // Mutation for updating athlete
-  const updateAthlete = async (data: UpdateAthleteData) => {
+  // L'erreur de linter indique que ces variables ne sont pas utilisées, mais gardons
+  // la requête pour s'assurer que les données sont chargées - potentiel usage futur
+  useQuery({
+    queryKey: ['competitorStatus', athleteId],
+    queryFn: async () => {
+      // Ne pas exécuter la requête si l'athlète n'est pas encore chargé
+      if (!athlete?.id) return null;
+
+      const response = await api.competitorStatus.getCompetitorStatus({
+        params: { id: athlete.id },
+      });
+      if (response.status !== 200)
+        throw new Error('Failed to load competitor status');
+      return response.body;
+    },
+    enabled: !!athlete?.id, // Exécuter seulement si athlete.id existe
+  });
+
+  // Mutation for creating a new competitor status
+  const createCompetitorStatus = async (data: CreateCompetitorStatus) => {
     setIsLoading(true);
     try {
-      const response = await api.athlete.updateAthlete({
-        params: { id: athleteId },
-        body: data,
+      // S'assurer que athlete existe
+      if (!athlete) {
+        throw new Error('Athlète non trouvé');
+      }
+
+      const requestBody: CreateCompetitorStatus = {
+        level: data.level,
+        sexCategory: data.sexCategory,
+        weightCategory: data.weightCategory,
+        athleteId: athlete.id,
+      };
+
+      const response = await api.competitorStatus.createCompetitorStatus({
+        body: requestBody,
       });
-      if (response.status !== 200) {
-        throw new Error("Erreur lors de la modification de l'athlète");
+
+      if (response.status !== 201) {
+        throw new Error(
+          "Erreur lors de la création du nouveau statut compétitif de l'athlète"
+        );
       }
       toast({
-        title: 'Athlète modifié avec succès',
-        description: "L'athlète a été modifié avec succès",
+        title: 'Nouveau statut compétitif créé',
+        description:
+          "Un nouveau statut compétitif a été créé pour l'athlète, l'ancien statut a été archivé",
       });
-      setIsEditing(false);
+      setIsCreatingCompetitorStatus(false);
       queryClient.invalidateQueries({ queryKey: ['athletes'] });
       queryClient.invalidateQueries({ queryKey: ['athlete', athleteId] });
       return response.body;
@@ -104,36 +109,97 @@ function AthleteDetailPage() {
     }
   };
 
-  // Form setup
-  const form = useForm<UpdateAthleteData>({
-    resolver: zodResolver(updateAthleteSchema),
-    defaultValues: athlete
-      ? {
-          firstName: athlete.firstName,
-          lastName: athlete.lastName,
-          birthday:
-            athlete.birthday instanceof Date
-              ? format(athlete.birthday, 'yyyy-MM-dd')
-              : format(new Date(athlete.birthday), 'yyyy-MM-dd'),
-          country: athlete.country ?? '',
-        }
-      : undefined,
+  // Mutation for updating athlete competitor status (correction only)
+  const updateCompetitorStatus = async (data: UpdateCompetitorStatus) => {
+    setIsLoading(true);
+    try {
+      // Vérifier que l'athlète existe
+      if (!athlete) {
+        throw new Error('Athlète non trouvé');
+      }
+
+      // Obtenir le dernier statut compétitif avec l'ID via une requête dédiée
+      const getStatusResponse = await api.competitorStatus.getCompetitorStatus({
+        params: { id: athlete.id },
+      });
+
+      if (getStatusResponse.status !== 200 || !getStatusResponse.body.id) {
+        throw new Error('Impossible de récupérer le statut compétitif actuel');
+      }
+
+      // Utiliser l'ID obtenu de la réponse pour la mise à jour
+      const competitorStatusId = getStatusResponse.body.id;
+
+      const requestBody: UpdateCompetitorStatus = {
+        level: data.level,
+        sexCategory: data.sexCategory,
+        weightCategory: data.weightCategory,
+      };
+
+      const response = await api.competitorStatus.updateCompetitorStatus({
+        params: { id: competitorStatusId },
+        body: requestBody,
+      });
+
+      if (response.status !== 200) {
+        throw new Error(
+          "Erreur lors de la correction du statut compétitif de l'athlète"
+        );
+      }
+      toast({
+        title: 'Statut compétitif corrigé avec succès',
+        description:
+          "Le statut compétitif de l'athlète a été corrigé avec succès",
+      });
+      setIsEditingCompetitorStatus(false);
+      queryClient.invalidateQueries({ queryKey: ['athletes'] });
+      queryClient.invalidateQueries({ queryKey: ['athlete', athleteId] });
+      queryClient.invalidateQueries({
+        queryKey: ['competitorStatus', athleteId],
+      });
+      return response.body;
+    } catch (error: unknown) {
+      toast({
+        title: 'Erreur',
+        description:
+          error instanceof Error ? error.message : 'Une erreur est survenue',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Form setup for updating competitor status
+  const updateCompetitorStatusForm = useForm<UpdateCompetitorStatus>({
+    resolver: zodResolver(updateCompetitorStatusSchema),
+    defaultValues: {
+      level: CompetitorLevel.ROOKIE,
+      sexCategory: SexCategory.MEN,
+      weightCategory: 0,
+    },
+  });
+
+  // Form setup for creating competitor status
+  const createCompetitorStatusForm = useForm<CreateCompetitorStatus>({
+    resolver: zodResolver(createCompetitorStatusSchema),
+    defaultValues: {
+      level: CompetitorLevel.ROOKIE,
+      sexCategory: SexCategory.MEN,
+      weightCategory: 0,
+    },
   });
 
   // Update form values when athlete data is loaded
-  React.useEffect(() => {
-    if (athlete) {
-      form.reset({
-        firstName: athlete.firstName,
-        lastName: athlete.lastName,
-        birthday:
-          athlete.birthday instanceof Date
-            ? format(athlete.birthday, 'yyyy-MM-dd')
-            : format(new Date(athlete.birthday), 'yyyy-MM-dd'),
-        country: athlete.country ?? '',
+  useEffect(() => {
+    if (athlete?.competitorStatus) {
+      updateCompetitorStatusForm.reset({
+        level: athlete.competitorStatus.level as CompetitorLevel,
+        sexCategory: athlete.competitorStatus.sexCategory as SexCategory,
+        weightCategory: athlete.competitorStatus.weightCategory || 0,
       });
     }
-  }, [athlete, form]);
+  }, [athlete, updateCompetitorStatusForm]);
 
   if (athleteLoading) {
     return (
@@ -164,225 +230,26 @@ function AthleteDetailPage() {
               {athlete.firstName} {athlete.lastName}
             </h1>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={() => setIsEditing(!isEditing)}>
-              <Pencil className="h-4 w-4 mr-2" />
-              {isEditing ? t('common:cancel') : t('common:edit')}
-            </Button>
-            {isEditing && (
-              <Button
-                type="submit"
-                onClick={form.handleSubmit(updateAthlete)}
-                disabled={isLoading}
-              >
-                {t('common:save')}
-              </Button>
-            )}
-          </div>
         </div>
       </div>
 
       {/* Main Content */}
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto">
-          {isEditing ? (
-            <EditAthleteForm
-              form={form}
-              athlete={athlete}
-              isLoading={isLoading}
-              onSubmit={updateAthlete}
-              onCancel={() => setIsEditing(false)}
-            />
-          ) : (
-            <AthleteInfo athlete={athlete} />
-          )}
+          <AthleteDetail
+            athlete={athlete}
+            isEditingCompetitorStatus={isEditingCompetitorStatus}
+            setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
+            isCreatingCompetitorStatus={isCreatingCompetitorStatus}
+            setIsCreatingCompetitorStatus={setIsCreatingCompetitorStatus}
+            updateCompetitorStatusForm={updateCompetitorStatusForm}
+            createCompetitorStatusForm={createCompetitorStatusForm}
+            isLoading={isLoading}
+            onUpdateCompetitorStatus={updateCompetitorStatus}
+            onCreateCompetitorStatus={createCompetitorStatus}
+          />
         </div>
       </div>
     </div>
-  );
-}
-
-function AthleteInfo({ athlete }: { athlete: Athlete }) {
-  return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Personal Information */}
-        <Card className="bg-background rounded-md shadow-none">
-          <CardContent className="space-y-4 pt-6">
-            <h2 className="text-lg font-semibold mb-4">
-              Informations personnelles
-            </h2>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Prénom</Label>
-                <p className="text-sm">{athlete.firstName}</p>
-              </div>
-              <div className="space-y-2">
-                <Label>Nom</Label>
-                <p className="text-sm">{athlete.lastName}</p>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Date de naissance</Label>
-              <p className="text-sm">
-                {format(new Date(athlete.birthday), 'Pp', { locale: fr })}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Pays</Label>
-              <p className="text-sm">{athlete.country || '-'}</p>
-            </div>
-
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <p className="text-sm">{athlete.email}</p>
-            </div>
-
-            {athlete.club && (
-              <div className="space-y-2">
-                <Label>Club</Label>
-                <p className="text-sm">Club ID: {athlete.club.id}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Stats & Club */}
-        <div className="space-y-6">
-          {/* Stats */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardContent className="space-y-4 pt-6">
-              <h2 className="text-lg font-semibold mb-4">Statistiques</h2>
-
-              <div className="space-y-4">
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">
-                    Dernière activité
-                  </div>
-                  <div className="text-lg font-semibold">-</div>
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-muted-foreground">
-                    Nombre d'entraînements
-                  </div>
-                  <div className="text-lg font-semibold">0</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Additional Info placeholder */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardContent className="space-y-4 pt-6">
-              <h2 className="text-lg font-semibold mb-4">Programmes actifs</h2>
-              <div className="text-sm text-muted-foreground">
-                Aucun programme actif
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-
-      {/* History */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="space-y-4 pt-6">
-          <h2 className="text-lg font-semibold mb-4">
-            Historique des entrainements
-          </h2>
-          <div className="text-sm text-muted-foreground">
-            Aucun entrainement n'a encore été réalisé
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-interface EditAthleteFormProps {
-  form: ReturnType<typeof useForm<UpdateAthleteData>>;
-  athlete: Athlete;
-  isLoading: boolean;
-  onSubmit: (data: UpdateAthleteData) => void;
-  onCancel: () => void;
-}
-
-function EditAthleteForm({ form, athlete, onSubmit }: EditAthleteFormProps) {
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Card className="bg-background rounded-md shadow-none">
-          <CardContent className="space-y-4 pt-6">
-            <h2 className="text-lg font-semibold mb-4">
-              Modifier les informations
-            </h2>
-
-            <div className="grid grid-cols-2 gap-4">
-              <FormField
-                control={form.control}
-                name="firstName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Prénom</FormLabel>
-                    <FormControl className="bg-white">
-                      <Input placeholder="Prénom" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="lastName"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom</FormLabel>
-                    <FormControl className="bg-white">
-                      <Input placeholder="Nom" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
-            <FormField
-              control={form.control}
-              name="birthday"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Date de naissance</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input type="date" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <FormField
-              control={form.control}
-              name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Pays</FormLabel>
-                  <FormControl className="bg-white">
-                    <Input placeholder="Pays" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-
-            <div className="space-y-2">
-              <Label>Email</Label>
-              <p className="text-sm">{athlete.email}</p>
-            </div>
-          </CardContent>
-        </Card>
-      </form>
-    </Form>
   );
 }
