@@ -293,6 +293,7 @@ export class WorkoutService {
 
       const session = new Session();
       session.workout = workoutToCreate;
+
       session.scheduledDate = new Date(workout.session.scheduledDate);
 
       await this.em.persistAndFlush(session);
