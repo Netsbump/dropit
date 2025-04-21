@@ -4,10 +4,6 @@
   "eventMoved": "Entraînement déplacé",
   "eventMovedDescription": "L'entraînement a été replanifié",
   "createWorkout": "Créer un entraînement",
-  "today": "Aujourd'hui",
-  "month": "Mois",
-  "week": "Semaine",
-  "year": "Année",
   "calendar": {
     "no_events": "Aucun entraînement planifié",
     "drag_info": "Déplacez les entraînements pour les replanifier",

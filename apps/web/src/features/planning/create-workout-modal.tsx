@@ -7,6 +7,7 @@ import {
 import { useTranslation } from '@dropit/i18n';
 import { CreateWorkout } from '@dropit/schemas';
 import { format } from 'date-fns';
+import { enGB, fr } from 'date-fns/locale';
 import { WorkoutCreationStepper } from '../workout/workout-creation-stepper';
 
 interface CreateWorkoutModalProps {
@@ -20,7 +21,8 @@ export function CreateWorkoutModal({
   onClose,
   selectedDate,
 }: CreateWorkoutModalProps) {
-  const { t } = useTranslation('planning');
+  const { t, i18n } = useTranslation('planning');
+  const locale = i18n.language === 'fr' ? fr : enGB;
 
   const handleSubmitSuccess = (data: CreateWorkout) => {
     // Ici vous pourriez traiter les données du workout si nécessaire
@@ -34,7 +36,7 @@ export function CreateWorkoutModal({
         <DialogHeader>
           <DialogTitle>
             {t('createWorkout')}{' '}
-            {selectedDate && `- ${format(selectedDate, 'PPP')}`}
+            {selectedDate && `- ${format(selectedDate, 'PPP', { locale })}`}
           </DialogTitle>
         </DialogHeader>
         <div className="py-4">

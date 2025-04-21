@@ -3,20 +3,30 @@ import {
   CalendarEvent,
   PlanningCalendar,
 } from '@/features/planning/planning-calendar';
+import { api } from '@/lib/api';
+import { HeaderPage } from '@/shared/components/layout/header-page';
 import { useTranslation } from '@dropit/i18n';
 import { EventClickArg } from '@fullcalendar/core';
 import { DateClickArg } from '@fullcalendar/interaction';
+import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/planning')({
-  component: RouteComponent,
+  component: PlanningPage,
 });
 
-function RouteComponent() {
+function PlanningPage() {
   const { t } = useTranslation('planning');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: calendarEvents, isLoading: calendarEventsLoading } = useQuery({
+    queryKey: ['calendarEvents'],
+    queryFn: () => api.session.getSessions(),
+  });
+
+  console.log(calendarEvents);
 
   // Example initial events - in a real app, these would come from an API
   const initialEvents: CalendarEvent[] = [
@@ -43,11 +53,10 @@ function RouteComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-6">{t('title')}</h1>
-      <p className="text-muted-foreground mb-6">{t('description')}</p>
+    <div className="relative flex-1">
+      <HeaderPage title={t('title')} description={t('description')} />
 
-      <div className="bg-background rounded-lg shadow p-4">
+      <div className="bg-white rounded-lg shadow p-4">
         <PlanningCalendar
           initialEvents={initialEvents}
           onDateClick={handleDateClick}

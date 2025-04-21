@@ -42,13 +42,15 @@ function AthletesPage() {
   if (isAthleteDetail) {
     return <Outlet />;
   }
-
   if (athletesLoading) return <div>{t('common:loading')}</div>;
   if (!athletes) return <div>{t('common:no_results')}</div>;
 
   return (
     <div className="relative flex-1">
-      <HeaderPage title="athletes:title" description="athletes:description" />
+      <HeaderPage
+        title={t('athletes:title')}
+        description={t('athletes:description')}
+      />
 
       <div>
         {athletesLoading ? (

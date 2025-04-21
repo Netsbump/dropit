@@ -8,7 +8,6 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import multiMonthPlugin from '@fullcalendar/multimonth';
 import FullCalendar from '@fullcalendar/react';
-import timeGridPlugin from '@fullcalendar/timegrid';
 import { useState } from 'react';
 
 export type CalendarEvent = {
@@ -84,37 +83,26 @@ export function PlanningCalendar({
   };
 
   return (
-    <div className={cn('planning-calendar', className)}>
+    <div className={cn('planning-calendar bg-white', className)}>
       <FullCalendar
-        plugins={[
-          dayGridPlugin,
-          timeGridPlugin,
-          interactionPlugin,
-          multiMonthPlugin,
-        ]}
+        plugins={[dayGridPlugin, interactionPlugin, multiMonthPlugin]}
         initialView="dayGridMonth"
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,multiMonthYear',
+          right: 'dayGridMonth,dayGridWeek,multiMonthYear',
         }}
-        buttonText={{
-          today: t('today'),
-          month: t('month'),
-          week: t('week'),
-          year: t('year'),
-        }}
+        locale={currentLocale}
         editable={true}
         selectable={true}
         selectMirror={true}
         dayMaxEvents={true}
         weekends={true}
         events={events}
-        locale={currentLocale}
         eventClick={handleEventClick}
         dateClick={handleDateClick}
         eventDrop={handleEventDrop}
-        height="auto"
+        height="75vh"
       />
     </div>
   );
