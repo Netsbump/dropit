@@ -1,8 +1,5 @@
 import { CreateWorkoutModal } from '@/features/planning/create-workout-modal';
-import {
-  CalendarEvent,
-  PlanningCalendar,
-} from '@/features/planning/planning-calendar';
+import { PlanningCalendar } from '@/features/planning/planning-calendar';
 import { api } from '@/lib/api';
 import { HeaderPage } from '@/shared/components/layout/header-page';
 import { useTranslation } from '@dropit/i18n';
@@ -23,24 +20,12 @@ function PlanningPage() {
 
   const { data: calendarEvents, isLoading: calendarEventsLoading } = useQuery({
     queryKey: ['calendarEvents'],
-    queryFn: () => api.session.getSessions(),
+    queryFn: async () => {
+      const response = await api.session.getSessions();
+      if (response.status !== 200) throw new Error('Failed to load sessions');
+      return response.body;
+    },
   });
-
-  console.log(calendarEvents);
-
-  // Example initial events - in a real app, these would come from an API
-  const initialEvents: CalendarEvent[] = [
-    {
-      id: '1',
-      title: 'Squat Day',
-      start: '2024-05-15',
-    },
-    {
-      id: '2',
-      title: 'Clean & Jerk',
-      start: '2024-05-20',
-    },
-  ];
 
   const handleDateClick = (info: DateClickArg) => {
     setSelectedDate(new Date(info.date));
@@ -52,13 +37,15 @@ function PlanningPage() {
     console.log('Event clicked:', info.event);
   };
 
+  if (calendarEventsLoading) return <div>{t('common:loading')}</div>;
+
   return (
     <div className="relative flex-1">
       <HeaderPage title={t('title')} description={t('description')} />
 
       <div className="bg-white rounded-lg shadow p-4">
         <PlanningCalendar
-          initialEvents={initialEvents}
+          initialEvents={calendarEvents}
           onDateClick={handleDateClick}
           onEventClick={handleEventClick}
         />

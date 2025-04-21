@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
+import { SessionDto } from '@dropit/schemas';
 import { Duration, EventApi, EventClickArg } from '@fullcalendar/core';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import frLocale from '@fullcalendar/core/locales/fr';
@@ -9,14 +10,6 @@ import interactionPlugin, { DateClickArg } from '@fullcalendar/interaction';
 import multiMonthPlugin from '@fullcalendar/multimonth';
 import FullCalendar from '@fullcalendar/react';
 import { useState } from 'react';
-
-export type CalendarEvent = {
-  id: string;
-  title: string;
-  start: string;
-  end?: string;
-  allDay?: boolean;
-};
 
 interface EventDropInfo {
   event: EventApi;
@@ -27,7 +20,7 @@ interface EventDropInfo {
 
 interface PlanningCalendarProps {
   className?: string;
-  initialEvents?: CalendarEvent[];
+  initialEvents?: SessionDto[];
   onEventClick?: (eventInfo: EventClickArg) => void;
   onDateClick?: (dateInfo: DateClickArg) => void;
   onEventDrop?: (eventDropInfo: EventDropInfo) => void;
@@ -42,7 +35,7 @@ export function PlanningCalendar({
 }: PlanningCalendarProps) {
   const { t, i18n } = useTranslation('planning');
   const { toast } = useToast();
-  const [events, setEvents] = useState<CalendarEvent[]>(initialEvents);
+  const [events, setEvents] = useState<SessionDto[]>(initialEvents);
   const currentLocale = i18n.language === 'fr' ? frLocale : enLocale;
 
   const handleEventClick = (info: EventClickArg) => {
@@ -98,7 +91,12 @@ export function PlanningCalendar({
         selectMirror={true}
         dayMaxEvents={true}
         weekends={true}
-        events={events}
+        events={events.map((event) => ({
+          id: event.id,
+          title: event.workout.title,
+          start: event.scheduledDate,
+          end: event.scheduledDate,
+        }))}
         eventClick={handleEventClick}
         dateClick={handleDateClick}
         eventDrop={handleEventDrop}
