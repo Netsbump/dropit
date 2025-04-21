@@ -1,9 +1,61 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { CreateWorkoutModal } from '@/features/planning/create-workout-modal';
+import { PlanningCalendar } from '@/features/planning/planning-calendar';
+import { api } from '@/lib/api';
+import { HeaderPage } from '@/shared/components/layout/header-page';
+import { useTranslation } from '@dropit/i18n';
+import { EventClickArg } from '@fullcalendar/core';
+import { DateClickArg } from '@fullcalendar/interaction';
+import { useQuery } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 
 export const Route = createFileRoute('/planning')({
-  component: RouteComponent,
-})
+  component: PlanningPage,
+});
 
-function RouteComponent() {
-  return <div>Hello "/planning/"!</div>
+function PlanningPage() {
+  const { t } = useTranslation('planning');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const { data: calendarEvents, isLoading: calendarEventsLoading } = useQuery({
+    queryKey: ['calendarEvents'],
+    queryFn: async () => {
+      const response = await api.session.getSessions();
+      if (response.status !== 200) throw new Error('Failed to load sessions');
+      return response.body;
+    },
+  });
+
+  const handleDateClick = (info: DateClickArg) => {
+    setSelectedDate(new Date(info.date));
+    setIsModalOpen(true);
+  };
+
+  const handleEventClick = (info: EventClickArg) => {
+    // Handle event click - e.g., open workout details
+    console.log('Event clicked:', info.event);
+  };
+
+  if (calendarEventsLoading) return <div>{t('common:loading')}</div>;
+
+  return (
+    <div className="relative flex-1">
+      <HeaderPage title={t('title')} description={t('description')} />
+
+      <div className="bg-white rounded-lg shadow p-4">
+        <PlanningCalendar
+          initialEvents={calendarEvents}
+          onDateClick={handleDateClick}
+          onEventClick={handleEventClick}
+        />
+      </div>
+
+      <CreateWorkoutModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDate={selectedDate}
+      />
+    </div>
+  );
 }

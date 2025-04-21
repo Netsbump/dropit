@@ -21,7 +21,10 @@ function ProgramsLayout() {
 
   return (
     <>
-      <HeaderPage title="programs.title" description="programs.description" />
+      <HeaderPage
+        title={t('programs.title')}
+        description={t('programs.description')}
+      />
       <div className="border-b">
         <nav className="flex gap-8">
           <Link

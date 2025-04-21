@@ -1,4 +1,3 @@
-//import { WorkoutCreationForm } from '@/features/workout/workout-creation-form';
 import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';

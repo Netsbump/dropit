@@ -1,0 +1,17 @@
+{
+  "title": "Planification d'entraînement",
+  "description": "Planifiez vos entraînements d'haltérophilie",
+  "eventMoved": "Entraînement déplacé",
+  "eventMovedDescription": "L'entraînement a été replanifié",
+  "createWorkout": "Créer un entraînement",
+  "calendar": {
+    "no_events": "Aucun entraînement planifié",
+    "drag_info": "Déplacez les entraînements pour les replanifier",
+    "click_info": "Cliquez sur un jour pour ajouter un entraînement"
+  },
+  "workouts": {
+    "upcoming": "Entraînements à venir",
+    "past": "Entraînements passés",
+    "view_details": "Voir détails"
+  }
+}

@@ -1,21 +1,25 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
+import { initReactI18next } from 'react-i18next';
 
-import en from './locales/en/common.json';
-import fr from './locales/fr/common.json';
 import enAthletes from './locales/en/athletes.json';
+import en from './locales/en/common.json';
+import enPlanning from './locales/en/planning.json';
 import frAthletes from './locales/fr/athletes.json';
+import fr from './locales/fr/common.json';
+import frPlanning from './locales/fr/planning.json';
 
 export const defaultNS = 'common';
 export const resources = {
   en: {
     common: en,
     athletes: enAthletes,
+    planning: enPlanning,
   },
   fr: {
     common: fr,
     athletes: frAthletes,
+    planning: frPlanning,
   },
 } as const;
 
@@ -36,4 +40,4 @@ i18n
 
 // Re-export hooks and utilities that components will need
 export { useTranslation } from 'react-i18next';
-export default i18n; 
+export default i18n;

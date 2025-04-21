@@ -1,0 +1,17 @@
+{
+  "title": "Training Planning",
+  "description": "Plan your weightlifting workouts",
+  "eventMoved": "Workout moved",
+  "eventMovedDescription": "The workout has been rescheduled",
+  "createWorkout": "Create Workout",
+  "calendar": {
+    "no_events": "No workouts planned",
+    "drag_info": "Drag workouts to reschedule",
+    "click_info": "Click on a day to add a workout"
+  },
+  "workouts": {
+    "upcoming": "Upcoming workouts",
+    "past": "Past workouts",
+    "view_details": "View details"
+  }
+}
