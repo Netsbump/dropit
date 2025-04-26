@@ -1,6 +1,4 @@
 import { z } from 'zod';
-import { athleteSessionSchema } from './athlete-session.schema';
-import { athleteSchema } from './athlete.schema';
 import { workoutSchema } from './workout.schema';
 
 export const createSessionSchema = z.object({
@@ -32,7 +30,6 @@ export const sessionSchema = z.object({
       })
     )
     .optional(),
-  athleteSessions: z.array(athleteSessionSchema).optional(),
   scheduledDate: z.string().or(z.date()),
   completedDate: z.string().or(z.date()).optional(),
   createdAt: z.string().or(z.date()),

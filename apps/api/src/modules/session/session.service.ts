@@ -5,6 +5,7 @@ import { AthleteSession } from '../../entities/athlete-session.entity';
 import { Athlete } from '../../entities/athlete.entity';
 import { Session } from '../../entities/session.entity';
 import { Workout } from '../../entities/workout.entity';
+import { SessionMapper } from './session.mapper';
 
 @Injectable()
 export class SessionService {
@@ -16,7 +17,7 @@ export class SessionService {
       {},
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
-    return sessions.map((session) => this.mapToDto(session));
+    return SessionMapper.toDtoList(sessions);
   }
 
   async getSession(id: string): Promise<SessionDto> {
@@ -193,7 +194,6 @@ export class SessionService {
         elements: [],
       },
       athletes,
-      athleteSessions,
       scheduledDate: session.scheduledDate,
       completedDate: session.completedDate,
       createdAt: session.createdAt,
