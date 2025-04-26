@@ -9,8 +9,7 @@ import { SessionController } from './session.controller';
 import { SessionPresenter } from './session.presenter';
 import { SessionRepository } from './session.repository';
 import { SessionService } from './session.service';
-import { GetSessionUseCase } from './use-cases/get-session.use-case';
-import { GetSessionsUseCase } from './use-cases/get-sessions.use-case';
+import { SessionUseCase } from './session.use-case';
 @Module({
   imports: [
     MikroOrmModule.forFeature([Session, Athlete, Workout]),
@@ -22,8 +21,7 @@ import { GetSessionsUseCase } from './use-cases/get-sessions.use-case';
     SessionService,
     SessionRepository,
     SessionPresenter,
-    GetSessionsUseCase,
-    GetSessionUseCase,
+    SessionUseCase,
   ],
   exports: [SessionService, SessionRepository],
 })

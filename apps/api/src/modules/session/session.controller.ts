@@ -6,8 +6,7 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { SessionService } from './session.service';
-import { GetSessionUseCase } from './use-cases/get-session.use-case';
-import { GetSessionsUseCase } from './use-cases/get-sessions.use-case';
+import { SessionUseCase } from './session.use-case';
 
 const c = apiContract.session;
 
@@ -15,21 +14,20 @@ const c = apiContract.session;
 export class SessionController {
   constructor(
     private readonly sessionService: SessionService,
-    private readonly getSessionsUseCase: GetSessionsUseCase,
-    private readonly getSessionUseCase: GetSessionUseCase
+    private readonly sessionUseCase: SessionUseCase
   ) {}
 
   @TsRestHandler(c.getSessions)
   async getSessions() {
     return tsRestHandler(c.getSessions, async () => {
-      return this.getSessionsUseCase.execute();
+      return this.sessionUseCase.getAll();
     });
   }
 
   @TsRestHandler(c.getSession)
   async getSession() {
     return tsRestHandler(c.getSession, async ({ params }) => {
-      return this.getSessionUseCase.execute(params.id);
+      return this.sessionUseCase.getOne(params.id);
     });
   }
 
