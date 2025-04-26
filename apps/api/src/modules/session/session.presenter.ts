@@ -10,6 +10,13 @@ export class SessionPresenter {
     };
   }
 
+  presentOne(session: SessionDto) {
+    return {
+      status: 200 as const,
+      body: session,
+    };
+  }
+
   presentError(error: Error) {
     if (error instanceof NotFoundException) {
       return {

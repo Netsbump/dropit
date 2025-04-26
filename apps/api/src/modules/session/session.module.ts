@@ -9,6 +9,7 @@ import { SessionController } from './session.controller';
 import { SessionPresenter } from './session.presenter';
 import { SessionRepository } from './session.repository';
 import { SessionService } from './session.service';
+import { GetSessionUseCase } from './use-cases/get-session.use-case';
 import { GetSessionsUseCase } from './use-cases/get-sessions.use-case';
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { GetSessionsUseCase } from './use-cases/get-sessions.use-case';
     SessionRepository,
     SessionPresenter,
     GetSessionsUseCase,
+    GetSessionUseCase,
   ],
   exports: [SessionService, SessionRepository],
 })
