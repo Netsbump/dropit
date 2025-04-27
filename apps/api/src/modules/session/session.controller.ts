@@ -6,40 +6,28 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { SessionService } from './session.service';
+import { SessionUseCase } from './session.use-case';
 
 const c = apiContract.session;
 
 @Controller()
 export class SessionController {
-  constructor(private readonly sessionService: SessionService) {}
+  constructor(
+    private readonly sessionService: SessionService,
+    private readonly sessionUseCase: SessionUseCase
+  ) {}
 
   @TsRestHandler(c.getSessions)
   async getSessions() {
     return tsRestHandler(c.getSessions, async () => {
-      try {
-        const sessions = await this.sessionService.getSessions();
-        return { status: 200, body: sessions };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
+      return this.sessionUseCase.getAll();
     });
   }
 
   @TsRestHandler(c.getSession)
   async getSession() {
     return tsRestHandler(c.getSession, async ({ params }) => {
-      try {
-        const session = await this.sessionService.getSession(params.id);
-        return { status: 200, body: session };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
+      return this.sessionUseCase.getOne(params.id);
     });
   }
 
