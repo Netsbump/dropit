@@ -98,14 +98,23 @@ jobs:
         run: pnpm run build
 
       - name: Run api tests
-        working-directory: .
-        run: pnpm run test:api:e2e
+        working-directory: apps/api
+        run: pnpm run test:e2e
         env:
+          API_PORT: 3001
+          NODE_ENV: test
+          DATABASE_USER: ${{ secrets.TEST_POSTGRES_USER }}
+          DATABASE_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+          DATABASE_NAME: dropit_test
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5433
           DATABASE_USER_TEST: ${{ secrets.TEST_POSTGRES_USER }}
           DATABASE_PASSWORD_TEST: ${{ secrets.TEST_POSTGRES_PASSWORD }}
           DATABASE_NAME_TEST: dropit_test
           DATABASE_PORT_TEST: 5433
           DATABASE_HOST_TEST: localhost
+          BETTER_AUTH_SECRET: test-secret-for-ci
+          TRUSTED_ORIGINS: "http://localhost:3000"
 
   dev:
     name: Verify Dev Environment
