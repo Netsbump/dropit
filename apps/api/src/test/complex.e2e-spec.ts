@@ -10,11 +10,11 @@ import { MikroORM } from '@mikro-orm/postgresql';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { ComplexCategoryService } from '../src/modules/complex-category/complex-category.service';
-import { ComplexService } from '../src/modules/complex/complex.service';
-import { ExerciseService } from '../src/modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../src/modules/exerciseCategory/exerciseCategory.service';
+import { AppModule } from '../app.module';
+import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
+import { ComplexService } from '../modules/complex/complex.service';
+import { ExerciseService } from '../modules/exercise/exercise.service';
+import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
 
 describe('ComplexController (e2e)', () => {
   let app: INestApplication;

@@ -5,12 +5,11 @@ import { config } from './env.config';
 const mikroOrmConfig: Options = defineConfig({
   entities: ['./dist/entities'],
   entitiesTs: ['./src/entities'],
-  dbName:
-    config.database.name || (config.env === 'test' ? 'dropit_test' : 'dropit'),
-  host: config.database.host || 'localhost',
-  port: config.database.port || (config.env === 'test' ? 5433 : 5432),
-  user: config.database.user || 'postgres',
-  password: config.database.password || 'example',
+  dbName: config.database.name,
+  host: config.database.host,
+  port: config.database.port,
+  user: config.database.user,
+  password: config.database.password,
   extensions: [SeedManager],
   seeder: {
     path: './dist/seeders',

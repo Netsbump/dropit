@@ -98,8 +98,14 @@ jobs:
         run: pnpm run build
 
       - name: Run api tests
-        working-directory: apps/api
-        run: pnpm run test:e2e
+        working-directory: .
+        run: pnpm run test:api:e2e
+        env:
+          DATABASE_USER_TEST: ${{ secrets.TEST_POSTGRES_USER }}
+          DATABASE_PASSWORD_TEST: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+          DATABASE_NAME_TEST: dropit_test
+          DATABASE_PORT_TEST: 5433
+          DATABASE_HOST_TEST: localhost
 
   dev:
     name: Verify Dev Environment

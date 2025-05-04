@@ -9,7 +9,12 @@
     "lint:fix": "biome lint --fix .",
     "format": "biome format .",
     "clean": "turbo clean && rm -rf node_modules",
-    "with-env": "dotenv -e .env --"
+    "with-env": "dotenv -e .env --",
+    "test": "dotenv -e .env -- turbo test",
+    "test:e2e": "dotenv -e .env -- turbo test:e2e",
+    "test:api": "dotenv -e .env -- pnpm --filter api test",
+    "test:api:e2e": "dotenv -e .env -- pnpm --filter api test:e2e",
+    "test:api:docker": "dotenv -e .env -- pnpm --filter api test:e2e:docker"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
