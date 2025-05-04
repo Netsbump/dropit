@@ -2,9 +2,8 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import mikroOrmConfig from './config/mikro-orm.config';
 //import { devOrmConfig, testOrmConfig } from './mikro-orm.config';
-import config from './mikro-orm.config';
 import { AthleteSessionModule } from './modules/athlete-session/athlete-session.module';
 import { AthleteModule } from './modules/athlete/athlete.module';
 import { ComplexCategoryModule } from './modules/complex-category/complex-category.module';
@@ -19,7 +18,7 @@ import { WorkoutModule } from './modules/workout/workout.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MikroOrmModule.forRoot(config),
+    MikroOrmModule.forRoot(mikroOrmConfig),
     AthleteModule,
     AthleteSessionModule,
     ExerciseModule,
@@ -32,6 +31,6 @@ import { WorkoutModule } from './modules/workout/workout.module';
     PersonalRecordModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [],
 })
 export class AppModule {}

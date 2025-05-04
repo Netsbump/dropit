@@ -1,17 +1,20 @@
 services:
   db:
     image: postgres:15-alpine
-    env_file:
-      - ./.env.database
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_NAME: ${DATABASE_NAME}
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "${DATABASE_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
-    env_file:
-      - ./.env.database
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
     ports: 
       - "${PGADMIN_PORT:-5050}:80"
     volumes:

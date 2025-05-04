@@ -1,7 +1,17 @@
 {
   "$schema": "https://turbo.build/schema.json",
   "globalDependencies": ["**/.env.*local"],
-  "globalEnv": ["NODE_ENV"],
+  "globalEnv": [
+    "NODE_ENV",
+    "API_PORT",
+    "DATABASE_PASSWORD",
+    "DATABASE_USER",
+    "DATABASE_NAME",
+    "DATABASE_HOST",
+    "DATABASE_PORT",
+    "BETTER_AUTH_SECRET",
+    "TRUSTED_ORIGINS"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

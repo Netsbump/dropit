@@ -13,6 +13,7 @@ import { z } from 'zod';
  * handling OS-specific path separators correctly.
  */
 const nodeEnv = process.env.NODE_ENV || 'development';
+
 if (nodeEnv === 'test') {
   dotenv.config({ path: join(process.cwd(), '.env.test') });
 } else {
@@ -26,14 +27,14 @@ export const configValidationSchema = z.object({
     .default('development'),
 
   // API
-  PORT: z.coerce.number(),
+  API_PORT: z.coerce.number(),
 
   // Database
-  DB_PASSWORD: z.string(),
-  DB_USER: z.string(),
-  DB_NAME: z.string(),
-  DB_HOST: z.string(),
-  DB_PORT: z.coerce.number(),
+  DATABASE_PASSWORD: z.string(),
+  DATABASE_USER: z.string(),
+  DATABASE_NAME: z.string(),
+  DATABASE_HOST: z.string(),
+  DATABASE_PORT: z.coerce.number(),
 
   // BetterAuth
   BETTER_AUTH_SECRET: z.string(),
@@ -56,17 +57,17 @@ if (!configParsed.success) {
 
 export const config = {
   env: configParsed.data.NODE_ENV,
-  apiPort: configParsed.data.PORT,
+  apiPort: configParsed.data.API_PORT,
   betterAuth: {
     secret: configParsed.data.BETTER_AUTH_SECRET,
     trustedOrigins: configParsed.data.TRUSTED_ORIGINS,
   },
   database: {
-    host: configParsed.data.DB_HOST,
-    port: configParsed.data.DB_PORT,
-    user: configParsed.data.DB_USER,
-    password: configParsed.data.DB_PASSWORD,
-    name: configParsed.data.DB_NAME,
-    connectionString: `postgresql://${configParsed.data.DB_USER}:${configParsed.data.DB_PASSWORD}@${configParsed.data.DB_HOST}:${configParsed.data.DB_PORT}/${configParsed.data.DB_NAME}`,
+    host: configParsed.data.DATABASE_HOST,
+    port: configParsed.data.DATABASE_PORT,
+    user: configParsed.data.DATABASE_USER,
+    password: configParsed.data.DATABASE_PASSWORD,
+    name: configParsed.data.DATABASE_NAME,
+    connectionString: `postgresql://${configParsed.data.DATABASE_USER}:${configParsed.data.DATABASE_PASSWORD}@${configParsed.data.DATABASE_HOST}:${configParsed.data.DATABASE_PORT}/${configParsed.data.DATABASE_NAME}`,
   },
 } as const;
