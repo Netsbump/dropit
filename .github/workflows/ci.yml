@@ -108,11 +108,6 @@ jobs:
           DATABASE_NAME: dropit_test
           DATABASE_HOST: localhost
           DATABASE_PORT: 5433
-          DATABASE_USER_TEST: ${{ secrets.TEST_POSTGRES_USER }}
-          DATABASE_PASSWORD_TEST: ${{ secrets.TEST_POSTGRES_PASSWORD }}
-          DATABASE_NAME_TEST: dropit_test
-          DATABASE_PORT_TEST: 5433
-          DATABASE_HOST_TEST: localhost
           BETTER_AUTH_SECRET: test-secret-for-ci
           TRUSTED_ORIGINS: "http://localhost:3000"
 
@@ -156,6 +151,16 @@ jobs:
 
       - name: Run dev server
         working-directory: .
+        env:
+          API_PORT: 3000
+          NODE_ENV: development
+          DATABASE_USER: ${{ secrets.DB_POSTGRES_USER }}
+          DATABASE_PASSWORD: ${{ secrets.DB_POSTGRES_PASSWORD }}
+          DATABASE_NAME: dropit
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          BETTER_AUTH_SECRET: dev-secret-for-ci
+          TRUSTED_ORIGINS: "http://localhost:5173"
         run: |
           pnpm run dev &
           sleep 10
