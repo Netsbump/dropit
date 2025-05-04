@@ -7,9 +7,9 @@ import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { ExerciseService } from '../src/modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../src/modules/exerciseCategory/exerciseCategory.service';
+import { AppModule } from '../app.module';
+import { ExerciseService } from '../modules/exercise/exercise.service';
+import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
 
 describe('ExerciseController (e2e)', () => {
   let app: INestApplication;

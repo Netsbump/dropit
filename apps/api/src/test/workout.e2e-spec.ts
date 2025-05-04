@@ -13,13 +13,13 @@ import { MikroORM } from '@mikro-orm/postgresql';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
-import { AppModule } from '../src/app.module';
-import { WORKOUT_ELEMENT_TYPES } from '../src/entities/workout-element.entity';
-import { ComplexCategoryService } from '../src/modules/complex-category/complex-category.service';
-import { ComplexService } from '../src/modules/complex/complex.service';
-import { ExerciseService } from '../src/modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../src/modules/exerciseCategory/exerciseCategory.service';
-import { WorkoutCategoryService } from '../src/modules/workout-category/workout-category.service';
+import { AppModule } from '../app.module';
+import { WORKOUT_ELEMENT_TYPES } from '../entities/workout-element.entity';
+import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
+import { ComplexService } from '../modules/complex/complex.service';
+import { ExerciseService } from '../modules/exercise/exercise.service';
+import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
+import { WorkoutCategoryService } from '../modules/workout-category/workout-category.service';
 
 describe('WorkoutController (e2e)', () => {
   let app: INestApplication;

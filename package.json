@@ -2,13 +2,19 @@
   "name": "dropit",
   "private": true,
   "scripts": {
-    "build": "turbo build",
-    "dev": "turbo dev",
-    "typecheck": "turbo typecheck",
+    "build": "dotenv -e .env -- turbo build",
+    "dev": "dotenv -e .env -- turbo dev",
+    "typecheck": "dotenv -e .env -- turbo typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
     "format": "biome format .",
-    "clean": "turbo clean && rm -rf node_modules"
+    "clean": "turbo clean && rm -rf node_modules",
+    "with-env": "dotenv -e .env --",
+    "test": "dotenv -e .env -- turbo test",
+    "test:e2e": "dotenv -e .env -- turbo test:e2e",
+    "test:api": "dotenv -e .env -- pnpm --filter api test",
+    "test:api:e2e": "dotenv -e .env -- pnpm --filter api test:e2e",
+    "test:api:docker": "dotenv -e .env -- pnpm --filter api test:e2e:docker"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
@@ -18,5 +24,8 @@
   "packageManager": "pnpm@8.15.4",
   "engines": {
     "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dotenv-cli": "^8.0.0"
   }
 }
