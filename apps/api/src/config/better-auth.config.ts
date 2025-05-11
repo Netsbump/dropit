@@ -1,11 +1,54 @@
-import { betterAuth } from 'better-auth';
+import { User, betterAuth } from 'better-auth';
+import { createAuthMiddleware } from 'better-auth/api';
+import { openAPI } from 'better-auth/plugins';
 import { Pool } from 'pg';
 import { config } from './env.config';
 
-export const auth = betterAuth({
-  secret: config.betterAuth.secret,
-  trustedOrigins: config.betterAuth.trustedOrigins,
-  database: new Pool({
-    connectionString: config.database.connectionString,
-  }),
-});
+interface BetterAuthOptionsDynamic {
+  sendResetPassword?: (
+    data: { user: User; url: string; token: string },
+    request: Request | undefined
+  ) => Promise<void>;
+  sendVerificationEmail?: (
+    data: { user: User; url: string; token: string },
+    request: Request | undefined
+  ) => Promise<void>;
+}
+
+export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
+  return betterAuth({
+    secret: config.betterAuth.secret,
+    trustedOrigins: config.betterAuth.trustedOrigins,
+    emailAndPassword: {
+      enabled: true,
+      sendResetPassword: async (data, request) => {
+        if (!options?.sendResetPassword) return;
+        return options.sendResetPassword(data, request);
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      expiresIn: 60 * 60 * 24 * 10, // 10 days
+      sendVerificationEmail: async (data, request) => {
+        if (!options?.sendVerificationEmail) return;
+        return options.sendVerificationEmail(data, request);
+      },
+    },
+    database: new Pool({
+      connectionString: config.database.connectionString,
+    }),
+    advanced: {
+      generateId: false,
+    },
+    rateLimit: {
+      window: 50,
+      max: 100,
+    },
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        // Je peux ajouter des logiques personnalisées ici si nécessaire
+      }),
+    },
+    plugins: [openAPI()],
+  });
+}
