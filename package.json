@@ -26,6 +26,7 @@
     "node": ">=20.0.0"
   },
   "dependencies": {
+    "@mikro-orm/knex": "6.4.2",
     "dotenv-cli": "^8.0.0"
   }
 }

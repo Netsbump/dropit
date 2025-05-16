@@ -7,13 +7,13 @@ import {
   ExerciseCategoryDto,
   ExerciseDto,
   WorkoutCategoryDto,
-  WorkoutDto,
 } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/postgresql';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
 import { WORKOUT_ELEMENT_TYPES } from '../entities/workout-element.entity';
 import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
 import { ComplexService } from '../modules/complex/complex.service';
@@ -45,6 +45,11 @@ describe('WorkoutController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);
+
+    // Ensure we're using test configuration
+    await orm.close();
+    Object.assign(orm.config, createTestMikroOrmOptions());
+    await orm.connect();
 
     // Nettoyer la base de données avant les tests
     const generator = orm.getSchemaGenerator();

@@ -1,5 +1,5 @@
 import { ComplexDto, CreateComplex, UpdateComplex } from '@dropit/schemas';
-import { EntityManager } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/core';
 import {
   BadRequestException,
   Injectable,

@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@mikro-orm/knex':
+        specifier: 6.4.2
+        version: 6.4.2(@mikro-orm/core@6.4.12)
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -1851,6 +1854,36 @@ packages:
       - sqlite3
       - supports-color
       - tedious
+
+  /@mikro-orm/knex@6.4.2(@mikro-orm/core@6.4.12):
+    resolution: {integrity: sha512-vA72sVyR+8irrLsTP5f+zh84Q1a2tvzSfVgit4L/G+JOEgltG6F8Sfic/xt/1Wcis1zgNUiUL50ISQSLnhVNAw==}
+    engines: {node: '>= 18.12.0'}
+    peerDependencies:
+      '@mikro-orm/core': ^6.0.0
+      better-sqlite3: '*'
+      libsql: '*'
+      mariadb: '*'
+    peerDependenciesMeta:
+      better-sqlite3:
+        optional: true
+      libsql:
+        optional: true
+      mariadb:
+        optional: true
+    dependencies:
+      '@mikro-orm/core': 6.4.12
+      fs-extra: 11.2.0
+      knex: 3.1.0(pg@8.14.1)
+      sqlstring: 2.3.3
+    transitivePeerDependencies:
+      - mysql
+      - mysql2
+      - pg
+      - pg-native
+      - sqlite3
+      - supports-color
+      - tedious
+    dev: false
 
   /@mikro-orm/migrations@6.4.12(@mikro-orm/core@6.4.12)(@types/node@20.17.30)(pg@8.15.6):
     resolution: {integrity: sha512-C8kSV5O9Fm3bAoyuxXr13RbUrJwIK41vsSEVeLBPLXBsfAkmh43c70SPoXgOKKoo27m0XBMH/bX70xaMF7qrag==}
@@ -5359,6 +5392,15 @@ packages:
       jsonfile: 6.1.0
       universalify: 2.0.1
     dev: true
+
+  /fs-extra@11.2.0:
+    resolution: {integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==}
+    engines: {node: '>=14.14'}
+    dependencies:
+      graceful-fs: 4.2.11
+      jsonfile: 6.1.0
+      universalify: 2.0.1
+    dev: false
 
   /fs-extra@11.3.0:
     resolution: {integrity: sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==}

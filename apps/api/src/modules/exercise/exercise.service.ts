@@ -1,5 +1,6 @@
 import { CreateExercise, ExerciseDto, UpdateExercise } from '@dropit/schemas';
-import { EntityManager, wrap } from '@mikro-orm/postgresql';
+import { EntityManager } from '@mikro-orm/core';
+import { wrap } from '@mikro-orm/postgresql';
 import {
   BadRequestException,
   Injectable,

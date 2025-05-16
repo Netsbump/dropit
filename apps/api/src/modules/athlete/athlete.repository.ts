@@ -1,10 +1,7 @@
 import { CreateAthlete } from '@dropit/schemas';
-import {
-  EntityManager,
-  EntityRepository,
-  QueryBuilder,
-  raw,
-} from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { InjectEntityManager } from '@mikro-orm/nestjs';
+import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
 import { PersonalRecord } from '../../entities/personal-record.entity';
@@ -31,8 +28,13 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     super(em, Athlete);
   }
 
+  // petit helper pour ne pas caster partout
+  private get sql(): SqlEntityManager {
+    return this.em as unknown as SqlEntityManager;
+  }
+
   private getBaseQuery(id?: string): QueryBuilder<Athlete> {
-    const qb = this.em.createQueryBuilder(Athlete, 'a');
+    const qb = this.sql.createQueryBuilder(Athlete, 'a');
 
     qb.select([
       'a.id AS id',
@@ -60,7 +62,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
 
     // Sous-requête pour le dernier PR de Snatch
     qb.addSelect(
-      this.em
+      this.sql
         .createQueryBuilder(PersonalRecord, 'pr_snatch')
         .select('pr_snatch.weight')
         .leftJoin('pr_snatch.exercise', 'e_snatch')
@@ -75,7 +77,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
 
     // Sous-requête pour le dernier PR de Clean & Jerk
     qb.addSelect(
-      this.em
+      this.sql
         .createQueryBuilder(PersonalRecord, 'pr_cj')
         .select('pr_cj.weight')
         .leftJoin('pr_cj.exercise', 'e_cj')

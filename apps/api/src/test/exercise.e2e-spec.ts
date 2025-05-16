@@ -8,6 +8,7 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
 import { ExerciseService } from '../modules/exercise/exercise.service';
 import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
 
@@ -27,6 +28,11 @@ describe('ExerciseController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);
+
+    // Ensure we're using test configuration
+    await orm.close();
+    Object.assign(orm.config, createTestMikroOrmOptions());
+    await orm.connect();
 
     // Nettoyer la base de données avant les tests
     const generator = orm.getSchemaGenerator();

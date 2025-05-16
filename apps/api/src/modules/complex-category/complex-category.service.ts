@@ -3,7 +3,7 @@ import {
   CreateComplexCategory,
   UpdateComplexCategory,
 } from '@dropit/schemas';
-import { EntityManager, wrap } from '@mikro-orm/postgresql';
+import { EntityManager, wrap } from '@mikro-orm/core';
 import {
   BadRequestException,
   Injectable,

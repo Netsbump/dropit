@@ -4,12 +4,9 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecord,
 } from '@dropit/schemas';
-import { EntityManager, wrap } from '@mikro-orm/postgresql';
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { EntityManager } from '@mikro-orm/core';
+import { wrap } from '@mikro-orm/postgresql';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../entities/athlete.entity';
 import { Exercise } from '../../entities/exercise.entity';
 import { PersonalRecord } from '../../entities/personal-record.entity';

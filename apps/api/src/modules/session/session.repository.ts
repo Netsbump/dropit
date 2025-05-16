@@ -1,5 +1,5 @@
 import { SessionDto } from '@dropit/schemas';
-import { EntityManager, EntityRepository } from '@mikro-orm/postgresql';
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Session } from '../../entities/session.entity';
 import { SessionMapper } from './session.mapper';
