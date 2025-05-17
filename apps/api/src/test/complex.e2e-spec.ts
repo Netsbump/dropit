@@ -12,10 +12,10 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
 import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
-import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
-import { ComplexService } from '../modules/complex/complex.service';
-import { ExerciseService } from '../modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
+import { ComplexCategoryService } from '../modules/training/complex-category/complex-category.service';
+import { ComplexService } from '../modules/training/complex/complex.service';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseService } from '../modules/training/exercise/exercise.service';
 
 describe('ComplexController (e2e)', () => {
   let app: INestApplication;

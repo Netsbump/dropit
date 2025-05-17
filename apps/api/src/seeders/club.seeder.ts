@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Club } from '../entities/club.entity';
+import { Club } from '../modules/members/club/club.entity';
 
 export async function seedClubs(em: EntityManager): Promise<Club[]> {
   console.log('Seeding clubs...');

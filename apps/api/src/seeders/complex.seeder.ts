@@ -1,8 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ComplexCategory } from '../entities/complex-category.entity';
-import { Complex } from '../entities/complex.entity';
-import { ExerciseComplex } from '../entities/exercise-complex.entity';
-import { Exercise } from '../entities/exercise.entity';
+import { ComplexCategory } from '../modules/training/complex-category/complex-category.entity';
+import { Complex } from '../modules/training/complex/complex.entity';
+import { ExerciseComplex } from '../modules/training/exercise-complex/exercise-complex.entity';
 import { seedExercises } from './exercise.seeder';
 
 export async function seedComplexes(

@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ExerciseCategory } from '../entities/exercise-category.entity';
-import { Exercise } from '../entities/exercise.entity';
+import { ExerciseCategory } from '../modules/training/exercise-category/exercise-category.entity';
+import { Exercise } from '../modules/training/exercise/exercise.entity';
 
 export async function seedExerciseCategories(
   em: EntityManager

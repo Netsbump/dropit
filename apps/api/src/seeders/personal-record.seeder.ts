@@ -1,26 +1,28 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../entities/athlete.entity';
-import { Exercise } from '../entities/exercise.entity';
-import { PersonalRecord } from '../entities/personal-record.entity';
+import { Athlete } from '../modules/members/athlete/athlete.entity';
+import { PersonalRecord } from '../modules/performance/personal-record/personal-record.entity';
+import { Exercise } from '../modules/training/exercise/exercise.entity';
 
 export async function seedPersonalRecords(em: EntityManager): Promise<void> {
   console.log('Seeding personal records...');
 
   // Récupérer les 5 athlètes
   const athletes = await em.find(Athlete, {}, { limit: 5 });
-  
+
   // Récupérer tous les exercices
   const exercises = await em.find(Exercise, {});
 
   // Trouver les exercices spécifiques
-  const snatch = exercises.find(e => e.name === 'Arraché');
-  const cleanAndJerk = exercises.find(e => e.name === 'Épaulé-Jeté');
+  const snatch = exercises.find((e) => e.name === 'Arraché');
+  const cleanAndJerk = exercises.find((e) => e.name === 'Épaulé-Jeté');
   const commonExercises = [
     'Squat Nuque',
     'Squat Clavicule',
     'Développé Militaire',
     'Soulevé de Terre',
-  ].map(name => exercises.find(e => e.name === name)).filter(Boolean);
+  ]
+    .map((name) => exercises.find((e) => e.name === name))
+    .filter(Boolean);
 
   // Distribution des PR pour chaque athlète
   const prDistribution = [
@@ -31,7 +33,12 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
         await createPR(em, athlete, cleanAndJerk, 100);
         for (const exercise of commonExercises) {
           if (exercise) {
-            await createPR(em, athlete, exercise, getRandomWeight(exercise.name));
+            await createPR(
+              em,
+              athlete,
+              exercise,
+              getRandomWeight(exercise.name)
+            );
           }
         }
       }
@@ -43,7 +50,12 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
         await createPR(em, athlete, cleanAndJerk, 105);
         for (const exercise of commonExercises) {
           if (exercise) {
-            await createPR(em, athlete, exercise, getRandomWeight(exercise.name));
+            await createPR(
+              em,
+              athlete,
+              exercise,
+              getRandomWeight(exercise.name)
+            );
           }
         }
       }
@@ -84,7 +96,7 @@ async function createPR(
   em: EntityManager,
   athlete: Athlete,
   exercise: Exercise,
-  weight: number,
+  weight: number
 ): Promise<void> {
   const pr = new PersonalRecord();
   pr.athlete = athlete;

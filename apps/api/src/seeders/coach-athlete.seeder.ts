@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../entities/athlete.entity';
-import { CoachAthlete } from '../entities/coach-athlete.entity';
+import { Athlete } from '../modules/members/athlete/athlete.entity';
+import { CoachAthlete } from '../modules/members/coach-athlete/coach-athlete.entity';
 
 export async function seedCoachAthleteRelationships(
   em: EntityManager
