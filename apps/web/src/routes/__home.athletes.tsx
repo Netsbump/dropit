@@ -21,7 +21,7 @@ function AthletesPage() {
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isAthleteDetail = matches.some(
-    (match) => match.routeId === '/home/athletes/$athleteId'
+    (match) => match.routeId === '/__home/athletes/$athleteId'
   );
 
   const { data: athletes, isLoading: athletesLoading } = useQuery({

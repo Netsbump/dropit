@@ -7,7 +7,7 @@ import {
   SidebarTrigger,
 } from '../shared/components/ui/sidebar';
 
-export const HomeRoute = createFileRoute('/__home')({
+export const Route = createFileRoute('/__home')({
   component: HomeLayout,
 });
 

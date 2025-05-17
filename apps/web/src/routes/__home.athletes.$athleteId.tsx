@@ -242,7 +242,7 @@ function AthleteDetailPage() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate({ to: '/home/athletes' })}
+            onClick={() => navigate({ to: '/athletes' })}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
