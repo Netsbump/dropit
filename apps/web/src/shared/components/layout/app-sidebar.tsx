@@ -19,7 +19,7 @@ import {
   SidebarSeparator,
 } from '@/shared/components/ui/sidebar';
 import { useTranslation } from '@dropit/i18n';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
   Calendar,
@@ -30,14 +30,32 @@ import {
   LifeBuoy,
   User,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Récupérer l'email de l'utilisateur depuis le localStorage
+    const email = localStorage.getItem('user_email');
+    setUserEmail(email);
+  }, []);
+
+  const handleLogout = () => {
+    // Supprimer les informations d'authentification
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('user_email');
+
+    // Rediriger vers la page de connexion
+    navigate({ to: '/login', replace: true });
+  };
 
   const items = [
     {
       title: t('sidebar.menu.dashboard'),
-      url: '/',
+      url: '/dashboard',
       icon: Home,
     },
     {
@@ -78,7 +96,9 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.sections.application')}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('sidebar.sections.application')}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -102,7 +122,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User /> Username
+                  <User /> {userEmail || 'User'}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -120,7 +140,7 @@ export function AppSidebar() {
                   <span>{t('sidebar.user.help')}</span>
                 </DropdownMenuItem>
                 <Separator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <span>{t('sidebar.user.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

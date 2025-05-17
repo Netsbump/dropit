@@ -11,7 +11,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/planning')({
+export const Route = createFileRoute('/__home/planning')({
   component: PlanningPage,
 });
 

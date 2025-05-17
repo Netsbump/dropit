@@ -10,7 +10,7 @@ import { DialogCreation } from '../features/athletes/dialog-creation';
 import { HeaderPage } from '../shared/components/layout/header-page';
 import { Button } from '../shared/components/ui/button';
 
-export const Route = createFileRoute('/athletes')({
+export const Route = createFileRoute('/__home/athletes')({
   component: AthletesPage,
 });
 
@@ -21,7 +21,7 @@ function AthletesPage() {
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isAthleteDetail = matches.some(
-    (match) => match.routeId === '/athletes/$athleteId'
+    (match) => match.routeId === '/home/athletes/$athleteId'
   );
 
   const { data: athletes, isLoading: athletesLoading } = useQuery({

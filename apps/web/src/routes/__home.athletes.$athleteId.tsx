@@ -18,7 +18,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export const Route = createFileRoute('/athletes/$athleteId')({
+export const Route = createFileRoute('/__home/athletes/$athleteId')({
   component: AthleteDetailPage,
 });
 
@@ -242,7 +242,7 @@ function AthleteDetailPage() {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => navigate({ to: '/athletes' })}
+            onClick={() => navigate({ to: '/home/athletes' })}
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>

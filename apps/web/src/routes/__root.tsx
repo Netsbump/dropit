@@ -1,32 +1,40 @@
-import { Outlet, createRootRoute } from '@tanstack/react-router';
+import { Outlet, createRootRoute, redirect } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/router-devtools';
-import { AppSidebar } from '../shared/components/layout/app-sidebar';
-import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
-import { Separator } from '../shared/components/ui/separator';
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from '../shared/components/ui/sidebar';
 
+// Définition de la route principale
 export const Route = createRootRoute({
-  component: () => (
-    <SidebarProvider className="w-full">
-      <div className="flex min-h-screen w-full">
-        <AppSidebar />
-        <main className="flex-1 overflow-auto w-full">
-          <div className="h-full w-full">
-            <div className="flex items-center p-2 border-b gap-2">
-              <SidebarTrigger />
-              <Separator orientation="vertical" className="h-6" />
-              <Breadcrumbs />
-            </div>
-            <div className="px-4 pt-10">
-              <Outlet />
-            </div>
-          </div>
-        </main>
-      </div>
-      <TanStackRouterDevtools position="bottom-right" />
-    </SidebarProvider>
-  ),
+  component: RootLayout,
+  beforeLoad: ({ location }) => {
+    // Simplified example - replace with your actual auth check
+    const isAuthenticated = localStorage.getItem('auth_token');
+
+    // Skip checks for the root route, handled by index.tsx
+    if (location.pathname === '/') return;
+
+    // Check if current path is an auth route
+    const isAuthRoute = location.pathname.includes('/auth');
+
+    // If not authenticated and not on an auth route, redirect to login
+    if (!isAuthenticated && !isAuthRoute) {
+      throw redirect({
+        to: '/login',
+      });
+    }
+
+    // If authenticated and on an auth route, redirect to home
+    if (isAuthenticated && isAuthRoute) {
+      throw redirect({
+        to: '/dashboard',
+      });
+    }
+  },
 });
+
+function RootLayout() {
+  return (
+    <div className="min-h-screen">
+      <Outlet />
+      <TanStackRouterDevtools position="bottom-right" />
+    </div>
+  );
+}

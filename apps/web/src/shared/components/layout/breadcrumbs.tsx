@@ -21,7 +21,7 @@ export function Breadcrumbs() {
   );
 
   const athleteMatch = matches.find(
-    (match) => match.routeId === '/athletes/$athleteId'
+    (match) => match.routeId === '/home/athletes/$athleteId'
   );
 
   // Si on est sur une page de détail workout, récupérer les infos
