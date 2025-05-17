@@ -24,15 +24,15 @@ describe('ExerciseController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);
-
-    // Ensure we're using test configuration
-    await orm.close();
-    Object.assign(orm.config, createTestMikroOrmOptions());
-    await orm.connect();
 
     // Nettoyer la base de données avant les tests
     const generator = orm.getSchemaGenerator();

@@ -14,7 +14,8 @@
     "test:e2e": "dotenv -e .env -- turbo test:e2e",
     "test:api": "dotenv -e .env -- pnpm --filter api test",
     "test:api:e2e": "dotenv -e .env -- pnpm --filter api test:e2e",
-    "test:api:docker": "dotenv -e .env -- pnpm --filter api test:e2e:docker"
+    "test:api:docker": "dotenv -e .env -- pnpm --filter api test:e2e:docker",
+    "db:seed": "dotenv -e .env -- turbo db:seed"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",

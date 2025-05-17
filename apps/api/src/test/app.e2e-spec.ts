@@ -12,16 +12,15 @@ describe('AppController (e2e)', () => {
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);
-
-    // Ensure we're using test configuration
-    await orm.close();
-    Object.assign(orm.config, createTestMikroOrmOptions());
-    await orm.connect();
-
     await app.init();
   });
 
