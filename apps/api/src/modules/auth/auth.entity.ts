@@ -1,11 +1,49 @@
+import { UserRole } from '@dropit/schemas';
 import {
   Entity,
+  Enum,
   ManyToOne,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { User } from '../../entities/user.entity';
+import { Media } from '../../entities/media.entity';
+
+@Entity()
+export class User {
+  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  id!: string;
+
+  @Property({ unique: true })
+  email!: string;
+
+  @Property()
+  password!: string;
+
+  @Enum(() => UserRole)
+  role!: UserRole;
+
+  @ManyToOne(() => Media, { nullable: true })
+  avatar?: Media;
+
+  @Property({ default: false })
+  isSuperAdmin = false;
+
+  @Property({ default: true })
+  isActive = true;
+
+  @Property({ default: false })
+  emailVerified = false;
+
+  @Property({ nullable: true })
+  lastLogin?: Date;
+
+  @Property({ onCreate: () => new Date() })
+  createdAt: Date = new Date();
+
+  @Property({ onUpdate: () => new Date() })
+  updatedAt: Date = new Date();
+}
 
 /**
  * Stocke les sessions d'authentification active

@@ -12,8 +12,8 @@ export function createMikroOrmOptions(options?: CreateMikroOrmOptions) {
   const isTestEnvironment = isTest || config.env === 'test';
 
   const _options: Options = defineConfig({
-    entities: ['./dist/**/*.entity.js'],
-    entitiesTs: ['./src/**/*.entity.ts'],
+    entities: ['./dist/**/*.entity.js', './dist/modules/auth/auth.entity.js'],
+    entitiesTs: ['./src/modules/auth/auth.entity.ts', './src/**/*.entity.ts'],
     dbName: config.database.name,
     host: config.database.host,
     port: config.database.port,

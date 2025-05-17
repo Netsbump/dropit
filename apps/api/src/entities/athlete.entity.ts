@@ -8,12 +8,12 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { AthleteRepository } from '../modules/athlete/athlete.repository';
+import { User } from '../modules/auth/auth.entity';
 import { AthleteSession } from './athlete-session.entity';
 import { Club } from './club.entity';
 import { CompetitorStatus } from './competitor-status.entity';
 import { PersonalRecord } from './personal-record.entity';
 import { PhysicalMetric } from './physical-metric.entity';
-import { User } from './user.entity';
 
 @Entity({ repository: () => AthleteRepository })
 export class Athlete {
