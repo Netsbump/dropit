@@ -1,22 +1,31 @@
+import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
+  let orm: MikroORM;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
+    orm = moduleFixture.get<MikroORM>(MikroORM);
     await app.init();
   });
 
   afterAll(async () => {
-    // Fermer l'application NestJS
+    if (orm) await orm.close();
     await app.close();
   });
 

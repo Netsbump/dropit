@@ -7,19 +7,19 @@ import {
   ExerciseCategoryDto,
   ExerciseDto,
   WorkoutCategoryDto,
-  WorkoutDto,
 } from '@dropit/schemas';
-import { MikroORM } from '@mikro-orm/postgresql';
+import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
-import { WORKOUT_ELEMENT_TYPES } from '../entities/workout-element.entity';
-import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
-import { ComplexService } from '../modules/complex/complex.service';
-import { ExerciseService } from '../modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
-import { WorkoutCategoryService } from '../modules/workout-category/workout-category.service';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
+import { ComplexCategoryService } from '../modules/training/complex-category/complex-category.service';
+import { ComplexService } from '../modules/training/complex/complex.service';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseService } from '../modules/training/exercise/exercise.service';
+import { WorkoutCategoryService } from '../modules/training/workout-category/workout-category.service';
+import { WORKOUT_ELEMENT_TYPES } from '../modules/training/workout-element/workout-element.entity';
 
 describe('WorkoutController (e2e)', () => {
   let app: INestApplication;
@@ -41,7 +41,12 @@ describe('WorkoutController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);

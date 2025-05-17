@@ -6,15 +6,16 @@ import {
   ExerciseCategoryDto,
   ExerciseDto,
 } from '@dropit/schemas';
-import { MikroORM } from '@mikro-orm/postgresql';
+import { MikroORM } from '@mikro-orm/core';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
-import { ComplexCategoryService } from '../modules/complex-category/complex-category.service';
-import { ComplexService } from '../modules/complex/complex.service';
-import { ExerciseService } from '../modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
+import { ComplexCategoryService } from '../modules/training/complex-category/complex-category.service';
+import { ComplexService } from '../modules/training/complex/complex.service';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseService } from '../modules/training/exercise/exercise.service';
 
 describe('ComplexController (e2e)', () => {
   let app: INestApplication;
@@ -31,7 +32,12 @@ describe('ComplexController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);

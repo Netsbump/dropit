@@ -1,8 +1,8 @@
+import { UserRole } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../entities/athlete.entity';
-import { Club } from '../entities/club.entity';
-import { User } from '../entities/user.entity';
-import { UserRole } from '../entities/user.entity';
+import { Athlete } from '../modules/members/athlete/athlete.entity';
+import { User } from '../modules/members/auth/auth.entity';
+import { Club } from '../modules/members/club/club.entity';
 
 // Noms et prénoms pour la génération d'athlètes
 const femaleFirstNames = [

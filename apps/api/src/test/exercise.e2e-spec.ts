@@ -8,8 +8,9 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
-import { ExerciseService } from '../modules/exercise/exercise.service';
-import { ExerciseCategoryService } from '../modules/exerciseCategory/exerciseCategory.service';
+import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseService } from '../modules/training/exercise/exercise.service';
 
 describe('ExerciseController (e2e)', () => {
   let app: INestApplication;
@@ -23,7 +24,12 @@ describe('ExerciseController (e2e)', () => {
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
-    }).compile();
+    })
+      .overrideProvider(MikroORM)
+      .useFactory({
+        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      })
+      .compile();
 
     app = moduleFixture.createNestApplication();
     orm = moduleFixture.get<MikroORM>(MikroORM);
