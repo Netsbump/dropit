@@ -10,7 +10,7 @@ import { ComplexFilters } from '../features/complex/complex-filters'
 import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
 
-export const Route = createFileRoute('/__programs/complex')({
+export const Route = createFileRoute('/__home/programs/complex')({
   component: ComplexPage,
 })
 

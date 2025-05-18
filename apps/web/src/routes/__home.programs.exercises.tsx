@@ -11,7 +11,7 @@ import { ExerciseCreationForm } from '../features/exercises/exercise-creation-fo
 import { Button } from '../shared/components/ui/button'
 import { DetailsPanel } from '../shared/components/ui/details-panel'
 
-export const Route = createFileRoute('/__programs/exercises')({
+export const Route = createFileRoute('/__home/programs/exercises')({
   component: ExercisesPage,
 })
 

@@ -10,7 +10,7 @@ import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
 import { DialogCreation } from '../features/exercises/dialog-creation';
 
-export const Route = createFileRoute('/__programs/workouts')({
+export const Route = createFileRoute('/__home/programs/workouts')({
   component: WorkoutPage,
 });
 
@@ -22,7 +22,7 @@ function WorkoutPage() {
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isWorkoutDetail = matches.some(
-    (match) => match.routeId === '/workouts/$workoutId'
+    (match) => match.routeId === '/__home/workouts/$workoutId'
   );
   const { t } = useTranslation();
   const { toast } = useToast();

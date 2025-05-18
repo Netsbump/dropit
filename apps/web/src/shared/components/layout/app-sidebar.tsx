@@ -1,3 +1,4 @@
+import { api } from '@/lib/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,8 +19,9 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/shared/components/ui/sidebar';
+import { toast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
-import { Link } from '@tanstack/react-router';
+import { Link, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
   Calendar,
@@ -30,19 +32,63 @@ import {
   LifeBuoy,
   User,
 } from 'lucide-react';
+import { useEffect, useState } from 'react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [userEmail, setUserEmail] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Récupérer l'email de l'utilisateur depuis le localStorage
+    const email = localStorage.getItem('user_email');
+    setUserEmail(email);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      // Appeler directement l'API pour se déconnecter
+      // Avec credentials: 'include', les cookies seront automatiquement envoyés
+      await api.auth.logout({ body: {} });
+
+      // Nettoyer le localStorage
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+
+      // Rediriger vers la page de connexion
+      toast({
+        title: 'Logout successful',
+        description: 'You have been logged out successfully',
+      });
+
+      navigate({ to: '/login', replace: true });
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+
+      // En cas d'erreur, on nettoie quand même le localStorage
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+
+      toast({
+        title: 'Logout issue',
+        description:
+          'You have been logged out but there was an issue contacting the server',
+        variant: 'destructive',
+      });
+
+      navigate({ to: '/login', replace: true });
+    }
+  };
 
   const items = [
     {
       title: t('sidebar.menu.dashboard'),
-      url: '/',
+      url: '/dashboard',
       icon: Home,
     },
     {
       title: t('sidebar.menu.programming'),
-      url: '/workouts',
+      url: '/programs/workouts',
       icon: LayoutDashboard,
     },
     {
@@ -78,7 +124,9 @@ export function AppSidebar() {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>{t('sidebar.sections.application')}</SidebarGroupLabel>
+          <SidebarGroupLabel>
+            {t('sidebar.sections.application')}
+          </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (
@@ -102,7 +150,7 @@ export function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User /> Username
+                  <User /> {userEmail || 'User'}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
@@ -120,7 +168,7 @@ export function AppSidebar() {
                   <span>{t('sidebar.user.help')}</span>
                 </DropdownMenuItem>
                 <Separator />
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={handleLogout}>
                   <span>{t('sidebar.user.logout')}</span>
                 </DropdownMenuItem>
               </DropdownMenuContent>

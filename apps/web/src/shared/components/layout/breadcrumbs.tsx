@@ -17,11 +17,11 @@ export function Breadcrumbs() {
 
   // Trouver le match pour la route workoutId si elle existe
   const workoutMatch = matches.find(
-    (match) => match.routeId === '/workouts/$workoutId'
+    (match) => match.routeId === '/__home/workouts/$workoutId'
   );
 
   const athleteMatch = matches.find(
-    (match) => match.routeId === '/athletes/$athleteId'
+    (match) => match.routeId === '/__home/athletes/$athleteId'
   );
 
   // Si on est sur une page de détail workout, récupérer les infos
@@ -60,7 +60,7 @@ export function Breadcrumbs() {
   // Construire le breadcrumb
   let breadcrumbs = uniqueMatches.map((match) => ({
     title:
-      match.routeId === '/workouts/$workoutId' && workout
+      match.routeId === '/__home/workouts/$workoutId' && workout
         ? workout.title
         : t(`routes.${match.pathname}`),
     path: match.pathname,
@@ -71,7 +71,7 @@ export function Breadcrumbs() {
     const dashboardCrumb = breadcrumbs[0]; // Garder "Tableau de bord"
     breadcrumbs = [
       dashboardCrumb,
-      { title: t('routes./workouts'), path: '/workouts' },
+      { title: t('routes./workouts'), path: '/programs/workouts' },
       {
         title: workout?.title || t('common.loading'),
         path: workoutMatch.pathname,

@@ -18,7 +18,7 @@ import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-export const Route = createFileRoute('/athletes/$athleteId')({
+export const Route = createFileRoute('/__home/athletes/$athleteId')({
   component: AthleteDetailPage,
 });
 

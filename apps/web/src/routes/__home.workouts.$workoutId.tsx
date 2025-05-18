@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/workouts/$workoutId')({
+export const Route = createFileRoute('/__home/workouts/$workoutId')({
   component: WorkoutDetailPage,
   loader: ({ params }) => {
     return {
@@ -52,7 +52,7 @@ function WorkoutDetailPage() {
   return (
     <WorkoutDetail
       workout={workout}
-      onNavigate={() => navigate({ to: '/workouts' })}
+      onNavigate={() => navigate({ to: '/programs/workouts' })}
       onEdit={() => setIsEditing(true)}
     />
   );

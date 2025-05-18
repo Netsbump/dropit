@@ -7,7 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { HeaderPage } from '../shared/components/layout/header-page';
 
-export const Route = createFileRoute('/__programs')({
+export const Route = createFileRoute('/__home/programs')({
   component: ProgramsLayout,
 });
 
@@ -28,7 +28,7 @@ function ProgramsLayout() {
       <div className="border-b">
         <nav className="flex gap-8">
           <Link
-            to="/workouts"
+            to="/programs/workouts"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'workouts'
                 ? 'text-primary border-b-2 border-primary'
@@ -38,7 +38,7 @@ function ProgramsLayout() {
             {t('programs.tabs.workouts')}
           </Link>
           <Link
-            to="/complex"
+            to="/programs/complex"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'complex'
                 ? 'text-primary border-b-2 border-primary'
@@ -48,7 +48,7 @@ function ProgramsLayout() {
             {t('programs.tabs.complex')}
           </Link>
           <Link
-            to="/exercises"
+            to="/programs/exercises"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'exercises'
                 ? 'text-primary border-b-2 border-primary'
