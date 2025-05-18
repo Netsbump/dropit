@@ -28,6 +28,15 @@ export const ConfirmResetPasswordRequestSchema = z.object({
   newPassword: z.string().min(6),
 });
 
+// Pour le logout, généralement aucun body n'est requis ou un body vide
+export const LogoutRequestSchema = z.object({}).optional();
+
+// Une réponse de succès simple
+export const SuccessResponseSchema = z.object({
+  success: z.boolean(),
+  message: z.string().optional(),
+});
+
 // Schémas de réponses
 export const TokensSchema = z.object({
   access: z.string(),
@@ -66,6 +75,8 @@ export type ResetPasswordRequest = z.infer<typeof ResetPasswordRequestSchema>;
 export type ConfirmResetPasswordRequest = z.infer<
   typeof ConfirmResetPasswordRequestSchema
 >;
+export type LogoutRequest = z.infer<typeof LogoutRequestSchema>;
+export type SuccessResponse = z.infer<typeof SuccessResponseSchema>;
 
 export type Tokens = z.infer<typeof TokensSchema>;
 export type User = z.infer<typeof UserSchema>;

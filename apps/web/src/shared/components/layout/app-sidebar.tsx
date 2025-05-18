@@ -1,3 +1,4 @@
+import { api } from '@/lib/api';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +19,7 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from '@/shared/components/ui/sidebar';
+import { toast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { Link, useNavigate } from '@tanstack/react-router';
 import {
@@ -43,13 +45,38 @@ export function AppSidebar() {
     setUserEmail(email);
   }, []);
 
-  const handleLogout = () => {
-    // Supprimer les informations d'authentification
-    localStorage.removeItem('auth_token');
-    localStorage.removeItem('user_email');
+  const handleLogout = async () => {
+    try {
+      // Appeler directement l'API pour se déconnecter
+      await api.auth.logout({ body: {} });
 
-    // Rediriger vers la page de connexion
-    navigate({ to: '/login', replace: true });
+      // Nettoyer le localStorage
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+
+      // Rediriger vers la page de connexion
+      navigate({ to: '/login', replace: true });
+
+      toast({
+        title: 'Logout successful',
+        description: 'You have been logged out successfully',
+      });
+    } catch (error) {
+      console.error('Erreur lors de la déconnexion:', error);
+
+      // En cas d'erreur, on nettoie quand même le localStorage
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user_email');
+
+      toast({
+        title: 'Logout issue',
+        description:
+          'You have been logged out but there was an issue contacting the server',
+        variant: 'destructive',
+      });
+
+      navigate({ to: '/login', replace: true });
+    }
   };
 
   const items = [

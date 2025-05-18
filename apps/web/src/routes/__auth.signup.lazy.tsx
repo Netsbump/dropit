@@ -1,3 +1,6 @@
+import { api } from '@/lib/api';
+import { toast } from '@/shared/hooks/use-toast';
+import { SignupRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
@@ -31,7 +34,7 @@ export const Route = createLazyFileRoute('/__auth/signup')({
 
 function Signup() {
   const navigate = useNavigate();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<SignupRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -47,23 +50,23 @@ function Signup() {
   }, [navigate]);
 
   const signupMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      // Simulation d'une API pour demo - remplacer par votre vrai appel API
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Simuler une inscription réussie
-          localStorage.setItem('auth_token', 'demo_token');
-          localStorage.setItem('user_email', values.email);
-          resolve({ success: true });
-        }, 1000);
-      });
+    mutationFn: async (values: SignupRequest) => {
+      const response = await api.auth.signup({ body: values });
+      if (response.status !== 201) {
+        throw new Error('Failed to signup');
+      }
+      return response.body;
     },
     onSuccess: () => {
+      toast({
+        title: 'Account created successfully',
+        description: 'The account has been created successfully',
+      });
       navigate({ to: '/', replace: true });
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: SignupRequest) {
     signupMutation.mutate(values);
   }
 

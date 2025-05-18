@@ -1,3 +1,6 @@
+import { api } from '@/lib/api';
+import { toast } from '@/shared/hooks/use-toast';
+import { LoginRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
@@ -31,7 +34,7 @@ export const Route = createLazyFileRoute('/__auth/login')({
 
 function Login() {
   const navigate = useNavigate();
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<LoginRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -47,23 +50,35 @@ function Login() {
   }, [navigate]);
 
   const loginMutation = useMutation({
-    mutationFn: async (values: z.infer<typeof formSchema>) => {
-      // Simulation d'une API pour demo - remplacer par votre vrai appel API
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          // Simuler une connexion réussie
-          localStorage.setItem('auth_token', 'demo_token');
-          localStorage.setItem('user_email', values.email);
-          resolve({ success: true });
-        }, 1000);
-      });
+    mutationFn: async (values: LoginRequest) => {
+      const response = await api.auth.login({ body: values });
+      if (response.status !== 200) {
+        throw new Error('Failed to login');
+      }
+
+      // Stocke le token pour les futures requêtes
+      localStorage.setItem('auth_token', response.body.tokens.access);
+
+      return response.body;
     },
     onSuccess: () => {
+      toast({
+        title: 'Login successful',
+        description: 'You have been logged in successfully',
+      });
       navigate({ to: '/dashboard', replace: true });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Login failed',
+        description:
+          error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
+      });
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: LoginRequest) {
     loginMutation.mutate(values);
   }
 
