@@ -13,17 +13,18 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
-import { Route as programsImport } from './routes/__programs'
 import { Route as homeImport } from './routes/__home'
 import { Route as authImport } from './routes/__auth'
 import { Route as IndexImport } from './routes/index'
-import { Route as WorkoutsWorkoutIdImport } from './routes/workouts.$workoutId'
-import { Route as programsWorkoutsImport } from './routes/__programs.workouts'
-import { Route as programsExercisesImport } from './routes/__programs.exercises'
-import { Route as programsComplexImport } from './routes/__programs.complex'
+import { Route as homeProgramsImport } from './routes/__home.programs'
 import { Route as homePlanningImport } from './routes/__home.planning'
 import { Route as homeDashboardImport } from './routes/__home.dashboard'
 import { Route as homeAthletesImport } from './routes/__home.athletes'
+import { Route as homeAboutImport } from './routes/__home.about'
+import { Route as homeWorkoutsWorkoutIdImport } from './routes/__home.workouts.$workoutId'
+import { Route as homeProgramsWorkoutsImport } from './routes/__home.programs.workouts'
+import { Route as homeProgramsExercisesImport } from './routes/__home.programs.exercises'
+import { Route as homeProgramsComplexImport } from './routes/__home.programs.complex'
 import { Route as homeAthletesAthleteIdImport } from './routes/__home.athletes.$athleteId'
 
 // Create Virtual Routes
@@ -34,11 +35,6 @@ const authPrivacyLazyImport = createFileRoute('/__auth/privacy')()
 const authLoginLazyImport = createFileRoute('/__auth/login')()
 
 // Create/Update Routes
-
-const programsRoute = programsImport.update({
-  id: '/__programs',
-  getParentRoute: () => rootRoute,
-} as any)
 
 const homeRoute = homeImport.update({
   id: '/__home',
@@ -88,28 +84,10 @@ const authLoginLazyRoute = authLoginLazyImport
   } as any)
   .lazy(() => import('./routes/__auth.login.lazy').then((d) => d.Route))
 
-const WorkoutsWorkoutIdRoute = WorkoutsWorkoutIdImport.update({
-  id: '/workouts/$workoutId',
-  path: '/workouts/$workoutId',
-  getParentRoute: () => rootRoute,
-} as any)
-
-const programsWorkoutsRoute = programsWorkoutsImport.update({
-  id: '/workouts',
-  path: '/workouts',
-  getParentRoute: () => programsRoute,
-} as any)
-
-const programsExercisesRoute = programsExercisesImport.update({
-  id: '/exercises',
-  path: '/exercises',
-  getParentRoute: () => programsRoute,
-} as any)
-
-const programsComplexRoute = programsComplexImport.update({
-  id: '/complex',
-  path: '/complex',
-  getParentRoute: () => programsRoute,
+const homeProgramsRoute = homeProgramsImport.update({
+  id: '/programs',
+  path: '/programs',
+  getParentRoute: () => homeRoute,
 } as any)
 
 const homePlanningRoute = homePlanningImport.update({
@@ -128,6 +106,36 @@ const homeAthletesRoute = homeAthletesImport.update({
   id: '/athletes',
   path: '/athletes',
   getParentRoute: () => homeRoute,
+} as any)
+
+const homeAboutRoute = homeAboutImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => homeRoute,
+} as any)
+
+const homeWorkoutsWorkoutIdRoute = homeWorkoutsWorkoutIdImport.update({
+  id: '/workouts/$workoutId',
+  path: '/workouts/$workoutId',
+  getParentRoute: () => homeRoute,
+} as any)
+
+const homeProgramsWorkoutsRoute = homeProgramsWorkoutsImport.update({
+  id: '/workouts',
+  path: '/workouts',
+  getParentRoute: () => homeProgramsRoute,
+} as any)
+
+const homeProgramsExercisesRoute = homeProgramsExercisesImport.update({
+  id: '/exercises',
+  path: '/exercises',
+  getParentRoute: () => homeProgramsRoute,
+} as any)
+
+const homeProgramsComplexRoute = homeProgramsComplexImport.update({
+  id: '/complex',
+  path: '/complex',
+  getParentRoute: () => homeProgramsRoute,
 } as any)
 
 const homeAthletesAthleteIdRoute = homeAthletesAthleteIdImport.update({
@@ -161,12 +169,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homeImport
       parentRoute: typeof rootRoute
     }
-    '/__programs': {
-      id: '/__programs'
-      path: ''
-      fullPath: ''
-      preLoaderRoute: typeof programsImport
-      parentRoute: typeof rootRoute
+    '/__home/about': {
+      id: '/__home/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof homeAboutImport
+      parentRoute: typeof homeImport
     }
     '/__home/athletes': {
       id: '/__home/athletes'
@@ -189,33 +197,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homePlanningImport
       parentRoute: typeof homeImport
     }
-    '/__programs/complex': {
-      id: '/__programs/complex'
-      path: '/complex'
-      fullPath: '/complex'
-      preLoaderRoute: typeof programsComplexImport
-      parentRoute: typeof programsImport
-    }
-    '/__programs/exercises': {
-      id: '/__programs/exercises'
-      path: '/exercises'
-      fullPath: '/exercises'
-      preLoaderRoute: typeof programsExercisesImport
-      parentRoute: typeof programsImport
-    }
-    '/__programs/workouts': {
-      id: '/__programs/workouts'
-      path: '/workouts'
-      fullPath: '/workouts'
-      preLoaderRoute: typeof programsWorkoutsImport
-      parentRoute: typeof programsImport
-    }
-    '/workouts/$workoutId': {
-      id: '/workouts/$workoutId'
-      path: '/workouts/$workoutId'
-      fullPath: '/workouts/$workoutId'
-      preLoaderRoute: typeof WorkoutsWorkoutIdImport
-      parentRoute: typeof rootRoute
+    '/__home/programs': {
+      id: '/__home/programs'
+      path: '/programs'
+      fullPath: '/programs'
+      preLoaderRoute: typeof homeProgramsImport
+      parentRoute: typeof homeImport
     }
     '/__auth/login': {
       id: '/__auth/login'
@@ -252,6 +239,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homeAthletesAthleteIdImport
       parentRoute: typeof homeAthletesImport
     }
+    '/__home/programs/complex': {
+      id: '/__home/programs/complex'
+      path: '/complex'
+      fullPath: '/programs/complex'
+      preLoaderRoute: typeof homeProgramsComplexImport
+      parentRoute: typeof homeProgramsImport
+    }
+    '/__home/programs/exercises': {
+      id: '/__home/programs/exercises'
+      path: '/exercises'
+      fullPath: '/programs/exercises'
+      preLoaderRoute: typeof homeProgramsExercisesImport
+      parentRoute: typeof homeProgramsImport
+    }
+    '/__home/programs/workouts': {
+      id: '/__home/programs/workouts'
+      path: '/workouts'
+      fullPath: '/programs/workouts'
+      preLoaderRoute: typeof homeProgramsWorkoutsImport
+      parentRoute: typeof homeProgramsImport
+    }
+    '/__home/workouts/$workoutId': {
+      id: '/__home/workouts/$workoutId'
+      path: '/workouts/$workoutId'
+      fullPath: '/workouts/$workoutId'
+      preLoaderRoute: typeof homeWorkoutsWorkoutIdImport
+      parentRoute: typeof homeImport
+    }
   }
 }
 
@@ -285,68 +300,78 @@ const homeAthletesRouteWithChildren = homeAthletesRoute._addFileChildren(
   homeAthletesRouteChildren,
 )
 
+interface homeProgramsRouteChildren {
+  homeProgramsComplexRoute: typeof homeProgramsComplexRoute
+  homeProgramsExercisesRoute: typeof homeProgramsExercisesRoute
+  homeProgramsWorkoutsRoute: typeof homeProgramsWorkoutsRoute
+}
+
+const homeProgramsRouteChildren: homeProgramsRouteChildren = {
+  homeProgramsComplexRoute: homeProgramsComplexRoute,
+  homeProgramsExercisesRoute: homeProgramsExercisesRoute,
+  homeProgramsWorkoutsRoute: homeProgramsWorkoutsRoute,
+}
+
+const homeProgramsRouteWithChildren = homeProgramsRoute._addFileChildren(
+  homeProgramsRouteChildren,
+)
+
 interface homeRouteChildren {
+  homeAboutRoute: typeof homeAboutRoute
   homeAthletesRoute: typeof homeAthletesRouteWithChildren
   homeDashboardRoute: typeof homeDashboardRoute
   homePlanningRoute: typeof homePlanningRoute
+  homeProgramsRoute: typeof homeProgramsRouteWithChildren
+  homeWorkoutsWorkoutIdRoute: typeof homeWorkoutsWorkoutIdRoute
 }
 
 const homeRouteChildren: homeRouteChildren = {
+  homeAboutRoute: homeAboutRoute,
   homeAthletesRoute: homeAthletesRouteWithChildren,
   homeDashboardRoute: homeDashboardRoute,
   homePlanningRoute: homePlanningRoute,
+  homeProgramsRoute: homeProgramsRouteWithChildren,
+  homeWorkoutsWorkoutIdRoute: homeWorkoutsWorkoutIdRoute,
 }
 
 const homeRouteWithChildren = homeRoute._addFileChildren(homeRouteChildren)
 
-interface programsRouteChildren {
-  programsComplexRoute: typeof programsComplexRoute
-  programsExercisesRoute: typeof programsExercisesRoute
-  programsWorkoutsRoute: typeof programsWorkoutsRoute
-}
-
-const programsRouteChildren: programsRouteChildren = {
-  programsComplexRoute: programsComplexRoute,
-  programsExercisesRoute: programsExercisesRoute,
-  programsWorkoutsRoute: programsWorkoutsRoute,
-}
-
-const programsRouteWithChildren = programsRoute._addFileChildren(
-  programsRouteChildren,
-)
-
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '': typeof programsRouteWithChildren
+  '': typeof homeRouteWithChildren
+  '/about': typeof homeAboutRoute
   '/athletes': typeof homeAthletesRouteWithChildren
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
-  '/complex': typeof programsComplexRoute
-  '/exercises': typeof programsExercisesRoute
-  '/workouts': typeof programsWorkoutsRoute
-  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
+  '/programs': typeof homeProgramsRouteWithChildren
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
   '/terms': typeof authTermsLazyRoute
   '/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
+  '/programs/complex': typeof homeProgramsComplexRoute
+  '/programs/exercises': typeof homeProgramsExercisesRoute
+  '/programs/workouts': typeof homeProgramsWorkoutsRoute
+  '/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '': typeof programsRouteWithChildren
+  '': typeof homeRouteWithChildren
+  '/about': typeof homeAboutRoute
   '/athletes': typeof homeAthletesRouteWithChildren
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
-  '/complex': typeof programsComplexRoute
-  '/exercises': typeof programsExercisesRoute
-  '/workouts': typeof programsWorkoutsRoute
-  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
+  '/programs': typeof homeProgramsRouteWithChildren
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
   '/terms': typeof authTermsLazyRoute
   '/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
+  '/programs/complex': typeof homeProgramsComplexRoute
+  '/programs/exercises': typeof homeProgramsExercisesRoute
+  '/programs/workouts': typeof homeProgramsWorkoutsRoute
+  '/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
 }
 
 export interface FileRoutesById {
@@ -354,19 +379,20 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/__auth': typeof authRouteWithChildren
   '/__home': typeof homeRouteWithChildren
-  '/__programs': typeof programsRouteWithChildren
+  '/__home/about': typeof homeAboutRoute
   '/__home/athletes': typeof homeAthletesRouteWithChildren
   '/__home/dashboard': typeof homeDashboardRoute
   '/__home/planning': typeof homePlanningRoute
-  '/__programs/complex': typeof programsComplexRoute
-  '/__programs/exercises': typeof programsExercisesRoute
-  '/__programs/workouts': typeof programsWorkoutsRoute
-  '/workouts/$workoutId': typeof WorkoutsWorkoutIdRoute
+  '/__home/programs': typeof homeProgramsRouteWithChildren
   '/__auth/login': typeof authLoginLazyRoute
   '/__auth/privacy': typeof authPrivacyLazyRoute
   '/__auth/signup': typeof authSignupLazyRoute
   '/__auth/terms': typeof authTermsLazyRoute
   '/__home/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
+  '/__home/programs/complex': typeof homeProgramsComplexRoute
+  '/__home/programs/exercises': typeof homeProgramsExercisesRoute
+  '/__home/programs/workouts': typeof homeProgramsWorkoutsRoute
+  '/__home/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
 }
 
 export interface FileRouteTypes {
@@ -374,52 +400,57 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/about'
     | '/athletes'
     | '/dashboard'
     | '/planning'
-    | '/complex'
-    | '/exercises'
-    | '/workouts'
-    | '/workouts/$workoutId'
+    | '/programs'
     | '/login'
     | '/privacy'
     | '/signup'
     | '/terms'
     | '/athletes/$athleteId'
+    | '/programs/complex'
+    | '/programs/exercises'
+    | '/programs/workouts'
+    | '/workouts/$workoutId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | ''
+    | '/about'
     | '/athletes'
     | '/dashboard'
     | '/planning'
-    | '/complex'
-    | '/exercises'
-    | '/workouts'
-    | '/workouts/$workoutId'
+    | '/programs'
     | '/login'
     | '/privacy'
     | '/signup'
     | '/terms'
     | '/athletes/$athleteId'
+    | '/programs/complex'
+    | '/programs/exercises'
+    | '/programs/workouts'
+    | '/workouts/$workoutId'
   id:
     | '__root__'
     | '/'
     | '/__auth'
     | '/__home'
-    | '/__programs'
+    | '/__home/about'
     | '/__home/athletes'
     | '/__home/dashboard'
     | '/__home/planning'
-    | '/__programs/complex'
-    | '/__programs/exercises'
-    | '/__programs/workouts'
-    | '/workouts/$workoutId'
+    | '/__home/programs'
     | '/__auth/login'
     | '/__auth/privacy'
     | '/__auth/signup'
     | '/__auth/terms'
     | '/__home/athletes/$athleteId'
+    | '/__home/programs/complex'
+    | '/__home/programs/exercises'
+    | '/__home/programs/workouts'
+    | '/__home/workouts/$workoutId'
   fileRoutesById: FileRoutesById
 }
 
@@ -427,16 +458,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   authRoute: typeof authRouteWithChildren
   homeRoute: typeof homeRouteWithChildren
-  programsRoute: typeof programsRouteWithChildren
-  WorkoutsWorkoutIdRoute: typeof WorkoutsWorkoutIdRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   authRoute: authRouteWithChildren,
   homeRoute: homeRouteWithChildren,
-  programsRoute: programsRouteWithChildren,
-  WorkoutsWorkoutIdRoute: WorkoutsWorkoutIdRoute,
 }
 
 export const routeTree = rootRoute
@@ -451,9 +478,7 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/__auth",
-        "/__home",
-        "/__programs",
-        "/workouts/$workoutId"
+        "/__home"
       ]
     },
     "/": {
@@ -471,18 +496,17 @@ export const routeTree = rootRoute
     "/__home": {
       "filePath": "__home.tsx",
       "children": [
+        "/__home/about",
         "/__home/athletes",
         "/__home/dashboard",
-        "/__home/planning"
+        "/__home/planning",
+        "/__home/programs",
+        "/__home/workouts/$workoutId"
       ]
     },
-    "/__programs": {
-      "filePath": "__programs.tsx",
-      "children": [
-        "/__programs/complex",
-        "/__programs/exercises",
-        "/__programs/workouts"
-      ]
+    "/__home/about": {
+      "filePath": "__home.about.tsx",
+      "parent": "/__home"
     },
     "/__home/athletes": {
       "filePath": "__home.athletes.tsx",
@@ -499,20 +523,14 @@ export const routeTree = rootRoute
       "filePath": "__home.planning.tsx",
       "parent": "/__home"
     },
-    "/__programs/complex": {
-      "filePath": "__programs.complex.tsx",
-      "parent": "/__programs"
-    },
-    "/__programs/exercises": {
-      "filePath": "__programs.exercises.tsx",
-      "parent": "/__programs"
-    },
-    "/__programs/workouts": {
-      "filePath": "__programs.workouts.tsx",
-      "parent": "/__programs"
-    },
-    "/workouts/$workoutId": {
-      "filePath": "workouts.$workoutId.tsx"
+    "/__home/programs": {
+      "filePath": "__home.programs.tsx",
+      "parent": "/__home",
+      "children": [
+        "/__home/programs/complex",
+        "/__home/programs/exercises",
+        "/__home/programs/workouts"
+      ]
     },
     "/__auth/login": {
       "filePath": "__auth.login.lazy.tsx",
@@ -533,6 +551,22 @@ export const routeTree = rootRoute
     "/__home/athletes/$athleteId": {
       "filePath": "__home.athletes.$athleteId.tsx",
       "parent": "/__home/athletes"
+    },
+    "/__home/programs/complex": {
+      "filePath": "__home.programs.complex.tsx",
+      "parent": "/__home/programs"
+    },
+    "/__home/programs/exercises": {
+      "filePath": "__home.programs.exercises.tsx",
+      "parent": "/__home/programs"
+    },
+    "/__home/programs/workouts": {
+      "filePath": "__home.programs.workouts.tsx",
+      "parent": "/__home/programs"
+    },
+    "/__home/workouts/$workoutId": {
+      "filePath": "__home.workouts.$workoutId.tsx",
+      "parent": "/__home"
     }
   }
 }

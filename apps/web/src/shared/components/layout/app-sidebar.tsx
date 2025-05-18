@@ -60,7 +60,7 @@ export function AppSidebar() {
     },
     {
       title: t('sidebar.menu.programming'),
-      url: '/workouts',
+      url: '/programs/workouts',
       icon: LayoutDashboard,
     },
     {
