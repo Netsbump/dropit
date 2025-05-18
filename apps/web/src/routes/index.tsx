@@ -1,18 +1,16 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { isAuthenticated } from '../shared/utils/auth';
 
 export const Route = createFileRoute('/')({
   beforeLoad: () => {
-    // Check if user is authenticated
-    const isAuthenticated = localStorage.getItem('auth_token');
-
     // Redirect based on authentication status
-    if (isAuthenticated) {
+    if (isAuthenticated()) {
       throw redirect({
         to: '/dashboard',
       });
     }
 
-    // Default: redirect to login
+    // Redirect to login if not authenticated
     throw redirect({
       to: '/login',
     });

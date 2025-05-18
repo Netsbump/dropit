@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute } from '@tanstack/react-router';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '../shared/components/layout/app-sidebar';
 import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
 import { Separator } from '../shared/components/ui/separator';
@@ -6,12 +6,21 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '../shared/components/ui/sidebar';
+import { isAuthenticated } from '../shared/utils/auth';
 
 export const Route = createFileRoute('/__home')({
+  beforeLoad: () => {
+    // If not authenticated, redirect to login
+    if (!isAuthenticated()) {
+      throw redirect({
+        to: '/login',
+      });
+    }
+  },
   component: HomeLayout,
 });
 
-export default function HomeLayout() {
+function HomeLayout() {
   return (
     <SidebarProvider className="w-full">
       <div className="flex min-h-screen w-full">
