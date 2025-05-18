@@ -48,6 +48,7 @@ export function AppSidebar() {
   const handleLogout = async () => {
     try {
       // Appeler directement l'API pour se déconnecter
+      // Avec credentials: 'include', les cookies seront automatiquement envoyés
       await api.auth.logout({ body: {} });
 
       // Nettoyer le localStorage
@@ -55,12 +56,12 @@ export function AppSidebar() {
       localStorage.removeItem('user_email');
 
       // Rediriger vers la page de connexion
-      navigate({ to: '/login', replace: true });
-
       toast({
         title: 'Logout successful',
         description: 'You have been logged out successfully',
       });
+
+      navigate({ to: '/login', replace: true });
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
 

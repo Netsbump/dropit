@@ -19,6 +19,21 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
   return betterAuth({
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
+
+    // Configuration des cookies HttpOnly
+    cookies: {
+      enabled: true,
+      httpOnly: true, // Empêche l'accès via JavaScript (protection XSS)
+      secure: config.env === 'production', // HTTPS en prod
+      sameSite: 'lax', // Protection CSRF de base
+      maxAge: 60 * 60 * 24 * 7, // 7 jours (en secondes)
+    },
+
+    // Support du Bearer token également (pour le mobile)
+    bearerToken: {
+      enabled: true,
+    },
+
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {

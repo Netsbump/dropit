@@ -2,11 +2,10 @@ import { api } from '@/lib/api';
 import { toast } from '@/shared/hooks/use-toast';
 import { SignupRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '../shared/components/ui/button';
@@ -34,6 +33,8 @@ export const Route = createLazyFileRoute('/__auth/signup')({
 
 function Signup() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const form = useForm<SignupRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,27 +43,31 @@ function Signup() {
     },
   });
 
-  // Vérifier si l'utilisateur est déjà connecté
-  useEffect(() => {
-    if (localStorage.getItem('auth_token')) {
-      navigate({ to: '/', replace: true });
-    }
-  }, [navigate]);
-
   const signupMutation = useMutation({
     mutationFn: async (values: SignupRequest) => {
       const response = await api.auth.signup({ body: values });
-      if (response.status !== 201) {
+      if (response.status !== 201 && response.status !== 200) {
         throw new Error('Failed to signup');
       }
       return response.body;
     },
     onSuccess: () => {
+      // Refresh auth state
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+
       toast({
         title: 'Account created successfully',
         description: 'The account has been created successfully',
       });
-      navigate({ to: '/', replace: true });
+      navigate({ to: '/dashboard', replace: true });
+    },
+    onError: (error) => {
+      toast({
+        title: 'Signup failed',
+        description:
+          error instanceof Error ? error.message : 'An error occurred',
+        variant: 'destructive',
+      });
     },
   });
 

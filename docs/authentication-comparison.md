@@ -9,7 +9,8 @@
 5. [Approche hybride dans Dropit](#approche-hybride-dans-dropit)
 6. [Pourquoi ce choix pour notre architecture](#pourquoi-ce-choix-pour-notre-architecture)
 7. [Schémas d'implémentation](#schémas-dimplémentation)
-8. [Conclusion](#conclusion)
+8. [Stockage sécurisé des tokens côté client](#stockage-sécurisé-des-tokens-côté-client)
+9. [Conclusion](#conclusion)
 
 ## Introduction
 
@@ -293,6 +294,201 @@ export class PublicController {
      │ 4. Supprime token local   │                           │
      │                           │                           │
 ```
+
+## Stockage sécurisé des tokens côté client
+
+Le stockage sécurisé des tokens JWT est crucial pour la sécurité de votre application. Voici les différentes options et leurs implications :
+
+### 1. LocalStorage
+
+**Implémentation actuelle dans Dropit** : 
+```typescript
+// Stockage après login
+localStorage.setItem('auth_token', response.body.tokens.access);
+
+// Récupération pour les requêtes
+const token = localStorage.getItem('auth_token');
+```
+
+**Avantages** :
+- Simple à implémenter
+- Persiste après fermeture du navigateur
+- Accessible facilement depuis JavaScript
+
+**Inconvénients** :
+- Vulnérable aux attaques XSS (Cross-Site Scripting)
+- Un script malveillant peut accéder au token
+
+**Risque** : **ÉLEVÉ** - Un attaquant pourrait voler le token via XSS et usurper l'identité de l'utilisateur.
+
+### 2. Cookies HttpOnly
+
+**Implémentation** :
+```typescript
+// Côté serveur Better-Auth (Node.js)
+res.cookie('auth_token', token, {
+  httpOnly: true,
+  secure: process.env.NODE_ENV === 'production',
+  maxAge: expiresIn * 1000
+});
+
+// Les requêtes incluent automatiquement le cookie
+```
+
+**Avantages** :
+- Non accessible par JavaScript (protection contre XSS)
+- Envoyé automatiquement avec les requêtes
+- Peut être configuré pour expirer
+
+**Inconvénients** :
+- Vulnérable aux attaques CSRF (Cross-Site Request Forgery)
+- Nécessite une configuration côté serveur
+
+**Risque** : **MOYEN** - Protégé contre XSS mais vulnérable aux CSRF sans protection supplémentaire.
+
+### 3. Cookies HttpOnly + SameSite + Secure + CSRF Token
+
+**Implémentation** :
+```typescript
+// Côté serveur
+res.cookie('auth_token', token, {
+  httpOnly: true,
+  secure: true,
+  sameSite: 'strict',
+  maxAge: expiresIn * 1000
+});
+
+// Génération d'un CSRF token
+const csrfToken = generateCSRFToken();
+res.cookie('csrf_token', csrfToken, {
+  secure: true,
+  sameSite: 'strict',
+  maxAge: expiresIn * 1000
+});
+
+// Côté client, inclusion du CSRF token dans les headers
+const csrfToken = document.cookie
+  .split('; ')
+  .find(row => row.startsWith('csrf_token='))
+  ?.split('=')[1];
+
+fetch('/api/resource', {
+  headers: { 'X-CSRF-Token': csrfToken }
+});
+```
+
+**Avantages** :
+- Protection maximale contre XSS et CSRF
+- Adapté aux environnements de production
+
+**Inconvénients** :
+- Plus complexe à implémenter
+- Nécessite une configuration précise
+
+**Risque** : **FAIBLE** - Solution la plus sécurisée pour les applications en production.
+
+### 4. Stockage en mémoire JavaScript
+
+**Implémentation** :
+```typescript
+// Module de service Auth
+let authToken = null;
+
+export function setAuthToken(token) {
+  authToken = token;
+}
+
+export function getAuthToken() {
+  return authToken;
+}
+
+// Utilisé dans les appels API
+fetchWithAuth('/api/resource');
+```
+
+**Avantages** :
+- N'est pas accessible depuis d'autres onglets/fenêtres
+- Effacé à la fermeture de l'onglet
+- Non exposé aux risques de stockage persistant
+
+**Inconvénients** :
+- Perdu à chaque rafraîchissement de page
+- Nécessite une SPA (Single Page Application)
+- Non persistant
+
+**Risque** : **FAIBLE** pour XSS, **ÉLEVÉ** pour expérience utilisateur.
+
+### Recommandation pour Dropit
+
+Étant donné que Dropit comprend:
+- Un backoffice web pour les administrateurs
+- Une application mobile pour les athlètes
+
+Nous recommandons l'implémentation suivante:
+
+#### Pour le backoffice web (environnement de production)
+
+1. **Cookies HttpOnly + SameSite + Secure**
+   - Configuration de Better-Auth pour envoyer les tokens via cookies sécurisés
+   - Ajout d'une protection CSRF pour les opérations sensibles
+
+2. **Mise à jour de la configuration ts-rest**:
+```typescript
+// apps/web/src/lib/api.ts
+export const api = initClient(apiContract, {
+  baseUrl: 'http://localhost:3000',
+  credentials: 'include', // Pour envoyer les cookies avec les requêtes
+  baseHeaders: () => ({
+    'Content-Type': 'application/json'
+    // Le CSRF token si nécessaire
+  }),
+});
+```
+
+#### Pour l'application mobile
+
+1. **Stockage sécurisé natif**
+   - iOS: Keychain
+   - Android: EncryptedSharedPreferences
+
+2. **En-tête d'autorisation**:
+```typescript
+// Pour les requêtes mobiles
+fetch(url, {
+  headers: {
+    Authorization: `Bearer ${token}`
+  }
+});
+```
+
+### Configuration de Better-Auth
+
+Better-Auth devrait être configuré pour supporter à la fois:
+- Les cookies HttpOnly pour le web (sécurité maximale)
+- Les tokens Bearer pour l'application mobile
+
+Configuration recommandée:
+```typescript
+// Dans votre configuration better-auth
+const authConfig = {
+  // Configuration existante...
+  
+  // Ajouter la configuration des cookies
+  cookies: {
+    enabled: true,
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'strict'
+  },
+  
+  // Support des tokens Bearer pour mobile
+  bearerToken: {
+    enabled: true
+  }
+};
+```
+
+Cette configuration offre le meilleur compromis entre sécurité et flexibilité pour une architecture multi-plateforme.
 
 ## Conclusion
 

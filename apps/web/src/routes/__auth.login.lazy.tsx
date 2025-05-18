@@ -2,11 +2,10 @@ import { api } from '@/lib/api';
 import { toast } from '@/shared/hooks/use-toast';
 import { LoginRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
-import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '../shared/components/ui/button';
@@ -34,6 +33,8 @@ export const Route = createLazyFileRoute('/__auth/login')({
 
 function Login() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const form = useForm<LoginRequest>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -42,26 +43,18 @@ function Login() {
     },
   });
 
-  // Vérifier si l'utilisateur est déjà connecté
-  useEffect(() => {
-    if (localStorage.getItem('auth_token')) {
-      navigate({ to: '/dashboard', replace: true });
-    }
-  }, [navigate]);
-
   const loginMutation = useMutation({
     mutationFn: async (values: LoginRequest) => {
       const response = await api.auth.login({ body: values });
       if (response.status !== 200) {
         throw new Error('Failed to login');
       }
-
-      // Stocke le token pour les futures requêtes
-      localStorage.setItem('auth_token', response.body.tokens.access);
-
       return response.body;
     },
     onSuccess: () => {
+      // Refresh auth state
+      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
+
       toast({
         title: 'Login successful',
         description: 'You have been logged in successfully',
