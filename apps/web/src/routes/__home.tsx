@@ -1,4 +1,6 @@
+import { authClient } from '@/lib/auth-client';
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
+import { useEffect } from 'react';
 import { AppSidebar } from '../shared/components/layout/app-sidebar';
 import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
 import { Separator } from '../shared/components/ui/separator';
@@ -6,35 +8,26 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '../shared/components/ui/sidebar';
-import { useAuth } from '../shared/hooks/use-auth';
-import { isAuthenticated } from '../shared/utils/auth';
 
 export const Route = createFileRoute('/__home')({
-  beforeLoad: () => {
-    // Quick check to avoid unnecessary redirects
-    // This will be replaced with a full cookie check in the future
-    if (!isAuthenticated()) {
-      throw redirect({
-        to: '/login',
-      });
-    }
-  },
   component: HomeLayout,
 });
 
 function HomeLayout() {
   // Use the auth hook to verify authentication with the API
-  const { isAuthenticated, isLoading } = useAuth();
+  const { data: sessionData, isPending } = authClient.useSession();
 
-  // If not authenticated after API check, redirect to login
-  if (!isLoading && !isAuthenticated) {
-    throw redirect({
-      to: '/login',
-    });
-  }
+  useEffect(() => {
+    // If not authenticated after API check, redirect to login
+    if (!isPending && !sessionData) {
+      throw redirect({
+        to: '/login',
+      });
+    }
+  }, [isPending, sessionData]);
 
   // Show loading state while checking auth
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
         Loading...

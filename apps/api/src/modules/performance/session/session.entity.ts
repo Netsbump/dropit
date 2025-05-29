@@ -9,8 +9,8 @@ import {
 import { Workout } from '../../training/workout/workout.entity';
 import { AthleteSession } from '../athlete-session/athlete-session.entity';
 
-@Entity()
-export class Session {
+@Entity({ tableName: 'training_session' })
+export class TrainingSession {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 

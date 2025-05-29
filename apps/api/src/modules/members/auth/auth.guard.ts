@@ -37,14 +37,14 @@ export class AuthGuard implements CanActivate {
       // Si nous arrivons ici et qu'il n'y a pas de session, l'accès est refusé
       if (!session) {
         throw new UnauthorizedException(
-          'Vous devez être connecté pour accéder à cette ressource'
+          'You must be logged in to access this resource'
         );
       }
 
       return true;
     } catch (error) {
-      console.error("Erreur d'authentification:", error);
-      throw new UnauthorizedException('Authentification échouée');
+      console.error('Authentication error:', error);
+      throw new UnauthorizedException('Authentication failed');
     }
   }
 }

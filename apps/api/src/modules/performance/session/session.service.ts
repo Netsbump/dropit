@@ -4,7 +4,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { Workout } from '../../training/workout/workout.entity';
 import { AthleteSession } from '../athlete-session/athlete-session.entity';
-import { Session } from './session.entity';
+import { TrainingSession } from './session.entity';
 import { SessionMapper } from './session.mapper';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class SessionService {
 
   async getSessions(): Promise<SessionDto[]> {
     const sessions = await this.em.find(
-      Session,
+      TrainingSession,
       {},
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
@@ -22,19 +22,19 @@ export class SessionService {
 
   async getSession(id: string): Promise<SessionDto> {
     const session = await this.em.findOne(
-      Session,
+      TrainingSession,
       { id },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('TrainingSession not found');
     }
     return this.mapToDto(session);
   }
 
   async getSessionsByAthlete(athleteId: string): Promise<SessionDto[]> {
     const sessions = await this.em.find(
-      Session,
+      TrainingSession,
       { athletes: { athlete: { id: athleteId } } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
@@ -58,7 +58,7 @@ export class SessionService {
       athletes.push(athlete);
     }
 
-    const sessionToCreate = new Session();
+    const sessionToCreate = new TrainingSession();
     sessionToCreate.workout = workout;
     sessionToCreate.scheduledDate = new Date(session.scheduledDate);
 
@@ -78,12 +78,12 @@ export class SessionService {
 
   async updateSession(id: string, session: UpdateSession): Promise<SessionDto> {
     const sessionToUpdate = await this.em.findOne(
-      Session,
+      TrainingSession,
       { id },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!sessionToUpdate) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('TrainingSession not found');
     }
 
     if (session.workoutId) {
@@ -130,12 +130,12 @@ export class SessionService {
     completedDate?: Date | string
   ): Promise<SessionDto> {
     const sessionToUpdate = await this.em.findOne(
-      Session,
+      TrainingSession,
       { id },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!sessionToUpdate) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('TrainingSession not found');
     }
 
     sessionToUpdate.completedDate = completedDate
@@ -148,12 +148,12 @@ export class SessionService {
 
   async deleteSession(id: string): Promise<void> {
     const session = await this.em.findOne(
-      Session,
+      TrainingSession,
       { id },
       { populate: ['athletes'] }
     );
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('TrainingSession not found');
     }
 
     for (const athleteLink of session.athletes) {
@@ -163,7 +163,7 @@ export class SessionService {
     await this.em.removeAndFlush(session);
   }
 
-  private mapToDto(session: Session): SessionDto {
+  private mapToDto(session: TrainingSession): SessionDto {
     const athletes = session.athletes.getItems().map((link) => ({
       id: link.athlete.id,
       firstName: link.athlete.firstName,

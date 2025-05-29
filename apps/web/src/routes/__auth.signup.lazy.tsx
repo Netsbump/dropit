@@ -1,8 +1,7 @@
-import { api } from '@/lib/api';
+import { authClient } from '@/lib/auth-client';
 import { toast } from '@/shared/hooks/use-toast';
-import { SignupRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
@@ -25,7 +24,10 @@ const formSchema = z.object({
   password: z
     .string()
     .min(6, { message: 'Password must be at least 6 characters.' }),
+  name: z.string().min(1, { message: 'Name is required.' }),
 });
+
+type SignupFormData = z.infer<typeof formSchema>;
 
 export const Route = createLazyFileRoute('/__auth/signup')({
   component: Signup,
@@ -33,28 +35,31 @@ export const Route = createLazyFileRoute('/__auth/signup')({
 
 function Signup() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const form = useForm<SignupRequest>({
+  const form = useForm<SignupFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
   });
 
   const signupMutation = useMutation({
-    mutationFn: async (values: SignupRequest) => {
-      const response = await api.auth.signup({ body: values });
-      if (response.status !== 201 && response.status !== 200) {
-        throw new Error('Failed to signup');
+    mutationFn: async (values: SignupFormData) => {
+      const response = await authClient.signUp.email({
+        email: values.email,
+        password: values.password,
+        name: values.name,
+        callbackURL: '/',
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Invalid email or password');
       }
-      return response.body;
+      return response.data;
     },
     onSuccess: () => {
-      // Refresh auth state
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-
       toast({
         title: 'Account created successfully',
         description: 'The account has been created successfully',
@@ -71,7 +76,7 @@ function Signup() {
     },
   });
 
-  function onSubmit(values: SignupRequest) {
+  function onSubmit(values: SignupFormData) {
     signupMutation.mutate(values);
   }
 
@@ -97,6 +102,19 @@ function Signup() {
                   <FormLabel>Email</FormLabel>
                   <FormControl>
                     <Input placeholder="name@example.com" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John Doe" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

@@ -1,4 +1,3 @@
-import { UserRole } from '@dropit/schemas';
 import {
   Entity,
   Enum,
@@ -9,10 +8,18 @@ import {
 } from '@mikro-orm/core';
 import { Media } from '../../core/media/media.entity';
 
-@Entity()
+export enum UserRole {
+  ATHLETE = 'athlete',
+  COACH = 'coach',
+  ADMIN = 'admin',
+}
+@Entity({ tableName: 'user' })
 export class User {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
+
+  @Property()
+  name!: string;
 
   @Property({ unique: true })
   email!: string;
@@ -48,8 +55,8 @@ export class User {
 /**
  * Stocke les sessions d'authentification active
  */
-@Entity({ tableName: 'auth_session' })
-export class AuthSession {
+@Entity({ tableName: 'session' })
+export class Session {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
@@ -79,8 +86,8 @@ export class AuthSession {
 /**
  * Stocke les comptes tiers liés (OAuth, etc)
  */
-@Entity({ tableName: 'auth_account' })
-export class AuthAccount {
+@Entity({ tableName: 'account' })
+export class Account {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
@@ -124,8 +131,8 @@ export class AuthAccount {
 /**
  * Stocke les jetons de vérification (email, réinitialisation de mot de passe, etc)
  */
-@Entity({ tableName: 'auth_verification' })
-export class AuthVerification {
+@Entity({ tableName: 'verification' })
+export class Verification {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 

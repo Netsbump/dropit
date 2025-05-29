@@ -18,19 +18,11 @@ import type {
 } from 'better-auth';
 import { toNodeHandler } from 'better-auth/node';
 import { createAuthMiddleware } from 'better-auth/plugins';
+import { NextFunction } from 'express';
 import { EmailModule } from '../../core/email/email.module';
 import { AFTER_HOOK_KEY, BEFORE_HOOK_KEY, HOOK_KEY } from './auth.decorator';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
-
-// Type simplifié d'un contexte middleware
-type AuthMiddlewareContext = MiddlewareContext<
-  MiddlewareOptions,
-  AuthContext & {
-    returned?: unknown;
-    responseHeaders?: Headers;
-  }
->;
 
 @Global()
 @Module({
@@ -51,25 +43,29 @@ export class AuthModule implements NestModule, OnModuleInit {
    * Initialise le service d'authentification au démarrage du module
    */
   async onModuleInit(): Promise<void> {
+    console.log('AuthModule: Starting initialization...');
     // S'assurer que le service d'authentification est initialisé
     await this.authService.onModuleInit();
+    console.log('AuthModule: Initialization complete');
   }
 
   /**
    * Configure le middleware d'authentification
    */
-  async configure(consumer: MiddlewareConsumer): Promise<void> {
+  async configure(consumer: MiddlewareConsumer) {
+    console.log('AuthModule: Configuring middleware...');
     // Attendre que l'authentification soit initialisée
     await this.onModuleInit();
 
     const auth = this.authService.auth;
+    console.log('AuthModule: Auth service initialized');
 
     // Rechercher tous les hooks d'authentification dans l'application
-    const providers = this.discoveryService.getProviders().filter(
-      // @ts-ignore - Les types exacts sont difficiles à aligner
-      (provider) =>
-        provider.metatype && Reflect.getMetadata(HOOK_KEY, provider.metatype)
-    );
+    const providers = this.discoveryService
+      .getProviders()
+      .filter(
+        ({ metatype }) => metatype && Reflect.getMetadata(HOOK_KEY, metatype)
+      );
 
     // Ajouter les hooks configurés aux instances de controllers
     for (const provider of providers) {
@@ -86,6 +82,7 @@ export class AuthModule implements NestModule, OnModuleInit {
 
     // Convertir le middleware better-auth en middleware NestJS
     const handler = toNodeHandler(auth);
+    console.log('AuthModule: BetterAuth middleware mounted!');
 
     // Appliquer le middleware aux routes commençant par /auth
     consumer.apply(handler).forRoutes({
@@ -100,29 +97,32 @@ export class AuthModule implements NestModule, OnModuleInit {
   private setupHook(
     metadataKey: symbol,
     hookType: 'before' | 'after',
-    providerMethod: (ctx: AuthMiddlewareContext) => Promise<void>
-  ): void {
+    providerMethod: (
+      ctx: MiddlewareContext<
+        MiddlewareOptions,
+        AuthContext & {
+          returned?: unknown;
+          responseHeaders?: Headers;
+        }
+      >
+    ) => Promise<void>
+  ) {
     const auth = this.authService.auth;
     const hookPath = Reflect.getMetadata(metadataKey, providerMethod);
-    if (!hookPath || !auth?.options.hooks) {
-      return;
-    }
+    if (!hookPath || !auth?.options.hooks) return;
 
-    // @ts-ignore - Les types exacts sont difficiles à aligner avec better-auth
+    // @ts-ignore
     const originalHook = auth.options.hooks[hookType];
-
-    // @ts-ignore - Les types exacts sont difficiles à aligner avec better-auth
-    auth.options.hooks[hookType] = createAuthMiddleware(
-      async (ctx: AuthMiddlewareContext) => {
-        if (originalHook) {
-          await originalHook(ctx);
-        }
-
-        if (hookPath === ctx.path) {
-          await providerMethod(ctx);
-        }
+    // @ts-ignore
+    auth.options.hooks[hookType] = createAuthMiddleware(async (ctx) => {
+      if (originalHook) {
+        await originalHook(ctx);
       }
-    );
+
+      if (hookPath === ctx.path) {
+        await providerMethod(ctx);
+      }
+    });
   }
 
   /**

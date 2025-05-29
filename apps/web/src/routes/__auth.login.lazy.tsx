@@ -1,13 +1,13 @@
-import { api } from '@/lib/api';
 import { toast } from '@/shared/hooks/use-toast';
-import { LoginRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { authClient } from '../lib/auth-client';
 import { Button } from '../shared/components/ui/button';
 import {
   Form,
@@ -27,15 +27,17 @@ const formSchema = z.object({
     .min(6, { message: 'Password must be at least 6 characters.' }),
 });
 
+type LoginFormData = z.infer<typeof formSchema>;
+
 export const Route = createLazyFileRoute('/__auth/login')({
   component: Login,
 });
 
 function Login() {
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { data: sessionData, isPending } = authClient.useSession();
 
-  const form = useForm<LoginRequest>({
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -44,34 +46,42 @@ function Login() {
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (values: LoginRequest) => {
-      const response = await api.auth.login({ body: values });
-      if (response.status !== 200) {
-        throw new Error('Failed to login');
+    mutationFn: async (values: LoginFormData) => {
+      const response = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+        callbackURL: '/dashboard',
+        rememberMe: true,
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Invalid email or password');
       }
-      return response.body;
+      return response.data;
     },
     onSuccess: () => {
-      // Refresh auth state
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-
       toast({
         title: 'Login successful',
         description: 'You have been logged in successfully',
       });
       navigate({ to: '/dashboard', replace: true });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
         title: 'Login failed',
-        description:
-          error instanceof Error ? error.message : 'An error occurred',
+        description: error.message || 'An error occurred',
         variant: 'destructive',
       });
     },
   });
 
-  function onSubmit(values: LoginRequest) {
+  useEffect(() => {
+    if (!isPending && sessionData) {
+      navigate({ to: '/dashboard', replace: true });
+    }
+  }, [sessionData, navigate, isPending]);
+
+  function onSubmit(values: LoginFormData) {
     loginMutation.mutate(values);
   }
 

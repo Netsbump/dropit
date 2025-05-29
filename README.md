@@ -126,6 +126,14 @@ Pour permettre aux packages dans packages/ d'être utilisés dans les différent
 pnpm build
 ```
 
+### Configuration des variables d'environnements
+
+Il y a seulement un seul fichier `.env` à la racine qui faut créer 
+
+```bash
+cp .env.example .env
+```
+
 ### Lancer le projet (développement)
 
 Démarrer les services via Docker Compose (ex: PostgreSQL, Redis, Typesence):

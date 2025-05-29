@@ -3,7 +3,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
-import { Session } from '../../performance/session/session.entity';
+import { TrainingSession } from '../../performance/session/session.entity';
 import { SessionModule } from '../../performance/session/session.module';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
@@ -23,7 +23,7 @@ import { WorkoutService } from './workout.service';
       AthleteSession,
       Athlete,
       Exercise,
-      Session,
+      TrainingSession,
       WorkoutCategory,
       WorkoutElement,
     ]),

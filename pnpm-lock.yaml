@@ -8,9 +8,6 @@ importers:
 
   .:
     dependencies:
-      '@mikro-orm/knex':
-        specifier: 6.4.2
-        version: 6.4.2(@mikro-orm/core@6.4.12)
       dotenv-cli:
         specifier: ^8.0.0
         version: 8.0.0
@@ -87,6 +84,9 @@ importers:
       rxjs:
         specifier: ^7.8.1
         version: 7.8.2
+      scrypt-js:
+        specifier: ^3.0.1
+        version: 3.0.1
       zod:
         specifier: ^3.24.1
         version: 3.24.2
@@ -241,6 +241,9 @@ importers:
       '@ts-rest/core':
         specifier: ^3.51.0
         version: 3.52.1(@types/node@20.17.30)(zod@3.24.2)
+      better-auth:
+        specifier: ^1.2.7
+        version: 1.2.7
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -1854,36 +1857,6 @@ packages:
       - sqlite3
       - supports-color
       - tedious
-
-  /@mikro-orm/knex@6.4.2(@mikro-orm/core@6.4.12):
-    resolution: {integrity: sha512-vA72sVyR+8irrLsTP5f+zh84Q1a2tvzSfVgit4L/G+JOEgltG6F8Sfic/xt/1Wcis1zgNUiUL50ISQSLnhVNAw==}
-    engines: {node: '>= 18.12.0'}
-    peerDependencies:
-      '@mikro-orm/core': ^6.0.0
-      better-sqlite3: '*'
-      libsql: '*'
-      mariadb: '*'
-    peerDependenciesMeta:
-      better-sqlite3:
-        optional: true
-      libsql:
-        optional: true
-      mariadb:
-        optional: true
-    dependencies:
-      '@mikro-orm/core': 6.4.12
-      fs-extra: 11.2.0
-      knex: 3.1.0(pg@8.14.1)
-      sqlstring: 2.3.3
-    transitivePeerDependencies:
-      - mysql
-      - mysql2
-      - pg
-      - pg-native
-      - sqlite3
-      - supports-color
-      - tedious
-    dev: false
 
   /@mikro-orm/migrations@6.4.12(@mikro-orm/core@6.4.12)(@types/node@20.17.30)(pg@8.15.6):
     resolution: {integrity: sha512-C8kSV5O9Fm3bAoyuxXr13RbUrJwIK41vsSEVeLBPLXBsfAkmh43c70SPoXgOKKoo27m0XBMH/bX70xaMF7qrag==}
@@ -5393,15 +5366,6 @@ packages:
       universalify: 2.0.1
     dev: true
 
-  /fs-extra@11.2.0:
-    resolution: {integrity: sha512-PmDi3uwK5nFuXh7XDTlVnS17xJS7vW36is2+w3xcv8SVxiB4NyATf4ctkVY5bkSjX0Y4nbvZCq1/EjtEyr9ktw==}
-    engines: {node: '>=14.14'}
-    dependencies:
-      graceful-fs: 4.2.11
-      jsonfile: 6.1.0
-      universalify: 2.0.1
-    dev: false
-
   /fs-extra@11.3.0:
     resolution: {integrity: sha512-Z4XaCL6dUDHfP/jT25jJKMmtxvuwbkrD1vNSMFlo9lNLY2c5FHYSQgHPRZUjAB26TpDEoW9HCOgplrdbaPV/ew==}
     engines: {node: '>=14.14'}
@@ -7611,6 +7575,10 @@ packages:
       ajv-formats: 2.1.1(ajv@8.17.1)
       ajv-keywords: 5.1.0(ajv@8.17.1)
     dev: true
+
+  /scrypt-js@3.0.1:
+    resolution: {integrity: sha512-cdwTTnqPu0Hyvf5in5asVdZocVDTNRmR7XEcJuIzMjJeSHybHl7vpB66AzwTaIg6CLSbtjcxc8fqcySfnTkccA==}
+    dev: false
 
   /semver@6.3.1:
     resolution: {integrity: sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA==}

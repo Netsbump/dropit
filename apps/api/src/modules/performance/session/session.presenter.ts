@@ -25,7 +25,7 @@ export class SessionPresenter {
       };
     }
 
-    console.error('Session error:', error);
+    console.error('TrainingSession error:', error);
 
     return {
       status: 500 as const,

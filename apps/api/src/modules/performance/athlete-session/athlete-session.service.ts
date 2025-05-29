@@ -7,7 +7,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteRepository } from '../../members/athlete/athlete.repository';
-import { Session } from '../session/session.entity';
+import { TrainingSession } from '../session/session.entity';
 import { AthleteSession } from './athlete-session.entity';
 @Injectable()
 export class AthleteSessionService {
@@ -81,12 +81,12 @@ export class AthleteSessionService {
       );
     }
 
-    const session = await this.em.findOne(Session, {
+    const session = await this.em.findOne(TrainingSession, {
       id: athleteSession.sessionId,
     });
     if (!session) {
       throw new NotFoundException(
-        `Session with ID ${athleteSession.sessionId} not found`
+        `TrainingSession with ID ${athleteSession.sessionId} not found`
       );
     }
 

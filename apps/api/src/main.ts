@@ -23,6 +23,7 @@ async function bootstrap() {
     ) => {
       // If is routes of better auth, next
       if (req.originalUrl.startsWith(`${PREFIX}/auth`)) {
+        console.log('Better Auth route detected:', req.originalUrl);
         return next();
       }
       // Else, apply the express json middleware
@@ -41,6 +42,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, openApiDocument);
 
   await app.listen(PORT);
+  console.log(`Application is running on: http://localhost:${PORT}`);
 }
 
 bootstrap();

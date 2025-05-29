@@ -112,7 +112,7 @@ export class SessionController {
         await this.sessionService.deleteSession(params.id);
         return {
           status: 200,
-          body: { message: 'Session deleted successfully' },
+          body: { message: 'TrainingSession deleted successfully' },
         };
       } catch (error) {
         if (error instanceof NotFoundException) {
