@@ -1,6 +1,5 @@
 import { authClient } from '@/lib/auth-client';
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { AppSidebar } from '../shared/components/layout/app-sidebar';
 import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
 import { Separator } from '../shared/components/ui/separator';
@@ -8,31 +7,32 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from '../shared/components/ui/sidebar';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/__home')({
   component: HomeLayout,
 });
 
 function HomeLayout() {
-  // Use the auth hook to verify authentication with the API
-  const { data: sessionData, isPending } = authClient.useSession();
+  const { data: session, isPending } = authClient.useSession();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    // If not authenticated after API check, redirect to login
-    if (!isPending && !sessionData) {
-      throw redirect({
-        to: '/login',
-      });
+    if (!isPending && !session) {
+      navigate({ to: '/login' });
     }
-  }, [isPending, sessionData]);
+  }, [isPending, session, navigate]);
 
-  // Show loading state while checking auth
   if (isPending) {
     return (
       <div className="flex min-h-screen w-full items-center justify-center">
         Loading...
       </div>
     );
+  }
+
+  if (!session) {
+    return null;
   }
 
   return (
