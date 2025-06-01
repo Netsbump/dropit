@@ -48,9 +48,9 @@ function Signup() {
   const signupMutation = useMutation({
     mutationFn: async (values: SignupFormData) => {
       const response = await authClient.signUp.email({
+        name: values.name,
         email: values.email,
         password: values.password,
-        name: values.name,
         callbackURL: '/',
       });
 

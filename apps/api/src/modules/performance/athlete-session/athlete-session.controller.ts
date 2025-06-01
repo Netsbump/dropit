@@ -14,7 +14,7 @@ export class AthleteSessionController {
   constructor(private readonly athleteSessionService: AthleteSessionService) {}
 
   @TsRestHandler(c.getAthleteSessions)
-  async getAthleteSessions() {
+  getAthleteSessions(): ReturnType<typeof tsRestHandler<typeof c.getAthleteSessions>> {
     return tsRestHandler(c.getAthleteSessions, async () => {
       try {
         const athleteSessions =
@@ -30,7 +30,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.getAthleteSession)
-  async getAthleteSession() {
+  getAthleteSession(): ReturnType<typeof tsRestHandler<typeof c.getAthleteSession>> {
     return tsRestHandler(c.getAthleteSession, async ({ params }) => {
       try {
         const athleteSession =
@@ -49,7 +49,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.getAthleteSessionsByAthlete)
-  async getAthleteSessionsByAthlete() {
+  getAthleteSessionsByAthlete(): ReturnType<typeof tsRestHandler<typeof c.getAthleteSessionsByAthlete>> {
     return tsRestHandler(c.getAthleteSessionsByAthlete, async ({ params }) => {
       try {
         const athleteSessions =
@@ -67,7 +67,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.getAthleteSessionsBySession)
-  async getAthleteSessionsBySession() {
+  getAthleteSessionsBySession(): ReturnType<typeof tsRestHandler<typeof c.getAthleteSessionsBySession>> {
     return tsRestHandler(c.getAthleteSessionsBySession, async ({ params }) => {
       try {
         const athleteSessions =
@@ -85,7 +85,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.createAthleteSession)
-  async createAthleteSession() {
+  createAthleteSession(): ReturnType<typeof tsRestHandler<typeof c.createAthleteSession>> {
     return tsRestHandler(c.createAthleteSession, async ({ body }) => {
       try {
         const newAthleteSession =
@@ -104,7 +104,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.updateAthleteSession)
-  async updateAthleteSession() {
+  updateAthleteSession(): ReturnType<typeof tsRestHandler<typeof c.updateAthleteSession>> {
     return tsRestHandler(c.updateAthleteSession, async ({ params, body }) => {
       try {
         const updatedAthleteSession =
@@ -127,7 +127,7 @@ export class AthleteSessionController {
   }
 
   @TsRestHandler(c.deleteAthleteSession)
-  async deleteAthleteSession() {
+  deleteAthleteSession(): ReturnType<typeof tsRestHandler<typeof c.deleteAthleteSession>> {
     return tsRestHandler(c.deleteAthleteSession, async ({ params }) => {
       try {
         await this.athleteSessionService.deleteAthleteSession(

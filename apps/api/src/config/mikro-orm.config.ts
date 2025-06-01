@@ -2,6 +2,7 @@ import { Migrator } from '@mikro-orm/migrations';
 import { Options, defineConfig } from '@mikro-orm/postgresql';
 import { SeedManager } from '@mikro-orm/seeder';
 import { config } from './env.config';
+import { TsMorphMetadataProvider } from '@mikro-orm/reflection';
 
 type CreateMikroOrmOptions = {
   isTest?: boolean;
@@ -12,13 +13,14 @@ export function createMikroOrmOptions(options?: CreateMikroOrmOptions) {
   const isTestEnvironment = isTest || config.env === 'test';
 
   const _options: Options = defineConfig({
-    entities: ['./dist/**/*.entity.js', './dist/modules/auth/auth.entity.js'],
-    entitiesTs: ['./src/modules/auth/auth.entity.ts', './src/**/*.entity.ts'],
+    entities: ['./dist/**/*.entity.js'],
+    entitiesTs: ['./src/**/*.entity.ts'],
     dbName: config.database.name,
     host: config.database.host,
     port: config.database.port,
     user: config.database.user,
     password: config.database.password,
+    metadataProvider: TsMorphMetadataProvider,
     forceUtcTimezone: true,
     extensions: [SeedManager, Migrator],
     seeder: {
@@ -35,7 +37,7 @@ export function createMikroOrmOptions(options?: CreateMikroOrmOptions) {
       allOrNothing: true,
       disableForeignKeys: false,
     },
-    debug: config.env !== 'production',
+    debug: true,
     schemaGenerator: isTestEnvironment
       ? {
           disableForeignKeys: true,

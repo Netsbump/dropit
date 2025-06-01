@@ -14,7 +14,7 @@ export class ComplexController {
   constructor(private readonly complexService: ComplexService) {}
 
   @TsRestHandler(c.getComplexes)
-  async getComplexes() {
+  getComplexes(): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
     return tsRestHandler(c.getComplexes, async () => {
       try {
         const complexes = await this.complexService.getComplexes();
@@ -39,7 +39,7 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.getComplex)
-  async getComplex() {
+  getComplex(): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
     return tsRestHandler(c.getComplex, async ({ params }) => {
       try {
         const complex = await this.complexService.getComplex(params.id);
@@ -63,7 +63,7 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.createComplex)
-  async createComplex() {
+  createComplex(): ReturnType<typeof tsRestHandler<typeof c.createComplex>> {
     return tsRestHandler(c.createComplex, async ({ body }) => {
       try {
         const newComplex = await this.complexService.createComplex(body);
@@ -91,7 +91,7 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.updateComplex)
-  async updateComplex() {
+  updateComplex(): ReturnType<typeof tsRestHandler<typeof c.updateComplex>> {
     return tsRestHandler(c.updateComplex, async ({ params, body }) => {
       try {
         const updatedComplex = await this.complexService.updateComplex(

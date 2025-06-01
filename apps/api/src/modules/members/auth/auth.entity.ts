@@ -21,35 +21,30 @@ export class User {
   @Property()
   name!: string;
 
-  @Property({ unique: true })
+  @Property()
+  @Unique()
   email!: string;
 
-  @Property()
-  password!: string;
+  // @Property()
+  // password!: string;
 
-  @Enum(() => UserRole)
-  role!: UserRole;
+  // @Enum(() => UserRole)
+  // role!: UserRole;
 
-  @ManyToOne(() => Media, { nullable: true })
-  avatar?: Media;
-
-  @Property({ default: false })
-  isSuperAdmin = false;
-
-  @Property({ default: true })
-  isActive = true;
-
-  @Property({ default: false })
-  emailVerified = false;
+  @Property({ fieldName: 'emailVerified' })
+  emailVerified: boolean = false
 
   @Property({ nullable: true })
-  lastLogin?: Date;
+  image?: string
 
-  @Property({ onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  // @Property({ default: true })
+  // isActive = true;
 
-  @Property({ onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
+
+  @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
+  updatedAt: Date = new Date()
 }
 
 /**
@@ -58,29 +53,29 @@ export class User {
 @Entity({ tableName: 'session' })
 export class Session {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date;
+  expiresAt!: Date
 
   @Property()
   @Unique()
-  token!: string;
+  token!: string
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 
   @Property({ fieldName: 'ipAddress', nullable: true })
-  ipAddress?: string;
+  ipAddress?: string
 
   @Property({ fieldName: 'userAgent', nullable: true })
-  userAgent?: string;
+  userAgent?: string
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: User
 }
 
 /**
@@ -89,43 +84,43 @@ export class Session {
 @Entity({ tableName: 'account' })
 export class Account {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property({ fieldName: 'accountId' })
-  accountId!: string;
+  accountId!: string
 
   @Property({ fieldName: 'providerId' })
-  providerId!: string;
+  providerId!: string
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: User
 
   @Property({ fieldName: 'accessToken', nullable: true })
-  accessToken?: string;
+  accessToken?: string
 
   @Property({ fieldName: 'refreshToken', nullable: true })
-  refreshToken?: string;
+  refreshToken?: string
 
   @Property({ fieldName: 'idToken', nullable: true })
-  idToken?: string;
+  idToken?: string
 
   @Property({ fieldName: 'accessTokenExpiresAt', nullable: true })
-  accessTokenExpiresAt?: Date;
+  accessTokenExpiresAt?: Date
 
   @Property({ fieldName: 'refreshTokenExpiresAt', nullable: true })
-  refreshTokenExpiresAt?: Date;
+  refreshTokenExpiresAt?: Date
 
   @Property({ nullable: true })
-  scope?: string;
+  scope?: string
 
   @Property({ nullable: true })
-  password?: string;
+  password?: string
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 }
 
 /**
@@ -134,20 +129,20 @@ export class Account {
 @Entity({ tableName: 'verification' })
 export class Verification {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property()
-  identifier!: string;
+  identifier!: string
 
   @Property()
-  value!: string;
+  value!: string
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date;
+  expiresAt!: Date
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 }

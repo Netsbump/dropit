@@ -14,7 +14,7 @@ export class WorkoutController {
   constructor(private readonly workoutService: WorkoutService) {}
 
   @TsRestHandler(c.getWorkouts)
-  async getWorkouts() {
+  getWorkouts(): ReturnType<typeof tsRestHandler<typeof c.getWorkouts>> {
     return tsRestHandler(c.getWorkouts, async () => {
       try {
         const workouts = await this.workoutService.getWorkouts();
@@ -39,7 +39,7 @@ export class WorkoutController {
   }
 
   @TsRestHandler(c.getWorkout)
-  async getWorkout() {
+  getWorkout(): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
     return tsRestHandler(c.getWorkout, async ({ params }) => {
       try {
         const workout = await this.workoutService.getWorkout(params.id);
@@ -64,7 +64,7 @@ export class WorkoutController {
   }
 
   @TsRestHandler(c.createWorkout)
-  async createWorkout() {
+  createWorkout(): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
       try {
         const workout = await this.workoutService.createWorkout(body);
@@ -88,7 +88,7 @@ export class WorkoutController {
   }
 
   @TsRestHandler(c.updateWorkout)
-  async updateWorkout() {
+  updateWorkout(): ReturnType<typeof tsRestHandler<typeof c.updateWorkout>> {
     return tsRestHandler(c.updateWorkout, async ({ params, body }) => {
       try {
         const workout = await this.workoutService.updateWorkout(
@@ -116,7 +116,7 @@ export class WorkoutController {
   }
 
   @TsRestHandler(c.deleteWorkout)
-  async deleteWorkout() {
+  deleteWorkout(): ReturnType<typeof tsRestHandler<typeof c.deleteWorkout>> {
     return tsRestHandler(c.deleteWorkout, async ({ params }) => {
       try {
         await this.workoutService.deleteWorkout(params.id);

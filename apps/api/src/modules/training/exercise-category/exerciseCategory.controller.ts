@@ -16,7 +16,7 @@ export class ExerciseCategoryController {
   ) {}
 
   @TsRestHandler(c.getExerciseCategories)
-  async getExerciseCategories() {
+  getExerciseCategories(): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
     return tsRestHandler(c.getExerciseCategories, async () => {
       try {
         const exerciseCategories =
@@ -40,7 +40,7 @@ export class ExerciseCategoryController {
   }
 
   @TsRestHandler(c.getExerciseCategory)
-  async getExerciseCategory() {
+  getExerciseCategory(): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
     return tsRestHandler(c.getExerciseCategory, async ({ params }) => {
       try {
         const exerciseCategory =
@@ -64,7 +64,7 @@ export class ExerciseCategoryController {
   }
 
   @TsRestHandler(c.createExerciseCategory)
-  async createExerciseCategory() {
+  createExerciseCategory(): ReturnType<typeof tsRestHandler<typeof c.createExerciseCategory>> {
     return tsRestHandler(c.createExerciseCategory, async ({ body }) => {
       try {
         const newExerciseCategory =
@@ -88,7 +88,7 @@ export class ExerciseCategoryController {
   }
 
   @TsRestHandler(c.updateExerciseCategory)
-  async updateExerciseCategory() {
+  updateExerciseCategory(): ReturnType<typeof tsRestHandler<typeof c.updateExerciseCategory>> {
     return tsRestHandler(c.updateExerciseCategory, async ({ params, body }) => {
       try {
         const updatedExerciseCategory =
@@ -115,7 +115,7 @@ export class ExerciseCategoryController {
   }
 
   @TsRestHandler(c.deleteExerciseCategory)
-  async deleteExerciseCategory() {
+  deleteExerciseCategory(): ReturnType<typeof tsRestHandler<typeof c.deleteExerciseCategory>> {
     return tsRestHandler(c.deleteExerciseCategory, async ({ params }) => {
       try {
         await this.exerciseCategoryService.deleteExerciseCategory(params.id);

@@ -16,7 +16,7 @@ export class CompetitorStatusController {
   ) {}
 
   @TsRestHandler(c.getCompetitorStatuses)
-  async getCompetitorStatuses() {
+  getCompetitorStatuses(): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
       try {
         const competitorStatuses =
@@ -42,7 +42,7 @@ export class CompetitorStatusController {
   }
 
   @TsRestHandler(c.getCompetitorStatus)
-  async getCompetitorStatus() {
+  getCompetitorStatus(): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
       try {
         const competitorStatus =
@@ -66,7 +66,7 @@ export class CompetitorStatusController {
   }
 
   @TsRestHandler(c.createCompetitorStatus)
-  async createCompetitorStatus() {
+  createCompetitorStatus(): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
       try {
         const newCompetitorStatus =
@@ -95,7 +95,7 @@ export class CompetitorStatusController {
   }
 
   @TsRestHandler(c.updateCompetitorStatus)
-  async updateCompetitorStatus() {
+  updateCompetitorStatus(): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
       try {
         const updatedCompetitorStatus =

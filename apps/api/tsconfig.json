@@ -7,9 +7,5 @@
     "target": "ES2021",
     "outDir": "./dist",
     "incremental": true,
-
-    // ⬇️ important : on coupe la génération de .d.ts ici pour éviter les erreurs de typage ts-rest
-    "declaration": false,
-    "declarationMap": false
   },
 }

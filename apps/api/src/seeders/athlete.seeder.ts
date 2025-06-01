@@ -93,11 +93,11 @@ export async function seedAthletes(
   // Créer un coach
   const coachUser = new User();
   coachUser.email = 'coach@example.com';
-  coachUser.password = await hashPassword('password123');
+  //coachUser.password = await hashPassword('password123');
   coachUser.name = 'Jean Dupont';
-  coachUser.role = UserRole.COACH;
-  coachUser.isActive = true;
-  coachUser.isSuperAdmin = false;
+  //coachUser.role = UserRole.COACH;
+  //coachUser.isActive = true;
+  //coachUser.isSuperAdmin = false;
   coachUser.emailVerified = true;
 
   em.persist(coachUser);
@@ -119,11 +119,11 @@ export async function seedAthletes(
 
     const user = new User();
     user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    user.password = await hashPassword('password123');
+    //user.password = await hashPassword('password123');
     user.name = `${firstName} ${lastName}`;
-    user.role = UserRole.ATHLETE;
-    user.isActive = true;
-    user.isSuperAdmin = false;
+    //user.role = UserRole.ATHLETE;
+    //user.isActive = true;
+    //user.isSuperAdmin = false;
     user.emailVerified = true;
 
     em.persist(user);
@@ -151,11 +151,11 @@ export async function seedAthletes(
 
     const user = new User();
     user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    user.password = await hashPassword('password123');
+    //user.password = await hashPassword('password123');
     user.name = `${firstName} ${lastName}`;
-    user.role = UserRole.ATHLETE;
-    user.isActive = true;
-    user.isSuperAdmin = false;
+    //user.role = UserRole.ATHLETE;
+    //user.isActive = true;
+    //user.isSuperAdmin = false;
     user.emailVerified = true;
 
     em.persist(user);
