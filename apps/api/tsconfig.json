@@ -8,4 +8,5 @@
     "outDir": "./dist",
     "incremental": true,
   },
+  "exclude": ["dist"]
 }

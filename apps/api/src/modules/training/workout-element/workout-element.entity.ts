@@ -4,6 +4,7 @@ import {
   ManyToOne,
   PrimaryKey,
   Property,
+  Enum,
 } from '@mikro-orm/core';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
@@ -21,15 +22,20 @@ export type WorkoutElementType =
 @Check({
   name: 'check_one_element_type',
   expression: `
-    (CASE WHEN exercise_id IS NOT NULL THEN 1 ELSE 0 END +
-     CASE WHEN complex_id IS NOT NULL THEN 1 ELSE 0 END) = 1
+    (type = 'exercise' AND exercise_id IS NOT NULL AND complex_id IS NULL) OR
+    (type = 'complex' AND complex_id IS NOT NULL AND exercise_id IS NULL)
   `,
 })
 export class WorkoutElement {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @Property()
+  // @Property({ type: 'string' })
+  // @Check({ 
+  //   name: 'valid_workout_element_type',
+  //   expression: `type IN ('exercise', 'complex')`
+  // })
+  @Enum({ items: () => Object.values(WORKOUT_ELEMENT_TYPES) })
   type!: WorkoutElementType;
 
   @ManyToOne(() => Workout)

@@ -187,14 +187,20 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
         workoutElement.exercise = exercisesMap[element.id];
+        if (!workoutElement.exercise) {
+          console.warn(`Exercise ${element.id} not found, skipping element`);
+          continue;
+        }
       } else {
         // Trouver le complex par son nom
         const complex = await em.findOne(Complex, {
           name: element.id,
         });
-        if (complex) {
-          workoutElement.complex = complex;
+        if (!complex) {
+          console.warn(`Complex ${element.id} not found, skipping element`);
+          continue;
         }
+        workoutElement.complex = complex;
       }
 
       em.persist(workoutElement);
