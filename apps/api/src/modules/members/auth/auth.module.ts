@@ -19,8 +19,6 @@ import type {
 
 import { toNodeHandler } from 'better-auth/node';
 import { createAuthMiddleware } from 'better-auth/plugins';
-import { NextFunction } from 'express';
-import express from 'express';
 import { EmailModule } from '../../core/email/email.module';
 import { AFTER_HOOK_KEY, BEFORE_HOOK_KEY, HOOK_KEY } from './auth.decorator';
 import { AuthGuard } from './auth.guard';
@@ -45,10 +43,7 @@ export class AuthModule implements NestModule, OnModuleInit {
    * Initialise le service d'authentification au démarrage du module
    */
   async onModuleInit(): Promise<void> {
-    console.log('AuthModule: Starting initialization...');
-    // S'assurer que le service d'authentification est initialisé
     await this.authService.onModuleInit();
-    console.log('AuthModule: Initialization complete');
   }
 
   /**
@@ -82,18 +77,11 @@ export class AuthModule implements NestModule, OnModuleInit {
 
     // Convertir le middleware better-auth en middleware NestJS
     const handler = toNodeHandler(auth);
-    console.log('AuthModule: Handler created from better-auth instance');
 
     // Appliquer le middleware aux routes commençant par /auth
     consumer.apply(handler).forRoutes({
       path: '/auth/*',
       method: RequestMethod.ALL,
-    });
-
-    console.log('AuthModule: Middleware applied to /auth/*');
-    console.log('AuthModule: Better-Auth configuration:', {
-      trustedOrigins: auth.options?.trustedOrigins || 'None',
-      hasDatabase: !!auth.options?.database,
     });
   }
 

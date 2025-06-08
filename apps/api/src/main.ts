@@ -25,7 +25,6 @@ async function bootstrap() {
     ) => {
       // If is routes of better auth, next
       if (req.originalUrl.startsWith(`${PREFIX}/auth`)) {
-        console.log('Better Auth route detected:', req.originalUrl);
         return next();
       }
       // Else, apply the express json middleware

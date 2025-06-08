@@ -26,7 +26,7 @@ export class User {
   email!: string;
 
   @Property({ fieldName: 'emailVerified' })
-  emailVerified: boolean = false
+  emailVerified = false
 
   @Property({ nullable: true })
   image?: string

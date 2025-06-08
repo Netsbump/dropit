@@ -15,38 +15,24 @@ export class AuthService implements OnModuleInit {
    * Initialisation du module auth lors du démarrage de l'application
    */
   async onModuleInit() {
-    console.log('AuthService: Starting initialization...');
-    console.log('AuthService: initPromise state:', {
-      isNull: AuthService.initPromise === null,
-      isPending: AuthService.initPromise instanceof Promise,
-      hasValue: !!AuthService.initPromise,
-    });
-
     if (!AuthService.initPromise) {
-      console.log('AuthService: Creating new initPromise');
       AuthService.initPromise = this.initialize().then(() => {
-        console.log('AuthService: initPromise resolved');
         return;
       });
     } else {
-      console.log('AuthService: Using existing initPromise');
     }
 
     await AuthService.initPromise;
-    console.log('AuthService: Initialization complete');
   }
 
   /**
    * Initialise l'instance better-auth
    */
   private async initialize() {
-    console.log('AuthService: initialize() called');
     if (this._auth) {
-      console.log('AuthService: Auth already initialized');
       return;
     }
 
-    console.log('AuthService: Creating auth configuration...');
     // Créer la configuration avec les implémentations d'email
     this._auth = betterAuth({
       trustedOrigins: config.betterAuth.trustedOrigins,
@@ -84,8 +70,6 @@ export class AuthService implements OnModuleInit {
         max: 100,
       },
     }) as unknown as Auth;
-    console.log('AuthService: Auth configuration created');
-    console.log('AuthService: initialize() resolving...');
   }
 
   /**
@@ -98,9 +82,6 @@ export class AuthService implements OnModuleInit {
       );
       throw new Error('Auth not initialized - call onModuleInit first');
     }
-    console.log('AuthService: Getting auth instance');
-    console.log('AuthService: Auth instance type:', typeof this._auth);
-    console.log('AuthService: Auth instance methods:', Object.keys(this._auth));
     return this._auth;
   }
 
@@ -108,12 +89,6 @@ export class AuthService implements OnModuleInit {
    * Récupère l'API better-auth
    */
   get api() {
-    console.log('AuthService: Accessing auth API');
-    console.log('AuthService: Configuration:', {
-      secret: config.betterAuth.secret ? 'Set' : 'Not set',
-      trustedOrigins: config.betterAuth.trustedOrigins,
-    });
-    console.log('AuthService: API methods:', Object.keys(this.auth.api));
     return this.auth.api;
   }
 }
