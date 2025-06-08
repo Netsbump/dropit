@@ -20,7 +20,7 @@ import { Input } from '../shared/components/ui/input';
 import { Separator } from '../shared/components/ui/separator';
 import { useTranslation } from '@dropit/i18n';
 
-function getFormSchema(t: any) {
+function getFormSchema(t: (key: string) => string) {
   return z.object({
     email: z.string().email({ message: t('common.validation.emailRequired') }),
     password: z

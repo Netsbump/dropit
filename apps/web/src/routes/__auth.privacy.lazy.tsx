@@ -26,8 +26,8 @@ function Privacy() {
             {t('privacy.sections.informationWeCollect.description')}
           </p>
           <ul className="list-disc pl-6 space-y-2">
-            {(t('privacy.sections.informationWeCollect.items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
-              <li key={index}>{item}</li>
+            {(t('privacy.sections.informationWeCollect.items', { returnObjects: true }) as string[]).map((item: string) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
 
@@ -41,8 +41,8 @@ function Privacy() {
             {t('privacy.sections.informationWeShare.description')}
           </p>
           <ul className="list-disc pl-6 space-y-2">
-            {(t('privacy.sections.informationWeShare.items', { returnObjects: true }) as string[]).map((item: string, index: number) => (
-              <li key={index}>{item}</li>
+            {(t('privacy.sections.informationWeShare.items', { returnObjects: true }) as string[]).map((item: string) => (
+              <li key={item}>{item}</li>
             ))}
           </ul>
 
