@@ -16,7 +16,7 @@ export class ComplexCategoryController {
   ) {}
 
   @TsRestHandler(c.getComplexCategories)
-  async getComplexCategories() {
+  getComplexCategories(): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
     return tsRestHandler(c.getComplexCategories, async () => {
       try {
         const complexCategory =
@@ -40,7 +40,7 @@ export class ComplexCategoryController {
   }
 
   @TsRestHandler(c.getComplexCategory)
-  async getComplexCategory() {
+  getComplexCategory(): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
     return tsRestHandler(c.getComplexCategory, async ({ params }) => {
       try {
         const complexCategory =
@@ -64,7 +64,7 @@ export class ComplexCategoryController {
   }
 
   @TsRestHandler(c.createComplexCategory)
-  async createComplexCategory() {
+  createComplexCategory(): ReturnType<typeof tsRestHandler<typeof c.createComplexCategory>> {
     return tsRestHandler(c.createComplexCategory, async ({ body }) => {
       try {
         const complexCategory =
@@ -88,7 +88,7 @@ export class ComplexCategoryController {
   }
 
   @TsRestHandler(c.updateComplexCategory)
-  async updateComplexCategory() {
+  updateComplexCategory(): ReturnType<typeof tsRestHandler<typeof c.updateComplexCategory>> {
     return tsRestHandler(c.updateComplexCategory, async ({ params, body }) => {
       try {
         const complexCategory =
@@ -115,7 +115,7 @@ export class ComplexCategoryController {
   }
 
   @TsRestHandler(c.deleteComplexCategory)
-  async deleteComplexCategory() {
+  deleteComplexCategory(): ReturnType<typeof tsRestHandler<typeof c.deleteComplexCategory>> {
     return tsRestHandler(c.deleteComplexCategory, async ({ params }) => {
       try {
         await this.complexCategoryService.deleteComplexCategory(params.id);

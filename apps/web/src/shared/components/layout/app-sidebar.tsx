@@ -1,4 +1,4 @@
-import { api } from '@/lib/api';
+import { authClient } from '@/lib/auth-client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -49,11 +49,7 @@ export function AppSidebar() {
     try {
       // Appeler directement l'API pour se déconnecter
       // Avec credentials: 'include', les cookies seront automatiquement envoyés
-      await api.auth.logout({ body: {} });
-
-      // Nettoyer le localStorage
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_email');
+      await authClient.signOut();
 
       // Rediriger vers la page de connexion
       toast({
@@ -64,10 +60,6 @@ export function AppSidebar() {
       navigate({ to: '/login', replace: true });
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
-
-      // En cas d'erreur, on nettoie quand même le localStorage
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('user_email');
 
       toast({
         title: 'Logout issue',

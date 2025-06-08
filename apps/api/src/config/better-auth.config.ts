@@ -38,7 +38,7 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
       enabled: true,
       sendResetPassword: async (data, request) => {
         if (!options?.sendResetPassword) return;
-        return options.sendResetPassword(data, request);
+        return options?.sendResetPassword?.(data, request);
       },
     },
     emailVerification: {
@@ -46,14 +46,16 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
       expiresIn: 60 * 60 * 24 * 10, // 10 days
       sendVerificationEmail: async (data, request) => {
         if (!options?.sendVerificationEmail) return;
-        return options.sendVerificationEmail(data, request);
+        return options?.sendVerificationEmail?.(data, request);
       },
     },
     database: new Pool({
-      connectionString: config.database.connectionString,
+      connectionString: config.database.connectionStringUrl,
     }),
     advanced: {
-      generateId: false,
+      database: {
+        generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
+      },
     },
     rateLimit: {
       window: 50,
@@ -61,9 +63,13 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
-        // Je peux ajouter des logiques personnalisées ici si nécessaire
+        if (ctx.path === '/auth/login') {
+          console.info('before');
+        }
       }),
     },
     plugins: [openAPI()],
   });
 }
+
+export const auth = createAuthConfig();

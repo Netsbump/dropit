@@ -26,7 +26,7 @@ export class AthleteController {
 
   // ──────────────────────────────── GET /athlete
   @TsRestHandler(c.getAthletes)
-  async getAthletes() {
+  getAthletes(): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
         const athletes = await this.getAthletesUseCase.execute();
@@ -42,7 +42,7 @@ export class AthleteController {
 
   // ──────────────────────────────── GET /athlete/:id
   @TsRestHandler(c.getAthlete)
-  async getAthlete() {
+  getAthlete(): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
         const athlete = await this.getAthleteUseCase.execute(params.id);
@@ -58,7 +58,7 @@ export class AthleteController {
 
   // ──────────────────────────────── POST /athlete
   @TsRestHandler(c.createAthlete)
-  async createAthlete() {
+  createAthlete(): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
     return tsRestHandler(c.createAthlete, async ({ body }) => {
       try {
         const newAthlete = await this.createAthleteUseCase.execute(body);
@@ -77,7 +77,7 @@ export class AthleteController {
 
   // ──────────────────────────────── PATCH /athlete/:id
   @TsRestHandler(c.updateAthlete)
-  async updateAthlete() {
+  updateAthlete(): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       try {
         const updated = await this.updateAthleteUseCase.execute(
@@ -96,7 +96,7 @@ export class AthleteController {
 
   // ──────────────────────────────── DELETE /athlete/:id
   @TsRestHandler(c.deleteAthlete)
-  async deleteAthlete() {
+  deleteAthlete(): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
       try {
         await this.deleteAthleteUseCase.execute(params.id);

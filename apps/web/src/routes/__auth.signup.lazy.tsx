@@ -1,8 +1,7 @@
-import { api } from '@/lib/api';
+import { authClient } from '@/lib/auth-client';
 import { toast } from '@/shared/hooks/use-toast';
-import { SignupRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
@@ -19,59 +18,75 @@ import {
 } from '../shared/components/ui/form';
 import { Input } from '../shared/components/ui/input';
 import { Separator } from '../shared/components/ui/separator';
+import { useTranslation } from '@dropit/i18n';
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
-});
+function getFormSchema(t: (key: string) => string) {
+  return z.object({
+    email: z.string().email({ message: t('common.validation.emailRequired') }),
+    password: z
+      .string()
+      .min(6, { message: t('common.validation.passwordMinLength') }),
+    name: z.string().min(1, { message: t('common.validation.nameRequired') }),
+  });
+}
+
+type SignupFormData = {
+  email: string;
+  password: string;
+  name: string;
+};
 
 export const Route = createLazyFileRoute('/__auth/signup')({
   component: Signup,
 });
 
 function Signup() {
+  const { t } = useTranslation(['auth']);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
 
-  const form = useForm<SignupRequest>({
+  const formSchema = getFormSchema(t);
+
+  const form = useForm<SignupFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       password: '',
+      name: '',
     },
   });
 
   const signupMutation = useMutation({
-    mutationFn: async (values: SignupRequest) => {
-      const response = await api.auth.signup({ body: values });
-      if (response.status !== 201 && response.status !== 200) {
-        throw new Error('Failed to signup');
+    mutationFn: async (values: SignupFormData) => {
+      const response = await authClient.signUp.email({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        callbackURL: '/',
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Invalid email or password');
       }
-      return response.body;
+      return response.data;
     },
     onSuccess: () => {
-      // Refresh auth state
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-
       toast({
-        title: 'Account created successfully',
-        description: 'The account has been created successfully',
+        title: t('signup.toast.success.title'),
+        description: t('signup.toast.success.description'),
       });
       navigate({ to: '/dashboard', replace: true });
     },
     onError: (error) => {
       toast({
-        title: 'Signup failed',
+        title: t('signup.toast.error.title'),
         description:
-          error instanceof Error ? error.message : 'An error occurred',
+          error instanceof Error ? error.message : t('signup.toast.error.description'),
         variant: 'destructive',
       });
     },
   });
 
-  function onSubmit(values: SignupRequest) {
+  function onSubmit(values: SignupFormData) {
     signupMutation.mutate(values);
   }
 
@@ -80,10 +95,10 @@ function Signup() {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Create an account
+            {t('signup.title')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email below to create your account
+            {t('signup.description')}
           </p>
         </div>
 
@@ -94,9 +109,22 @@ function Signup() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('signup.email')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t('common.placeholders.email')} {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t('signup.name')}</FormLabel>
+                  <FormControl>
+                    <Input placeholder={t('common.placeholders.name')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,9 +135,9 @@ function Signup() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t('signup.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -121,8 +149,8 @@ function Signup() {
               disabled={signupMutation.isPending}
             >
               {signupMutation.isPending
-                ? 'Creating account...'
-                : 'Sign Up with Email'}
+                ? t('signup.buttonLoading')
+                : t('signup.button')}
             </Button>
           </form>
         </Form>
@@ -133,42 +161,42 @@ function Signup() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
+              {t('signup.alternative')}
             </span>
           </div>
         </div>
 
         <Button variant="outline" type="button" className="w-full">
           <Github className="mr-2 h-4 w-4" />
-          GitHub
+          {t('signup.githubButton')}
         </Button>
 
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Already have an account?{' '}
+          {t('signup.redirect', { link: t('signup.redirectLink') })}{' '}
           <Link
             to="/login"
             className="underline underline-offset-4 hover:text-primary"
           >
-            Sign in
+            {t('signup.redirectLink')}
           </Link>
         </p>
 
         <p className="px-8 text-center text-sm text-muted-foreground">
-          By clicking continue, you agree to our{' '}
+          {t('signup.terms.prefix')}{' '}
           <Link
             to="/terms"
             className="underline underline-offset-4 hover:text-primary"
           >
-            Terms of Service
+            {t('signup.termsLink')}
           </Link>{' '}
-          and{' '}
+          {t('signup.terms.middle')}{' '}
           <Link
             to="/privacy"
             className="underline underline-offset-4 hover:text-primary"
           >
-            Privacy Policy
+            {t('signup.privacyLink')}
           </Link>
-          .
+          {t('signup.terms.suffix')}
         </p>
       </div>
     </div>

@@ -1,4 +1,3 @@
-import { UserRole } from '@dropit/schemas';
 import {
   Entity,
   Enum,
@@ -9,138 +8,132 @@ import {
 } from '@mikro-orm/core';
 import { Media } from '../../core/media/media.entity';
 
-@Entity()
+export enum UserRole {
+  ATHLETE = 'athlete',
+  COACH = 'coach',
+  ADMIN = 'admin',
+}
+@Entity({ tableName: 'user' })
 export class User {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @Property({ unique: true })
-  email!: string;
+  @Property()
+  name!: string;
 
   @Property()
-  password!: string;
+  @Unique()
+  email!: string;
 
-  @Enum(() => UserRole)
-  role!: UserRole;
-
-  @ManyToOne(() => Media, { nullable: true })
-  avatar?: Media;
-
-  @Property({ default: false })
-  isSuperAdmin = false;
-
-  @Property({ default: true })
-  isActive = true;
-
-  @Property({ default: false })
-  emailVerified = false;
+  @Property({ fieldName: 'emailVerified' })
+  emailVerified = false
 
   @Property({ nullable: true })
-  lastLogin?: Date;
+  image?: string
 
-  @Property({ onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
-  @Property({ onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
+  updatedAt: Date = new Date()
 }
 
 /**
  * Stocke les sessions d'authentification active
  */
-@Entity({ tableName: 'auth_session' })
-export class AuthSession {
+@Entity({ tableName: 'session' })
+export class Session {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date;
+  expiresAt!: Date
 
   @Property()
   @Unique()
-  token!: string;
+  token!: string
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 
   @Property({ fieldName: 'ipAddress', nullable: true })
-  ipAddress?: string;
+  ipAddress?: string
 
   @Property({ fieldName: 'userAgent', nullable: true })
-  userAgent?: string;
+  userAgent?: string
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: User
 }
 
 /**
  * Stocke les comptes tiers liés (OAuth, etc)
  */
-@Entity({ tableName: 'auth_account' })
-export class AuthAccount {
+@Entity({ tableName: 'account' })
+export class Account {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property({ fieldName: 'accountId' })
-  accountId!: string;
+  accountId!: string
 
   @Property({ fieldName: 'providerId' })
-  providerId!: string;
+  providerId!: string
 
   @ManyToOne(() => User, { fieldName: 'userId' })
-  user!: User;
+  user!: User
 
   @Property({ fieldName: 'accessToken', nullable: true })
-  accessToken?: string;
+  accessToken?: string
 
   @Property({ fieldName: 'refreshToken', nullable: true })
-  refreshToken?: string;
+  refreshToken?: string
 
   @Property({ fieldName: 'idToken', nullable: true })
-  idToken?: string;
+  idToken?: string
 
   @Property({ fieldName: 'accessTokenExpiresAt', nullable: true })
-  accessTokenExpiresAt?: Date;
+  accessTokenExpiresAt?: Date
 
   @Property({ fieldName: 'refreshTokenExpiresAt', nullable: true })
-  refreshTokenExpiresAt?: Date;
+  refreshTokenExpiresAt?: Date
 
   @Property({ nullable: true })
-  scope?: string;
+  scope?: string
 
   @Property({ nullable: true })
-  password?: string;
+  password?: string
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 }
 
 /**
  * Stocke les jetons de vérification (email, réinitialisation de mot de passe, etc)
  */
-@Entity({ tableName: 'auth_verification' })
-export class AuthVerification {
+@Entity({ tableName: 'verification' })
+export class Verification {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
+  id!: string
 
   @Property()
-  identifier!: string;
+  identifier!: string
 
   @Property()
-  value!: string;
+  value!: string
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date;
+  expiresAt!: Date
 
-  @Property({ fieldName: 'createdAt', onCreate: () => new Date() })
-  createdAt: Date = new Date();
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date();
+  updatedAt: Date = new Date()
 }

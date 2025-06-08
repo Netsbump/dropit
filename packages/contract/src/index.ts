@@ -1,7 +1,6 @@
 import { initContract } from '@ts-rest/core';
 import { athleteSessionContract } from './athlete-session.contract';
 import { athleteContract } from './athlete.contract';
-import { authContract } from './auth.contract';
 import { competitorStatusContract } from './competitor-status.contract';
 import { complexCategoryContract } from './complex-category.contract';
 import { complexContract } from './complex.contract';
@@ -26,7 +25,6 @@ export const apiContract = c.router({
   workout: workoutContract,
   competitorStatus: competitorStatusContract,
   personalRecord: personalRecordContract,
-  auth: authContract,
 });
 
 export * from './athlete.contract';
@@ -40,4 +38,3 @@ export * from './workout-category.contract';
 export * from './workout.contract';
 export * from './competitor-status.contract';
 export * from './personal-record.contract';
-export * from './auth.contract';

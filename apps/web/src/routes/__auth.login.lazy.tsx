@@ -1,13 +1,13 @@
-import { api } from '@/lib/api';
 import { toast } from '@/shared/hooks/use-toast';
-import { LoginRequest } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
 import { Github } from 'lucide-react';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { authClient } from '../lib/auth-client';
 import { Button } from '../shared/components/ui/button';
 import {
   Form,
@@ -19,23 +19,34 @@ import {
 } from '../shared/components/ui/form';
 import { Input } from '../shared/components/ui/input';
 import { Separator } from '../shared/components/ui/separator';
+import { useTranslation } from '@dropit/i18n';
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
-});
+function getFormSchema(t: (key: string) => string) {
+  return z.object({
+    email: z.string().email({ message: t('common.validation.emailRequired') }),
+    password: z
+      .string()
+      .min(6, { message: t('common.validation.passwordMinLength') }),
+  });
+}
+
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 export const Route = createLazyFileRoute('/__auth/login')({
   component: Login,
 });
 
 function Login() {
+  const { t } = useTranslation(['auth']);
   const navigate = useNavigate();
-  const queryClient = useQueryClient();
+  const { data: sessionData, isPending } = authClient.useSession();
 
-  const form = useForm<LoginRequest>({
+  const formSchema = getFormSchema(t);
+
+  const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
@@ -44,34 +55,42 @@ function Login() {
   });
 
   const loginMutation = useMutation({
-    mutationFn: async (values: LoginRequest) => {
-      const response = await api.auth.login({ body: values });
-      if (response.status !== 200) {
-        throw new Error('Failed to login');
+    mutationFn: async (values: LoginFormData) => {
+      const response = await authClient.signIn.email({
+        email: values.email,
+        password: values.password,
+        callbackURL: '/dashboard',
+        rememberMe: true,
+      });
+
+      if (response.error) {
+        throw new Error(response.error.message || 'Invalid email or password');
       }
-      return response.body;
+      return response.data;
     },
     onSuccess: () => {
-      // Refresh auth state
-      queryClient.invalidateQueries({ queryKey: ['auth', 'me'] });
-
       toast({
-        title: 'Login successful',
-        description: 'You have been logged in successfully',
+        title: t('login.toast.success.title'),
+        description: t('login.toast.success.description'),
       });
       navigate({ to: '/dashboard', replace: true });
     },
-    onError: (error) => {
+    onError: (error: Error) => {
       toast({
-        title: 'Login failed',
-        description:
-          error instanceof Error ? error.message : 'An error occurred',
+        title: t('login.toast.error.title'),
+        description: error.message || t('login.toast.error.description'),
         variant: 'destructive',
       });
     },
   });
 
-  function onSubmit(values: LoginRequest) {
+  useEffect(() => {
+    if (!isPending && sessionData) {
+      navigate({ to: '/dashboard', replace: true });
+    }
+  }, [sessionData, navigate, isPending]);
+
+  function onSubmit(values: LoginFormData) {
     loginMutation.mutate(values);
   }
 
@@ -80,10 +99,10 @@ function Login() {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
+            {t('login.title')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
+            {t('login.description')}
           </p>
         </div>
 
@@ -94,9 +113,9 @@ function Login() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('login.email')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t('common.placeholders.email')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -107,9 +126,9 @@ function Login() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t('login.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -120,7 +139,9 @@ function Login() {
               className="w-full"
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending ? 'Signing in...' : 'Sign In with Email'}
+              {loginMutation.isPending
+                ? t('login.buttonLoading')
+                : t('login.button')}
             </Button>
           </form>
         </Form>
@@ -131,23 +152,23 @@ function Login() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
+              {t('login.alternative')}
             </span>
           </div>
         </div>
 
         <Button variant="outline" type="button" className="w-full">
           <Github className="mr-2 h-4 w-4" />
-          GitHub
+          {t('login.githubButton')}
         </Button>
 
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          {t('login.redirect', { link: t('login.redirectLink') })}{' '}
           <Link
             to="/signup"
             className="underline underline-offset-4 hover:text-primary"
           >
-            Sign up
+            {t('login.redirectLink')}
           </Link>
         </p>
       </div>

@@ -1,31 +1,33 @@
-import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
-import { useAuth } from '../shared/hooks/use-auth';
-import { isAuthenticated } from '../shared/utils/auth';
+import { authClient } from '@/lib/auth-client';
+import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/__auth')({
-  beforeLoad: () => {
-    // Quick check to avoid unnecessary redirects
-    // This will be replaced with a full cookie check in the future
-    if (isAuthenticated()) {
-      throw redirect({
-        to: '/dashboard',
-      });
-    }
-  },
   component: AuthLayout,
 });
 
 function AuthLayout() {
-  // Use the auth hook to verify authentication with the API
-  const { isAuthenticated, isLoading } = useAuth();
+  const { data: session, isPending } = authClient.useSession();
+  const navigate = useNavigate();
 
-  // If authenticated after API check, redirect to dashboard
-  if (!isLoading && isAuthenticated) {
-    throw redirect({
-      to: '/dashboard',
-    });
+  useEffect(() => {
+    if (!isPending && session) {
+      navigate({ to: '/dashboard' });
+    }
+  }, [isPending, session, navigate]);
+
+  if (isPending) {
+    return (
+      <div className="flex min-h-screen w-full items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
+  if (session) {
+    return null;
+  }
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <Outlet />

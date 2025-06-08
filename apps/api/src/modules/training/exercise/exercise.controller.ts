@@ -14,7 +14,7 @@ export class ExerciseController {
   constructor(private readonly exerciseService: ExerciseService) {}
 
   @TsRestHandler(c.getExercises)
-  async getExercises() {
+  getExercises(): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
       try {
         const exercises = await this.exerciseService.getExercises();
@@ -39,7 +39,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.getExercise)
-  async getExercise() {
+  getExercise(): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
       try {
         const exercise = await this.exerciseService.getExercise(params.id);
@@ -62,7 +62,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.createExercise)
-  async createExercise() {
+  createExercise(): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
     return tsRestHandler(c.createExercise, async ({ body }) => {
       try {
         const newExercise = await this.exerciseService.createExercise(body);
@@ -90,7 +90,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.updateExercise)
-  async updateExercise() {
+  updateExercise(): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
     return tsRestHandler(c.updateExercise, async ({ params, body }) => {
       try {
         const updatedExercise = await this.exerciseService.updateExercise(
@@ -116,7 +116,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.deleteExercise)
-  async deleteExercise() {
+  deleteExercise(): ReturnType<typeof tsRestHandler<typeof c.deleteExercise>> {
     return tsRestHandler(c.deleteExercise, async ({ params }) => {
       try {
         await this.exerciseService.deleteExercise(params.id);
@@ -139,7 +139,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.searchExercises)
-  async searchExercises() {
+  searchExercises(): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
       try {
         // Contrat : query = { like: z.string() }

@@ -35,3 +35,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 node_modules
+
+# better-auth
+apps/api/temp

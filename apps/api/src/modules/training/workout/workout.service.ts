@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
-import { Session } from '../../performance/session/session.entity';
+import { TrainingSession } from '../../performance/session/session.entity';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
@@ -294,18 +294,18 @@ export class WorkoutService {
         athletes.push(athlete);
       }
 
-      const session = new Session();
-      session.workout = workoutToCreate;
+      const trainingSession = new TrainingSession();
+      trainingSession.workout = workoutToCreate;
 
-      session.scheduledDate = new Date(workout.session.scheduledDate);
+      trainingSession.scheduledDate = new Date(workout.session.scheduledDate);
 
-      await this.em.persistAndFlush(session);
+      await this.em.persistAndFlush(trainingSession);
 
       // Créer les liens avec les athlètes
       for (const athlete of athletes) {
         const athleteSession = new AthleteSession();
         athleteSession.athlete = athlete;
-        athleteSession.session = session;
+        athleteSession.session = trainingSession;
         this.em.persist(athleteSession);
       }
 

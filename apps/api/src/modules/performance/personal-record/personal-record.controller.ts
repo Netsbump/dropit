@@ -14,7 +14,7 @@ export class PersonalRecordController {
   constructor(private readonly personalRecordService: PersonalRecordService) {}
 
   @TsRestHandler(c.getPersonalRecords)
-  async getPersonalRecords() {
+  getPersonalRecords(): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecords>> {
     return tsRestHandler(c.getPersonalRecords, async () => {
       try {
         const personalRecords =
@@ -37,7 +37,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.getPersonalRecord)
-  async getPersonalRecord() {
+  getPersonalRecord(): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
       try {
         const personalRecord =
@@ -67,7 +67,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.getAthletePersonalRecords)
-  async getAthletePersonalRecords() {
+  getAthletePersonalRecords(): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
       try {
         const personalRecords =
@@ -91,7 +91,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.getAthletePersonalRecordsSummary)
-  async getAthletePersonalRecordsSummary() {
+  getAthletePersonalRecordsSummary(): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecordsSummary>> {
     return tsRestHandler(
       c.getAthletePersonalRecordsSummary,
       async ({ params }) => {
@@ -120,7 +120,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.createPersonalRecord)
-  async createPersonalRecord() {
+  createPersonalRecord(): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
       try {
         const newPersonalRecord =
@@ -149,7 +149,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.updatePersonalRecord)
-  async updatePersonalRecord() {
+  updatePersonalRecord(): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
       try {
         const updatedPersonalRecord =
@@ -176,7 +176,7 @@ export class PersonalRecordController {
   }
 
   @TsRestHandler(c.deletePersonalRecord)
-  async deletePersonalRecord() {
+  deletePersonalRecord(): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
       try {
         await this.personalRecordService.deletePersonalRecord(params.id);

@@ -15,7 +15,8 @@
     "DATABASE_PORT_TEST",
     "DATABASE_HOST_TEST",
     "BETTER_AUTH_SECRET",
-    "TRUSTED_ORIGINS"
+    "TRUSTED_ORIGINS",
+    "VITE_API_URL"
   ],
   "tasks": {
     "build": {

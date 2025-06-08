@@ -1,6 +1,8 @@
-import { UserRole } from '@dropit/schemas';
+import { randomBytes } from 'crypto';
 import { EntityManager } from '@mikro-orm/core';
+import { scrypt } from 'scrypt-js';
 import { Athlete } from '../modules/members/athlete/athlete.entity';
+import { UserRole } from '../modules/members/auth/auth.entity';
 import { User } from '../modules/members/auth/auth.entity';
 import { Club } from '../modules/members/club/club.entity';
 
@@ -72,13 +74,31 @@ export async function seedAthletes(
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
+  // Fonction utilitaire pour hasher les mots de passe avec scrypt
+  async function hashPassword(password: string): Promise<string> {
+    const salt = randomBytes(16);
+    const hash = await scrypt(
+      Buffer.from(password),
+      salt,
+      16384, // N
+      8, // r
+      1, // p
+      64 // dkLen
+    );
+    return `${Buffer.from(salt).toString('hex')}:${Buffer.from(hash).toString(
+      'hex'
+    )}`;
+  }
+
   // Créer un coach
   const coachUser = new User();
   coachUser.email = 'coach@example.com';
-  coachUser.password = 'password123'; // Dans un environnement réel, utilisez un hash
-  coachUser.role = UserRole.COACH;
-  coachUser.isActive = true;
-  coachUser.isSuperAdmin = false;
+  //coachUser.password = await hashPassword('password123');
+  coachUser.name = 'Jean Dupont';
+  //coachUser.role = UserRole.COACH;
+  //coachUser.isActive = true;
+  //coachUser.isSuperAdmin = false;
+  coachUser.emailVerified = true;
 
   em.persist(coachUser);
 
@@ -99,10 +119,12 @@ export async function seedAthletes(
 
     const user = new User();
     user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    user.password = 'password123'; // Dans un environnement réel, utilisez un hash
-    user.role = UserRole.ATHLETE;
-    user.isActive = true;
-    user.isSuperAdmin = false;
+    //user.password = await hashPassword('password123');
+    user.name = `${firstName} ${lastName}`;
+    //user.role = UserRole.ATHLETE;
+    //user.isActive = true;
+    //user.isSuperAdmin = false;
+    user.emailVerified = true;
 
     em.persist(user);
 
@@ -129,10 +151,12 @@ export async function seedAthletes(
 
     const user = new User();
     user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    user.password = 'password123'; // Dans un environnement réel, utilisez un hash
-    user.role = UserRole.ATHLETE;
-    user.isActive = true;
-    user.isSuperAdmin = false;
+    //user.password = await hashPassword('password123');
+    user.name = `${firstName} ${lastName}`;
+    //user.role = UserRole.ATHLETE;
+    //user.isActive = true;
+    //user.isSuperAdmin = false;
+    user.emailVerified = true;
 
     em.persist(user);
 

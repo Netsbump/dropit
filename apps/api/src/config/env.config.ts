@@ -68,6 +68,6 @@ export const config = {
     user: configParsed.data.DATABASE_USER,
     password: configParsed.data.DATABASE_PASSWORD,
     name: configParsed.data.DATABASE_NAME,
-    connectionString: `postgresql://${configParsed.data.DATABASE_USER}:${configParsed.data.DATABASE_PASSWORD}@${configParsed.data.DATABASE_HOST}:${configParsed.data.DATABASE_PORT}/${configParsed.data.DATABASE_NAME}`,
+    connectionStringUrl: `postgresql://${configParsed.data.DATABASE_USER}:${configParsed.data.DATABASE_PASSWORD}@${configParsed.data.DATABASE_HOST}:${configParsed.data.DATABASE_PORT}/${configParsed.data.DATABASE_NAME}`,
   },
 } as const;

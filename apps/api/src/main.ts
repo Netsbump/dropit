@@ -12,7 +12,9 @@ const PREFIX = '/api';
 const PORT = process.env.API_PORT || 3000;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bodyParser: false,
+  });
 
   // Conditional middleware for better auth
   app.use(
@@ -41,6 +43,7 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, openApiDocument);
 
   await app.listen(PORT);
+  console.log(`Application is running on: http://localhost:${PORT}`);
 }
 
 bootstrap();

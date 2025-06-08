@@ -1,17 +1,17 @@
 import { SessionDto } from '@dropit/schemas';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Session } from './session.entity';
+import { TrainingSession } from './session.entity';
 import { SessionMapper } from './session.mapper';
 @Injectable()
-export class SessionRepository extends EntityRepository<Session> {
+export class SessionRepository extends EntityRepository<TrainingSession> {
   constructor(public readonly em: EntityManager) {
-    super(em, Session);
+    super(em, TrainingSession);
   }
 
   async findAllWithDetails(): Promise<SessionDto[]> {
     const sessions = await this.em.find(
-      Session,
+      TrainingSession,
       {},
       {
         populate: [
@@ -39,7 +39,7 @@ export class SessionRepository extends EntityRepository<Session> {
 
   async findOneWithDetails(id: string): Promise<SessionDto> {
     const session = await this.em.findOne(
-      Session,
+      TrainingSession,
       { id },
       {
         populate: [
@@ -59,7 +59,7 @@ export class SessionRepository extends EntityRepository<Session> {
     );
 
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException('TrainingSession not found');
     }
 
     return SessionMapper.toDto(session);

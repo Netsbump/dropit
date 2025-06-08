@@ -8,6 +8,8 @@ import enPlanning from './locales/en/planning.json';
 import frAthletes from './locales/fr/athletes.json';
 import fr from './locales/fr/common.json';
 import frPlanning from './locales/fr/planning.json';
+import frAuth from './locales/fr/auth.json';
+import enAuth from './locales/en/auth.json';
 
 export const defaultNS = 'common';
 export const resources = {
@@ -15,11 +17,13 @@ export const resources = {
     common: en,
     athletes: enAthletes,
     planning: enPlanning,
+    auth: enAuth,
   },
   fr: {
     common: fr,
     athletes: frAthletes,
     planning: frPlanning,
+    auth: frAuth,
   },
 } as const;
 
