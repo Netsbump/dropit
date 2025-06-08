@@ -19,23 +19,32 @@ import {
 } from '../shared/components/ui/form';
 import { Input } from '../shared/components/ui/input';
 import { Separator } from '../shared/components/ui/separator';
+import { useTranslation } from '@dropit/i18n';
 
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please enter a valid email address.' }),
-  password: z
-    .string()
-    .min(6, { message: 'Password must be at least 6 characters.' }),
-});
+function getFormSchema(t: any) {
+  return z.object({
+    email: z.string().email({ message: t('common.validation.emailRequired') }),
+    password: z
+      .string()
+      .min(6, { message: t('common.validation.passwordMinLength') }),
+  });
+}
 
-type LoginFormData = z.infer<typeof formSchema>;
+type LoginFormData = {
+  email: string;
+  password: string;
+};
 
 export const Route = createLazyFileRoute('/__auth/login')({
   component: Login,
 });
 
 function Login() {
+  const { t } = useTranslation(['auth']);
   const navigate = useNavigate();
   const { data: sessionData, isPending } = authClient.useSession();
+
+  const formSchema = getFormSchema(t);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
@@ -61,15 +70,15 @@ function Login() {
     },
     onSuccess: () => {
       toast({
-        title: 'Login successful',
-        description: 'You have been logged in successfully',
+        title: t('login.toast.success.title'),
+        description: t('login.toast.success.description'),
       });
       navigate({ to: '/dashboard', replace: true });
     },
     onError: (error: Error) => {
       toast({
-        title: 'Login failed',
-        description: error.message || 'An error occurred',
+        title: t('login.toast.error.title'),
+        description: error.message || t('login.toast.error.description'),
         variant: 'destructive',
       });
     },
@@ -90,10 +99,10 @@ function Login() {
       <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
         <div className="flex flex-col space-y-2 text-center">
           <h1 className="text-2xl font-semibold tracking-tight">
-            Welcome back
+            {t('login.title')}
           </h1>
           <p className="text-sm text-muted-foreground">
-            Enter your email to sign in to your account
+            {t('login.description')}
           </p>
         </div>
 
@@ -104,9 +113,9 @@ function Login() {
               name="email"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Email</FormLabel>
+                  <FormLabel>{t('login.email')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="name@example.com" {...field} />
+                    <Input placeholder={t('common.placeholders.email')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,9 +126,9 @@ function Login() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Password</FormLabel>
+                  <FormLabel>{t('login.password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="••••••••" {...field} />
+                    <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -130,7 +139,9 @@ function Login() {
               className="w-full"
               disabled={loginMutation.isPending}
             >
-              {loginMutation.isPending ? 'Signing in...' : 'Sign In with Email'}
+              {loginMutation.isPending
+                ? t('login.buttonLoading')
+                : t('login.button')}
             </Button>
           </form>
         </Form>
@@ -141,23 +152,23 @@ function Login() {
           </div>
           <div className="relative flex justify-center text-xs uppercase">
             <span className="bg-background px-2 text-muted-foreground">
-              Or continue with
+              {t('login.alternative')}
             </span>
           </div>
         </div>
 
         <Button variant="outline" type="button" className="w-full">
           <Github className="mr-2 h-4 w-4" />
-          GitHub
+          {t('login.githubButton')}
         </Button>
 
         <p className="px-8 text-center text-sm text-muted-foreground">
-          Don't have an account?{' '}
+          {t('login.redirect', { link: t('login.redirectLink') })}{' '}
           <Link
             to="/signup"
             className="underline underline-offset-4 hover:text-primary"
           >
-            Sign up
+            {t('login.redirectLink')}
           </Link>
         </p>
       </div>

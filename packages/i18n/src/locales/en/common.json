@@ -1,5 +1,4 @@
 {
-  "welcome": "Welcome to Dropit",
   "common": {
     "loading": "Loading...",
     "start_create": "Start by creating one!",
@@ -27,11 +26,6 @@
     "/athletes": "Athletes",
     "/athletes/$athleteId": "Athlete",
     "/about": "Help & Support"
-  },
-  "auth": {
-    "login": "Login",
-    "register": "Register",
-    "logout": "Logout"
   },
   "sidebar": {
     "menu": {
