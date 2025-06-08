@@ -13,7 +13,7 @@
     <br />
     Pour plus de détails, vous pouvez 
     <br />
-    <a href="https://github.com/Netsbump/dropit/wiki/Cahier-des-charges"><strong>Explorer la documentation »</strong></a>
+    <a href="https://docs-dropit.pages.dev/"><strong>Explorer la documentation »</strong></a>
     <br />
     <br />
     <a href="https://dropit.sten-lvs.com">Voir la Démonstration</a>
