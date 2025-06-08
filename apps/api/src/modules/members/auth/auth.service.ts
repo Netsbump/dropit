@@ -75,7 +75,9 @@ export class AuthService implements OnModuleInit {
         connectionString: config.database.connectionStringUrl,
       }),
       advanced: {
-        generateId: false,
+        database: {
+          generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
+        },
       },
       rateLimit: {
         window: 50,
@@ -84,7 +86,6 @@ export class AuthService implements OnModuleInit {
     }) as unknown as Auth;
     console.log('AuthService: Auth configuration created');
     console.log('AuthService: initialize() resolving...');
-    return Promise.resolve();
   }
 
   /**

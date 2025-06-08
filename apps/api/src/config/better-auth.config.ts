@@ -53,7 +53,9 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
       connectionString: config.database.connectionStringUrl,
     }),
     advanced: {
-      generateId: false,
+      database: {
+        generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
+      },
     },
     rateLimit: {
       window: 50,

@@ -25,20 +25,11 @@ export class User {
   @Unique()
   email!: string;
 
-  // @Property()
-  // password!: string;
-
-  // @Enum(() => UserRole)
-  // role!: UserRole;
-
   @Property({ fieldName: 'emailVerified' })
   emailVerified: boolean = false
 
   @Property({ nullable: true })
   image?: string
-
-  // @Property({ default: true })
-  // isActive = true;
 
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date()

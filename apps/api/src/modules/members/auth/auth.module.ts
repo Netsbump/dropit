@@ -55,24 +55,10 @@ export class AuthModule implements NestModule, OnModuleInit {
    * Configure le middleware d'authentification
    */
   async configure(consumer: MiddlewareConsumer) {
-    console.log('AuthModule: Configuring middleware...');
     // Attendre que l'authentification soit initialisée
     await this.onModuleInit();
 
     const auth = this.authService.auth;
-    console.log('AuthModule: Auth service initialized');
-    console.log('AuthModule: Auth instance type:', typeof auth);
-    console.log('AuthModule: Auth instance methods:', Object.keys(auth));
-    console.log(
-      'AuthModule: Auth instance API methods:',
-      Object.keys(auth.api)
-    );
-    console.log('AuthModule: Auth instance handler type:', typeof auth.handler);
-    console.log(
-      'AuthModule: Auth instance handler methods:',
-      Object.keys(auth.handler)
-    );
-    console.log('AuthModule: Auth options:', auth.options);
 
     // Rechercher tous les hooks d'authentification dans l'application
     const providers = this.discoveryService
@@ -96,39 +82,18 @@ export class AuthModule implements NestModule, OnModuleInit {
 
     // Convertir le middleware better-auth en middleware NestJS
     const handler = toNodeHandler(auth);
-    console.log('AuthModule: BetterAuth middleware mounted!');
-
-    // Wrapper le handler pour ajouter des logs
-    const loggedHandler = (
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction
-    ) => {
-      console.log('=== BETTER AUTH MIDDLEWARE START ===');
-      console.log('Route:', req.originalUrl);
-      console.log('Method:', req.method);
-      console.log('Body:', req.body);
-      console.log('Handler type:', typeof handler);
-      console.log('Auth options:', auth.options);
-      console.log('Available API methods:', Object.keys(auth.api));
-      console.log('Handler implementation:', handler.toString());
-
-      // Log the request before passing it to better-auth
-      console.log('=== BETTER AUTH REQUEST DETAILS ===');
-      console.log('URL:', req.url);
-      console.log('Original URL:', req.originalUrl);
-      console.log('Path:', req.path);
-      console.log('Base URL:', req.baseUrl);
-      console.log('Headers:', req.headers);
-
-      handler(req, res);
-      console.log('=== BETTER AUTH MIDDLEWARE COMPLETE ===');
-    };
+    console.log('AuthModule: Handler created from better-auth instance');
 
     // Appliquer le middleware aux routes commençant par /auth
     consumer.apply(handler).forRoutes({
       path: '/auth/*',
       method: RequestMethod.ALL,
+    });
+
+    console.log('AuthModule: Middleware applied to /auth/*');
+    console.log('AuthModule: Better-Auth configuration:', {
+      trustedOrigins: auth.options?.trustedOrigins || 'None',
+      hasDatabase: !!auth.options?.database,
     });
   }
 
