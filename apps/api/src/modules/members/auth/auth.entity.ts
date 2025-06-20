@@ -32,7 +32,7 @@ export class User {
   image?: string
 
   @Property({ default: 'athlete' })
-  role: string = 'athlete'
+  role = 'athlete'
 
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date()
