@@ -1,6 +1,8 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from '../modules/members/athlete/athlete.entity';
 import { CoachAthlete } from '../modules/members/coach-athlete/coach-athlete.entity';
+import { User } from '../modules/members/auth/auth.entity';
+import { UserRole } from '../modules/members/auth/auth.entity';
 
 export async function seedCoachAthleteRelationships(
   em: EntityManager
@@ -15,11 +17,29 @@ export async function seedCoachAthleteRelationships(
     return;
   }
 
-  // Trouver un coach (le premier athlète créé dans notre seed)
-  const coach = athletes[0];
+  // Trouver le coach en vérifiant le rôle dans la table user
+  const coachUser = await em.getConnection().execute(
+    'SELECT id FROM "user" WHERE role = ? LIMIT 1',
+    [UserRole.COACH]
+  );
+
+  if (!coachUser || coachUser.length === 0) {
+    console.log('No coach found. Please run seedAthletes first.');
+    return;
+  }
+
+  const coachUserId = coachUser[0].id;
+  const coach = athletes.find(athlete => athlete.user?.id === coachUserId);
+
+  if (!coach) {
+    console.log('Coach athlete not found. Please run seedAthletes first.');
+    return;
+  }
+
+  console.log(`Found coach: ${coach.firstName} ${coach.lastName}`);
 
   // Les autres athlètes seront rattachés à ce coach
-  const athletesToLink = athletes.slice(1);
+  const athletesToLink = athletes.filter(athlete => athlete.id !== coach.id);
 
   let relationshipsCreated = 0;
 
