@@ -17,13 +17,13 @@ export class MainSeeder extends Seeder {
 
     // 2. Seed des entités utilisateur (clubs, athlètes, relations)
     await seedClubs(em);
-    //const athletes = await seedAthletes(em);
-    //await seedCoachAthleteRelationships(em);
+    await seedAthletes(em);
+    await seedCoachAthleteRelationships(em);
 
     //3. Seed des données des athlètes supplémentaires
-    //await seedCompetitorStatuses(em);
-    //await seedPersonalRecords(em);
-    //await seedPhysicalMetrics(em);
+    await seedCompetitorStatuses(em);
+    await seedPersonalRecords(em);
+    await seedPhysicalMetrics(em);
 
     console.log('All seeds completed successfully');
   }

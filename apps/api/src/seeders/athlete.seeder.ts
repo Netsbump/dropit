@@ -1,60 +1,11 @@
-import { randomBytes } from 'crypto';
 import { EntityManager } from '@mikro-orm/core';
-import { scrypt } from 'scrypt-js';
 import { Athlete } from '../modules/members/athlete/athlete.entity';
-import { UserRole } from '../modules/members/auth/auth.entity';
+import { faker } from '@faker-js/faker';
 import { User } from '../modules/members/auth/auth.entity';
 import { Club } from '../modules/members/club/club.entity';
-
-// Noms et prénoms pour la génération d'athlètes
-const femaleFirstNames = [
-  'Sophie',
-  'Emma',
-  'Léa',
-  'Chloé',
-  'Manon',
-  'Camille',
-  'Sarah',
-  'Océane',
-  'Julie',
-  'Lucie',
-];
-
-const maleFirstNames = [
-  'Lucas',
-  'Hugo',
-  'Thomas',
-  'Théo',
-  'Noah',
-  'Antoine',
-  'Louis',
-  'Maxime',
-  'Alexandre',
-  'Paul',
-];
-
-const lastNames = [
-  'Martin',
-  'Bernard',
-  'Dubois',
-  'Thomas',
-  'Robert',
-  'Richard',
-  'Petit',
-  'Durand',
-  'Leroy',
-  'Moreau',
-  'Simon',
-  'Laurent',
-  'Lefebvre',
-  'Michel',
-  'Garcia',
-  'David',
-  'Bertrand',
-  'Roux',
-  'Vincent',
-  'Fournier',
-];
+import { hashPassword } from 'better-auth/crypto';
+import { Account } from '../modules/members/auth/auth.entity';
+import { UserRole } from '../modules/members/auth/auth.entity';
 
 export async function seedAthletes(
   em: EntityManager
@@ -68,39 +19,32 @@ export async function seedAthletes(
     throw new Error('No club found. Please run seedClubs first.');
   }
 
-  const club = clubs[0]; // Utiliser le premier club trouvé
+  const club = clubs[0];
   console.log(`Using club: ${club.name} for all athletes`);
 
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
-  // Fonction utilitaire pour hasher les mots de passe avec scrypt
-  async function hashPassword(password: string): Promise<string> {
-    const salt = randomBytes(16);
-    const hash = await scrypt(
-      Buffer.from(password),
-      salt,
-      16384, // N
-      8, // r
-      1, // p
-      64 // dkLen
-    );
-    return `${Buffer.from(salt).toString('hex')}:${Buffer.from(hash).toString(
-      'hex'
-    )}`;
-  }
-
   // Créer un coach
   const coachUser = new User();
-  coachUser.email = 'coach@example.com';
-  //coachUser.password = await hashPassword('password123');
   coachUser.name = 'Jean Dupont';
-  //coachUser.role = UserRole.COACH;
-  //coachUser.isActive = true;
-  //coachUser.isSuperAdmin = false;
+  coachUser.email = 'coach@example.com';
   coachUser.emailVerified = true;
+  // Le champ role sera géré automatiquement par Better Auth via additionalFields
+  await em.persistAndFlush(coachUser);
 
-  em.persist(coachUser);
+  // Mettre à jour le rôle du coach manuellement via SQL
+  await em.getConnection().execute(
+    'UPDATE "user" SET role = ? WHERE id = ?',
+    [UserRole.COACH, coachUser.id]
+  );
+
+  const coachAccount = new Account();
+  coachAccount.user = coachUser;
+  coachAccount.providerId = 'credential';
+  coachAccount.accountId = coachUser.email;
+  coachAccount.password = await hashPassword('Password123!');
+  await em.persistAndFlush(coachAccount);
 
   coach = new Athlete();
   coach.firstName = 'Jean';
@@ -110,74 +54,43 @@ export async function seedAthletes(
   coach.club = club;
   coach.user = coachUser;
 
-  em.persist(coach);
+  await em.persistAndFlush(coach);
+  athletes.push(coach);
 
-  // Créer 10 athlètes femmes
-  for (let i = 0; i < 10; i++) {
-    const firstName = femaleFirstNames[i];
-    const lastName = lastNames[i];
+  // Créer des athlètes avec faker
+  const numberOfAthletes = faker.number.int({ min: 15, max: 25 });
+  
+  for (let i = 0; i < numberOfAthletes; i++) {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const email = faker.internet.email({ firstName, lastName });
 
     const user = new User();
-    user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    //user.password = await hashPassword('password123');
+    user.email = email.toLowerCase();
     user.name = `${firstName} ${lastName}`;
-    //user.role = UserRole.ATHLETE;
-    //user.isActive = true;
-    //user.isSuperAdmin = false;
     user.emailVerified = true;
+    await em.persistAndFlush(user);
 
-    em.persist(user);
+    // Créer un compte avec mot de passe pour chaque athlète
+    const account = new Account();
+    account.user = user;
+    account.providerId = 'credential';
+    account.accountId = user.email;
+    account.password = await hashPassword('Password123!');
+    await em.persistAndFlush(account);
 
     const athlete = new Athlete();
     athlete.firstName = firstName;
     athlete.lastName = lastName;
-    athlete.birthday = new Date(
-      1990 + i,
-      Math.floor(Math.random() * 12),
-      Math.floor(Math.random() * 28) + 1
-    );
+    athlete.birthday = faker.date.birthdate({ min: 16, max: 35, mode: 'age' });
     athlete.country = 'France';
     athlete.club = club;
     athlete.user = user;
 
-    em.persist(athlete);
+    await em.persistAndFlush(athlete);
     athletes.push(athlete);
   }
 
-  // Créer 10 athlètes hommes
-  for (let i = 0; i < 10; i++) {
-    const firstName = maleFirstNames[i];
-    const lastName = lastNames[i + 10];
-
-    const user = new User();
-    user.email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}@example.com`;
-    //user.password = await hashPassword('password123');
-    user.name = `${firstName} ${lastName}`;
-    //user.role = UserRole.ATHLETE;
-    //user.isActive = true;
-    //user.isSuperAdmin = false;
-    user.emailVerified = true;
-
-    em.persist(user);
-
-    const athlete = new Athlete();
-    athlete.firstName = firstName;
-    athlete.lastName = lastName;
-    athlete.birthday = new Date(
-      1990 + i,
-      Math.floor(Math.random() * 12),
-      Math.floor(Math.random() * 28) + 1
-    );
-    athlete.country = 'France';
-    athlete.club = club;
-    athlete.user = user;
-
-    em.persist(athlete);
-    athletes.push(athlete);
-  }
-
-  await em.flush();
-  console.log(`1 coach and ${athletes.length} athletes seeded`);
-
+  console.log(`1 coach and ${athletes.length - 1} athletes seeded`);
   return { athletes, coach };
 }

@@ -3,6 +3,7 @@ import { createAuthMiddleware } from 'better-auth/api';
 import { openAPI } from 'better-auth/plugins';
 import { Pool } from 'pg';
 import { config } from './env.config';
+import { UserRole } from '../modules/members/auth/auth.entity';
 
 interface BetterAuthOptionsDynamic {
   sendResetPassword?: (
@@ -32,6 +33,17 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
     // Support du Bearer token également (pour le mobile)
     bearerToken: {
       enabled: true,
+    },
+
+    user: {
+      additionalFields: {
+        role: {
+          type: 'string',
+          required: true,
+          defaultValue: UserRole.ATHLETE,
+          input: false, // don't allow user to set role
+        },
+      },
     },
 
     emailAndPassword: {

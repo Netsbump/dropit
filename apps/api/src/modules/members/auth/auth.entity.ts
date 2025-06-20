@@ -6,13 +6,13 @@ import {
   Property,
   Unique,
 } from '@mikro-orm/core';
-import { Media } from '../../core/media/media.entity';
 
 export enum UserRole {
   ATHLETE = 'athlete',
   COACH = 'coach',
   ADMIN = 'admin',
 }
+
 @Entity({ tableName: 'user' })
 export class User {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
@@ -30,6 +30,9 @@ export class User {
 
   @Property({ nullable: true })
   image?: string
+
+  @Property({ default: 'athlete' })
+  role: string = 'athlete'
 
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date()
