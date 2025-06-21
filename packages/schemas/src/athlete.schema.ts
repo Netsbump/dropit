@@ -18,7 +18,7 @@ export const athleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  avatar: z.string().optional(),
+  image: z.string().optional(),
   birthday: z.date(),
   country: z.string().optional(),
   club: z.string().optional(),

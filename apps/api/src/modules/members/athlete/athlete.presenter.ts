@@ -9,7 +9,7 @@ export const AthletePresenter = {
       lastName: athlete.lastName,
       birthday: new Date(athlete.birthday),
       email: athlete.email ?? '',
-      avatar: athlete.avatar ?? '',
+      image: athlete.image ?? '',
       country: athlete.country,
       club: athlete.club ?? '',
       metrics: athlete.weight ? { weight: athlete.weight } : undefined,
