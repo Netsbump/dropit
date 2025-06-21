@@ -13,7 +13,7 @@ export type AthleteBasics = Pick<
 export type AthleteDetails = AthleteBasics & {
   club: string;
   email: string;
-  avatar: string;
+  image: string;
   weight: number;
   level: string;
   sex_category: string;
@@ -43,7 +43,7 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'a.country',
       'c.name AS club',
       'u.email',
-      'u.avatar',
+      'u.image',
       'pm.weight',
       'cs.level',
       'cs.sexCategory',

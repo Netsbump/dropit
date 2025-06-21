@@ -41,12 +41,12 @@ export const columns: ColumnDef<AthleteDto>[] = [
       const firstName = row.original.firstName;
       const lastName = row.original.lastName;
       const email = row.original.email;
-      const avatar = row.original.avatar;
+      const image = row.original.image;
 
       return (
         <div className="flex items-center gap-3">
           <Avatar>
-            <AvatarImage src={avatar} />
+            <AvatarImage src={image} />
             <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
           </Avatar>
           <div className="flex flex-col">
