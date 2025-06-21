@@ -100,5 +100,32 @@
       "columns": "Columns",
       "selected_rows": "{{count}} of {{total}} column(s) selected."
     }
+  },
+  "organization": {
+    "setup": {
+      "title": "Create Your Organization",
+      "description": "Set up your coaching organization to start managing athletes and programs."
+    },
+    "create": {
+      "title": "Create Organization",
+      "description": "Add a new organization to your account.",
+      "button": "Create Organization",
+      "success": {
+        "title": "Organization Created",
+        "description": "Your organization has been created successfully."
+      },
+      "error": {
+        "title": "Creation Failed",
+        "description": "Failed to create organization. Please try again."
+      }
+    },
+    "fields": {
+      "name": "Organization Name",
+      "name_placeholder": "Enter organization name",
+      "slug": "Slug",
+      "slug_placeholder": "Enter organization slug",
+      "description": "Description",
+      "description_placeholder": "Enter organization description"
+    }
   }
 }

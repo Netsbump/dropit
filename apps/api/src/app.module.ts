@@ -4,6 +4,7 @@ import { DbModule } from './modules/core/db/db.module';
 import { EmailModule } from './modules/core/email/email.module';
 import { AthleteModule } from './modules/members/athlete/athlete.module';
 import { AuthModule } from './modules/members/auth/auth.module';
+import { OrganizationModule } from './modules/members/organization/organization.module';
 import { AthleteSessionModule } from './modules/performance/athlete-session/athlete-session.module';
 import { PersonalRecordModule } from './modules/performance/personal-record/personal-record.module';
 import { SessionModule } from './modules/performance/session/session.module';
@@ -19,6 +20,7 @@ import { WorkoutModule } from './modules/training/workout/workout.module';
     DbModule,
     AuthModule.forRootAsync(),
     AthleteModule,
+    OrganizationModule,
     AthleteSessionModule,
     ExerciseModule,
     ExerciseCategoryModule,

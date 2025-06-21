@@ -4,6 +4,7 @@ import { openAPI } from 'better-auth/plugins';
 import { Pool } from 'pg';
 import { config } from './env.config';
 import { UserRole } from '../modules/members/auth/auth.entity';
+import { organization } from 'better-auth/plugins/organization';
 
 interface BetterAuthOptionsDynamic {
   sendResetPassword?: (
@@ -80,7 +81,7 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
         }
       }),
     },
-    plugins: [openAPI()],
+    plugins: [openAPI(), organization()],
   });
 }
 

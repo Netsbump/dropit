@@ -1,7 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Auth, betterAuth } from 'better-auth';
-import { Pool } from 'pg';
-import { config } from '../../../config/env.config';
+import { Auth } from 'better-auth';
+import { createAuthConfig } from '../../../config/better-auth.config';
 import { EmailService } from '../../core/email/email.service';
 
 @Injectable()
@@ -19,7 +18,6 @@ export class AuthService implements OnModuleInit {
       AuthService.initPromise = this.initialize().then(() => {
         return;
       });
-    } else {
     }
 
     await AuthService.initPromise;
@@ -33,41 +31,21 @@ export class AuthService implements OnModuleInit {
       return;
     }
 
-    // Créer la configuration avec les implémentations d'email
-    this._auth = betterAuth({
-      trustedOrigins: config.betterAuth.trustedOrigins,
-      emailAndPassword: {
-        enabled: true,
-        sendResetPassword: async (data) => {
-          return this.emailService.sendEmail({
-            to: data.user.email,
-            subject: 'Reset your password',
-            content: `Hello ${data.user.name}, please reset your password by clicking on the link below: ${data.url}`,
-          });
-        },
+    // Utilise la configuration centralisée et injecte les dépendances (email)
+    this._auth = createAuthConfig({
+      sendResetPassword: async (data) => {
+        return this.emailService.sendEmail({
+          to: data.user.email,
+          subject: 'Reset your password',
+          content: `Hello ${data.user.name}, please reset your password by clicking on the link below: ${data.url}`,
+        });
       },
-      emailVerification: {
-        sendOnSignUp: true,
-        expiresIn: 60 * 60 * 24 * 10, // 10 days
-        sendVerificationEmail: async (data) => {
-          return this.emailService.sendEmail({
-            to: data.user.email,
-            subject: 'Verify your email',
-            content: `Hello ${data.user.name}, please verify your email by clicking on the link below: ${data.url}`,
-          });
-        },
-      },
-      database: new Pool({
-        connectionString: config.database.connectionStringUrl,
-      }),
-      advanced: {
-        database: {
-          generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
-        },
-      },
-      rateLimit: {
-        window: 50,
-        max: 100,
+      sendVerificationEmail: async (data) => {
+        return this.emailService.sendEmail({
+          to: data.user.email,
+          subject: 'Verify your email',
+          content: `Hello ${data.user.name}, please verify your email by clicking on the link below: ${data.url}`,
+        });
       },
     }) as unknown as Auth;
   }

@@ -68,6 +68,9 @@ export class Session {
   @Property({ fieldName: 'userAgent', nullable: true })
   userAgent?: string
 
+  @Property({ fieldName: 'activeOrganizationId', nullable: true })
+  activeOrganizationId?: string
+
   @ManyToOne(() => User, { fieldName: 'userId' })
   user!: User
 }

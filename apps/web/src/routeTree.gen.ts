@@ -16,6 +16,7 @@ import { Route as rootRoute } from './routes/__root'
 import { Route as homeImport } from './routes/__home'
 import { Route as authImport } from './routes/__auth'
 import { Route as IndexImport } from './routes/index'
+import { Route as homeSetupOrganizationImport } from './routes/__home.setup-organization'
 import { Route as homeProgramsImport } from './routes/__home.programs'
 import { Route as homePlanningImport } from './routes/__home.planning'
 import { Route as homeDashboardImport } from './routes/__home.dashboard'
@@ -83,6 +84,12 @@ const authLoginLazyRoute = authLoginLazyImport
     getParentRoute: () => authRoute,
   } as any)
   .lazy(() => import('./routes/__auth.login.lazy').then((d) => d.Route))
+
+const homeSetupOrganizationRoute = homeSetupOrganizationImport.update({
+  id: '/setup-organization',
+  path: '/setup-organization',
+  getParentRoute: () => homeRoute,
+} as any)
 
 const homeProgramsRoute = homeProgramsImport.update({
   id: '/programs',
@@ -204,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homeProgramsImport
       parentRoute: typeof homeImport
     }
+    '/__home/setup-organization': {
+      id: '/__home/setup-organization'
+      path: '/setup-organization'
+      fullPath: '/setup-organization'
+      preLoaderRoute: typeof homeSetupOrganizationImport
+      parentRoute: typeof homeImport
+    }
     '/__auth/login': {
       id: '/__auth/login'
       path: '/login'
@@ -322,6 +336,7 @@ interface homeRouteChildren {
   homeDashboardRoute: typeof homeDashboardRoute
   homePlanningRoute: typeof homePlanningRoute
   homeProgramsRoute: typeof homeProgramsRouteWithChildren
+  homeSetupOrganizationRoute: typeof homeSetupOrganizationRoute
   homeWorkoutsWorkoutIdRoute: typeof homeWorkoutsWorkoutIdRoute
 }
 
@@ -331,6 +346,7 @@ const homeRouteChildren: homeRouteChildren = {
   homeDashboardRoute: homeDashboardRoute,
   homePlanningRoute: homePlanningRoute,
   homeProgramsRoute: homeProgramsRouteWithChildren,
+  homeSetupOrganizationRoute: homeSetupOrganizationRoute,
   homeWorkoutsWorkoutIdRoute: homeWorkoutsWorkoutIdRoute,
 }
 
@@ -344,6 +360,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
   '/programs': typeof homeProgramsRouteWithChildren
+  '/setup-organization': typeof homeSetupOrganizationRoute
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
@@ -363,6 +380,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
   '/programs': typeof homeProgramsRouteWithChildren
+  '/setup-organization': typeof homeSetupOrganizationRoute
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
@@ -384,6 +402,7 @@ export interface FileRoutesById {
   '/__home/dashboard': typeof homeDashboardRoute
   '/__home/planning': typeof homePlanningRoute
   '/__home/programs': typeof homeProgramsRouteWithChildren
+  '/__home/setup-organization': typeof homeSetupOrganizationRoute
   '/__auth/login': typeof authLoginLazyRoute
   '/__auth/privacy': typeof authPrivacyLazyRoute
   '/__auth/signup': typeof authSignupLazyRoute
@@ -405,6 +424,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/planning'
     | '/programs'
+    | '/setup-organization'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -423,6 +443,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/planning'
     | '/programs'
+    | '/setup-organization'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -442,6 +463,7 @@ export interface FileRouteTypes {
     | '/__home/dashboard'
     | '/__home/planning'
     | '/__home/programs'
+    | '/__home/setup-organization'
     | '/__auth/login'
     | '/__auth/privacy'
     | '/__auth/signup'
@@ -501,6 +523,7 @@ export const routeTree = rootRoute
         "/__home/dashboard",
         "/__home/planning",
         "/__home/programs",
+        "/__home/setup-organization",
         "/__home/workouts/$workoutId"
       ]
     },
@@ -531,6 +554,10 @@ export const routeTree = rootRoute
         "/__home/programs/exercises",
         "/__home/programs/workouts"
       ]
+    },
+    "/__home/setup-organization": {
+      "filePath": "__home.setup-organization.tsx",
+      "parent": "/__home"
     },
     "/__auth/login": {
       "filePath": "__auth.login.lazy.tsx",
