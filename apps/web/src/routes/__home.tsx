@@ -20,7 +20,20 @@ function HomeLayout() {
   useEffect(() => {
     if (!isPending && !session) {
       navigate({ to: '/login' });
+      return;
     }
+
+    // TODO: Implémenter la logique pour vérifier si l'utilisateur est un coach
+    // et s'il a une organisation. Pour l'instant, on laisse passer.
+    // 
+    // if (session?.user?.role === 'coach') {
+    //   // Vérifier s'il a une organisation
+    //   const hasOrganization = await checkUserOrganization(session.user.id);
+    //   if (!hasOrganization) {
+    //     navigate({ to: '/setup-organization' });
+    //     return;
+    //   }
+    // }
   }, [isPending, session, navigate]);
 
   if (isPending) {
