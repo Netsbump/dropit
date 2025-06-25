@@ -48,17 +48,6 @@ export class AuthGuard implements CanActivate {
         );
       }
 
-      // 🔍 LOG: Informations d'authentification réussie
-      console.log('✅ [AuthGuard] Authentication successful:', {
-        userId: session.user?.id,
-        userEmail: session.user?.email,
-        userRole: (session.user as any)?.role || 'N/A',
-        activeOrganizationId: (session.user as any)?.activeOrganizationId || 'N/A',
-        sessionId: session.session?.id || 'N/A',
-        endpoint,
-        timestamp: new Date().toISOString(),
-      });
-
       return true;
     } catch (error) {
       console.error('❌ [AuthGuard] Authentication error:', {

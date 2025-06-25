@@ -5,7 +5,8 @@ import { Pool } from 'pg';
 import { config } from './env.config';
 import { UserRole } from '../modules/members/auth/auth.entity';
 import { organization } from 'better-auth/plugins/organization';
-import { ac, owner, admin, member } from './better-auth-permissions';
+import { ac, owner, admin, member } from '@dropit/permissions';
+
 
 interface BetterAuthOptionsDynamic {
   sendResetPassword?: (
@@ -85,7 +86,8 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
     plugins: [
       openAPI(), 
       organization({
-        ac,
+        // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
+        ac: ac as any,
         roles: {
           owner,
           admin,

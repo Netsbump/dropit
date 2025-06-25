@@ -15,6 +15,7 @@
     "@dropit/contract": "workspace:*",
     "@dropit/i18n": "workspace:*",
     "@dropit/schemas": "workspace:*",
+    "@dropit/permissions": "workspace:*",
     "@fullcalendar/core": "^6.1.17",
     "@fullcalendar/daygrid": "^6.1.17",
     "@fullcalendar/interaction": "^6.1.17",

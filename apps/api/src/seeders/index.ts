@@ -4,6 +4,7 @@ import { seedAthletes } from './athlete.seeder';
 import { seedClubs } from './club.seeder';
 import { seedCoachAthleteRelationships } from './coach-athlete.seeder';
 import { seedCompetitorStatuses } from './competitor-status.seeder';
+import { seedOrganizations } from './organization.seeder';
 import { seedPersonalRecords } from './personal-record.seeder';
 import { seedPhysicalMetrics } from './physical-metric.seeder';
 import { seedWorkouts } from './workout.seeder';
@@ -15,10 +16,11 @@ export class MainSeeder extends Seeder {
     // 1. Seed des entités de base (exercices, complexes, workouts)
     await seedWorkouts(em);
 
-    // 2. Seed des entités utilisateur (clubs, athlètes, relations)
+    // 2. Seed des entités utilisateur (clubs, organisations, athlètes, relations)
     await seedClubs(em);
     await seedAthletes(em);
     await seedCoachAthleteRelationships(em);
+    await seedOrganizations(em);
 
     //3. Seed des données des athlètes supplémentaires
     await seedCompetitorStatuses(em);

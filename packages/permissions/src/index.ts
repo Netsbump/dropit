@@ -14,7 +14,7 @@ const statement = {
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
-  "personal-record": ["read", "create", "update", "delete"],
+  personalRecord: ["read", "create", "update", "delete"],
 } as const;
 
 /**
@@ -34,7 +34,7 @@ export const member = ac.newRole({
   complex: ["read"],
   athlete: ["read"],
   session: ["read"],
-  "personal-record": ["read", "create"],
+  personalRecord: ["read", "create"],
 });
 
 // Rôle Admin (gestion complète sauf suppression d'organisation)
@@ -45,7 +45,7 @@ export const admin = ac.newRole({
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
-  "personal-record": ["read", "create", "update", "delete"],
+  personalRecord: ["read", "create", "update", "delete"],
 });
 
 // Rôle Owner (toutes les permissions)
@@ -56,5 +56,6 @@ export const owner = ac.newRole({
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
-  "personal-record": ["read", "create", "update", "delete"],
-}); 
+  personalRecord: ["read", "create", "update", "delete"],
+});
+
