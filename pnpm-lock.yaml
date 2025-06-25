@@ -27,6 +27,9 @@ importers:
       '@dropit/contract':
         specifier: workspace:*
         version: link:../../packages/contract
+      '@dropit/permissions':
+        specifier: workspace:*
+        version: link:../../packages/permissions
       '@dropit/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -169,6 +172,9 @@ importers:
       '@dropit/i18n':
         specifier: workspace:*
         version: link:../../packages/i18n
+      '@dropit/permissions':
+        specifier: workspace:*
+        version: link:../../packages/permissions
       '@dropit/schemas':
         specifier: workspace:*
         version: link:../../packages/schemas
@@ -351,6 +357,16 @@ importers:
       typescript:
         specifier: ^5.0.0
         version: 5.8.3
+
+  packages/permissions:
+    dependencies:
+      better-auth:
+        specifier: ^1.2.7
+        version: 1.2.7
+    devDependencies:
+      tsup:
+        specifier: ^8.3.5
+        version: 8.4.0(typescript@5.8.3)
 
   packages/schemas:
     dependencies:

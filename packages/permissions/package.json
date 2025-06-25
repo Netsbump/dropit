@@ -1,0 +1,27 @@
+{
+    "name": "@dropit/permissions",
+    "version": "1.0.0",
+    "private": true,
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "import": "./dist/index.mjs",
+        "require": "./dist/index.js"
+      }
+    },
+    "main": "./dist/index.js",
+    "module": "./dist/index.mjs",
+    "types": "./dist/index.d.ts",
+    "files": ["/dist"],
+    "scripts": {
+      "build": "tsup src/index.ts --format cjs,esm --dts --clean"
+    },
+    "license": "ISC",
+    "peerDependencies": {
+      "better-auth": "^1.2.7"
+    },
+    "devDependencies": {
+      "tsup": "^8.3.5"
+    }
+  }
+  

@@ -531,3 +531,244 @@ sequenceDiagram
 2. **Protégez vos routes** avec le AuthGuard
 3. **Utilisez les décorateurs** pour gérer les exceptions et accéder aux données de session
 4. **Vérifiez que votre entité User** contient tous les champs requis
+
+---
+
+# 🎯 **Système de Permissions et Rôles**
+
+Pour garantir la cohérence et une source unique de vérité, la gestion des permissions a été centralisée dans un paquet partagé `@dropit/permissions`. Ce paquet est consommé à la fois par le backend (API) et le frontend (web), assurant que les deux environnements opèrent avec les mêmes règles d'autorisation.
+
+## **Concepts Clés**
+
+### **Policies et Roles**
+- **Policies** : Définissent les permissions sur les ressources (ex: `workout: ["read", "create", "update", "delete"]`)
+- **Roles** : Groupent les policies pour différents types d'utilisateurs (ex: `owner`, `admin`, `member`)
+
+## **Architecture des Permissions**
+
+Le système fonctionne en **deux étapes** :
+
+1. **Authentification** : Vérification de l'identité de l'utilisateur (AuthGuard global)
+2. **Autorisation** : Gérée automatiquement par Better Auth côté client
+
+### **Conception Métier**
+
+- **AuthGuard** : Vérifie uniquement que l'utilisateur existe et est authentifié
+- **Better Auth Middleware** : Gère automatiquement les permissions côté client
+- **Pas de PermissionGuard** : Les permissions sont vérifiées côté client !
+
+## **Configuration des Permissions**
+
+La configuration est définie dans le paquet `@dropit/permissions`.
+
+### 1. Définition des Resources et Actions
+```typescript
+// packages/permissions/src/index.ts
+const statement = {
+  // Ressources par défaut de Better Auth
+  ...defaultStatements,
+  
+  // Nos ressources métier
+  workout: ["read", "create", "update", "delete"],
+  exercise: ["read", "create", "update", "delete"],
+  complex: ["read", "create", "update", "delete"],
+  athlete: ["read", "create", "update", "delete"],
+  session: ["read", "create", "update", "delete"],
+  personalRecord: ["read", "create", "update", "delete"],
+} as const;
+```
+
+### 2. Création de l'Access Control
+```typescript
+export const ac = createAccessControl(statement);
+```
+
+### 3. Définition des Roles avec leurs Policies
+```typescript
+// Rôle Member (lecture seule + création de ses propres records)
+export const member = ac.newRole({
+  ...memberAc.statements,
+  workout: ["read"],
+  exercise: ["read"],
+  complex: ["read"],
+  athlete: ["read"],
+  session: ["read"],
+  personalRecord: ["read", "create"],
+});
+
+// Rôle Admin (gestion complète sauf suppression d'organisation)
+export const admin = ac.newRole({
+  ...adminAc.statements,
+  workout: ["read", "create", "update", "delete"],
+  exercise: ["read", "create", "update", "delete"],
+  complex: ["read", "create", "update", "delete"],
+  athlete: ["read", "create", "update", "delete"],
+  session: ["read", "create", "update", "delete"],
+  personalRecord: ["read", "create", "update", "delete"],
+});
+
+// Rôle Owner (toutes les permissions)
+export const owner = ac.newRole({
+  ...ownerAc.statements,
+  workout: ["read", "create", "update", "delete"],
+  exercise: ["read", "create", "update", "delete"],
+  complex: ["read", "create", "update", "delete"],
+  athlete: ["read", "create", "update", "delete"],
+  session: ["read", "create", "update", "delete"],
+  personalRecord: ["read", "create", "update", "delete"],
+});
+```
+
+## **Configuration Backend**
+
+### 1. Configuration Better Auth
+```typescript
+// better-auth.config.ts
+import { organization } from 'better-auth/plugins/organization';
+import { ac, owner, admin, member } from '@dropit/permissions';
+
+export function createAuthConfig() {
+  return betterAuth({
+    // ... autres configurations
+    plugins: [
+      openAPI(), 
+      organization({
+        ac, // ✅ AccessControl avec vos permissions
+        roles: {
+          owner,
+          admin, 
+          member,
+        }
+      })
+    ],
+  });
+}
+```
+
+### 2. Configuration Client
+```typescript
+// auth-client.ts
+import { createAuthClient } from 'better-auth/react';
+import { organizationClient } from 'better-auth/client/plugins';
+import { ac, owner, admin, member } from '@dropit/permissions';
+
+const authClient = createAuthClient({
+  baseURL: 'http://localhost:3000',
+  plugins: [organizationClient({
+    ac, // ✅ Même AccessControl
+    roles: {
+      owner,
+      admin,
+      member,
+    }
+  })],
+});
+```
+
+## **Flux Complet des Permissions**
+
+### **Étape 1 : Connexion**
+1. Utilisateur se connecte
+2. Better Auth récupère son rôle depuis la DB
+3. Session créée avec le rôle
+
+### **Étape 2 : Navigation**
+1. Utilisateur navigue dans l'app
+2. Better Auth vérifie automatiquement les permissions
+3. Si autorisé → affiche le contenu
+4. Si non autorisé → redirige ou cache
+
+### **Étape 3 : Appels API**
+1. Frontend fait un appel API (avec session)
+2. Backend vérifie juste l'authentification (AuthGuard)
+3. Retourne les données
+4. Frontend affiche selon les permissions
+
+## **Utilisation Côté Frontend**
+
+### **Protection de Routes**
+```typescript
+// Route protégée automatiquement
+function ProtectedPage() {
+  const { data: session } = authClient.useSession();
+  
+  if (!session) {
+    return <Navigate to="/login" />;
+  }
+  
+  return <ProtectedContent />;
+}
+```
+
+### **Affichage Conditionnel basé sur les Roles**
+```typescript
+function WorkoutActions() {
+  const { data: session } = authClient.useSession();
+  
+  return (
+    <div>
+      <button>Voir les workouts</button>
+      {session?.user?.role === 'owner' && (
+        <button>Créer un workout</button>
+      )}
+      {session?.user?.role === 'admin' && (
+        <button>Modifier les workouts</button>
+      )}
+    </div>
+  );
+}
+```
+
+### **Vérification de Permissions Spécifiques**
+```typescript
+function WorkoutManagement() {
+  const { data: session } = authClient.useSession();
+  const { data: activeOrganization } = authClient.useActiveOrganization();
+
+  // Vérifier si l'utilisateur peut créer des workouts
+  const canCreateWorkout = activeOrganization?.can('workout', 'create');
+
+  return (
+    <div>
+      {canCreateWorkout && (
+        <button>Créer un nouveau workout</button>
+      )}
+    </div>
+  );
+}
+```
+
+## **Tableau des Rôles et Permissions**
+
+| Rôle | Workout | Exercise | Athlete | Session | Personal Record |
+|------|---------|----------|---------|---------|-----------------|
+| **owner** | read, create, update, delete | read, create, update, delete | read, create, update, delete | read, create, update, delete | read, create, update, delete |
+| **admin** | read, create, update, delete | read, create, update, delete | read, create, update, delete | read, create, update, delete | read, create, update, delete |
+| **member** | read | read | read | read | read, create |
+
+## **Sécurité des Permissions**
+
+### **Côté Client**
+- Better Auth gère les permissions automatiquement
+- Interface adaptée selon les rôles
+- Protection des routes et composants
+
+### **Côté Serveur**
+- Juste vérification de l'authentification
+- Pas de logique de permissions complexe
+- Performance optimisée
+
+### **Base de Données**
+- Rôles stockés et vérifiés
+- Sessions sécurisées
+- Tokens JWT signés
+
+## **Avantages de Cette Approche**
+
+- ✅ **Simple** : Pas de guards complexes côté serveur
+- ✅ **Automatique** : Better Auth gère tout
+- ✅ **Sécurisé** : Permissions vérifiées côté client
+- ✅ **Performance** : Moins de requêtes côté serveur
+- ✅ **UX** : Interface adaptée aux permissions
+- ✅ **Maintenable** : Une seule source de vérité pour les permissions
+

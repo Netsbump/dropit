@@ -2,9 +2,11 @@ import { workoutContract } from '@dropit/contract';
 import {
   BadRequestException,
   Controller,
+  Get,
   NotFoundException,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
+import { Public, Session } from '../../members/auth/auth.decorator';
 import { WorkoutService } from './workout.service';
 
 const c = workoutContract;
@@ -140,5 +142,14 @@ export class WorkoutController {
         throw error;
       }
     });
+  }
+
+  @Get('public')
+  @Public()
+  getPublicWorkouts() {
+    return {
+      message: 'Public workouts endpoint',
+      workouts: []
+    };
   }
 }

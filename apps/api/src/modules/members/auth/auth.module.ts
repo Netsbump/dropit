@@ -10,6 +10,7 @@ import {
   DiscoveryModule,
   DiscoveryService,
   MetadataScanner,
+  APP_GUARD,
 } from '@nestjs/core';
 import type {
   AuthContext,
@@ -27,7 +28,14 @@ import { AuthService } from './auth.service';
 @Global()
 @Module({
   imports: [DiscoveryModule, EmailModule],
-  providers: [AuthService, AuthGuard],
+  providers: [
+    AuthService, 
+    AuthGuard,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
   exports: [AuthService, AuthGuard],
 })
 export class AuthModule implements NestModule, OnModuleInit {

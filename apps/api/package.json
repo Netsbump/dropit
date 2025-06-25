@@ -30,6 +30,7 @@
   "dependencies": {
     "@dropit/contract": "workspace:*",
     "@dropit/schemas": "workspace:*",
+    "@dropit/permissions": "workspace:*",
     "@mikro-orm/cli": "6.4.7",
     "@mikro-orm/core": "6.4.7",
     "@mikro-orm/migrations": "6.4.7",
