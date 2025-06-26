@@ -96,9 +96,9 @@ export class PermissionsGuard implements CanActivate {
   private checkUserRolePermissions(organizationRole: string, resource: string, requiredActions: string[]): boolean {
     // Mapping des rôles vers les objets de permissions définis
     const rolePermissionsMap = {
-      'member': member.statements,
-      'admin': admin.statements,
-      'owner': owner.statements,
+      member: member.statements,
+      admin: admin.statements,
+      owner: owner.statements,
     };
 
     // Récupérer les permissions du rôle de l'utilisateur

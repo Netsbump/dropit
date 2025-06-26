@@ -4,8 +4,8 @@ import { Reflector } from '@nestjs/core';
 import { EntityManager } from '@mikro-orm/core';
 import { PermissionsGuard } from './permissions.guard';
 import { member, admin, owner } from '@dropit/permissions';
-import { Member, Organization } from '../members/organization/organization.entity';
-import { User } from '../members/auth/auth.entity';
+import { Member, Organization, Invitation } from '../members/organization/organization.entity';
+import { Collection } from '@mikro-orm/core';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;
@@ -13,31 +13,30 @@ describe('PermissionsGuard', () => {
   let entityManager: EntityManager;
 
   // Mock data
-  const mockUser: User = {
-    id: 'user-123',
-    name: 'Test User',
+  const mockUser = { 
+    id: 'user-123', 
     email: 'test@example.com',
+    name: 'Test User',
     emailVerified: false,
     role: 'athlete',
     createdAt: new Date(),
     updatedAt: new Date(),
-  } as User;
-
-  const mockOrganization: Organization = {
-    id: 'org-456',
+  };
+  const mockOrganization = { 
+    id: 'org-456', 
     name: 'Test Org',
     createdAt: new Date(),
-    members: { add: jest.fn(), getItems: jest.fn(), count: jest.fn(), isInitialized: true } as any,
-    invitations: { add: jest.fn(), getItems: jest.fn(), count: jest.fn(), isInitialized: true } as any,
+    members: { add: jest.fn(), getItems: jest.fn(), count: jest.fn(), isInitialized: true } as unknown as Collection<Member>,
+    invitations: { add: jest.fn(), getItems: jest.fn(), count: jest.fn(), isInitialized: true } as unknown as Collection<Invitation>,
   } as Organization;
-
+  
   const mockMember: Member = {
     id: 'member-789',
     user: mockUser,
     organization: mockOrganization,
     role: 'member',
     createdAt: new Date(),
-  } as Member;
+  };
 
   const mockRequest = {
     session: {
@@ -242,8 +241,8 @@ describe('PermissionsGuard', () => {
         const resource = controllerName.replace('Controller', '').toLowerCase();
         
         expect(resource).toBe('personalrecord');
-        expect((member.statements as Record<string, string[]>)['personalRecord']).toBeDefined();
-        expect((member.statements as Record<string, string[]>)['personalrecord']).toBeUndefined();
+        expect((member.statements as Record<string, string[]>).personalRecord).toBeDefined();
+        expect((member.statements as Record<string, string[]>).personalrecord).toBeUndefined();
       });
     });
 
@@ -422,20 +421,19 @@ describe('PermissionsGuard', () => {
 
   describe('Permission Package Integration Tests', () => {
     it('should use correct permission mappings from @dropit/permissions package', () => {
-      // Vérifier que les permissions sont correctement définies dans le package
-      expect((member.statements as Record<string, string[]>)["workout"]).toEqual(["read"]);
-      expect((admin.statements as Record<string, string[]>)["workout"]).toEqual(["read", "create", "update", "delete"]);
-      expect((owner.statements as Record<string, string[]>)["workout"]).toEqual(["read", "create", "update", "delete"]);
+      expect((member.statements as Record<string, string[]>).workout).toEqual(['read']);
+      expect((admin.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
+      expect((owner.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
     });
 
     it('should handle all supported resources', () => {
-      const resources = ["workout", "exercise", "complex", "athlete", "session", "personalRecord"] as const;
+      const resources = ['workout', 'exercise', 'complex', 'athlete', 'session', 'personalRecord'] as const;
       
-      resources.forEach(resource => {
+      for (const resource of resources) {
         expect((member.statements as Record<string, string[]>)[resource]).toBeDefined();
         expect((admin.statements as Record<string, string[]>)[resource]).toBeDefined();
         expect((owner.statements as Record<string, string[]>)[resource]).toBeDefined();
-      });
+      }
     });
   });
 }); 
