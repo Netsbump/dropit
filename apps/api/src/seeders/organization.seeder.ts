@@ -70,28 +70,10 @@ export async function seedOrganizations(
   await em.persistAndFlush(coachMember);
   console.log('Coach added as owner to organization');
 
-  // Mettre à jour la session du coach pour définir l'organisation active
-  // Better Auth gère automatiquement l'activeOrganizationId dans la session
-  // mais nous devons nous assurer que l'utilisateur a une organisation active
   console.log('Organization seeding completed');
   console.log('Coach user ID:', coachUser.id);
   console.log('Organization ID:', organization.id);
   console.log('Coach member role:', coachMember.role);
-
-  // Mettre à jour la session active pour définir l'organisation active
-  // Note: Better Auth gère automatiquement cela, mais nous pouvons forcer la mise à jour
-  const activeSession = await em.findOne(Session, { 
-    user: { id: coachUser.id },
-    expiresAt: { $gt: new Date() }
-  });
-
-  if (activeSession) {
-    activeSession.activeOrganizationId = organization.id;
-    await em.persistAndFlush(activeSession);
-    console.log('Updated active session with organization ID:', organization.id);
-  } else {
-    console.log('No active session found for coach, will be set on next login');
-  }
 
   return { organization, coachMember };
 } 
