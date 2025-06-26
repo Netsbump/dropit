@@ -3,17 +3,22 @@ import {
   BadRequestException,
   Controller,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { ExerciseService } from './exercise.service';
+import { PermissionsGuard } from '../../permissions/permissions.guard';
+import { RequirePermissions } from '../../permissions/permissions.decorator';
 
 const c = exerciseContract;
 
 @Controller()
+@UseGuards(PermissionsGuard)
 export class ExerciseController {
   constructor(private readonly exerciseService: ExerciseService) {}
 
   @TsRestHandler(c.getExercises)
+  @RequirePermissions('read')
   getExercises(): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
       try {
@@ -39,6 +44,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.getExercise)
+  @RequirePermissions('read')
   getExercise(): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
       try {
@@ -62,6 +68,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.createExercise)
+  @RequirePermissions('create')
   createExercise(): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
     return tsRestHandler(c.createExercise, async ({ body }) => {
       try {
@@ -90,6 +97,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.updateExercise)
+  @RequirePermissions('update')
   updateExercise(): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
     return tsRestHandler(c.updateExercise, async ({ params, body }) => {
       try {
@@ -116,6 +124,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.deleteExercise)
+  @RequirePermissions('delete')
   deleteExercise(): ReturnType<typeof tsRestHandler<typeof c.deleteExercise>> {
     return tsRestHandler(c.deleteExercise, async ({ params }) => {
       try {
@@ -139,6 +148,7 @@ export class ExerciseController {
   }
 
   @TsRestHandler(c.searchExercises)
+  @RequirePermissions('read')
   searchExercises(): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
       try {

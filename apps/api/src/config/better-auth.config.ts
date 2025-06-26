@@ -6,6 +6,8 @@ import { config } from './env.config';
 import { UserRole } from '../modules/members/auth/auth.entity';
 import { organization } from 'better-auth/plugins/organization';
 import { ac, owner, admin, member } from '@dropit/permissions';
+import { Member } from '../modules/members/organization/organization.entity';
+import { EntityManager } from '@mikro-orm/core';
 
 
 interface BetterAuthOptionsDynamic {
@@ -19,7 +21,7 @@ interface BetterAuthOptionsDynamic {
   ) => Promise<void>;
 }
 
-export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
+export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: EntityManager) {
   return betterAuth({
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
@@ -95,6 +97,23 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic) {
         }
       })
     ],
+    databaseHooks: {
+      session: {
+        create: {
+          before: async (session, context) => {
+            if (!em) return { data: {} };
+            const emFork = em.fork(); // 👈 important pour MikroORM
+            // Récupère la première orga du user
+            const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
+            return {
+              data: {
+                activeOrganizationId: memberRecord?.organization.id ?? null,
+              }
+            };
+          }
+        }
+      }
+    },
   });
 }
 

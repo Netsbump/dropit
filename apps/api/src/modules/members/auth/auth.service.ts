@@ -2,13 +2,14 @@ import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Auth } from 'better-auth';
 import { createAuthConfig } from '../../../config/better-auth.config';
 import { EmailService } from '../../core/email/email.service';
+import { EntityManager } from '@mikro-orm/core';
 
 @Injectable()
 export class AuthService implements OnModuleInit {
   private _auth: Auth | null = null;
   private static initPromise: Promise<void> | null = null;
 
-  constructor(private emailService: EmailService) {}
+  constructor(private emailService: EmailService, private em: EntityManager) {}
 
   /**
    * Initialisation du module auth lors du démarrage de l'application
@@ -47,7 +48,7 @@ export class AuthService implements OnModuleInit {
           content: `Hello ${data.user.name}, please verify your email by clicking on the link below: ${data.url}`,
         });
       },
-    }) as unknown as Auth;
+    }, this.em) as unknown as Auth;
   }
 
   /**
