@@ -22,7 +22,7 @@ Guard NestJS qui vérifie les permissions de l'utilisateur pour accéder aux rou
 - Détermine la ressource depuis le nom du controller
 - Vérifie les permissions en utilisant les rôles définis dans `@dropit/permissions`
 
-**Important :** Le guard utilise le rôle d'organisation (Member.role) et non le rôle utilisateur (User.role).
+**Important :** Le guard utilise le rôle d'organisation (Member.role)
 
 ### RequirePermissions Decorator
 
@@ -243,9 +243,8 @@ export class WorkoutController {
 
 ## Différence avec Better Auth
 
-### Rôle Utilisateur vs Rôle d'Organisation
+### Rôle d'Organisation
 
-- **User.role** : Rôle global de l'utilisateur (ex: 'coach', 'athlete') - **Non utilisé pour les permissions**
 - **Member.role** : Rôle au sein de l'organisation (ex: 'owner', 'admin', 'member') - **Utilisé pour les permissions**
 
 ### Pourquoi cette approche ?

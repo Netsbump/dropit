@@ -44,8 +44,8 @@ export async function seedOrganizations(
 
   // Créer une nouvelle organisation
   const organization = new Organization();
-  organization.name = 'DropIt Coaching';
-  organization.slug = 'dropit-coaching';
+  organization.name = 'Halterophilie Club';
+  organization.slug = 'halterophilie-club';
   organization.metadata = JSON.stringify({
     description: 'Organisation de coaching pour la gestion des athlètes et des programmes d\'entraînement',
     type: 'coaching',
@@ -65,15 +65,27 @@ export async function seedOrganizations(
   const coachMember = new Member();
   coachMember.user = coachUser;
   coachMember.organization = organization;
-  coachMember.role = 'owner'; // Le coach devient owner de l'organisation
+  coachMember.role = 'owner'; 
 
   await em.persistAndFlush(coachMember);
   console.log('Coach added as owner to organization');
+  console.log('Coach user ID:', coachUser.id);
+  console.log('Coach member role:', coachMember.role);
+
+  // Ajouter les athlètes comme membres de l'organisation
+  const athletes = await em.find(User, { isSuperAdmin: false, email: { $ne: 'coach@example.com' } });
+  for (const athlete of athletes) {
+    const athleteMember = new Member();
+    athleteMember.user = athlete;
+    athleteMember.organization = organization;
+    athleteMember.role = 'member';
+    await em.persistAndFlush(athleteMember);
+    console.log('Athlete added as member to organization');
+  }
 
   console.log('Organization seeding completed');
-  console.log('Coach user ID:', coachUser.id);
   console.log('Organization ID:', organization.id);
-  console.log('Coach member role:', coachMember.role);
+
 
   return { organization, coachMember };
 } 
