@@ -3,7 +3,6 @@ import { createAuthMiddleware } from 'better-auth/api';
 import { openAPI } from 'better-auth/plugins';
 import { Pool } from 'pg';
 import { config } from './env.config';
-import { UserRole } from '../modules/members/auth/auth.entity';
 import { organization } from 'better-auth/plugins/organization';
 import { ac, owner, admin, member } from '@dropit/permissions';
 import { Member } from '../modules/members/organization/organization.entity';
@@ -42,11 +41,11 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
 
     user: {
       additionalFields: {
-        role: {
-          type: 'string',
-          required: true,
-          defaultValue: UserRole.ATHLETE,
-          input: false, // don't allow user to set role
+        isSuperAdmin: {
+          type: 'boolean',
+          required: false,
+          defaultValue: false,
+          input: false, // don't allow user to set isSuperAdmin
         },
       },
     },

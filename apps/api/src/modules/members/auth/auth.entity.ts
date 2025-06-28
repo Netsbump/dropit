@@ -1,17 +1,11 @@
 import {
   Entity,
-  Enum,
   ManyToOne,
   PrimaryKey,
   Property,
   Unique,
 } from '@mikro-orm/core';
-
-export enum UserRole {
-  ATHLETE = 'athlete',
-  COACH = 'coach',
-  ADMIN = 'admin',
-}
+import { Media } from '../../core/media/media.entity';
 
 @Entity({ tableName: 'user' })
 export class User {
@@ -31,14 +25,15 @@ export class User {
   @Property({ nullable: true })
   image?: string
 
-  @Property({ default: 'athlete' })
-  role = 'athlete'
-
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date()
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
   updatedAt: Date = new Date()
+
+  @Property()
+  isSuperAdmin = false;
+
 }
 
 /**

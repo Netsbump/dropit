@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { Seeder } from '@mikro-orm/seeder';
 import { seedAthletes } from './athlete.seeder';
 import { seedClubs } from './club.seeder';
-import { seedCoachAthleteRelationships } from './coach-athlete.seeder';
 import { seedCompetitorStatuses } from './competitor-status.seeder';
 import { seedOrganizations } from './organization.seeder';
 import { seedPersonalRecords } from './personal-record.seeder';
@@ -19,7 +18,6 @@ export class MainSeeder extends Seeder {
     // 2. Seed des entités utilisateur (clubs, organisations, athlètes, relations)
     await seedClubs(em);
     await seedAthletes(em);
-    await seedCoachAthleteRelationships(em);
     await seedOrganizations(em);
 
     //3. Seed des données des athlètes supplémentaires

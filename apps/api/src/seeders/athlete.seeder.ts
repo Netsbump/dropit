@@ -5,11 +5,35 @@ import { User } from '../modules/members/auth/auth.entity';
 import { Club } from '../modules/members/club/club.entity';
 import { hashPassword } from 'better-auth/crypto';
 import { Account } from '../modules/members/auth/auth.entity';
-import { UserRole } from '../modules/members/auth/auth.entity';
 
 export async function seedAthletes(
   em: EntityManager
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
+  console.log('Seeding one super admin...');
+  
+  // Créer un super admin
+  const superAdmin = new User();
+  superAdmin.name = 'Sten Levasseur';
+  superAdmin.email = 'levasseur.sten@gmail.com';
+  superAdmin.emailVerified = true;
+  //Le champs isSuperAdmin est créé automatiquement par la config de better-auth
+  await em.persistAndFlush(superAdmin);
+
+  // Mettre à jour le champs isSuperAdmin manuellement via SQL
+  await em.getConnection().execute(
+    'UPDATE "user" SET is_super_admin = true WHERE id = ?',
+    [superAdmin.id]
+  );
+
+  const superAdminAccount = new Account();
+  superAdminAccount.user = superAdmin;
+  superAdminAccount.providerId = 'credential';
+  superAdminAccount.accountId = superAdmin.email;
+  superAdminAccount.password = await hashPassword('Password123!');
+  await em.persistAndFlush(superAdminAccount);
+
+  console.log('Super admin created');
+
   console.log('Seeding athletes and coach...');
 
   // Récupérer le premier club existant
@@ -30,14 +54,7 @@ export async function seedAthletes(
   coachUser.name = 'Jean Dupont';
   coachUser.email = 'coach@example.com';
   coachUser.emailVerified = true;
-  // Le champ role sera géré automatiquement par Better Auth via additionalFields
   await em.persistAndFlush(coachUser);
-
-  // Mettre à jour le rôle du coach manuellement via SQL
-  await em.getConnection().execute(
-    'UPDATE "user" SET role = ? WHERE id = ?',
-    [UserRole.COACH, coachUser.id]
-  );
 
   const coachAccount = new Account();
   coachAccount.user = coachUser;
