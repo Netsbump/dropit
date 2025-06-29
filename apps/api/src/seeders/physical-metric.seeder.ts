@@ -18,13 +18,8 @@ export async function seedPhysicalMetrics(em: EntityManager): Promise<void> {
       metric.weight = Math.floor(Math.random() * (100 - 50) + 50);
       // Taille entre 1.60m et 1.90m
       metric.height = Number((Math.random() * (1.9 - 1.6) + 1.6).toFixed(2));
-
-      // La date de fin est définie pour les anciennes mesures
-      if (i > 0) {
-        const endDate = new Date();
-        endDate.setMonth(endDate.getMonth() - i * 2 + 2);
-        metric.endDate = endDate;
-      }
+      // Date lors de l'enregistrement
+      metric.date = new Date();
 
       em.persist(metric);
     }
