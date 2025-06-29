@@ -58,7 +58,10 @@ export class PermissionsGuard implements CanActivate {
 
       // 5. Déterminer la ressource depuis le nom du controller
       const controllerName = context.getClass().name;
-      const resource = controllerName.replace('Controller', '').toLowerCase();
+      const resource = controllerName
+      .replace('Controller', '')
+      .replace(/^([A-Z])/, (match) => match.toLowerCase()) // Première lettre en minuscule
+      .replace(/([A-Z])/g, (match) => match); // Garde les autres majuscules
       
       console.log('🔐 [PermissionsGuard] Checking permissions:', {
         user: user.id,

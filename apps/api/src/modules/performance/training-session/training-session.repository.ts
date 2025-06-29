@@ -10,10 +10,10 @@ export class TrainingSessionRepository extends EntityRepository<TrainingSession>
     super(em, TrainingSession);
   }
 
-  async findAllWithDetails(): Promise<TrainingSessionDto[]> {
+  async findAllWithDetails(organizationId: string): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
-      {},
+      { organization: { id: organizationId } },
       {
         populate: [
           'athletes',
@@ -38,10 +38,10 @@ export class TrainingSessionRepository extends EntityRepository<TrainingSession>
     return TrainingSessionMapper.toDtoList(sessions);
   }
 
-  async findOneWithDetails(id: string): Promise<TrainingSessionDto> {
+  async findOneWithDetails(id: string, organizationId: string): Promise<TrainingSessionDto> {
     const session = await this.em.findOne(
       TrainingSession,
-      { id },
+      { id, organization: { id: organizationId } },
       {
         populate: [
           'athletes',

@@ -11,6 +11,7 @@ import { Public } from '../../members/auth/auth.decorator';
 import { WorkoutService } from './workout.service';
 import { PermissionsGuard } from '../../permissions/permissions.guard';
 import { RequirePermissions } from '../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../members/organization/organization.decorator';
 
 const c = workoutContract;
 
@@ -73,10 +74,10 @@ export class WorkoutController {
 
   @TsRestHandler(c.createWorkout)
   @RequirePermissions('create')
-  createWorkout(): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
+  createWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
       try {
-        const workout = await this.workoutService.createWorkout(body);
+        const workout = await this.workoutService.createWorkout(body, organizationId);
         return {
           status: 201,
           body: workout,
