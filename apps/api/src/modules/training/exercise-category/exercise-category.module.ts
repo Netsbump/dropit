@@ -1,8 +1,8 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { ExerciseCategory } from './exercise-category.entity';
-import { ExerciseCategoryController } from './exerciseCategory.controller';
-import { ExerciseCategoryService } from './exerciseCategory.service';
+import { ExerciseCategoryController } from './exercise-category.controller';
+import { ExerciseCategoryService } from './exercise-category.service';
 
 @Module({
   imports: [MikroOrmModule.forFeature([ExerciseCategory])],

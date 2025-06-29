@@ -10,7 +10,7 @@ import { PersonalRecordModule } from './modules/performance/personal-record/pers
 import { TrainingSessionModule } from './modules/performance/training-session/training-session.module';
 import { ComplexCategoryModule } from './modules/training/complex-category/complex-category.module';
 import { ComplexModule } from './modules/training/complex/complex.module';
-import { ExerciseCategoryModule } from './modules/training/exercise-category/exerciseCategory.module';
+import { ExerciseCategoryModule } from './modules/training/exercise-category/exercise-category.module';
 import { ExerciseModule } from './modules/training/exercise/exercise.module';
 import { WorkoutCategoryModule } from './modules/training/workout-category/workout-category.module';
 import { WorkoutModule } from './modules/training/workout/workout.module';

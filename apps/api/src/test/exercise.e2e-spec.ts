@@ -9,7 +9,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { AppModule } from '../app.module';
 import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
-import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exercise-category.service';
 import { ExerciseService } from '../modules/training/exercise/exercise.service';
 
 describe('ExerciseController (e2e)', () => {
