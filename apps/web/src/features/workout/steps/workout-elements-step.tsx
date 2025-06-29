@@ -26,7 +26,7 @@ import { SortableWorkoutElement } from '../sortable-workout-element';
 
 // Importer le schéma étendu depuis le stepper parent
 const extendedWorkoutSchema = createWorkoutSchema.extend({
-  session: z
+  trainingSession: z
     .object({
       athleteIds: z.array(z.string()),
       scheduledDate: z.string(),

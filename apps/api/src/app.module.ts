@@ -7,7 +7,7 @@ import { AuthModule } from './modules/members/auth/auth.module';
 import { OrganizationModule } from './modules/members/organization/organization.module';
 import { AthleteSessionModule } from './modules/performance/athlete-session/athlete-session.module';
 import { PersonalRecordModule } from './modules/performance/personal-record/personal-record.module';
-import { SessionModule } from './modules/performance/session/session.module';
+import { TrainingSessionModule } from './modules/performance/training-session/training-session.module';
 import { ComplexCategoryModule } from './modules/training/complex-category/complex-category.module';
 import { ComplexModule } from './modules/training/complex/complex.module';
 import { ExerciseCategoryModule } from './modules/training/exercise-category/exerciseCategory.module';
@@ -26,7 +26,7 @@ import { WorkoutModule } from './modules/training/workout/workout.module';
     ExerciseCategoryModule,
     ComplexModule,
     ComplexCategoryModule,
-    SessionModule,
+    TrainingSessionModule,
     WorkoutCategoryModule,
     WorkoutModule,
     PersonalRecordModule,

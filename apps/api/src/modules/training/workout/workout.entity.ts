@@ -6,7 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { TrainingSession } from '../../performance/session/session.entity';
+import { TrainingSession } from '../../performance/training-session/training-session.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
 import { WorkoutElement } from '../workout-element/workout-element.entity';
 
@@ -34,7 +34,7 @@ export class Workout {
     () => TrainingSession,
     (trainingSession) => trainingSession.workout
   )
-  sessions = new Collection<TrainingSession>(this);
+  trainingSessions = new Collection<TrainingSession>(this);
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

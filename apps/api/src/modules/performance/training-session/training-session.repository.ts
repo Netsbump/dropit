@@ -1,15 +1,16 @@
-import { SessionDto } from '@dropit/schemas';
+import { TrainingSessionDto } from '@dropit/schemas';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TrainingSession } from './session.entity';
-import { SessionMapper } from './session.mapper';
+import { TrainingSession } from './training-session.entity';
+import { TrainingSessionMapper } from './training-session.mapper';
+
 @Injectable()
-export class SessionRepository extends EntityRepository<TrainingSession> {
+export class TrainingSessionRepository extends EntityRepository<TrainingSession> {
   constructor(public readonly em: EntityManager) {
     super(em, TrainingSession);
   }
 
-  async findAllWithDetails(): Promise<SessionDto[]> {
+  async findAllWithDetails(): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
       {},
@@ -34,10 +35,10 @@ export class SessionRepository extends EntityRepository<TrainingSession> {
       throw new NotFoundException('Sessions not found');
     }
 
-    return SessionMapper.toDtoList(sessions);
+    return TrainingSessionMapper.toDtoList(sessions);
   }
 
-  async findOneWithDetails(id: string): Promise<SessionDto> {
+  async findOneWithDetails(id: string): Promise<TrainingSessionDto> {
     const session = await this.em.findOne(
       TrainingSession,
       { id },
@@ -62,6 +63,6 @@ export class SessionRepository extends EntityRepository<TrainingSession> {
       throw new NotFoundException('TrainingSession not found');
     }
 
-    return SessionMapper.toDto(session);
+    return TrainingSessionMapper.toDto(session);
   }
 }

@@ -19,9 +19,9 @@ import { useEffect, useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
-// Définir un schéma étendu pour le formulaire qui inclut le champ session
+// Définir un schéma étendu pour le formulaire qui inclut le champ session d'entrainement
 const extendedWorkoutSchema = createWorkoutSchema.extend({
-  session: z
+  trainingSession: z
     .object({
       athleteIds: z
         .array(z.string())
@@ -83,12 +83,12 @@ export function WorkoutPlanningStep({
     setIsScheduled(enabled);
     if (!enabled) {
       // Clear scheduling data when disabled
-      form.setValue('session', undefined);
+      form.setValue('trainingSession', undefined);
       setSelectedAthletes([]);
       setSelectAll(false);
     } else {
       // Initialize with empty values
-      form.setValue('session', { athleteIds: [], scheduledDate: '' });
+      form.setValue('trainingSession', { athleteIds: [], scheduledDate: '' });
     }
   };
 
@@ -121,7 +121,7 @@ export function WorkoutPlanningStep({
   // Update form when athlete selection changes
   useEffect(() => {
     if (isScheduled) {
-      form.setValue('session.athleteIds', selectedAthletes);
+      form.setValue('trainingSession.athleteIds', selectedAthletes);
     }
   }, [selectedAthletes, form, isScheduled]);
 
@@ -142,7 +142,7 @@ export function WorkoutPlanningStep({
         <div className="border rounded-md p-4 space-y-4">
           <FormField
             control={form.control}
-            name="session.scheduledDate"
+            name="trainingSession.scheduledDate"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Date de programmation</FormLabel>
@@ -236,9 +236,9 @@ export function WorkoutPlanningStep({
                 </div>
               </ScrollArea>
 
-              {form.formState.errors.session?.athleteIds && (
+              {form.formState.errors.trainingSession?.athleteIds && (
                 <div className="px-3 py-2 text-sm text-destructive">
-                  {form.formState.errors.session.athleteIds.message}
+                  {form.formState.errors.trainingSession.athleteIds.message}
                 </div>
               )}
             </div>
@@ -258,7 +258,7 @@ export function WorkoutPlanningStep({
             onClick={form.handleSubmit(onSubmit)}
             disabled={
               isScheduled &&
-              (!form.watch('session.scheduledDate') ||
+              (!form.watch('trainingSession.scheduledDate') ||
                 selectedAthletes.length === 0)
             }
           >

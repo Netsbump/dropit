@@ -9,9 +9,9 @@ import { WorkoutElementsStep } from './steps/workout-elements-step';
 import { WorkoutInfoStep } from './steps/workout-info-step';
 import { WorkoutPlanningStep } from './steps/workout-planning-step';
 
-// Définir un schéma étendu pour le formulaire qui inclut le champ session
+// Définir un schéma étendu pour le formulaire qui inclut le champ session d'entrainement
 const extendedWorkoutSchema = createWorkoutSchema.extend({
-  session: z
+  trainingSession: z
     .object({
       athleteIds: z.array(z.string()),
       scheduledDate: z.string(),
@@ -56,7 +56,7 @@ export function WorkoutCreationStepper({
       description: '',
       workoutCategory: '',
       elements: [],
-      session: {
+      trainingSession: {
         athleteIds: [],
         scheduledDate: '',
       },
@@ -64,9 +64,12 @@ export function WorkoutCreationStepper({
   });
 
   const handleSubmit = (data: ExtendedWorkoutSchema) => {
-    // Si aucune date ou aucun athlète n'est sélectionné, on supprime la session
-    if (!data.session?.scheduledDate || !data.session?.athleteIds?.length) {
-      const { session, ...rest } = data;
+    // Si aucune date ou aucun athlète n'est sélectionné, on supprime la session d'entrainement
+    if (
+      !data.trainingSession?.scheduledDate ||
+      !data.trainingSession?.athleteIds?.length
+    ) {
+      const { trainingSession, ...rest } = data;
       onSuccess(rest as z.infer<typeof createWorkoutSchema>);
     } else {
       onSuccess(data as z.infer<typeof createWorkoutSchema>);

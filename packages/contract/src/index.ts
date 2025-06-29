@@ -7,7 +7,7 @@ import { complexContract } from './complex.contract';
 import { exerciseCategoryContract } from './exercise-category.contract';
 import { exerciseContract } from './exercise.contract';
 import { personalRecordContract } from './personal-record.contract';
-import { sessionContract } from './session.contract';
+import { trainingSessionContract } from './training-session.contract';
 import { workoutCategoryContract } from './workout-category.contract';
 import { workoutContract } from './workout.contract';
 
@@ -20,7 +20,7 @@ export const apiContract = c.router({
   exerciseCategory: exerciseCategoryContract,
   complex: complexContract,
   complexCategory: complexCategoryContract,
-  session: sessionContract,
+  trainingSession: trainingSessionContract,
   workoutCategory: workoutCategoryContract,
   workout: workoutContract,
   competitorStatus: competitorStatusContract,
@@ -33,7 +33,7 @@ export * from './exercise.contract';
 export * from './exercise-category.contract';
 export * from './complex.contract';
 export * from './complex-category.contract';
-export * from './session.contract';
+export * from './training-session.contract';
 export * from './workout-category.contract';
 export * from './workout.contract';
 export * from './competitor-status.contract';

@@ -1,16 +1,16 @@
-import { SessionDto } from '@dropit/schemas';
+import { TrainingSessionDto } from '@dropit/schemas';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
-export class SessionPresenter {
-  present(sessions: SessionDto[]) {
+export class TrainingSessionPresenter {
+  present(sessions: TrainingSessionDto[]) {
     return {
       status: 200 as const,
       body: sessions,
     };
   }
 
-  presentOne(session: SessionDto) {
+  presentOne(session: TrainingSessionDto) {
     return {
       status: 200 as const,
       body: session,
@@ -30,8 +30,9 @@ export class SessionPresenter {
     return {
       status: 500 as const,
       body: {
-        message: 'Une erreur est survenue lors de la récupération des sessions',
-      },
+        message:
+          'An error occurred while retrieving training sessions',
+      },  
     };
   }
 }

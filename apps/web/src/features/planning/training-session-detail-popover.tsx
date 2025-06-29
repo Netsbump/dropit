@@ -4,12 +4,12 @@ import {
   PopoverContent,
 } from '@/shared/components/ui/popover';
 import { useEffect, useState } from 'react';
-import { SessionDetail } from './session-detail';
+import { TrainingSessionDetail } from './training-session-detail';
 
-interface SessionDetailPopoverProps {
+interface TrainingSessionDetailPopoverProps {
   isOpen: boolean;
   onClose: () => void;
-  sessionId?: string;
+  trainingSessionId?: string;
   anchorElement?: HTMLElement | null;
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
@@ -17,16 +17,16 @@ interface SessionDetailPopoverProps {
   onAthleteClick?: (athleteId: string) => void;
 }
 
-export function SessionDetailPopover({
+export function TrainingSessionDetailPopover({
   isOpen,
   onClose,
-  sessionId,
+  trainingSessionId,
   anchorElement,
   onEdit,
   onDelete,
   onViewDetail,
   onAthleteClick,
-}: SessionDetailPopoverProps) {
+}: TrainingSessionDetailPopoverProps) {
   const [open, setOpen] = useState(isOpen);
 
   // Synchroniser l'état ouvert/fermé avec la prop isOpen
@@ -42,7 +42,7 @@ export function SessionDetailPopover({
     }
   };
 
-  if (!sessionId) return null;
+  if (!trainingSessionId) return null;
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
@@ -56,8 +56,8 @@ export function SessionDetailPopover({
         sideOffset={5}
       >
         <div className="bg-white rounded-md overflow-hidden">
-          <SessionDetail
-            id={sessionId}
+          <TrainingSessionDetail
+            id={trainingSessionId}
             onClose={onClose}
             onEdit={onEdit}
             onDelete={onDelete}
