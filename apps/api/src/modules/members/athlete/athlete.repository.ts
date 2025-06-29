@@ -11,7 +11,6 @@ export type AthleteBasics = Pick<
 >;
 
 export type AthleteDetails = AthleteBasics & {
-  club: string;
   email: string;
   image: string;
   weight: number;
@@ -41,10 +40,8 @@ export class AthleteRepository extends EntityRepository<Athlete> {
       'a.lastName',
       'a.birthday',
       'a.country',
-      'c.name AS club',
       'u.email',
       'u.image',
-      'pm.weight',
       'cs.level',
       'cs.sexCategory',
       'cs.weightCategory',
@@ -56,8 +53,22 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     }
 
     qb.leftJoin('a.user', 'u');
-    qb.leftJoin('a.club', 'c');
-    qb.leftJoin('a.physicalMetrics', 'pm', { 'pm.endDate': null });
+
+    // récupère la date la plus récente
+    const today = new Date().toISOString();
+
+    // Sous-requête pour récupérer la métrique physique la plus proche de aujourd'hui
+    qb.addSelect(
+      this.sql
+        .createQueryBuilder('PhysicalMetric', 'pm')
+        .select('pm.weight')
+        .where({ 'pm.athlete': raw('a.id') })
+        .orderBy([
+          { [raw(`ABS(EXTRACT(EPOCH FROM (pm.date - '${today}')))`)]: 'ASC' }
+        ])
+        .limit(1)
+        .as('pm_weight')
+    );
 
     // Sous-requête pour le dernier PR de Snatch
     qb.addSelect(

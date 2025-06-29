@@ -100,9 +100,6 @@ export function AthleteDetail({
           <h1 className="text-2xl font-bold mb-1">
             {athlete.firstName} {athlete.lastName}
           </h1>
-          {athlete.club && (
-            <p className="text-muted-foreground mb-2">{athlete.club}</p>
-          )}
           {athlete.country && (
             <p className="text-sm text-muted-foreground">{athlete.country}</p>
           )}
@@ -145,12 +142,6 @@ export function AthleteDetail({
               <p className="text-sm">{athlete.email}</p>
             </div>
 
-            {athlete.club && (
-              <div className="space-y-2">
-                <Label>{t('athletes:details.club')}</Label>
-                <p className="text-sm">{athlete.club || '-'}</p>
-              </div>
-            )}
           </CardContent>
         </Card>
 

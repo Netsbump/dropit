@@ -14,13 +14,6 @@ export class CreateAthleteUseCase {
   async execute(data: CreateAthlete): Promise<AthleteDto> {
     const athlete = await this.athleteRepository.createAthlete(data);
 
-    // if (data.clubId) {
-    //   const club = await this.em.findOne(Club, { id: data.clubId });
-    //   if (club) {
-    //     athlete.club = club;
-    //   }
-    // }
-
     // if (data.userId) {
     //   const user = await this.em.findOne(User, { id: data.userId });
     //   if (user) {

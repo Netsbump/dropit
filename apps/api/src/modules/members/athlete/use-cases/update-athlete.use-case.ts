@@ -14,15 +14,6 @@ export class UpdateAthleteUseCase {
   async execute(id: string, data: UpdateAthlete): Promise<AthleteDto> {
     const athlete = await this.athleteRepository.updateAthlete(id, data);
 
-    // if (data.clubId !== undefined) {
-    //   if (data.clubId) {
-    //     const club = await this.em.findOne(Club, { id: data.clubId });
-    //     if (club) {
-    //       athlete.club = club;
-    //     }
-    //   }
-    // }
-
     // if (data.userId !== undefined) {
     //   if (data.userId) {
     //     const user = await this.em.findOne(User, { id: data.userId });
