@@ -3,12 +3,12 @@ import { Athlete } from '../../members/athlete/athlete.entity';
 import { TrainingSession } from '../training-session/training-session.entity';
 
 @Entity()
-export class AthleteSession {
+export class AthleteTrainingSession {
   @ManyToOne(() => Athlete, { primary: true })
   athlete!: Athlete;
 
   @ManyToOne(() => TrainingSession, { primary: true })
-  session!: TrainingSession;
+  trainingSession!: TrainingSession;
 
   @Property({ nullable: true })
   notes_athlete?: string;

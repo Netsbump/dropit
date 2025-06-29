@@ -1,5 +1,5 @@
 export * from './athlete.schema';
-export * from './athlete-session.schema';
+export * from './athlete-training-session.schema';
 export * from './exercice.schema';
 export * from './exercise-category.schema';
 export * from './complex.schema';

@@ -3,7 +3,7 @@ import { Module, forwardRef } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { OrganizationModule } from '../../members/organization/organization.module';
-import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
+import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
 import { TrainingSession } from '../../performance/training-session/training-session.entity';
 import { TrainingSessionModule } from '../../performance/training-session/training-session.module';
 import { Complex } from '../complex/complex.entity';
@@ -21,7 +21,7 @@ import { WorkoutService } from './workout.service';
     MikroOrmModule.forFeature([
       Workout,
       Complex,
-      AthleteSession,
+      AthleteTrainingSession,
       Athlete,
       Exercise,
       TrainingSession,

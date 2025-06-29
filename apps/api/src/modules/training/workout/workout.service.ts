@@ -6,7 +6,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
-import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
+import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
 import { TrainingSession } from '../../performance/training-session/training-session.entity';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
@@ -303,10 +303,10 @@ export class WorkoutService {
 
       // Créer les liens avec les athlètes
       for (const athlete of athletes) {
-        const athleteSession = new AthleteSession();
-        athleteSession.athlete = athlete;
-        athleteSession.session = trainingSession;
-        this.em.persist(athleteSession);
+        const athleteTrainingSession = new AthleteTrainingSession();
+        athleteTrainingSession.athlete = athlete;
+        athleteTrainingSession.trainingSession = trainingSession;
+        this.em.persist(athleteTrainingSession);
       }
 
       await this.em.flush();

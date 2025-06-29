@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Workout } from '../../training/workout/workout.entity';
-import { AthleteSession } from '../athlete-session/athlete-session.entity';
+import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
 
 @Entity()
 export class TrainingSession {
@@ -18,10 +18,10 @@ export class TrainingSession {
   workout!: Workout;
 
   @OneToMany(
-    () => AthleteSession,
-    (athleteSession) => athleteSession.session
+    () => AthleteTrainingSession,
+    (athleteTrainingSession) => athleteTrainingSession.trainingSession
   )
-  athletes = new Collection<AthleteSession>(this);
+  athletes = new Collection<AthleteTrainingSession>(this);
 
   @Property()
   scheduledDate!: Date;

@@ -3,7 +3,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { Workout } from '../../training/workout/workout.entity';
-import { AthleteSession } from '../athlete-session/athlete-session.entity';
+import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
 import { TrainingSession } from './training-session.entity';
 import { TrainingSessionMapper } from './training-session.mapper';
 
@@ -65,10 +65,10 @@ export class TrainingSessionService {
     await this.em.persistAndFlush(trainingSessionToCreate);
 
     for (const athlete of athletes) {
-      const athleteSession = new AthleteSession();
-      athleteSession.athlete = athlete;
-      athleteSession.session = trainingSessionToCreate;
-      this.em.persist(athleteSession);
+      const athleteTrainingSession = new AthleteTrainingSession();
+      athleteTrainingSession.athlete = athlete;
+      athleteTrainingSession.trainingSession = trainingSessionToCreate;
+      this.em.persist(athleteTrainingSession);
     }
 
     await this.em.flush();
@@ -106,10 +106,10 @@ export class TrainingSessionService {
         if (!athlete) {
           throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
         }
-        const athleteSession = new AthleteSession();
-        athleteSession.athlete = athlete;
-        athleteSession.session = trainingSessionToUpdate;
-        this.em.persist(athleteSession);
+        const athleteTrainingSession = new AthleteTrainingSession();
+        athleteTrainingSession.athlete = athlete;
+        athleteTrainingSession.trainingSession = trainingSessionToUpdate;
+        this.em.persist(athleteTrainingSession);
       }
     }
 
@@ -177,7 +177,7 @@ export class TrainingSessionService {
 
     const athleteSessions = trainingSession.athletes.getItems().map((link) => ({
       athleteId: link.athlete.id,
-      sessionId: link.session.id,
+      sessionId: link.trainingSession.id,
       notes_athlete: link.notes_athlete,
       createdAt: link.createdAt,
       updatedAt: link.updatedAt,
