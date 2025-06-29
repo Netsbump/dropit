@@ -8,13 +8,14 @@ const statement = {
   // Ressources par défaut de Better Auth
   ...defaultStatements,
   
-  // Nos ressources métier
+  // Mes ressources métier
   workout: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
+  trainingSession: ["read", "create", "update", "delete"],
 } as const;
 
 /**
@@ -35,6 +36,7 @@ export const member = ac.newRole({
   athlete: ["read"],
   session: ["read"],
   personalRecord: ["read", "create"],
+  trainingSession: ["read"],
 });
 
 // Rôle Admin (gestion complète sauf suppression d'organisation)
@@ -46,6 +48,7 @@ export const admin = ac.newRole({
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
+  trainingSession: ["read", "create", "update", "delete"],
 });
 
 // Rôle Owner (toutes les permissions)
@@ -57,5 +60,6 @@ export const owner = ac.newRole({
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
+  trainingSession: ["read", "create", "update", "delete"],
 });
 

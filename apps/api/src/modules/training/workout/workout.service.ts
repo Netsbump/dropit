@@ -17,6 +17,7 @@ import {
 } from '../workout-element/workout-element.entity';
 import { Workout } from './workout.entity';
 import { WorkoutMapper } from './workout.mapper';
+import { Organization } from '../../members/organization/organization.entity';
 
 @Injectable()
 export class WorkoutService {
@@ -219,7 +220,7 @@ export class WorkoutService {
     // };
   }
 
-  async createWorkout(workout: CreateWorkout): Promise<WorkoutDto> {
+  async createWorkout(workout: CreateWorkout, organizationId: string): Promise<WorkoutDto> {
     if (!workout.title) {
       throw new BadRequestException('Workout title is required');
     }
@@ -283,10 +284,14 @@ export class WorkoutService {
     await this.em.persistAndFlush(workoutToCreate);
 
     // Si une session d'entrainement est demandée, la créer
-    if (workout.session) {
+    if (workout.trainingSession) {
+      const organization = await this.em.findOne(Organization, { id: organizationId });
+      if (!organization) {
+        throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+      }
       // Vérifier que tous les athlètes existent
       const athletes: Athlete[] = [];
-      for (const athleteId of workout.session.athleteIds) {
+      for (const athleteId of workout.trainingSession.athleteIds) {
         const athlete = await this.em.findOne(Athlete, { id: athleteId });
         if (!athlete) {
           throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
@@ -296,8 +301,8 @@ export class WorkoutService {
 
       const trainingSession = new TrainingSession();
       trainingSession.workout = workoutToCreate;
-
-      trainingSession.scheduledDate = new Date(workout.session.scheduledDate);
+      trainingSession.organization = organization;
+      trainingSession.scheduledDate = new Date(workout.trainingSession.scheduledDate);
 
       await this.em.persistAndFlush(trainingSession);
 

@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { Workout } from '../../training/workout/workout.entity';
 import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
+import { Organization } from '../../members/organization/organization.entity';
 
 @Entity()
 export class TrainingSession {
@@ -16,6 +17,9 @@ export class TrainingSession {
 
   @ManyToOne(() => Workout)
   workout!: Workout;
+
+  @ManyToOne(() => Organization)
+  organization!: Organization;
 
   @OneToMany(
     () => AthleteTrainingSession,

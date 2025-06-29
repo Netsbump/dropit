@@ -6,24 +6,25 @@ import { Workout } from '../../training/workout/workout.entity';
 import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
 import { TrainingSession } from './training-session.entity';
 import { TrainingSessionMapper } from './training-session.mapper';
+import { Organization } from '../../members/organization/organization.entity';
 
 @Injectable()
 export class TrainingSessionService {
   constructor(private readonly em: EntityManager) {}
 
-  async getTrainingSessions(): Promise<TrainingSessionDto[]> {
+  async getTrainingSessions(organizationId: string): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
-      {},
+      { organization: { id: organizationId } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     return TrainingSessionMapper.toDtoList(sessions);
   }
 
-  async getTrainingSession(id: string): Promise<TrainingSessionDto> {
+  async getTrainingSession(id: string, organizationId: string): Promise<TrainingSessionDto> {
     const session = await this.em.findOne(
       TrainingSession,
-      { id },
+      { id, organization: { id: organizationId } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!session) {
@@ -32,16 +33,21 @@ export class TrainingSessionService {
     return this.mapToDto(session);
   }
 
-  async getTrainingSessionsByAthlete(athleteId: string): Promise<TrainingSessionDto[]> {
+  async getTrainingSessionsByAthlete(athleteId: string, organizationId: string): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
-      { athletes: { athlete: { id: athleteId } } },
+      { athletes: { athlete: { id: athleteId } }, organization: { id: organizationId } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     return sessions.map((session) => this.mapToDto(session));
   }
 
-  async createTrainingSession(session: CreateTrainingSession): Promise<TrainingSessionDto> {
+  async createTrainingSession(session: CreateTrainingSession, organizationId: string): Promise<TrainingSessionDto> {
+    const organization = await this.em.findOne(Organization, { id: organizationId });
+    if (!organization) {
+      throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+    }
+
     const workout = await this.em.findOne(Workout, { id: session.workoutId });
     if (!workout) {
       throw new NotFoundException(
@@ -61,6 +67,7 @@ export class TrainingSessionService {
     const trainingSessionToCreate = new TrainingSession();
     trainingSessionToCreate.workout = workout;
     trainingSessionToCreate.scheduledDate = new Date(session.scheduledDate);
+    trainingSessionToCreate.organization = organization;
 
     await this.em.persistAndFlush(trainingSessionToCreate);
 
@@ -73,13 +80,13 @@ export class TrainingSessionService {
 
     await this.em.flush();
 
-    return this.getTrainingSession(trainingSessionToCreate.id);
+    return this.getTrainingSession(trainingSessionToCreate.id, organizationId);
   }
 
-  async updateTrainingSession(id: string, session: UpdateTrainingSession): Promise<TrainingSessionDto> {
+  async updateTrainingSession(id: string, session: UpdateTrainingSession, organizationId: string): Promise<TrainingSessionDto> {
     const trainingSessionToUpdate = await this.em.findOne(
       TrainingSession,
-      { id },
+      { id, organization: { id: organizationId } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!trainingSessionToUpdate) {
@@ -127,11 +134,12 @@ export class TrainingSessionService {
 
   async completeTrainingSession(
     id: string,
-    completedDate?: Date | string
+    organizationId: string,
+    completedDate?: Date | string,
   ): Promise<TrainingSessionDto> {
     const trainingSessionToUpdate = await this.em.findOne(
       TrainingSession,
-      { id },
+      { id, organization: { id: organizationId } },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
     if (!trainingSessionToUpdate) {
@@ -146,10 +154,10 @@ export class TrainingSessionService {
     return this.mapToDto(trainingSessionToUpdate);
   }
 
-  async deleteTrainingSession(id: string): Promise<void> {
+  async deleteTrainingSession(id: string, organizationId: string): Promise<void> {
     const trainingSession = await this.em.findOne(
       TrainingSession,
-      { id },
+      { id, organization: { id: organizationId } },
       { populate: ['athletes'] }
     );
     if (!trainingSession) {
