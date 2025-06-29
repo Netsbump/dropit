@@ -14,7 +14,7 @@ import { AppModule } from '../app.module';
 import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
 import { ComplexCategoryService } from '../modules/training/complex-category/complex-category.service';
 import { ComplexService } from '../modules/training/complex/complex.service';
-import { ExerciseCategoryService } from '../modules/training/exercise-category/exerciseCategory.service';
+import { ExerciseCategoryService } from '../modules/training/exercise-category/exercise-category.service';
 import { ExerciseService } from '../modules/training/exercise/exercise.service';
 
 describe('ComplexController (e2e)', () => {

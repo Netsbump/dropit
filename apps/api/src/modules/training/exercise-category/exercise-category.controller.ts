@@ -5,7 +5,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ExerciseCategoryService } from './exerciseCategory.service';
+import { ExerciseCategoryService } from './exercise-category.service';
 
 const c = exerciseCategoryContract;
 
