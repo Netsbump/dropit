@@ -2,7 +2,6 @@ import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from '../modules/members/athlete/athlete.entity';
 import { faker } from '@faker-js/faker';
 import { User } from '../modules/members/auth/auth.entity';
-import { Club } from '../modules/members/club/club.entity';
 import { hashPassword } from 'better-auth/crypto';
 import { Account } from '../modules/members/auth/auth.entity';
 
@@ -36,16 +35,6 @@ export async function seedAthletes(
 
   console.log('Seeding athletes and coach...');
 
-  // Récupérer le premier club existant
-  const clubs = await em.find(Club, {}, { limit: 1 });
-
-  if (clubs.length === 0) {
-    throw new Error('No club found. Please run seedClubs first.');
-  }
-
-  const club = clubs[0];
-  console.log(`Using club: ${club.name} for all athletes`);
-
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
@@ -68,7 +57,6 @@ export async function seedAthletes(
   coach.lastName = 'Dupont';
   coach.birthday = new Date('1985-05-15');
   coach.country = 'France';
-  coach.club = club;
   coach.user = coachUser;
 
   await em.persistAndFlush(coach);
@@ -101,7 +89,6 @@ export async function seedAthletes(
     athlete.lastName = lastName;
     athlete.birthday = faker.date.birthdate({ min: 16, max: 35, mode: 'age' });
     athlete.country = 'France';
-    athlete.club = club;
     athlete.user = user;
 
     await em.persistAndFlush(athlete);

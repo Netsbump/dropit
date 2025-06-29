@@ -170,7 +170,6 @@ export class SessionService {
       lastName: link.athlete.lastName,
       birthday: link.athlete.birthday,
       country: link.athlete.country,
-      clubId: link.athlete.club?.id,
       userId: link.athlete.user?.id,
       createdAt: link.athlete.createdAt,
       updatedAt: link.athlete.updatedAt,

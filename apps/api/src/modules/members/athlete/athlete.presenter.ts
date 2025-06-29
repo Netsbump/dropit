@@ -11,7 +11,6 @@ export const AthletePresenter = {
       email: athlete.email ?? '',
       image: athlete.image ?? '',
       country: athlete.country,
-      club: athlete.club ?? '',
       metrics: athlete.weight ? { weight: athlete.weight } : undefined,
       personalRecords:
         athlete.pr_snatch || athlete.pr_cleanAndJerk

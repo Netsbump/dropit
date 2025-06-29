@@ -12,7 +12,6 @@ import { CompetitorStatus } from '../../performance/competitor-status/competitor
 import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
 import { PhysicalMetric } from '../../performance/physical-metric/physical-metric.entity';
 import { User } from '../auth/auth.entity';
-import { Club } from '../club/club.entity';
 import { AthleteRepository } from './athlete.repository';
 
 @Entity({ repository: () => AthleteRepository })
@@ -40,9 +39,6 @@ export class Athlete {
 
   @OneToOne(() => User, { owner: true, nullable: true })
   user?: User;
-
-  @ManyToOne(() => Club)
-  club!: Club;
 
   @OneToMany(
     () => AthleteSession,
