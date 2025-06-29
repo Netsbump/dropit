@@ -1,26 +1,26 @@
-import { CreateSession, SessionDto, UpdateSession } from '@dropit/schemas';
+import { CreateTrainingSession, TrainingSessionDto, UpdateTrainingSession } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { Workout } from '../../training/workout/workout.entity';
 import { AthleteSession } from '../athlete-session/athlete-session.entity';
-import { TrainingSession } from './session.entity';
-import { SessionMapper } from './session.mapper';
+import { TrainingSession } from './training-session.entity';
+import { TrainingSessionMapper } from './training-session.mapper';
 
 @Injectable()
-export class SessionService {
+export class TrainingSessionService {
   constructor(private readonly em: EntityManager) {}
 
-  async getSessions(): Promise<SessionDto[]> {
+  async getTrainingSessions(): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
       {},
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
-    return SessionMapper.toDtoList(sessions);
+    return TrainingSessionMapper.toDtoList(sessions);
   }
 
-  async getSession(id: string): Promise<SessionDto> {
+  async getTrainingSession(id: string): Promise<TrainingSessionDto> {
     const session = await this.em.findOne(
       TrainingSession,
       { id },
@@ -32,7 +32,7 @@ export class SessionService {
     return this.mapToDto(session);
   }
 
-  async getSessionsByAthlete(athleteId: string): Promise<SessionDto[]> {
+  async getTrainingSessionsByAthlete(athleteId: string): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(
       TrainingSession,
       { athletes: { athlete: { id: athleteId } } },
@@ -41,7 +41,7 @@ export class SessionService {
     return sessions.map((session) => this.mapToDto(session));
   }
 
-  async createSession(session: CreateSession): Promise<SessionDto> {
+  async createTrainingSession(session: CreateTrainingSession): Promise<TrainingSessionDto> {
     const workout = await this.em.findOne(Workout, { id: session.workoutId });
     if (!workout) {
       throw new NotFoundException(
@@ -58,31 +58,31 @@ export class SessionService {
       athletes.push(athlete);
     }
 
-    const sessionToCreate = new TrainingSession();
-    sessionToCreate.workout = workout;
-    sessionToCreate.scheduledDate = new Date(session.scheduledDate);
+    const trainingSessionToCreate = new TrainingSession();
+    trainingSessionToCreate.workout = workout;
+    trainingSessionToCreate.scheduledDate = new Date(session.scheduledDate);
 
-    await this.em.persistAndFlush(sessionToCreate);
+    await this.em.persistAndFlush(trainingSessionToCreate);
 
     for (const athlete of athletes) {
       const athleteSession = new AthleteSession();
       athleteSession.athlete = athlete;
-      athleteSession.session = sessionToCreate;
+      athleteSession.session = trainingSessionToCreate;
       this.em.persist(athleteSession);
     }
 
     await this.em.flush();
 
-    return this.getSession(sessionToCreate.id);
+    return this.getTrainingSession(trainingSessionToCreate.id);
   }
 
-  async updateSession(id: string, session: UpdateSession): Promise<SessionDto> {
-    const sessionToUpdate = await this.em.findOne(
+  async updateTrainingSession(id: string, session: UpdateTrainingSession): Promise<TrainingSessionDto> {
+    const trainingSessionToUpdate = await this.em.findOne(
       TrainingSession,
       { id },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
-    if (!sessionToUpdate) {
+    if (!trainingSessionToUpdate) {
       throw new NotFoundException('TrainingSession not found');
     }
 
@@ -93,11 +93,11 @@ export class SessionService {
           `Workout with ID ${session.workoutId} not found`
         );
       }
-      sessionToUpdate.workout = workout;
+      trainingSessionToUpdate.workout = workout;
     }
 
     if (session.athleteIds) {
-      for (const athleteLink of sessionToUpdate.athletes) {
+      for (const athleteLink of trainingSessionToUpdate.athletes) {
         await this.em.removeAndFlush(athleteLink);
       }
 
@@ -108,63 +108,63 @@ export class SessionService {
         }
         const athleteSession = new AthleteSession();
         athleteSession.athlete = athlete;
-        athleteSession.session = sessionToUpdate;
+        athleteSession.session = trainingSessionToUpdate;
         this.em.persist(athleteSession);
       }
     }
 
     if (session.scheduledDate) {
-      sessionToUpdate.scheduledDate = new Date(session.scheduledDate);
+      trainingSessionToUpdate.scheduledDate = new Date(session.scheduledDate);
     }
 
     if (session.completedDate) {
-      sessionToUpdate.completedDate = new Date(session.completedDate);
+      trainingSessionToUpdate.completedDate = new Date(session.completedDate);
     }
 
     await this.em.flush();
-    return this.mapToDto(sessionToUpdate);
+    return this.mapToDto(trainingSessionToUpdate);
   }
 
-  async completeSession(
+  async completeTrainingSession(
     id: string,
     completedDate?: Date | string
-  ): Promise<SessionDto> {
-    const sessionToUpdate = await this.em.findOne(
+  ): Promise<TrainingSessionDto> {
+    const trainingSessionToUpdate = await this.em.findOne(
       TrainingSession,
       { id },
       { populate: ['workout', 'athletes', 'athletes.athlete'] }
     );
-    if (!sessionToUpdate) {
+    if (!trainingSessionToUpdate) {
       throw new NotFoundException('TrainingSession not found');
     }
 
-    sessionToUpdate.completedDate = completedDate
+    trainingSessionToUpdate.completedDate = completedDate
       ? new Date(completedDate)
       : new Date();
 
-    await this.em.persistAndFlush(sessionToUpdate);
-    return this.mapToDto(sessionToUpdate);
+    await this.em.persistAndFlush(trainingSessionToUpdate);
+    return this.mapToDto(trainingSessionToUpdate);
   }
 
-  async deleteSession(id: string): Promise<void> {
-    const session = await this.em.findOne(
+  async deleteTrainingSession(id: string): Promise<void> {
+    const trainingSession = await this.em.findOne(
       TrainingSession,
       { id },
       { populate: ['athletes'] }
     );
-    if (!session) {
+    if (!trainingSession) {
       throw new NotFoundException('TrainingSession not found');
     }
 
-    for (const athleteLink of session.athletes) {
+    for (const athleteLink of trainingSession.athletes) {
       await this.em.removeAndFlush(athleteLink);
     }
 
-    await this.em.removeAndFlush(session);
+    await this.em.removeAndFlush(trainingSession);  
   }
 
-  private mapToDto(session: TrainingSession): SessionDto {
-    const athletes = session.athletes.getItems().map((link) => ({
+  private mapToDto(trainingSession: TrainingSession): TrainingSessionDto {
+    const athletes = trainingSession.athletes.getItems().map((link) => ({
       id: link.athlete.id,
       firstName: link.athlete.firstName,
       lastName: link.athlete.lastName,
@@ -175,7 +175,7 @@ export class SessionService {
       updatedAt: link.athlete.updatedAt,
     }));
 
-    const athleteSessions = session.athletes.getItems().map((link) => ({
+    const athleteSessions = trainingSession.athletes.getItems().map((link) => ({
       athleteId: link.athlete.id,
       sessionId: link.session.id,
       notes_athlete: link.notes_athlete,
@@ -184,19 +184,19 @@ export class SessionService {
     }));
 
     return {
-      id: session.id,
+      id: trainingSession.id,
       workout: {
-        id: session.workout.id,
-        title: session.workout.title,
-        description: session.workout.description,
-        workoutCategory: session.workout.category.id,
+        id: trainingSession.workout.id,
+        title: trainingSession.workout.title,
+        description: trainingSession.workout.description,
+        workoutCategory: trainingSession.workout.category.id,
         elements: [],
       },
       athletes,
-      scheduledDate: session.scheduledDate,
-      completedDate: session.completedDate,
-      createdAt: session.createdAt,
-      updatedAt: session.updatedAt,
+      scheduledDate: trainingSession.scheduledDate,
+      completedDate: trainingSession.completedDate,
+      createdAt: trainingSession.createdAt,
+      updatedAt: trainingSession.updatedAt,
     };
   }
 }

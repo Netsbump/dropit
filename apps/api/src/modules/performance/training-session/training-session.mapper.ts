@@ -1,9 +1,9 @@
-import { SessionDto } from '@dropit/schemas';
+import { TrainingSessionDto } from '@dropit/schemas';
 import { WorkoutMapper } from '../../training/workout/workout.mapper';
-import { TrainingSession } from './session.entity';
+import { TrainingSession } from './training-session.entity';
 
-export const SessionMapper = {
-  toDto(session: TrainingSession): SessionDto {
+export const TrainingSessionMapper = {
+  toDto(session: TrainingSession): TrainingSessionDto {
     const athletes = session.athletes.getItems().map((link) => ({
       id: link.athlete.id,
       firstName: link.athlete.firstName,
@@ -21,7 +21,7 @@ export const SessionMapper = {
     };
   },
 
-  toDtoList(sessions: TrainingSession[]): SessionDto[] {
-    return sessions.map((session) => SessionMapper.toDto(session));
+  toDtoList(sessions: TrainingSession[]): TrainingSessionDto[] {
+    return sessions.map((session) => TrainingSessionMapper.toDto(session));
   },
 };

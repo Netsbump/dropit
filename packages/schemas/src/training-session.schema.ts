@@ -1,24 +1,24 @@
 import { z } from 'zod';
 import { workoutSchema } from './workout.schema';
 
-export const createSessionSchema = z.object({
+export const createTrainingSessionSchema = z.object({
   workoutId: z.string(),
   athleteIds: z.array(z.string()),
   scheduledDate: z.string().or(z.date()),
 });
 
-export type CreateSession = z.infer<typeof createSessionSchema>;
+export type CreateTrainingSession = z.infer<typeof createTrainingSessionSchema>;
 
-export const updateSessionSchema = z.object({
+export const updateTrainingSessionSchema = z.object({
   workoutId: z.string().optional(),
   athleteIds: z.array(z.string()).optional(),
   scheduledDate: z.string().or(z.date()).optional(),
   completedDate: z.string().or(z.date()).optional(),
 });
 
-export type UpdateSession = z.infer<typeof updateSessionSchema>;
+export type UpdateTrainingSession = z.infer<typeof updateTrainingSessionSchema>;
 
-export const sessionSchema = z.object({
+export const trainingSessionSchema = z.object({
   id: z.string(),
   workout: workoutSchema,
   athletes: z
@@ -36,4 +36,4 @@ export const sessionSchema = z.object({
   updatedAt: z.string().or(z.date()),
 });
 
-export type SessionDto = z.infer<typeof sessionSchema>;
+export type TrainingSessionDto = z.infer<typeof trainingSessionSchema>;

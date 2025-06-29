@@ -1,6 +1,6 @@
 import { CreateWorkoutModal } from '@/features/planning/create-workout-modal';
 import { PlanningCalendar } from '@/features/planning/planning-calendar';
-import { SessionDetailPopover } from '@/features/planning/session-detail-popover';
+import { TrainingSessionDetailPopover } from '@/features/planning/training-session-detail-popover';
 import { api } from '@/lib/api';
 import { HeaderPage } from '@/shared/components/layout/header-page';
 import { useToast } from '@/shared/hooks/use-toast';
@@ -22,7 +22,7 @@ function PlanningPage() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailPopoverOpen, setIsDetailPopoverOpen] = useState(false);
-  const [selectedSessionId, setSelectedSessionId] = useState<
+  const [selectedTrainingSessionId, setSelectedTrainingSessionId] = useState<
     string | undefined
   >();
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(
@@ -36,8 +36,9 @@ function PlanningPage() {
   } = useQuery({
     queryKey: ['calendarEvents'],
     queryFn: async () => {
-      const response = await api.session.getSessions();
-      if (response.status !== 200) throw new Error('Failed to load sessions');
+      const response = await api.trainingSession.getTrainingSessions();
+      if (response.status !== 200)
+        throw new Error('Failed to load training sessions');
       return response.body;
     },
   });
@@ -54,8 +55,8 @@ function PlanningPage() {
     }
 
     // Définir l'élément d'ancrage et ouvrir le popover
-    const sessionId = info.event._def.publicId;
-    setSelectedSessionId(sessionId);
+    const trainingSessionId = info.event._def.publicId;
+    setSelectedTrainingSessionId(trainingSessionId);
 
     // Utiliser l'élément DOM de l'événement comme point d'ancrage
     const eventEl = info.el;
@@ -71,25 +72,27 @@ function PlanningPage() {
     setIsDetailPopoverOpen(false);
   };
 
-  const handleEditSession = (id: string) => {
+  const handleEditTrainingSession = (id: string) => {
     // Fermer d'abord le popover
     setIsDetailPopoverOpen(false);
 
     // Logique temporaire - à remplacer par une navigation vers le formulaire d'édition
     toast({
-      title: t('editSession'),
-      description: `${t('editingSession')} ID: ${id}`,
+      title: t('editTrainingSession'),
+      description: `${t('editingTrainingSession')} ID: ${id}`,
     });
 
-    // TODO: Rediriger vers le formulaire d'édition de session
+    // TODO: Rediriger vers le formulaire d'édition de la session d'entrainement
   };
 
-  const handleDeleteSession = async (id: string) => {
+  const handleDeleteTrainingSession = async (id: string) => {
     // Confirmation avant suppression
-    if (window.confirm(t('confirmDeleteSession'))) {
+    if (window.confirm(t('confirmDeleteTrainingSession'))) {
       try {
-        // Appel à l'API pour supprimer la session
-        const response = await api.session.deleteSession({ params: { id } });
+        // Appel à l'API pour supprimer la session d'entrainement
+        const response = await api.trainingSession.deleteTrainingSession({
+          params: { id },
+        });
 
         if (response.status === 200) {
           // Fermer le popover
@@ -98,37 +101,37 @@ function PlanningPage() {
           // Afficher un message de succès
           toast({
             title: t('success'),
-            description: t('sessionDeleted'),
+            description: t('trainingSessionDeleted'),
           });
 
           // Rafraîchir les données du calendrier
           refetch();
         } else {
-          throw new Error('Failed to delete session');
+          throw new Error('Failed to delete training session');
         }
       } catch (error) {
         // Afficher un message d'erreur
         toast({
           title: t('error'),
-          description: t('errorDeletingSession'),
+          description: t('errorDeletingTrainingSession'),
           variant: 'destructive',
         });
       }
     }
   };
 
-  const handleViewSessionDetail = (id: string) => {
+  const handleViewTrainingSessionDetail = (id: string) => {
     // Fermer le popover
     setIsDetailPopoverOpen(false);
 
-    // Naviguer vers la page de détail de la session
+    // Naviguer vers la page de détail de la session d'entrainement
     // Note: Cette route devra être créée dans votre application
-    navigate({ to: `/session/${id}` });
+    navigate({ to: `/training-session/${id}` });
 
     // Alternative: Si la page n'existe pas encore, afficher un toast
     toast({
-      title: t('viewSessionDetail'),
-      description: t('navigatingToSessionDetail'),
+      title: t('viewTrainingTrainingSessionDetail'),
+      description: t('navigatingToTrainingTrainingSessionDetail'),
     });
   };
 
@@ -166,14 +169,14 @@ function PlanningPage() {
         selectedDate={selectedDate}
       />
 
-      <SessionDetailPopover
+      <TrainingSessionDetailPopover
         isOpen={isDetailPopoverOpen}
         onClose={handleClosePopover}
-        sessionId={selectedSessionId}
+        trainingSessionId={selectedTrainingSessionId}
         anchorElement={popoverAnchorEl}
-        onEdit={handleEditSession}
-        onDelete={handleDeleteSession}
-        onViewDetail={handleViewSessionDetail}
+        onEdit={handleEditTrainingSession}
+        onDelete={handleDeleteTrainingSession}
+        onViewDetail={handleViewTrainingSessionDetail}
         onAthleteClick={handleAthleteClick}
       />
     </div>

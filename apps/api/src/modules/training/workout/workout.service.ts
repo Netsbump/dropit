@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
-import { TrainingSession } from '../../performance/session/session.entity';
+import { TrainingSession } from '../../performance/training-session/training-session.entity';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
@@ -282,7 +282,7 @@ export class WorkoutService {
 
     await this.em.persistAndFlush(workoutToCreate);
 
-    // Si une session est demandée, la créer
+    // Si une session d'entrainement est demandée, la créer
     if (workout.session) {
       // Vérifier que tous les athlètes existent
       const athletes: Athlete[] = [];

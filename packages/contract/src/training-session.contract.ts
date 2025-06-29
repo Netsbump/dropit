@@ -1,17 +1,17 @@
 import {
-  createSessionSchema,
-  sessionSchema,
-  updateSessionSchema,
+  createTrainingSessionSchema,
+  trainingSessionSchema,
+  updateTrainingSessionSchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
 
-export const sessionContract = {
-  getSessions: {
+export const trainingSessionContract = {
+  getTrainingSessions: {
     method: 'GET',
-    path: '/session',
-    summary: 'Get all sessions',
+    path: '/training-session',
+    summary: 'Get all training sessions',
     responses: {
-      200: z.array(sessionSchema),
+      200: z.array(trainingSessionSchema),
       404: z.object({
         message: z.string(),
       }),
@@ -21,15 +21,15 @@ export const sessionContract = {
     },
   },
 
-  getSession: {
+  getTrainingSession: {
     method: 'GET',
-    path: '/session/:id',
-    summary: 'Get a session by id',
+    path: '/training-session/:id',
+    summary: 'Get a training session by id',
     pathParams: z.object({
       id: z.string(),
     }),
     responses: {
-      200: sessionSchema,
+      200: trainingSessionSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -39,15 +39,15 @@ export const sessionContract = {
     },
   },
 
-  getSessionsByAthlete: {
+  getTrainingSessionsByAthlete: {
     method: 'GET',
-    path: '/session/athlete/:athleteId',
-    summary: 'Get sessions by athlete id',
+    path: '/training-session/athlete/:athleteId',
+    summary: 'Get training sessions by athlete id',
     pathParams: z.object({
       athleteId: z.string(),
     }),
     responses: {
-      200: z.array(sessionSchema),
+      200: z.array(trainingSessionSchema),
       404: z.object({
         message: z.string(),
       }),
@@ -57,13 +57,13 @@ export const sessionContract = {
     },
   },
 
-  createSession: {
+  createTrainingSession: {
     method: 'POST',
-    path: '/session',
-    summary: 'Create a session',
-    body: createSessionSchema,
+    path: '/training-session',
+    summary: 'Create a training session',
+    body: createTrainingSessionSchema,
     responses: {
-      201: sessionSchema,
+      201: trainingSessionSchema,
       400: z.object({
         message: z.string(),
       }),
@@ -76,16 +76,16 @@ export const sessionContract = {
     },
   },
 
-  updateSession: {
+  updateTrainingSession: {
     method: 'PATCH',
-    path: '/session/:id',
-    summary: 'Update a session',
+    path: '/training-session/:id',
+    summary: 'Update a training session',
     pathParams: z.object({
       id: z.string(),
     }),
-    body: updateSessionSchema,
+    body: updateTrainingSessionSchema,
     responses: {
-      200: sessionSchema,
+      200: trainingSessionSchema,
       400: z.object({
         message: z.string(),
       }),
@@ -98,10 +98,10 @@ export const sessionContract = {
     },
   },
 
-  completeSession: {
+  completeTrainingSession: {
     method: 'PATCH',
-    path: '/session/:id/complete',
-    summary: 'Mark a session as completed',
+    path: '/training-session/:id/complete',
+    summary: 'Mark a training session as completed',
     pathParams: z.object({
       id: z.string(),
     }),
@@ -110,7 +110,7 @@ export const sessionContract = {
       notes: z.string().optional(),
     }),
     responses: {
-      200: sessionSchema,
+      200: trainingSessionSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -120,10 +120,10 @@ export const sessionContract = {
     },
   },
 
-  deleteSession: {
+  deleteTrainingSession: {
     method: 'DELETE',
-    path: '/session/:id',
-    summary: 'Delete a session',
+    path: '/training-session/:id',
+    summary: 'Delete a training session',
     pathParams: z.object({
       id: z.string(),
     }),

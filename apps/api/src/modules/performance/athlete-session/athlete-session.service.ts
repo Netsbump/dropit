@@ -7,7 +7,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteRepository } from '../../members/athlete/athlete.repository';
-import { TrainingSession } from '../session/session.entity';
+import { TrainingSession } from '../training-session/training-session.entity';
 import { AthleteSession } from './athlete-session.entity';
 @Injectable()
 export class AthleteSessionService {

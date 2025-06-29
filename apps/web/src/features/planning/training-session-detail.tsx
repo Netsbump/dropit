@@ -25,7 +25,7 @@ import {
   X,
 } from 'lucide-react';
 
-interface SessionDetailProps {
+interface TrainingSessionDetailProps {
   id: string;
   onClose?: () => void;
   onEdit?: (id: string) => void;
@@ -34,22 +34,25 @@ interface SessionDetailProps {
   onAthleteClick?: (athleteId: string) => void;
 }
 
-export function SessionDetail({
+export function TrainingSessionDetail({
   id,
   onClose,
   onEdit,
   onDelete,
   onViewDetail,
   onAthleteClick,
-}: SessionDetailProps) {
+}: TrainingSessionDetailProps) {
   const { t, i18n } = useTranslation('planning');
   const locale = i18n.language === 'fr' ? fr : enGB;
 
   const { data, isLoading } = useQuery({
-    queryKey: ['session', id],
+    queryKey: ['trainingSession', id],
     queryFn: async () => {
-      const response = await api.session.getSession({ params: { id } });
-      if (response.status !== 200) throw new Error('Failed to load session');
+      const response = await api.trainingSession.getTrainingSession({
+        params: { id },
+      });
+      if (response.status !== 200)
+        throw new Error('Failed to load training session');
       return response.body;
     },
   });

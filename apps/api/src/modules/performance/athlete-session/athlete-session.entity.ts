@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, Property } from '@mikro-orm/core';
 import { Athlete } from '../../members/athlete/athlete.entity';
-import { TrainingSession } from '../session/session.entity';
+import { TrainingSession } from '../training-session/training-session.entity';
 
 @Entity()
 export class AthleteSession {

@@ -28,9 +28,9 @@ import { useEffect, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { z } from 'zod';
 
-// Définir le schéma étendu pour le formulaire qui inclut le champ session
+// Définir le schéma étendu pour le formulaire qui inclut le champ session d'entrainement
 const extendedWorkoutSchema = createWorkoutSchema.extend({
-  session: z
+  trainingSession: z
     .object({
       athleteIds: z.array(z.string()),
       scheduledDate: z.string(),

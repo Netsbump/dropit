@@ -4,8 +4,8 @@ import { Athlete } from '../../members/athlete/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { OrganizationModule } from '../../members/organization/organization.module';
 import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
-import { TrainingSession } from '../../performance/session/session.entity';
-import { SessionModule } from '../../performance/session/session.module';
+import { TrainingSession } from '../../performance/training-session/training-session.entity';
+import { TrainingSessionModule } from '../../performance/training-session/training-session.module';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { ExerciseModule } from '../exercise/exercise.module';
@@ -29,7 +29,7 @@ import { WorkoutService } from './workout.service';
       WorkoutElement,
     ]),
     forwardRef(() => AthleteModule),
-    forwardRef(() => SessionModule),
+    forwardRef(() => TrainingSessionModule),
     forwardRef(() => WorkoutCategoryModule),
     forwardRef(() => ExerciseModule),
     OrganizationModule,

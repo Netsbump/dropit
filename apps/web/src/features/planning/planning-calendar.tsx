@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
-import { SessionDto } from '@dropit/schemas';
+import { TrainingSessionDto } from '@dropit/schemas';
 import { Duration, EventApi, EventClickArg } from '@fullcalendar/core';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import frLocale from '@fullcalendar/core/locales/fr';
@@ -20,7 +20,7 @@ interface EventDropInfo {
 
 interface PlanningCalendarProps {
   className?: string;
-  initialEvents?: SessionDto[];
+  initialEvents?: TrainingSessionDto[];
   onEventClick?: (eventInfo: EventClickArg) => void;
   onDateClick?: (dateInfo: DateClickArg) => void;
   onEventDrop?: (eventDropInfo: EventDropInfo) => void;
@@ -35,7 +35,7 @@ export function PlanningCalendar({
 }: PlanningCalendarProps) {
   const { t, i18n } = useTranslation('planning');
   const { toast } = useToast();
-  const [events, setEvents] = useState<SessionDto[]>(initialEvents);
+  const [events, setEvents] = useState<TrainingSessionDto[]>(initialEvents);
   const currentLocale = i18n.language === 'fr' ? frLocale : enLocale;
 
   const handleEventClick = (info: EventClickArg) => {
