@@ -1,5 +1,5 @@
 import { initContract } from '@ts-rest/core';
-import { athleteSessionContract } from './athlete-session.contract';
+import { athleteTrainingSessionContract } from './athlete-training-session.contract';
 import { athleteContract } from './athlete.contract';
 import { competitorStatusContract } from './competitor-status.contract';
 import { complexCategoryContract } from './complex-category.contract';
@@ -15,7 +15,7 @@ const c = initContract();
 
 export const apiContract = c.router({
   athlete: athleteContract,
-  athleteSession: athleteSessionContract,
+  athleteTrainingSession: athleteTrainingSessionContract,
   exercise: exerciseContract,
   exerciseCategory: exerciseCategoryContract,
   complex: complexContract,
@@ -28,7 +28,7 @@ export const apiContract = c.router({
 });
 
 export * from './athlete.contract';
-export * from './athlete-session.contract';
+export * from './athlete-training-session.contract';
 export * from './exercise.contract';
 export * from './exercise-category.contract';
 export * from './complex.contract';

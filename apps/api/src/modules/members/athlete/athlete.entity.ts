@@ -7,7 +7,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { AthleteSession } from '../../performance/athlete-session/athlete-session.entity';
+import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
 import { CompetitorStatus } from '../../performance/competitor-status/competitor-status.entity';
 import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
 import { PhysicalMetric } from '../../performance/physical-metric/physical-metric.entity';
@@ -41,10 +41,10 @@ export class Athlete {
   user?: User;
 
   @OneToMany(
-    () => AthleteSession,
-    (athleteSession) => athleteSession.athlete
+    () => AthleteTrainingSession,
+    (athleteTrainingSession) => athleteTrainingSession.athlete
   )
-  sessions = new Collection<AthleteSession>(this);
+  trainingSessions = new Collection<AthleteTrainingSession>(this);
 
   @OneToMany(
     () => PhysicalMetric,
