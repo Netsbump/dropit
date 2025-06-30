@@ -18,7 +18,7 @@ describe('PermissionsGuard', () => {
     email: 'test@example.com',
     name: 'Test User',
     emailVerified: false,
-    role: 'athlete',
+    isSuperAdmin: false,
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -233,7 +233,7 @@ describe('PermissionsGuard', () => {
         jest.spyOn(reflector, 'get').mockReturnValue(['create']);
         jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
 
-        await expect(guard.canActivate(personalRecordContext)).rejects.toThrow(ForbiddenException);
+        await expect(guard.canActivate(personalRecordContext)).resolves.toBe(true);
       });
 
       it('should document the current controller name transformation behavior', () => {

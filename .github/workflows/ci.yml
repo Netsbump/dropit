@@ -99,7 +99,9 @@ jobs:
 
       - name: Run api tests
         working-directory: apps/api
-        run: pnpm run test:e2e
+        run: |
+          pnpm run test:unit
+          pnpm run test:integration
         env:
           API_PORT: 3001
           NODE_ENV: test
