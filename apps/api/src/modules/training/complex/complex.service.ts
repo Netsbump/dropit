@@ -9,13 +9,21 @@ import { ComplexCategory } from '../complex-category/complex-category.entity';
 import { ExerciseComplex } from '../exercise-complex/exercise-complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { Complex } from './complex.entity';
+import { OrganizationService } from '../../members/organization/organization.service';
 
 @Injectable()
 export class ComplexService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly organizationService: OrganizationService
+  ) {}
 
-  async getComplexes(): Promise<ComplexDto[]> {
-    const complexes = await this.em.findAll(Complex, {
+  async getComplexes(organizationId: string): Promise<ComplexDto[]> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    const complexes = await this.em.find(Complex, {
+      ...filterConditions,
+    }, {
       populate: [
         'complexCategory',
         'exercises',
@@ -58,10 +66,15 @@ export class ComplexService {
     });
   }
 
-  async getComplex(id: string): Promise<ComplexDto> {
+  async getComplex(id: string, organizationId: string): Promise<ComplexDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const complex = await this.em.findOne(
       Complex,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       {
         populate: [
           'complexCategory',
@@ -104,7 +117,7 @@ export class ComplexService {
     };
   }
 
-  async createComplex(complex: CreateComplex): Promise<ComplexDto> {
+  async createComplex(complex: CreateComplex, organizationId: string, userId: string): Promise<ComplexDto> {
     if (!complex.name) {
       throw new BadRequestException('Complex name is required');
     }
@@ -128,6 +141,10 @@ export class ComplexService {
     complexToCreate.name = complex.name;
     complexToCreate.complexCategory = complexCategory;
     complexToCreate.description = complex.description || '';
+
+    // Assigner le coach créateur
+    const user = await this.organizationService.getUserById(userId);
+    complexToCreate.createdBy = user;
 
     for (const exercise of complex.exercises) {
       const exerciseComplex = new ExerciseComplex();
@@ -155,57 +172,18 @@ export class ComplexService {
 
     await this.em.persistAndFlush(complexToCreate);
 
-    const complexCreated = await this.em.findOne(
-      Complex,
-      {
-        id: complexToCreate.id,
-      },
-      {
-        populate: [
-          'complexCategory',
-          'exercises',
-          'exercises.exercise',
-          'exercises.exercise.exerciseCategory',
-        ],
-      }
-    );
-
-    if (!complexCreated) {
-      throw new NotFoundException('Complex not found');
-    }
-
-    return {
-      id: complexCreated.id,
-      name: complexCreated.name,
-      description: complexCreated.description,
-      complexCategory: {
-        id: complexCreated.complexCategory.id,
-        name: complexCreated.complexCategory.name,
-      },
-      exercises: complexCreated.exercises.getItems().map((exerciseComplex) => {
-        const exercise = exerciseComplex.exercise;
-        return {
-          id: exercise.id,
-          name: exercise.name,
-          exerciseCategory: {
-            id: exercise.exerciseCategory.id,
-            name: exercise.exerciseCategory.name,
-          },
-          description: exercise.description,
-          video: exercise.video?.id,
-          englishName: exercise.englishName,
-          shortName: exercise.shortName,
-          order: exerciseComplex.order,
-          reps: exerciseComplex.reps,
-        };
-      }),
-    };
+    return this.getComplex(complexToCreate.id, organizationId);
   }
 
-  async updateComplex(id: string, complex: UpdateComplex): Promise<ComplexDto> {
+  async updateComplex(id: string, complex: UpdateComplex, organizationId: string): Promise<ComplexDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const complexToUpdate = await this.em.findOne(
       Complex,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       {
         populate: ['exercises'],
       }
@@ -274,48 +252,34 @@ export class ComplexService {
     // Flush final pour sauvegarder toutes les modifications
     await this.em.persistAndFlush(complexToUpdate);
 
-    const updatedComplex = await this.em.findOne(
+    return this.getComplex(id, organizationId);
+  }
+
+  async deleteComplex(id: string, organizationId: string): Promise<void> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    const complexToDelete = await this.em.findOne(
       Complex,
-      { id },
       {
-        populate: [
-          'complexCategory',
-          'exercises',
-          'exercises.exercise',
-          'exercises.exercise.exerciseCategory',
-        ],
+        id,
+        ...filterConditions,
+      },
+      {
+        populate: ['exercises'],
       }
     );
-
-    if (!updatedComplex) {
+    if (!complexToDelete) {
       throw new NotFoundException('Complex not found');
     }
 
-    return {
-      id: updatedComplex.id,
-      name: updatedComplex.name,
-      description: updatedComplex.description,
-      complexCategory: {
-        id: updatedComplex.complexCategory.id,
-        name: updatedComplex.complexCategory.name,
-      },
-      exercises: updatedComplex.exercises.getItems().map((exerciseComplex) => {
-        const exercise = exerciseComplex.exercise;
-        return {
-          id: exercise.id,
-          name: exercise.name,
-          exerciseCategory: {
-            id: exercise.exerciseCategory.id,
-            name: exercise.exerciseCategory.name,
-          },
-          description: exercise.description,
-          video: exercise.video?.id,
-          englishName: exercise.englishName,
-          shortName: exercise.shortName,
-          order: exerciseComplex.order,
-          reps: exerciseComplex.reps,
-        };
-      }),
-    };
+    // Supprimer d'abord les relations avec les exercices
+    const exercises = complexToDelete.exercises.getItems();
+    for (const exerciseComplex of exercises) {
+      this.em.remove(exerciseComplex);
+    }
+
+    await this.em.removeAndFlush(complexToDelete);
   }
 }
+
+

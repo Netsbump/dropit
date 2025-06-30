@@ -173,6 +173,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
     workout.title = workoutData.title;
     workout.description = workoutData.description;
     workout.category = workoutCategoriesMap[workoutData.category];
+    workout.createdBy = null;
 
     await em.persistAndFlush(workout);
 

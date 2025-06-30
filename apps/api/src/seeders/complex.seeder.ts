@@ -146,6 +146,7 @@ export async function seedComplexes(
     complex.name = complexData.name;
     complex.description = complexData.description;
     complex.complexCategory = complexCategoriesMap[complexData.category];
+    complex.createdBy = null;
 
     await em.persistAndFlush(complex);
 

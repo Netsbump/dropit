@@ -1,5 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module, forwardRef } from '@nestjs/common';
+import { OrganizationModule } from '../../members/organization/organization.module';
 import { ComplexCategory } from '../complex-category/complex-category.entity';
 import { ComplexCategoryModule } from '../complex-category/complex-category.module';
 import { ExerciseCategoryModule } from '../exercise-category/exercise-category.module';
@@ -20,6 +21,7 @@ import { ComplexService } from './complex.service';
     forwardRef(() => ExerciseModule),
     forwardRef(() => ExerciseCategoryModule),
     forwardRef(() => ComplexCategoryModule),
+    OrganizationModule,
   ],
   controllers: [ComplexController],
   providers: [ComplexService],

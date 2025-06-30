@@ -8,13 +8,21 @@ import {
 } from '@nestjs/common';
 import { ExerciseCategory } from '../exercise-category/exercise-category.entity';
 import { Exercise } from './exercise.entity';
+import { OrganizationService } from '../../members/organization/organization.service';
 
 @Injectable()
 export class ExerciseService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly organizationService: OrganizationService
+  ) {}
 
-  async getExercises(): Promise<ExerciseDto[]> {
-    const exercises = await this.em.findAll(Exercise, {
+  async getExercises(organizationId: string): Promise<ExerciseDto[]> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    const exercises = await this.em.find(Exercise, {
+      ...filterConditions,
+    }, {
       populate: ['exerciseCategory'],
     });
 
@@ -38,10 +46,15 @@ export class ExerciseService {
     });
   }
 
-  async getExercise(id: string): Promise<ExerciseDto> {
+  async getExercise(id: string, organizationId: string): Promise<ExerciseDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const exercise = await this.em.findOne(
       Exercise,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       {
         populate: ['exerciseCategory'],
       }
@@ -65,7 +78,7 @@ export class ExerciseService {
     };
   }
 
-  async createExercise(newExercise: CreateExercise): Promise<ExerciseDto> {
+  async createExercise(newExercise: CreateExercise, userId: string): Promise<ExerciseDto> {
     if (!newExercise.name) {
       throw new BadRequestException('Exercise name is required');
     }
@@ -92,6 +105,11 @@ export class ExerciseService {
     if (newExercise.shortName) {
       exerciseToCreate.shortName = newExercise.shortName;
     }
+    
+    // Assigner le coach créateur
+    const user = await this.organizationService.getUserById(userId);
+    exerciseToCreate.createdBy = user;
+    
     // TODO: add video
 
     await this.em.persistAndFlush(exerciseToCreate);
@@ -126,11 +144,17 @@ export class ExerciseService {
 
   async updateExercise(
     id: string,
-    exercise: UpdateExercise
+    exercise: UpdateExercise,
+    organizationId: string
   ): Promise<ExerciseDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const exerciseToUpdate = await this.em.findOne(
       Exercise,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       {
         populate: ['exerciseCategory'],
       }
@@ -172,8 +196,13 @@ export class ExerciseService {
     };
   }
 
-  async deleteExercise(id: string): Promise<{ message: string }> {
-    const exerciseToDelete = await this.em.findOne(Exercise, { id });
+  async deleteExercise(id: string, organizationId: string): Promise<{ message: string }> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    const exerciseToDelete = await this.em.findOne(Exercise, {
+      id,
+      ...filterConditions,
+    });
 
     if (!exerciseToDelete) {
       throw new NotFoundException(`Exercise with ID ${id} not found`);
@@ -186,11 +215,14 @@ export class ExerciseService {
     };
   }
 
-  async searchExercises(query: string): Promise<ExerciseDto[]> {
+  async searchExercises(query: string, organizationId: string): Promise<ExerciseDto[]> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const exercises = await this.em.find(
       Exercise,
       {
         name: { $ilike: `%${query}%` },
+        ...filterConditions,
       },
       {
         populate: ['exerciseCategory'],

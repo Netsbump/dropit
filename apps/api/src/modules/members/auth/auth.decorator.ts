@@ -1,9 +1,24 @@
 import type { ExecutionContext } from '@nestjs/common';
 import { SetMetadata, createParamDecorator } from '@nestjs/common';
+import { User } from 'better-auth';
 
 export const BEFORE_HOOK_KEY = Symbol('BEFORE_HOOK');
 export const AFTER_HOOK_KEY = Symbol('AFTER_HOOK');
 export const HOOK_KEY = Symbol('HOOK');
+
+/**
+ * Type pour l'utilisateur connecté avec les champs étendus de notre application
+ */
+export interface AuthenticatedUser extends User {
+  id: string;
+  name: string;
+  email: string;
+  emailVerified: boolean;
+  image?: string;
+  isSuperAdmin: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 /**
  * Décorateur pour marquer une route comme publique (accessible sans authentification)
@@ -22,6 +37,16 @@ export const Session = createParamDecorator(
   (_data: unknown, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();
     return request.session;
+  }
+);
+
+/**
+ * Décorateur pour injecter l'utilisateur connecté dans un contrôleur
+ */
+export const CurrentUser = createParamDecorator(
+  (_data: unknown, context: ExecutionContext): AuthenticatedUser => {
+    const request = context.switchToHttp().getRequest();
+    return request.user;
   }
 );
 

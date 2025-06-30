@@ -9,6 +9,7 @@ import {
 import { TrainingSession } from '../../performance/training-session/training-session.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
 import { WorkoutElement } from '../workout-element/workout-element.entity';
+import { User } from '../../members/auth/auth.entity'
 
 @Entity()
 export class Workout {
@@ -23,6 +24,9 @@ export class Workout {
 
   @ManyToOne(() => WorkoutCategory)
   category!: WorkoutCategory;
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy!: User | null;
 
   @OneToMany(
     () => WorkoutElement,
