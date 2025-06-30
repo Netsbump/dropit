@@ -8,6 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { ComplexCategory } from '../complex-category/complex-category.entity';
 import { ExerciseComplex } from '../exercise-complex/exercise-complex.entity';
+import { User } from '../../members/auth/auth.entity';
 
 @Entity()
 export class Complex {
@@ -34,4 +35,7 @@ export class Complex {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy!: User | null;
 }

@@ -3,21 +3,28 @@ import {
   BadRequestException,
   Controller,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { ComplexService } from './complex.service';
+import { PermissionsGuard } from '../../permissions/permissions.guard';
+import { RequirePermissions } from '../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../members/organization/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../members/auth/auth.decorator';
 
 const c = complexContract;
 
 @Controller()
+@UseGuards(PermissionsGuard)
 export class ComplexController {
   constructor(private readonly complexService: ComplexService) {}
 
   @TsRestHandler(c.getComplexes)
-  getComplexes(): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
+  @RequirePermissions('read')
+  getComplexes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
     return tsRestHandler(c.getComplexes, async () => {
       try {
-        const complexes = await this.complexService.getComplexes();
+        const complexes = await this.complexService.getComplexes(organizationId);
 
         return {
           status: 200,
@@ -39,10 +46,11 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.getComplex)
-  getComplex(): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
+  @RequirePermissions('read')
+  getComplex(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
     return tsRestHandler(c.getComplex, async ({ params }) => {
       try {
-        const complex = await this.complexService.getComplex(params.id);
+        const complex = await this.complexService.getComplex(params.id, organizationId);
         return {
           status: 200,
           body: complex,
@@ -63,10 +71,14 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.createComplex)
-  createComplex(): ReturnType<typeof tsRestHandler<typeof c.createComplex>> {
+  @RequirePermissions('create')
+  createComplex(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.createComplex>> {
     return tsRestHandler(c.createComplex, async ({ body }) => {
       try {
-        const newComplex = await this.complexService.createComplex(body);
+        const newComplex = await this.complexService.createComplex(body, organizationId, user.id);
         return {
           status: 201,
           body: newComplex,
@@ -91,12 +103,14 @@ export class ComplexController {
   }
 
   @TsRestHandler(c.updateComplex)
-  updateComplex(): ReturnType<typeof tsRestHandler<typeof c.updateComplex>> {
+  @RequirePermissions('update')
+  updateComplex(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateComplex>> {
     return tsRestHandler(c.updateComplex, async ({ params, body }) => {
       try {
         const updatedComplex = await this.complexService.updateComplex(
           params.id,
-          body
+          body,
+          organizationId
         );
         return {
           status: 200,

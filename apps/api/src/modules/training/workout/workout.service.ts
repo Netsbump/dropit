@@ -17,14 +17,21 @@ import {
 } from '../workout-element/workout-element.entity';
 import { Workout } from './workout.entity';
 import { WorkoutMapper } from './workout.mapper';
-import { Organization } from '../../members/organization/organization.entity';
+import { OrganizationService } from '../../members/organization/organization.service';
 
 @Injectable()
 export class WorkoutService {
-  constructor(private readonly em: EntityManager) {}
+  constructor(
+    private readonly em: EntityManager,
+    private readonly organizationService: OrganizationService
+  ) {}
 
-  async getWorkouts(): Promise<WorkoutDto[]> {
-    const workouts = await this.em.findAll(Workout, {
+  async getWorkouts(organizationId: string): Promise<WorkoutDto[]> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    const workouts = await this.em.find(Workout, {
+      ...filterConditions,
+    }, {
       populate: [
         'category',
         'elements',
@@ -123,10 +130,15 @@ export class WorkoutService {
     return formattedWorkouts;
   }
 
-  async getWorkout(id: string): Promise<WorkoutDto> {
+  async getWorkout(id: string, organizationId: string): Promise<WorkoutDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const workout = await this.em.findOne(
       Workout,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       {
         populate: [
           'category',
@@ -147,84 +159,9 @@ export class WorkoutService {
     }
 
     return WorkoutMapper.toDto(workout);
-
-    // const formattedElements = [];
-
-    // for (const element of workout.elements.getItems()) {
-    //   const baseElement = {
-    //     id: element.id,
-    //     order: element.order,
-    //     reps: element.reps,
-    //     sets: element.sets,
-    //     rest: element.rest,
-    //     startWeight_percent: element.startWeight_percent,
-    //   };
-
-    //   if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE && element.exercise) {
-    //     formattedElements.push({
-    //       ...baseElement,
-    //       type: 'exercise' as const,
-    //       exercise: {
-    //         id: element.exercise.id,
-    //         name: element.exercise.name,
-    //         description: element.exercise.description,
-    //         exerciseCategory: {
-    //           id: element.exercise.exerciseCategory.id,
-    //           name: element.exercise.exerciseCategory.name,
-    //         },
-    //         video: element.exercise.video?.id,
-    //         englishName: element.exercise.englishName,
-    //         shortName: element.exercise.shortName,
-    //       },
-    //     });
-    //   } else if (
-    //     element.type === WORKOUT_ELEMENT_TYPES.COMPLEX &&
-    //     element.complex
-    //   ) {
-    //     formattedElements.push({
-    //       ...baseElement,
-    //       type: 'complex' as const,
-    //       complex: {
-    //         id: element.complex.id,
-    //         name: element.complex.name,
-    //         description: element.complex.description,
-    //         complexCategory: {
-    //           id: element.complex.complexCategory.id,
-    //           name: element.complex.complexCategory.name,
-    //         },
-    //         exercises: element.complex.exercises.getItems().map((ex) => ({
-    //           id: ex.exercise.id,
-    //           name: ex.exercise.name,
-    //           description: ex.exercise.description,
-    //           exerciseCategory: {
-    //             id: ex.exercise.exerciseCategory.id,
-    //             name: ex.exercise.exerciseCategory.name,
-    //           },
-    //           video: ex.exercise.video?.id,
-    //           englishName: ex.exercise.englishName,
-    //           shortName: ex.exercise.shortName,
-    //           order: ex.order,
-    //           reps: ex.reps,
-    //         })),
-    //       },
-    //     });
-    //   }
-    // }
-
-    // return {
-    //   id: workout.id,
-    //   title: workout.title,
-    //   workoutCategory: workout.category.name,
-    //   description: workout.description,
-    //   elements: formattedElements,
-    // };
   }
 
-  async createWorkout(workout: CreateWorkout, organizationId: string): Promise<WorkoutDto> {
-    if (!workout.title) {
-      throw new BadRequestException('Workout title is required');
-    }
-
+  async createWorkout(workout: CreateWorkout, organizationId: string, userId: string): Promise<WorkoutDto> {
     if (!workout.elements || workout.elements.length === 0) {
       throw new BadRequestException('Workout must have at least one element');
     }
@@ -243,6 +180,10 @@ export class WorkoutService {
     workoutToCreate.title = workout.title;
     workoutToCreate.description = workout.description || '';
     workoutToCreate.category = category;
+
+    // Assigner le coach créateur
+    const user = await this.organizationService.getUserById(userId);
+    workoutToCreate.createdBy = user;
 
     for (const element of workout.elements) {
       const workoutElement = new WorkoutElement();
@@ -285,10 +226,8 @@ export class WorkoutService {
 
     // Si une session d'entrainement est demandée, la créer
     if (workout.trainingSession) {
-      const organization = await this.em.findOne(Organization, { id: organizationId });
-      if (!organization) {
-        throw new NotFoundException(`Organization with ID ${organizationId} not found`);
-      }
+      const organization = await this.organizationService.getOrganizationById(organizationId);
+      
       // Vérifier que tous les athlètes existent
       const athletes: Athlete[] = [];
       for (const athleteId of workout.trainingSession.athleteIds) {
@@ -317,13 +256,18 @@ export class WorkoutService {
       await this.em.flush();
     }
 
-    return this.getWorkout(workoutToCreate.id);
+    return this.getWorkout(workoutToCreate.id, organizationId);
   }
 
-  async updateWorkout(id: string, workout: UpdateWorkout): Promise<WorkoutDto> {
+  async updateWorkout(id: string, workout: UpdateWorkout, organizationId: string): Promise<WorkoutDto> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const workoutToUpdate = await this.em.findOne(
       Workout,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       { populate: ['elements'] }
     );
     if (!workoutToUpdate) {
@@ -401,13 +345,18 @@ export class WorkoutService {
 
     await this.em.flush();
 
-    return this.getWorkout(id);
+    return this.getWorkout(id, organizationId);
   }
 
-  async deleteWorkout(id: string): Promise<void> {
+  async deleteWorkout(id: string, organizationId: string): Promise<void> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
     const workoutToDelete = await this.em.findOne(
       Workout,
-      { id },
+      {
+        id,
+        ...filterConditions,
+      },
       { populate: ['elements'] }
     );
     if (!workoutToDelete) {

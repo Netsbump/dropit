@@ -9,6 +9,8 @@ import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { ExerciseService } from './exercise.service';
 import { PermissionsGuard } from '../../permissions/permissions.guard';
 import { RequirePermissions } from '../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../members/organization/organization.decorator';
+import { CurrentUser, AuthenticatedUser } from '../../members/auth/auth.decorator';
 
 const c = exerciseContract;
 
@@ -19,10 +21,10 @@ export class ExerciseController {
 
   @TsRestHandler(c.getExercises)
   @RequirePermissions('read')
-  getExercises(): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
+  getExercises(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
       try {
-        const exercises = await this.exerciseService.getExercises();
+        const exercises = await this.exerciseService.getExercises(organizationId);
 
         return {
           status: 200,
@@ -45,10 +47,10 @@ export class ExerciseController {
 
   @TsRestHandler(c.getExercise)
   @RequirePermissions('read')
-  getExercise(): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
+  getExercise(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
       try {
-        const exercise = await this.exerciseService.getExercise(params.id);
+        const exercise = await this.exerciseService.getExercise(params.id, organizationId);
 
         return {
           status: 200,
@@ -69,10 +71,10 @@ export class ExerciseController {
 
   @TsRestHandler(c.createExercise)
   @RequirePermissions('create')
-  createExercise(): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
+  createExercise(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
     return tsRestHandler(c.createExercise, async ({ body }) => {
       try {
-        const newExercise = await this.exerciseService.createExercise(body);
+        const newExercise = await this.exerciseService.createExercise(body, user.id);
         return {
           status: 201,
           body: newExercise,
@@ -98,12 +100,13 @@ export class ExerciseController {
 
   @TsRestHandler(c.updateExercise)
   @RequirePermissions('update')
-  updateExercise(): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
+  updateExercise(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
     return tsRestHandler(c.updateExercise, async ({ params, body }) => {
       try {
         const updatedExercise = await this.exerciseService.updateExercise(
           params.id,
-          body
+          body,
+          organizationId
         );
 
         return {
@@ -125,10 +128,10 @@ export class ExerciseController {
 
   @TsRestHandler(c.deleteExercise)
   @RequirePermissions('delete')
-  deleteExercise(): ReturnType<typeof tsRestHandler<typeof c.deleteExercise>> {
+  deleteExercise(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteExercise>> {
     return tsRestHandler(c.deleteExercise, async ({ params }) => {
       try {
-        await this.exerciseService.deleteExercise(params.id);
+        await this.exerciseService.deleteExercise(params.id, organizationId);
 
         return {
           status: 200,
@@ -149,12 +152,13 @@ export class ExerciseController {
 
   @TsRestHandler(c.searchExercises)
   @RequirePermissions('read')
-  searchExercises(): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
+  searchExercises(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
       try {
         // Contrat : query = { like: z.string() }
         const exerciseFound = await this.exerciseService.searchExercises(
-          query.like
+          query.like,
+          organizationId
         );
 
         return {

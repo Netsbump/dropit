@@ -134,6 +134,7 @@ export async function seedExercises(
     exerciseToCreate.exerciseCategory = categories[exercise.category];
     exerciseToCreate.englishName = exercise.englishName;
     exerciseToCreate.shortName = exercise.shortName;
+    exerciseToCreate.createdBy = null;
     await em.persistAndFlush(exerciseToCreate);
     exercisesMap[exercise.name] = exerciseToCreate;
     console.log('Exercise created:', exerciseToCreate);

@@ -12,12 +12,6 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    // Skip authentication in test environment
-    if (process.env.NODE_ENV === 'test') {
-      console.log('🧪 [AuthGuard] Test environment detected, skipping authentication');
-      return true;
-    }
-
     const request = context.switchToHttp().getRequest();
     const endpoint = `${request.method} ${request.url}`;
     

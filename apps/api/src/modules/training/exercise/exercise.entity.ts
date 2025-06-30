@@ -10,6 +10,7 @@ import { Media } from '../../core/media/media.entity';
 import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
 import { ExerciseCategory } from '../exercise-category/exercise-category.entity';
 import { ExerciseComplex } from '../exercise-complex/exercise-complex.entity';
+import { User } from '../../members/auth/auth.entity';
 
 @Entity()
 export class Exercise {
@@ -33,6 +34,9 @@ export class Exercise {
 
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy!: User | null;
 
   @ManyToOne(() => ExerciseCategory)
   exerciseCategory!: ExerciseCategory;

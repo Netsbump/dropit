@@ -7,11 +7,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { Public } from '../../members/auth/auth.decorator';
+import { AuthenticatedUser, Public } from '../../members/auth/auth.decorator';
 import { WorkoutService } from './workout.service';
 import { PermissionsGuard } from '../../permissions/permissions.guard';
 import { RequirePermissions } from '../../permissions/permissions.decorator';
 import { CurrentOrganization } from '../../members/organization/organization.decorator';
+import { CurrentUser } from '../../members/auth/auth.decorator';
 
 const c = workoutContract;
 
@@ -22,10 +23,10 @@ export class WorkoutController {
 
   @TsRestHandler(c.getWorkouts)
   @RequirePermissions('read')
-  getWorkouts(): ReturnType<typeof tsRestHandler<typeof c.getWorkouts>> {
+  getWorkouts(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getWorkouts>> {
     return tsRestHandler(c.getWorkouts, async () => {
       try {
-        const workouts = await this.workoutService.getWorkouts();
+        const workouts = await this.workoutService.getWorkouts(organizationId);
 
         return {
           status: 200,
@@ -48,10 +49,10 @@ export class WorkoutController {
 
   @TsRestHandler(c.getWorkout)
   @RequirePermissions('read')
-  getWorkout(): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
+  getWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
     return tsRestHandler(c.getWorkout, async ({ params }) => {
       try {
-        const workout = await this.workoutService.getWorkout(params.id);
+        const workout = await this.workoutService.getWorkout(params.id, organizationId);
 
         return {
           status: 200,
@@ -74,10 +75,13 @@ export class WorkoutController {
 
   @TsRestHandler(c.createWorkout)
   @RequirePermissions('create')
-  createWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
+  createWorkout(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
       try {
-        const workout = await this.workoutService.createWorkout(body, organizationId);
+        const workout = await this.workoutService.createWorkout(body, organizationId, user.id);
         return {
           status: 201,
           body: workout,
@@ -99,12 +103,13 @@ export class WorkoutController {
 
   @TsRestHandler(c.updateWorkout)
   @RequirePermissions('update')
-  updateWorkout(): ReturnType<typeof tsRestHandler<typeof c.updateWorkout>> {
+  updateWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateWorkout>> {
     return tsRestHandler(c.updateWorkout, async ({ params, body }) => {
       try {
         const workout = await this.workoutService.updateWorkout(
           params.id,
-          body
+          body,
+          organizationId
         );
 
         return {
@@ -128,10 +133,10 @@ export class WorkoutController {
 
   @TsRestHandler(c.deleteWorkout)
   @RequirePermissions('delete')
-  deleteWorkout(): ReturnType<typeof tsRestHandler<typeof c.deleteWorkout>> {
+  deleteWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteWorkout>> {
     return tsRestHandler(c.deleteWorkout, async ({ params }) => {
       try {
-        await this.workoutService.deleteWorkout(params.id);
+        await this.workoutService.deleteWorkout(params.id, organizationId);
 
         return {
           status: 200,
