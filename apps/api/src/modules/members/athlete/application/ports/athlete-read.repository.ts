@@ -19,6 +19,6 @@ export type AthleteDetails = AthleteBasics & {
 };
 
 export interface AthleteReadRepository {
-    findOneWithDetails(athleteId: string): Promise<AthleteDetails | null>;
-    findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
+  findOneWithDetails(athleteId: string): Promise<AthleteDetails | null>;
+  findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
 }
