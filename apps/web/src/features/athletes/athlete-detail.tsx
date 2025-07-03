@@ -22,7 +22,7 @@ import {
 } from '@/shared/components/ui/tabs';
 import { useTranslation } from '@dropit/i18n';
 import {
-  AthleteDto,
+  AthleteDetailsDto,
   CompetitorLevel,
   CreateCompetitorStatus,
   PersonalRecordDto,
@@ -43,7 +43,7 @@ import { Dumbbell, Pencil, Plus } from 'lucide-react';
 import { Form, useForm } from 'react-hook-form';
 
 type AthleteDetailProps = {
-  athlete: AthleteDto;
+  athlete: AthleteDetailsDto;
   personalRecords?: PersonalRecordDto[];
   personalRecordsLoading?: boolean;
   isEditingCompetitorStatus: boolean;

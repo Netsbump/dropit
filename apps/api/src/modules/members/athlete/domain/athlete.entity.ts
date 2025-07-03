@@ -1,20 +1,18 @@
 import {
   Collection,
   Entity,
-  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
-import { CompetitorStatus } from '../../performance/competitor-status/competitor-status.entity';
-import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
-import { PhysicalMetric } from '../../performance/physical-metric/physical-metric.entity';
-import { User } from '../auth/auth.entity';
-import { AthleteRepository } from './athlete.repository';
+import { AthleteTrainingSession } from '../../../performance/athlete-training-session/athlete-training-session.entity';
+import { CompetitorStatus } from '../../../performance/competitor-status/competitor-status.entity';
+import { PersonalRecord } from '../../../performance/personal-record/personal-record.entity';
+import { PhysicalMetric } from '../../../performance/physical-metric/physical-metric.entity';
+import { User } from '../../auth/auth.entity';
 
-@Entity({ repository: () => AthleteRepository })
+@Entity()
 export class Athlete {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;

@@ -23,7 +23,7 @@ import {
   TableRow,
 } from '@/shared/components/ui/table';
 import { useTranslation } from '@dropit/i18n';
-import { AthleteDto } from '@dropit/schemas';
+import { AthleteDetailsDto } from '@dropit/schemas';
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -40,8 +40,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useState } from 'react';
 
 interface DataTableProps<TValue> {
-  columns: ColumnDef<AthleteDto, TValue>[];
-  data: AthleteDto[];
+  columns: ColumnDef<AthleteDetailsDto, TValue>[];
+  data: AthleteDetailsDto[];
   onDialogCreation: (open: boolean) => void;
   onRowClick?: (id: string) => void;
   searchColumn?: string;

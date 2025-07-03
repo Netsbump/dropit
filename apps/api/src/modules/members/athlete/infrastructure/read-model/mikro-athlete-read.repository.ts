@@ -1,32 +1,17 @@
-import { CreateAthlete } from '@dropit/schemas';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
-import { Athlete } from './athlete.entity';
+import { PersonalRecord } from '../../../../performance/personal-record/personal-record.entity';
+import { Athlete } from '../../domain/athlete.entity';
+import { AthleteReadRepository, AthleteDetails } from '../../application/ports/athlete-read.repository';
 
-export type AthleteBasics = Pick<
-  Athlete,
-  'id' | 'firstName' | 'lastName' | 'birthday' | 'country'
->;
-
-export type AthleteDetails = AthleteBasics & {
-  email: string;
-  image: string;
-  weight: number;
-  level: string;
-  sex_category: string;
-  weight_category: string;
-  pr_snatch?: number;
-  pr_cleanAndJerk?: number;
-};
 @Injectable()
-export class AthleteRepository extends EntityRepository<Athlete> {
+export class MikroAthleteReadRepository extends EntityRepository<Athlete> implements AthleteReadRepository {
   constructor(public readonly em: EntityManager) {
     super(em, Athlete);
   }
 
-  // petit helper pour ne pas caster partout
+  // helper to avoid casting everywhere
   private get sql(): SqlEntityManager {
     return this.em as unknown as SqlEntityManager;
   }
@@ -119,52 +104,5 @@ export class AthleteRepository extends EntityRepository<Athlete> {
     }
 
     return athletes[0] as AthleteDetails;
-  }
-
-  async createAthlete(data: CreateAthlete): Promise<AthleteDetails> {
-    const athlete = new Athlete();
-    athlete.firstName = data.firstName;
-    athlete.lastName = data.lastName;
-    athlete.birthday = new Date(data.birthday);
-    athlete.country = data.country;
-
-    await this.em.persistAndFlush(athlete);
-    return this.findOneWithDetails(athlete.id);
-  }
-
-  async updateAthlete(
-    id: string,
-    data: Partial<CreateAthlete>
-  ): Promise<AthleteDetails> {
-    const athlete = await this.em.findOne(Athlete, { id });
-    if (!athlete) {
-      throw new NotFoundException('Athlete not found');
-    }
-
-    if (data.firstName !== undefined) {
-      athlete.firstName = data.firstName;
-    }
-
-    if (data.lastName !== undefined) {
-      athlete.lastName = data.lastName;
-    }
-
-    if (data.birthday !== undefined) {
-      athlete.birthday = new Date(data.birthday);
-    }
-
-    if (data.country !== undefined) {
-      athlete.country = data.country;
-    }
-
-    await this.em.persistAndFlush(athlete);
-    return this.findOneWithDetails(athlete.id);
-  }
-
-  async deleteAthlete(id: string): Promise<void> {
-    const athlete = await this.em.findOne(Athlete, { id });
-    if (athlete) {
-      await this.em.removeAndFlush(athlete);
-    }
   }
 }

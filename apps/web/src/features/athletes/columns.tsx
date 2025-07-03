@@ -5,10 +5,10 @@ import {
 } from '@/shared/components/ui/avatar';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
-import { AthleteDto } from '@dropit/schemas';
+import { AthleteDetailsDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
 
-export const columns: ColumnDef<AthleteDto>[] = [
+export const columns: ColumnDef<AthleteDetailsDto>[] = [
   {
     id: 'select',
     header: ({ table }) => (
