@@ -10,3 +10,7 @@ import { SetMetadata } from "@nestjs/common";
  */
 export const RequirePermissions = (...permissions: string[]) => 
   SetMetadata('REQUIRED_PERMISSIONS', permissions);
+
+export const NO_ORGANIZATION = 'NO_ORGANIZATION';
+export const NoOrganization = () => 
+  SetMetadata(NO_ORGANIZATION, true);

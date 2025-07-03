@@ -3,6 +3,7 @@ import { Reflector } from '@nestjs/core';
 import { member, admin, owner } from '@dropit/permissions';
 import { EntityManager } from '@mikro-orm/core';
 import { Member } from '../members/organization/organization.entity';
+import { NO_ORGANIZATION } from './permissions.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -21,52 +22,50 @@ export class PermissionsGuard implements CanActivate {
       if (!user) {
         throw new ForbiddenException('User not found in session');
       }
+      
+      // 2. Récupérer les permissions requises depuis le décorateur
+      const requiredPermissions = this.reflector.get<string[]>('REQUIRED_PERMISSIONS', context.getHandler());
 
-      // 2. Vérifier que l'utilisateur appartient bien à une organisation
+      // Si pas de permissions requises, accès autorisé
+      if (!requiredPermissions || requiredPermissions.length === 0) {
+        return true;
+      }
+
+      // 3. Vérifier si c'est une action sans organisation
+      const noOrganization = this.reflector.get<boolean>(NO_ORGANIZATION, context.getHandler());
+  
+      if (noOrganization) {
+        // ✅ Action sans organisation - vérifier seulement l'authentification
+        console.log('✅ [PermissionsGuard] No-org action granted');
+        return true;
+      }
+
+      // 4. Déterminer la ressource depuis le nom du controller
+      const controllerName = context.getClass().name;
+      const resource = controllerName
+      .replace('Controller', '')
+      .replace(/^([A-Z])/, (match) => match.toLowerCase()) // Première lettre en minuscule
+      .replace(/([A-Z])/g, (match) => match); // Garde les autres majuscules
+       
+      // 5. Vérifier que l'utilisateur appartient bien à une organisation
       const organizationId = session?.session?.activeOrganizationId;
       if (!organizationId) {
         throw new ForbiddenException('User does not belong to an organization');
       }
 
-
-      // 3. Récupérer le rôle de l'utilisateur dans l'organisation
+      // 6. Récupérer le rôle de l'utilisateur dans l'organisation
       const memberRecord = await this.em.findOne(Member, {
         user: { id: user.id },
         organization: { id: organizationId },
       });
 
-     
       if (!memberRecord) {
         throw new ForbiddenException('User is not a member of this organization');
       }
 
       const organizationRole = memberRecord.role;
 
-      // 4. Récupérer les permissions requises depuis le décorateur
-      const requiredPermissions = this.reflector.get<string[]>('REQUIRED_PERMISSIONS', context.getHandler());
-      
-      // Si pas de permissions requises, accès autorisé
-      if (!requiredPermissions || requiredPermissions.length === 0) {
-        return true;
-      }
-
-      // 5. Déterminer la ressource depuis le nom du controller
-      const controllerName = context.getClass().name;
-      const resource = controllerName
-      .replace('Controller', '')
-      .replace(/^([A-Z])/, (match) => match.toLowerCase()) // Première lettre en minuscule
-      .replace(/([A-Z])/g, (match) => match); // Garde les autres majuscules
-      
-      console.log('🔐 [PermissionsGuard] Checking permissions:', {
-        user: user.id,
-        organizationId,
-        resource,
-        requiredPermissions,
-        organizationRole,
-        endpoint: `${request.method} ${request.url}`
-      });
-
-      // 6. Vérification basée sur le rôle d'organisation en utilisant les permissions définies
+      // 7. Vérification basée sur le rôle d'organisation en utilisant les permissions définies
       const hasPermission = this.checkUserRolePermissions(organizationRole, resource, requiredPermissions);
 
       if (hasPermission) {

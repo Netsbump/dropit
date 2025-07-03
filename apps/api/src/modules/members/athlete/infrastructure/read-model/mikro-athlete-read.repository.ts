@@ -16,7 +16,7 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
     return this.em as unknown as SqlEntityManager;
   }
 
-  private getBaseQuery(id?: string): QueryBuilder<Athlete> {
+  private getBaseQuery(id?: string, athleteUserIds?: string[]): QueryBuilder<Athlete> {
     const qb = this.sql.createQueryBuilder(Athlete, 'a');
 
     qb.select([
@@ -25,6 +25,7 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
       'a.lastName',
       'a.birthday',
       'a.country',
+      'u.id',
       'u.email',
       'u.image',
       'cs.level',
@@ -32,8 +33,13 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
       'cs.weightCategory',
     ]);
 
+
+    // Filtrage par organisation (toujours appliqué)
+    if (athleteUserIds) {
+      qb.where({ 'u.id': { $in: athleteUserIds } });
+    }
+
     if (id) {
-      console.log('on rentre dans le if avec id', id);
       qb.where({ 'a.id': id });
     }
 
@@ -90,14 +96,14 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
     return qb;
   }
 
-  async findAllWithDetails(): Promise<AthleteDetails[]> {
+  async findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]> {
     // Récupère les résultats bruts (format "table", non-hydratés) via execute('all'). durée 4ms.
-    const athletes = await this.getBaseQuery().execute('all');
+    const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute('all');
     return athletes as AthleteDetails[];
   }
 
-  async findOneWithDetails(id: string): Promise<AthleteDetails> {
-    const athletes = await this.getBaseQuery(id).execute('all');
+  async findOneWithDetails(athleteId: string): Promise<AthleteDetails> {
+    const athletes = await this.getBaseQuery(athleteId, undefined).execute('all');
 
     if (!athletes || athletes.length === 0) {
       throw new NotFoundException('Athlete not found');

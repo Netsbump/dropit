@@ -24,6 +24,7 @@ import { EmailModule } from '../../core/email/email.module';
 import { AFTER_HOOK_KEY, BEFORE_HOOK_KEY, HOOK_KEY } from './auth.decorator';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { UserService } from './user.service';
 
 @Global()
 @Module({
@@ -31,12 +32,13 @@ import { AuthService } from './auth.service';
   providers: [
     AuthService, 
     AuthGuard,
+    UserService,
     {
       provide: APP_GUARD,
       useClass: AuthGuard,
     },
   ],
-  exports: [AuthService, AuthGuard],
+  exports: [AuthService, AuthGuard, UserService],
 })
 export class AuthModule implements NestModule, OnModuleInit {
   constructor(
