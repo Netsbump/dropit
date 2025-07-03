@@ -33,7 +33,7 @@ export const member = ac.newRole({
   workout: ["read"],
   exercise: ["read"],
   complex: ["read"],
-  athlete: ["read"],
+  athlete: ["read", "create", "update", "delete"],
   session: ["read"],
   personalRecord: ["read", "create"],
   trainingSession: ["read"],

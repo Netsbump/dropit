@@ -100,4 +100,36 @@ export class OrganizationService {
     }
     return organization;
   }
+
+  /**
+   * Récupère les IDs des athlètes d'une organisation
+   * @param organizationId - ID de l'organisation
+   * @returns Array des IDs des athlètes
+  */
+  async getAthleteUserIds(organizationId: string): Promise<string[]> {
+  const athleteMembers = await this.em.find(Member, {
+    organization: { id: organizationId },
+    role: 'member'
+  });
+
+  return athleteMembers.map((member) => member.user.id);
+  }
+
+  /**
+   * Vérifie si un athlète appartient à une organisation
+   * @param athleteId - ID de l'athlète
+   * @param organizationId - ID de l'organisation
+   * @throws NotFoundException si l'athlète n'appartient pas à l'organisation
+  */
+  async checkAthleteBelongsToOrganization(athleteId: string, organizationId: string): Promise<void> {
+    const member = await this.em.findOne(Member, {
+      user: { id: athleteId },
+      organization: { id: organizationId },
+      role: 'member'
+    });
+    
+    if (!member) {
+      throw new NotFoundException(`Athlete with ID ${athleteId} does not belong to organization ${organizationId}`);
+    }
+  }
 } 

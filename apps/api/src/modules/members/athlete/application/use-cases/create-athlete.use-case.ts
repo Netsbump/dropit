@@ -1,27 +1,34 @@
 import { AthleteDto, CreateAthlete } from '@dropit/schemas';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../domain/athlete.entity';
 import { ATHLETE_WRITE_REPO, AthleteWriteRepository } from '../ports/athlete-write.repository';
 import { CreatedAthletePresenter } from '../../interface/presenter/create-athlete.presenter';
+import { UserService } from '../../../auth/user.service';
 
 @Injectable()
 export class CreateAthleteUseCase {
   constructor(
     @Inject(ATHLETE_WRITE_REPO)
-    private readonly athleteWriteRepository: AthleteWriteRepository
+    private readonly athleteWriteRepository: AthleteWriteRepository,
+    private readonly userService: UserService
   ) {}
 
-  async execute(data: CreateAthlete): Promise<AthleteDto> {
+  async execute(data: CreateAthlete, userId: string): Promise<AthleteDto> {
 
     //1. Check if User exists 
-    // if (data.userId) {
-    //   const user = await this.em.findOne(User, { id: data.userId });
-    //   if (user) {
-    //     athlete.id = user.id;
-    //   }
-    // }
+    const user = await this.userService.getUserById(userId);
 
-    //2. Create Athlete
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    // 2. Check if User already has an athlete profile
+    const existingAthlete = await this.athleteWriteRepository.ofId(userId);
+    if (existingAthlete) {
+      throw new BadRequestException('User already has an athlete profile');
+    }
+
+    //3. Create Athlete
     const athlete = new Athlete();
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
@@ -29,11 +36,12 @@ export class CreateAthleteUseCase {
     if (data.country) {
       athlete.country = data.country;
     }
+    athlete.user = user;
 
-    //3. Save Athlete
+    //4. Save Athlete
     await this.athleteWriteRepository.save(athlete);
 
-    //4. Return Athlete
+    //5. Return Athlete
     return CreatedAthletePresenter.toDto(athlete);
 
   }

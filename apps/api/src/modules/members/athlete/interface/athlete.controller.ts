@@ -12,8 +12,9 @@ import { GetAthleteUseCase } from '../application/use-cases/get-athlete.use-case
 import { GetAthletesUseCase } from '../application/use-cases/get-athletes.use-case';
 import { UpdateAthleteUseCase } from '../application/use-cases/update-athlete.use-case';
 import { PermissionsGuard } from '../../../permissions/permissions.guard';
-import { RequirePermissions } from '../../../permissions/permissions.decorator';
+import { NoOrganization, RequirePermissions } from '../../../permissions/permissions.decorator';
 import { CurrentOrganization } from '../../organization/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../auth/auth.decorator';
 
 const c = apiContract.athlete;
 
@@ -34,7 +35,7 @@ export class AthleteController {
   getAthletes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
-        const athletes = await this.getAthletesUseCase.execute();
+        const athletes = await this.getAthletesUseCase.execute(organizationId);
         return { status: 200, body: athletes };
       } catch (error) {
         if (error instanceof NotFoundException) {
@@ -51,7 +52,7 @@ export class AthleteController {
   getAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
-        const athlete = await this.getAthleteUseCase.execute(params.id);
+        const athlete = await this.getAthleteUseCase.execute(params.id, organizationId);
         return { status: 200, body: athlete };
       } catch (error) {
         if (error instanceof NotFoundException) {
@@ -65,10 +66,13 @@ export class AthleteController {
   // ──────────────────────────────── POST /athlete
   @TsRestHandler(c.createAthlete)
   @RequirePermissions('create')
-  createAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
+  @NoOrganization()
+  createAthlete(    
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
     return tsRestHandler(c.createAthlete, async ({ body }) => {
       try {
-        const newAthlete = await this.createAthleteUseCase.execute(body);
+        const newAthlete = await this.createAthleteUseCase.execute(body, user.id);
         return { status: 201, body: newAthlete };
       } catch (error) {
         if (error instanceof BadRequestException) {
@@ -85,12 +89,14 @@ export class AthleteController {
   // ──────────────────────────────── PATCH /athlete/:id
   @TsRestHandler(c.updateAthlete)
   @RequirePermissions('update')
-  updateAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
+  @NoOrganization()
+  updateAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       try {
         const updated = await this.updateAthleteUseCase.execute(
           params.id,
-          body
+          body,
+          user.id
         );
         return { status: 200, body: updated };
       } catch (error) {
@@ -105,10 +111,10 @@ export class AthleteController {
   // ──────────────────────────────── DELETE /athlete/:id
   @TsRestHandler(c.deleteAthlete)
   @RequirePermissions('delete')
-  deleteAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
+  deleteAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
       try {
-        await this.deleteAthleteUseCase.execute(params.id);
+        await this.deleteAthleteUseCase.execute(params.id, user.id);
         return {
           status: 204,
           body: null,

@@ -21,6 +21,7 @@ import { DeleteAthleteUseCase } from './application/use-cases/delete-athlete.use
 import { GetAthleteUseCase } from './application/use-cases/get-athlete.use-case';
 import { GetAthletesUseCase } from './application/use-cases/get-athletes.use-case';
 import { UpdateAthleteUseCase } from './application/use-cases/update-athlete.use-case';
+import { OrganizationModule } from '../organization/organization.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UpdateAthleteUseCase } from './application/use-cases/update-athlete.use
       entities: [Athlete, PersonalRecord],
     }),
     forwardRef(() => PersonalRecordModule),
+    forwardRef(() => OrganizationModule),
   ],
 
   controllers: [AthleteController],
