@@ -1,4 +1,5 @@
 import {
+  athleteDetailsSchema,
   athleteSchema,
   createAthleteSchema,
   updateAthleteSchema,
@@ -11,7 +12,7 @@ export const athleteContract = {
     path: '/athlete',
     summary: 'Get all athletes',
     responses: {
-      200: z.array(athleteSchema),
+      200: z.array(athleteDetailsSchema),
       404: z.object({
         message: z.string(),
       }),
@@ -29,7 +30,7 @@ export const athleteContract = {
       id: z.string(),
     }),
     responses: {
-      200: athleteSchema,
+      200: athleteDetailsSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -85,9 +86,7 @@ export const athleteContract = {
       id: z.string(),
     }),
     responses: {
-      200: z.object({
-        message: z.string(),
-      }),
+      204: z.null(),
       404: z.object({
         message: z.string(),
       }),

@@ -3,18 +3,22 @@ import {
   BadRequestException,
   Controller,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-
-import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
-import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
-import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
-import { GetAthletesUseCase } from './use-cases/get-athletes.use-case';
-import { UpdateAthleteUseCase } from './use-cases/update-athlete.use-case';
+import { CreateAthleteUseCase } from '../application/use-cases/create-athlete.use-case';
+import { DeleteAthleteUseCase } from '../application/use-cases/delete-athlete.use-case';
+import { GetAthleteUseCase } from '../application/use-cases/get-athlete.use-case';
+import { GetAthletesUseCase } from '../application/use-cases/get-athletes.use-case';
+import { UpdateAthleteUseCase } from '../application/use-cases/update-athlete.use-case';
+import { PermissionsGuard } from '../../../permissions/permissions.guard';
+import { RequirePermissions } from '../../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../organization/organization.decorator';
 
 const c = apiContract.athlete;
 
 @Controller()
+@UseGuards(PermissionsGuard)
 export class AthleteController {
   constructor(
     private readonly getAthletesUseCase: GetAthletesUseCase,
@@ -26,7 +30,8 @@ export class AthleteController {
 
   // ──────────────────────────────── GET /athlete
   @TsRestHandler(c.getAthletes)
-  getAthletes(): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
+  @RequirePermissions('read')
+  getAthletes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
         const athletes = await this.getAthletesUseCase.execute();
@@ -42,7 +47,8 @@ export class AthleteController {
 
   // ──────────────────────────────── GET /athlete/:id
   @TsRestHandler(c.getAthlete)
-  getAthlete(): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
+  @RequirePermissions('read')
+  getAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
         const athlete = await this.getAthleteUseCase.execute(params.id);
@@ -58,7 +64,8 @@ export class AthleteController {
 
   // ──────────────────────────────── POST /athlete
   @TsRestHandler(c.createAthlete)
-  createAthlete(): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
+  @RequirePermissions('create')
+  createAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
     return tsRestHandler(c.createAthlete, async ({ body }) => {
       try {
         const newAthlete = await this.createAthleteUseCase.execute(body);
@@ -77,7 +84,8 @@ export class AthleteController {
 
   // ──────────────────────────────── PATCH /athlete/:id
   @TsRestHandler(c.updateAthlete)
-  updateAthlete(): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
+  @RequirePermissions('update')
+  updateAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       try {
         const updated = await this.updateAthleteUseCase.execute(
@@ -96,13 +104,14 @@ export class AthleteController {
 
   // ──────────────────────────────── DELETE /athlete/:id
   @TsRestHandler(c.deleteAthlete)
-  deleteAthlete(): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
+  @RequirePermissions('delete')
+  deleteAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
       try {
         await this.deleteAthleteUseCase.execute(params.id);
         return {
-          status: 200,
-          body: { message: 'Athlete deleted successfully' },
+          status: 204,
+          body: null,
         };
       } catch (error) {
         if (error instanceof NotFoundException) {

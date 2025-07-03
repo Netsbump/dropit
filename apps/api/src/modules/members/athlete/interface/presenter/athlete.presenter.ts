@@ -1,8 +1,8 @@
-import { AthleteDto } from '@dropit/schemas';
-import { AthleteDetails } from './athlete.repository';
+import { AthleteDetailsDto } from '@dropit/schemas';
+import { AthleteDetails } from '../../application/ports/athlete-read.repository';
 
 export const AthletePresenter = {
-  toDto(athlete: AthleteDetails): AthleteDto {
+  toDto(athlete: AthleteDetails): AthleteDetailsDto {
     return {
       id: athlete.id,
       firstName: athlete.firstName,
@@ -32,7 +32,7 @@ export const AthletePresenter = {
     };
   },
 
-  toDtoList(athletes: AthleteDetails[]): AthleteDto[] {
+  toDtoList(athletes: AthleteDetails[]): AthleteDetailsDto[] {
     return athletes.map(this.toDto);
   },
 };

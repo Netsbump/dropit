@@ -6,7 +6,7 @@ import {
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/athlete.entity';
+import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { CompetitorStatus } from './competitor-status.entity';
 
 @Injectable()

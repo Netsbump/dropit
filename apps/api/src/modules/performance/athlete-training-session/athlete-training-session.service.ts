@@ -5,15 +5,13 @@ import {
 } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/athlete.entity';
-import { AthleteRepository } from '../../members/athlete/athlete.repository';
+import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { TrainingSession } from '../training-session/training-session.entity';
 import { AthleteTrainingSession } from './athlete-training-session.entity';
 @Injectable()
 export class AthleteTrainingSessionService {
   constructor(
     private readonly em: EntityManager,
-    private readonly athleteRepository: AthleteRepository
   ) {}
 
   async getAthleteTrainingSessions(): Promise<AthleteTrainingSessionDto[]> {

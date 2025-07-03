@@ -1,30 +1,56 @@
+import { forwardRef, Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module, forwardRef } from '@nestjs/common';
+
 import { PersonalRecord } from '../../performance/personal-record/personal-record.entity';
 import { PersonalRecordModule } from '../../performance/personal-record/personal-record.module';
-import { AthleteController } from './athlete.controller';
-import { Athlete } from './athlete.entity';
-import { AthleteRepository } from './athlete.repository';
-import { CreateAthleteUseCase } from './use-cases/create-athlete.use-case';
-import { DeleteAthleteUseCase } from './use-cases/delete-athlete.use-case';
-import { GetAthleteUseCase } from './use-cases/get-athlete.use-case';
-import { GetAthletesUseCase } from './use-cases/get-athletes.use-case';
-import { UpdateAthleteUseCase } from './use-cases/update-athlete.use-case';
+
+import { Athlete } from './domain/athlete.entity';
+
+// ports (symboles)
+import { ATHLETE_READ_REPO } from './application/ports/athlete-read.repository';
+import { ATHLETE_WRITE_REPO } from './application/ports/athlete-write.repository';
+
+// implémentations MikroORM
+import { MikroAthleteReadRepository } from './infrastructure/read-model/mikro-athlete-read.repository';
+import { MikroAthleteWriteRepository } from './infrastructure/persistence/mikro-athlete-write.repository';
+
+// contrôleur & use-cases
+import { AthleteController } from './interface/athlete.controller';
+import { CreateAthleteUseCase } from './application/use-cases/create-athlete.use-case';
+import { DeleteAthleteUseCase } from './application/use-cases/delete-athlete.use-case';
+import { GetAthleteUseCase } from './application/use-cases/get-athlete.use-case';
+import { GetAthletesUseCase } from './application/use-cases/get-athletes.use-case';
+import { UpdateAthleteUseCase } from './application/use-cases/update-athlete.use-case';
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature([Athlete, PersonalRecord]),
+    // on déclare aussi les custom-repositories ici
+    MikroOrmModule.forFeature({
+      entities: [Athlete, PersonalRecord],
+    }),
     forwardRef(() => PersonalRecordModule),
   ],
+
   controllers: [AthleteController],
+
   providers: [
-    AthleteRepository,
+    // implémentations MikroORM
+    MikroAthleteReadRepository,
+    MikroAthleteWriteRepository,
+
+    // liaisons port -> implémentation
+    { provide: ATHLETE_READ_REPO,  useClass: MikroAthleteReadRepository },
+    { provide: ATHLETE_WRITE_REPO, useClass: MikroAthleteWriteRepository },
+
+    // use-cases
     GetAthletesUseCase,
     GetAthleteUseCase,
     CreateAthleteUseCase,
     UpdateAthleteUseCase,
     DeleteAthleteUseCase,
   ],
-  exports: [AthleteRepository],
+
+  // ce que d’autres modules pourront injecter
+  exports: [ATHLETE_READ_REPO, ATHLETE_WRITE_REPO],
 })
 export class AthleteModule {}

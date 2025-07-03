@@ -1,7 +1,7 @@
 import { CreateTrainingSession, TrainingSessionDto, UpdateTrainingSession } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/athlete.entity';
+import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { Workout } from '../../training/workout/workout.entity';
 import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
 import { TrainingSession } from './training-session.entity';

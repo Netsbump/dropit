@@ -7,7 +7,7 @@ import {
 import { EntityManager } from '@mikro-orm/core';
 import { wrap } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/athlete.entity';
+import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { Exercise } from '../../training/exercise/exercise.entity';
 import { PersonalRecord } from './personal-record.entity';
 

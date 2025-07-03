@@ -1,6 +1,6 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/athlete.entity';
+import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { TrainingSession } from '../training-session/training-session.entity';
 import { TrainingSessionModule } from '../training-session/training-session.module';
