@@ -2,11 +2,11 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
-import { TrainingSession } from '../training-session/training-session.entity';
+import { TrainingSession } from '../training-session/domain/training-session.entity';
 import { TrainingSessionModule } from '../training-session/training-session.module';
-import { AthleteTrainingSessionController } from './athlete-training-session.controller';
-import { AthleteTrainingSession } from './athlete-training-session.entity';
-import { AthleteTrainingSessionService } from './athlete-training-session.service';
+import { AthleteTrainingSessionController } from './interface/athlete-training-session.controller';
+import { AthleteTrainingSession } from './domain/athlete-training-session.entity';
+import { AthleteTrainingSessionUseCases } from './application/athlete-training-session.use-cases';
 
 @Module({
   imports: [
@@ -15,7 +15,7 @@ import { AthleteTrainingSessionService } from './athlete-training-session.servic
     TrainingSessionModule,
   ],
   controllers: [AthleteTrainingSessionController],
-  providers: [AthleteTrainingSessionService],
-  exports: [AthleteTrainingSessionService],
+  providers: [AthleteTrainingSessionUseCases],
+  exports: [AthleteTrainingSessionUseCases],
 })
 export class AthleteTrainingSessionModule {}

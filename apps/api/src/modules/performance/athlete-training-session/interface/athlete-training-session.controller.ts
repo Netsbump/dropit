@@ -3,22 +3,27 @@ import {
   BadRequestException,
   Controller,
   NotFoundException,
+  UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { AthleteTrainingSessionService } from './athlete-training-session.service';
+import { AthleteTrainingSessionUseCases } from '../application/athlete-training-session.use-cases';
+import { PermissionsGuard } from '../../../permissions/permissions.guard';
+import { RequirePermissions } from '../../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../members/organization/organization.decorator';
 
 const c = apiContract.athleteTrainingSession;
 
+@UseGuards(PermissionsGuard)
 @Controller()
 export class AthleteTrainingSessionController {
-  constructor(private readonly athleteTrainingSessionService: AthleteTrainingSessionService) {}
+  constructor(private readonly athleteTrainingSessionService: AthleteTrainingSessionUseCases) {}
 
   @TsRestHandler(c.getAthleteTrainingSessions)
-  getAthleteTrainingSessions(): ReturnType<typeof tsRestHandler<typeof c.getAthleteTrainingSessions>> {
+  @RequirePermissions('read')
+  getAthleteTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthleteTrainingSessions>> {
     return tsRestHandler(c.getAthleteTrainingSessions, async () => {
       try {
-        const athleteTrainingSessions =
-          await this.athleteTrainingSessionService.getAthleteTrainingSessions();
+        const athleteTrainingSessions = await this.athleteTrainingSessionService.getAllAthleteTrainingSessions(organizationId);
         return { status: 200, body: athleteTrainingSessions };
       } catch (error) {
         if (error instanceof NotFoundException) {
@@ -30,6 +35,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.getAthleteTrainingSession)
+  @RequirePermissions('read')
   getAthleteTrainingSession(): ReturnType<typeof tsRestHandler<typeof c.getAthleteTrainingSession>> {
     return tsRestHandler(c.getAthleteTrainingSession, async ({ params }) => {
       try {
@@ -49,6 +55,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.getAthleteTrainingSessionsByAthlete)
+  @RequirePermissions('read')
   getAthleteTrainingSessionsByAthlete(): ReturnType<typeof tsRestHandler<typeof c.getAthleteTrainingSessionsByAthlete>> {
     return tsRestHandler(c.getAthleteTrainingSessionsByAthlete, async ({ params }) => {
       try {
@@ -67,6 +74,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.getAthleteTrainingSessionsByTrainingSession)
+  @RequirePermissions('read')
   getAthleteTrainingSessionsByTrainingSession(): ReturnType<typeof tsRestHandler<typeof c.getAthleteTrainingSessionsByTrainingSession>> {
     return tsRestHandler(c.getAthleteTrainingSessionsByTrainingSession, async ({ params }) => {
       try {
@@ -85,6 +93,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.createAthleteTrainingSession)
+  @RequirePermissions('create')
   createAthleteTrainingSession(): ReturnType<typeof tsRestHandler<typeof c.createAthleteTrainingSession>> {
     return tsRestHandler(c.createAthleteTrainingSession, async ({ body }) => {
       try {
@@ -104,6 +113,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.updateAthleteTrainingSession)
+  @RequirePermissions('update')
   updateAthleteTrainingSession(): ReturnType<typeof tsRestHandler<typeof c.updateAthleteTrainingSession>> {
     return tsRestHandler(c.updateAthleteTrainingSession, async ({ params, body }) => {
       try {
@@ -127,6 +137,7 @@ export class AthleteTrainingSessionController {
   }
 
   @TsRestHandler(c.deleteAthleteTrainingSession)
+  @RequirePermissions('delete')
   deleteAthleteTrainingSession(): ReturnType<typeof tsRestHandler<typeof c.deleteAthleteTrainingSession>> {
     return tsRestHandler(c.deleteAthleteTrainingSession, async ({ params }) => {
       try {

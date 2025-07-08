@@ -1,8 +1,8 @@
 import { TrainingSessionDto } from '@dropit/schemas';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TrainingSession } from './training-session.entity';
-import { TrainingSessionMapper } from './training-session.mapper';
+import { TrainingSession } from './domain/training-session.entity';
+import { TrainingSessionMapper } from './interface/training-session.mapper';
 
 @Injectable()
 export class TrainingSessionRepository extends EntityRepository<TrainingSession> {

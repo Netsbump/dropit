@@ -18,7 +18,7 @@ export class GetAthletesUseCase {
     const organization = await this.organizationService.getOrganizationById(organizationId);
 
     //2. Get athletes ids from organization
-    const athleteUserIds = await this.organizationService.getAthleteUserIds(organizationId);
+    const athleteUserIds = await this.organizationService.getAthleteUserIds(organization.id);
 
     //3. Get athletes from repository
     const athletes = await this.athleteReadRepository.findAllWithDetails(athleteUserIds);

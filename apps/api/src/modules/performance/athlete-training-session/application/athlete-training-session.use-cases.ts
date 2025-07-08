@@ -5,27 +5,40 @@ import {
 } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/domain/athlete.entity';
-import { TrainingSession } from '../training-session/training-session.entity';
-import { AthleteTrainingSession } from './athlete-training-session.entity';
+import { Athlete } from '../../../members/athlete/domain/athlete.entity';
+import { TrainingSession } from '../../training-session/domain/training-session.entity';
+import { AthleteTrainingSession } from '../domain/athlete-training-session.entity';
+import { AthleteTrainingSessionPresenter } from '../interface/athlete-training-session.presenter';
+import { AthleteTrainingSessionRepository } from './athlete-training-session.repository';
+import { OrganizationService } from '../../../members/organization/organization.service';
+
 @Injectable()
-export class AthleteTrainingSessionService {
+export class AthleteTrainingSessionUseCases {
   constructor(
     private readonly em: EntityManager,
+    private readonly athleteTrainingSessionRepository: AthleteTrainingSessionRepository,
+    private readonly organizationService: OrganizationService,
   ) {}
 
-  async getAthleteTrainingSessions(): Promise<AthleteTrainingSessionDto[]> {
-    const athleteSessions = await this.em.find(
-      AthleteTrainingSession,
-      {},
-      { populate: ['athlete', 'trainingSession'] }
-    );
-    return athleteSessions.map((athleteSession) =>
-      this.mapToDto(athleteSession)
-    );
+  async getAllAthleteTrainingSessions(organizationId: string): Promise<AthleteTrainingSessionDto[]> {
+
+   //1. Validate organization
+   const organization = await this.organizationService.getOrganizationById(organizationId);
+
+   //2. Get athletes ids from organization
+   const athleteUserIds = await this.organizationService.getAthleteUserIds(organization.id);
+
+   //3. Get athleteTrainingSessions from repository
+   const athleteTrainingSessions = await this.athleteTrainingSessionRepository.getAll(athleteUserIds);
+
+    if (!athleteTrainingSessions) {
+      throw new NotFoundException('AthleteTrainingSessions not found');
+    }
+
+    return AthleteTrainingSessionPresenter.toDtoList(athleteTrainingSessions);
   }
 
-  async getAthleteTrainingSession(
+  async getOneAthleteTrainingSession(
     athleteId: string,
     sessionId: string
   ): Promise<AthleteTrainingSessionDto> {
@@ -37,7 +50,7 @@ export class AthleteTrainingSessionService {
     if (!athleteSession) {
       throw new NotFoundException('AthleteTrainingSession not found');
     }
-    return this.mapToDto(athleteSession);
+    return AthleteTrainingSessionPresenter.toDto(athleteSession);
   }
 
   async getAthleteTrainingSessionsByAthlete(
@@ -48,9 +61,7 @@ export class AthleteTrainingSessionService {
       { athlete: { id: athleteId } },
       { populate: ['athlete', 'trainingSession'] }
     );
-    return athleteSessions.map((athleteSession) =>
-      this.mapToDto(athleteSession)
-    );
+    return AthleteTrainingSessionPresenter.toDtoList(athleteSessions);
   }
 
   async getAthleteTrainingSessionsBySession(
@@ -61,9 +72,7 @@ export class AthleteTrainingSessionService {
       { trainingSession: { id: sessionId } },
       { populate: ['athlete', 'trainingSession'] }
     );
-    return athleteSessions.map((athleteSession) =>
-      this.mapToDto(athleteSession)
-    );
+    return AthleteTrainingSessionPresenter.toDtoList(athleteSessions);
   }
 
   async createAthleteTrainingSession(
@@ -104,7 +113,7 @@ export class AthleteTrainingSessionService {
     athleteTrainingSessionToCreate.notes_athlete = athleteTrainingSession.notes_athlete;
 
     await this.em.persistAndFlush(athleteTrainingSessionToCreate);
-    return this.mapToDto(athleteTrainingSessionToCreate);
+    return AthleteTrainingSessionPresenter.toDto(athleteTrainingSessionToCreate);
   }
 
   async updateAthleteTrainingSession(
@@ -126,7 +135,7 @@ export class AthleteTrainingSessionService {
     }
 
     await this.em.persistAndFlush(athleteTrainingSessionToUpdate);
-    return this.mapToDto(athleteTrainingSessionToUpdate);
+    return AthleteTrainingSessionPresenter.toDto(athleteTrainingSessionToUpdate);
   }
 
   async deleteAthleteTrainingSession(
@@ -142,15 +151,5 @@ export class AthleteTrainingSessionService {
     }
 
     await this.em.removeAndFlush(athleteTrainingSession); 
-  }
-
-  private mapToDto(athleteTrainingSession: AthleteTrainingSession): AthleteTrainingSessionDto {
-    return {
-      athleteId: athleteTrainingSession.athlete.id,
-      trainingSessionId: athleteTrainingSession.trainingSession.id,
-      notes_athlete: athleteTrainingSession.notes_athlete,
-      createdAt: athleteTrainingSession.createdAt,
-      updatedAt: athleteTrainingSession.updatedAt,
-    };
   }
 }

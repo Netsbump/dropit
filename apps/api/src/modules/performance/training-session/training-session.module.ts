@@ -4,11 +4,11 @@ import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { Workout } from '../../training/workout/workout.entity';
 import { WorkoutModule } from '../../training/workout/workout.module';
-import { TrainingSessionController } from './training-session.controller';
-import { TrainingSession } from './training-session.entity';
-import { TrainingSessionPresenter } from './training-session.presenter';
+import { TrainingSessionController } from './interface/training-session.controller';
+import { TrainingSession } from './domain/training-session.entity';
+import { TrainingSessionPresenter } from './interface/training-session.presenter';
 import { TrainingSessionRepository } from './training-session.repository';
-import { TrainingSessionService } from './training-session.service';
+import { TrainingSessionService } from './application/training-session.service';
 import { TrainingSessionUseCase } from './training-session.use-case';
 
 @Module({

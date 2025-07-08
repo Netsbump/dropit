@@ -1,37 +1,16 @@
 import { CreateTrainingSession, TrainingSessionDto, UpdateTrainingSession } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../members/athlete/domain/athlete.entity';
-import { Workout } from '../../training/workout/workout.entity';
-import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
-import { TrainingSession } from './training-session.entity';
-import { TrainingSessionMapper } from './training-session.mapper';
-import { Organization } from '../../members/organization/organization.entity';
+import { Athlete } from '../../../members/athlete/domain/athlete.entity';
+import { Workout } from '../../../training/workout/workout.entity';
+import { AthleteTrainingSession } from '../athlete-training-session/domain/athlete-training-session.entity';
+import { TrainingSession } from '../domain/training-session.entity';
+import { TrainingSessionMapper } from '../interface/training-session.mapper';
+import { Organization } from '../../../members/organization/organization.entity';
 
 @Injectable()
 export class TrainingSessionService {
   constructor(private readonly em: EntityManager) {}
-
-  async getTrainingSessions(organizationId: string): Promise<TrainingSessionDto[]> {
-    const sessions = await this.em.find(
-      TrainingSession,
-      { organization: { id: organizationId } },
-      { populate: ['workout', 'athletes', 'athletes.athlete'] }
-    );
-    return TrainingSessionMapper.toDtoList(sessions);
-  }
-
-  async getTrainingSession(id: string, organizationId: string): Promise<TrainingSessionDto> {
-    const session = await this.em.findOne(
-      TrainingSession,
-      { id, organization: { id: organizationId } },
-      { populate: ['workout', 'athletes', 'athletes.athlete'] }
-    );
-    if (!session) {
-      throw new NotFoundException('TrainingSession not found');
-    }
-    return this.mapToDto(session);
-  }
 
   async getTrainingSessionsByAthlete(athleteId: string, organizationId: string): Promise<TrainingSessionDto[]> {
     const sessions = await this.em.find(

@@ -6,11 +6,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { TrainingSessionService } from './training-session.service';
-import { TrainingSessionUseCase } from './training-session.use-case';
-import { PermissionsGuard } from '../../permissions/permissions.guard';
-import { RequirePermissions } from '../../permissions/permissions.decorator';
-import { CurrentOrganization } from '../../members/organization/organization.decorator';
+import { TrainingSessionService } from '../application/training-session.service';
+import { TrainingSessionUseCase } from './../application/training-session.use-case';
+import { PermissionsGuard } from '../../../permissions/permissions.guard';
+import { RequirePermissions } from '../../../permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../members/organization/organization.decorator';
 
 const c = apiContract.trainingSession;
 @UseGuards(PermissionsGuard)
@@ -23,6 +23,11 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.getTrainingSessions)
   @RequirePermissions('read')
+  /*
+   * Get all training sessions
+   * @param organizationId - The organization id
+   * @returns The training sessions
+  */
   getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessions>> {
     return tsRestHandler(c.getTrainingSessions, async () => {
       return this.trainingSessionUseCase.getAll(organizationId);
@@ -31,6 +36,12 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.getTrainingSession)
   @RequirePermissions('read')
+  /*
+   * Get one training session
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @returns The training session
+  */
   getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSession>> {
     return tsRestHandler(c.getTrainingSession, async ({ params }) => {
       return this.trainingSessionUseCase.getOne(params.id, organizationId);
@@ -39,6 +50,12 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.getTrainingSessionsByAthlete)
   @RequirePermissions('read')
+  /*
+   * Get all training sessions by athlete
+   * @param organizationId - The organization id
+   * @param athleteId - The athlete id
+   * @returns The training sessions
+  */
   getTrainingSessionsByAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessionsByAthlete>> {
     return tsRestHandler(c.getTrainingSessionsByAthlete, async ({ params }) => {
       try {
@@ -56,8 +73,28 @@ export class TrainingSessionController {
     });
   }
 
+  @TsRestHandler(c.getTrainingSessionByAthlete)
+  @RequirePermissions('read')
+  /*
+   * Get one training session by athlete
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @returns The training session
+  */
+  getTrainingSessionByAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessionByAthlete>> {
+    return tsRestHandler(c.getTrainingSessionByAthlete, async ({ params }) => {
+      return this.trainingSessionUseCase.getOneByAthlete(params.id, organizationId);
+    });
+  }
+
   @TsRestHandler(c.createTrainingSession)
   @RequirePermissions('create')
+  /*
+   * Create a training session
+   * @param organizationId - The organization id
+   * @param body - The training session data
+   * @returns The created training session
+  */
   createTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createTrainingSession>> {
     return tsRestHandler(c.createTrainingSession, async ({ body }) => {
       try {
@@ -77,6 +114,13 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.updateTrainingSession)
   @RequirePermissions('update')
+  /*
+   * Update a training session
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @param body - The training session data
+   * @returns The updated training session
+  */
   updateTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateTrainingSession>> {
     return tsRestHandler(c.updateTrainingSession, async ({ params, body }) => {
       try {
@@ -98,8 +142,45 @@ export class TrainingSessionController {
     });
   }
 
+  @TsRestHandler(c.updateTrainingSessionAthlete)
+  @RequirePermissions('update')
+  /*
+   * Update a training session by athlete
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @param body - The training session data
+   * @returns The updated training session
+  */
+  updateTrainingSessionAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateTrainingSessionAthlete>> {
+    return tsRestHandler(c.updateTrainingSessionAthlete, async ({ params, body }) => {
+      return this.trainingSessionService.updateTrainingSessionAthlete(params.id, body, organizationId);
+    });
+  }
+
+  @TsRestHandler(c.updateAthleteNotes)
+  @RequirePermissions('update')
+  /*
+   * Update athlete notes
+   * @param organizationId - The organization id
+   * @param id - The training session id  
+   * @param body - The training session data
+   * @returns The updated training session
+  */
+  updateAthleteNotes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateAthleteNotes>> {
+    return tsRestHandler(c.updateAthleteNotes, async ({ params, body }) => {
+      return this.trainingSessionService.updateAthleteNotes(params.id, body, organizationId);
+    });
+  }
+
   @TsRestHandler(c.completeTrainingSession)
   @RequirePermissions('update')
+  /*
+   * Complete a training session
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @param body - The training session data
+   * @returns The completed training session
+  */
   completeTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.completeTrainingSession>> {
     return tsRestHandler(c.completeTrainingSession, async ({ params, body }) => {
       try {
@@ -120,6 +201,12 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.deleteTrainingSession) 
   @RequirePermissions('delete')
+  /*
+   * Delete a training session
+   * @param organizationId - The organization id
+   * @param id - The training session id
+   * @returns The deleted training session
+  */
     deleteTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteTrainingSession>> {
     return tsRestHandler(c.deleteTrainingSession, async ({ params }) => {
       try {
