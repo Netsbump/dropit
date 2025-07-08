@@ -11,8 +11,26 @@ import { TrainingSessionUseCase } from './../application/training-session.use-ca
 import { PermissionsGuard } from '../../../permissions/permissions.guard';
 import { RequirePermissions } from '../../../permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../members/organization/organization.decorator';
+import { CurrentUser } from '../../../members/auth/auth.decorator';
 
 const c = apiContract.trainingSession;
+
+/**
+ * Training Session Controller
+ * 
+ * @description
+ * Handles all training session related operations including CRUD operations,
+ * athlete-specific operations, and session completion workflows.
+ * 
+ * @remarks
+ * This controller uses Ts REST for type-safe API contracts and integrates
+ * with the permissions system via @UseGuards(PermissionsGuard).
+ * All endpoints require appropriate permissions (read, create, update, delete)
+ * and are scoped to the current organization.
+ * 
+ * @see {@link TrainingSessionUseCase} for business logic implementation
+ * @see {@link PermissionsGuard} for authorization handling
+ */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class TrainingSessionController {
@@ -23,28 +41,32 @@ export class TrainingSessionController {
 
   @TsRestHandler(c.getTrainingSessions)
   @RequirePermissions('read')
-  /*
-   * Get all training sessions
-   * @param organizationId - The organization id
-   * @returns The training sessions
-  */
   getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessions>> {
     return tsRestHandler(c.getTrainingSessions, async () => {
-      return this.trainingSessionUseCase.getAll(organizationId);
+      return await this.trainingSessionUseCase.getAll(organizationId);
     });
   }
 
   @TsRestHandler(c.getTrainingSession)
   @RequirePermissions('read')
-  /*
-   * Get one training session
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @returns The training session
-  */
   getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSession>> {
     return tsRestHandler(c.getTrainingSession, async ({ params }) => {
-      return this.trainingSessionUseCase.getOne(params.id, organizationId);
+      return await this.trainingSessionUseCase.getOne(params.id, organizationId);
+    });
+  }
+
+/**
+ * Creates a new training session for the current organization.
+ *
+ * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+ * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+ * @returns The newly created training session.
+ */
+  @TsRestHandler(c.createTrainingSession)
+  @RequirePermissions('create')
+  createTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof c.createTrainingSession>> {
+    return tsRestHandler(c.createTrainingSession, async ({ body }) => {
+      return this.trainingSessionUseCase.createOne(body, organizationId, userId);
     });
   }
 
@@ -87,30 +109,7 @@ export class TrainingSessionController {
     });
   }
 
-  @TsRestHandler(c.createTrainingSession)
-  @RequirePermissions('create')
-  /*
-   * Create a training session
-   * @param organizationId - The organization id
-   * @param body - The training session data
-   * @returns The created training session
-  */
-  createTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.createTrainingSession>> {
-    return tsRestHandler(c.createTrainingSession, async ({ body }) => {
-      try {
-        const newTrainingSession = await this.trainingSessionService.createTrainingSession(body, organizationId);
-        return { status: 201, body: newTrainingSession };
-      } catch (error) {
-        if (error instanceof BadRequestException) {
-          return { status: 400, body: { message: error.message } };
-        }
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
-    });
-  }
+
 
   @TsRestHandler(c.updateTrainingSession)
   @RequirePermissions('update')

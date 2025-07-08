@@ -111,4 +111,12 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
 
     return athletes[0] as AthleteDetails;
   }
+
+  async getOne(athleteId: string): Promise<Athlete | null> {
+    return await this.em.findOne(Athlete, { id: athleteId });
+  }
+
+  async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
+    return await this.em.find(Athlete, { id: { $in: athleteUserIds } });
+  }
 }

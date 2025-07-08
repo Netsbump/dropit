@@ -35,7 +35,7 @@ export class AthleteController {
   getAthletes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
-        const athletes = await this.getAthletesUseCase.execute(organizationId);
+        const athletes = await this.getAthletesUseCase.findAllWithDetails(organizationId);
         return { status: 200, body: athletes };
       } catch (error) {
         if (error instanceof NotFoundException) {
@@ -52,7 +52,7 @@ export class AthleteController {
   getAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
-        const athlete = await this.getAthleteUseCase.execute(params.id, organizationId);
+        const athlete = await this.getAthleteUseCase.findOneWithDetails(params.id, organizationId);
         return { status: 200, body: athlete };
       } catch (error) {
         if (error instanceof NotFoundException) {

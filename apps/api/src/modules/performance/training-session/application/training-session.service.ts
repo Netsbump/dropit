@@ -21,46 +21,46 @@ export class TrainingSessionService {
     return sessions.map((session) => this.mapToDto(session));
   }
 
-  async createTrainingSession(session: CreateTrainingSession, organizationId: string): Promise<TrainingSessionDto> {
-    const organization = await this.em.findOne(Organization, { id: organizationId });
-    if (!organization) {
-      throw new NotFoundException(`Organization with ID ${organizationId} not found`);
-    }
+  // async createTrainingSession(session: CreateTrainingSession, organizationId: string): Promise<TrainingSessionDto> {
+  //   const organization = await this.em.findOne(Organization, { id: organizationId });
+  //   if (!organization) {
+  //     throw new NotFoundException(`Organization with ID ${organizationId} not found`);
+  //   }
 
-    const workout = await this.em.findOne(Workout, { id: session.workoutId });
-    if (!workout) {
-      throw new NotFoundException(
-        `Workout with ID ${session.workoutId} not found`
-      );
-    }
+  //   const workout = await this.em.findOne(Workout, { id: session.workoutId });
+  //   if (!workout) {
+  //     throw new NotFoundException(
+  //       `Workout with ID ${session.workoutId} not found`
+  //     );
+  //   }
 
-    const athletes: Athlete[] = [];
-    for (const athleteId of session.athleteIds) {
-      const athlete = await this.em.findOne(Athlete, { id: athleteId });
-      if (!athlete) {
-        throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
-      }
-      athletes.push(athlete);
-    }
+  //   const athletes: Athlete[] = [];
+  //   for (const athleteId of session.athleteIds) {
+  //     const athlete = await this.em.findOne(Athlete, { id: athleteId });
+  //     if (!athlete) {
+  //       throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+  //     }
+  //     athletes.push(athlete);
+  //   }
 
-    const trainingSessionToCreate = new TrainingSession();
-    trainingSessionToCreate.workout = workout;
-    trainingSessionToCreate.scheduledDate = new Date(session.scheduledDate);
-    trainingSessionToCreate.organization = organization;
+  //   const trainingSessionToCreate = new TrainingSession();
+  //   trainingSessionToCreate.workout = workout;
+  //   trainingSessionToCreate.scheduledDate = new Date(session.scheduledDate);
+  //   trainingSessionToCreate.organization = organization;
 
-    await this.em.persistAndFlush(trainingSessionToCreate);
+  //   await this.em.persistAndFlush(trainingSessionToCreate);
 
-    for (const athlete of athletes) {
-      const athleteTrainingSession = new AthleteTrainingSession();
-      athleteTrainingSession.athlete = athlete;
-      athleteTrainingSession.trainingSession = trainingSessionToCreate;
-      this.em.persist(athleteTrainingSession);
-    }
+  //   for (const athlete of athletes) {
+  //     const athleteTrainingSession = new AthleteTrainingSession();
+  //     athleteTrainingSession.athlete = athlete;
+  //     athleteTrainingSession.trainingSession = trainingSessionToCreate;
+  //     this.em.persist(athleteTrainingSession);
+  //   }
 
-    await this.em.flush();
+  //   await this.em.flush();
 
-    return this.getTrainingSession(trainingSessionToCreate.id, organizationId);
-  }
+  //   return this.getTrainingSession(trainingSessionToCreate.id, organizationId);
+  // }
 
   async updateTrainingSession(id: string, session: UpdateTrainingSession, organizationId: string): Promise<TrainingSessionDto> {
     const trainingSessionToUpdate = await this.em.findOne(

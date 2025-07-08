@@ -1,4 +1,4 @@
-import { AthleteDetailsDto } from '@dropit/schemas';
+import { AthleteDetailsDto, AthleteDto } from '@dropit/schemas';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { AthletePresenter } from '../../interface/presenter/athlete.presenter';
 import { ATHLETE_READ_REPO, AthleteReadRepository } from '../ports/athlete-read.repository';
@@ -12,7 +12,7 @@ export class GetAthletesUseCase {
     private readonly organizationService: OrganizationService
   ) {}
 
-  async execute(organizationId: string): Promise<AthleteDetailsDto[]> {
+  async findAllWithDetails(organizationId: string): Promise<AthleteDetailsDto[]> {
 
     //1. Validate organization
     const organization = await this.organizationService.getOrganizationById(organizationId);
@@ -22,6 +22,22 @@ export class GetAthletesUseCase {
 
     //3. Get athletes from repository
     const athletes = await this.athleteReadRepository.findAllWithDetails(athleteUserIds);
+    if (!athletes) {
+      throw new NotFoundException('Athletes not found');
+    }
+    
+    return AthletePresenter.toDtoListDetails(athletes);
+  }
+
+  async findAll(organizationId: string): Promise<AthleteDto[]> {
+    //1. Validate organization
+    const organization = await this.organizationService.getOrganizationById(organizationId);
+
+    //2. Get athletes ids from organization
+    const athleteUserIds = await this.organizationService.getAthleteUserIds(organization.id);
+
+    //3. Get athletes from repository
+    const athletes = await this.athleteReadRepository.getAll(athleteUserIds);
     if (!athletes) {
       throw new NotFoundException('Athletes not found');
     }

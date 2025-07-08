@@ -130,7 +130,13 @@ export class WorkoutService {
     return formattedWorkouts;
   }
 
-  async getWorkout(id: string, organizationId: string): Promise<WorkoutDto> {
+  async getWorkout(id: string, organizationId: string): Promise<Workout | null> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    return await this.em.findOne(Workout, { id, ...filterConditions });
+  }
+
+  async getWorkoutWithDetails(id: string, organizationId: string): Promise<WorkoutDto> {
     const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
 
     const workout = await this.em.findOne(

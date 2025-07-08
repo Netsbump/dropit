@@ -1,22 +1,26 @@
-import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { TrainingSessionPresenter } from '../interface/training-session.presenter';
 import { TrainingSessionRepository } from '../application/training-session.repository';
 import { OrganizationService } from '../../../members/organization/organization.service';
 import { TrainingSessionMapper } from '../interface/training-session.mapper';
 import { CreateTrainingSession } from '@dropit/schemas';
 import { WorkoutService } from '../../../training/workout/workout.service';
-import { AthleteService } from '../../../members/athlete/athlete.service';
 import { UserService } from '../../../members/auth/user.service';
+import { TrainingSession } from '../domain/training-session.entity';
+import { AthleteTrainingSession } from '../domain/athlete-training-session.entity';
+import { AthleteTrainingSessionRepository } from '../../athlete-training-session/application/athlete-training-session.repository';
+import { AthleteReadRepository } from '../../../members/athlete/application/ports/athlete-read.repository';
 
 @Injectable()
 export class TrainingSessionUseCase {
   constructor(
     private readonly trainingSessionRepository: TrainingSessionRepository,
+    private readonly athleteTrainingSessionRepository: AthleteTrainingSessionRepository,
     private readonly trainingSessionPresenter: TrainingSessionPresenter,
     private readonly organizationService: OrganizationService,
     private readonly workoutService: WorkoutService,
-    private readonly athleteService: AthleteService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly athleteReadRepository: AthleteReadRepository
   ) {}
 
   async getOne(id: string, organizationId: string) {
@@ -90,29 +94,52 @@ export class TrainingSessionUseCase {
       //4. Check if workout exists
       const workout = await this.workoutService.getWorkout(data.workoutId, organization.id);
 
-      //5. Should I need to check if the workout is attached to this coach or is it already attached when i get the workout?
-
       if (!workout) {
         throw new NotFoundException(
           `Workout with ID ${data.workoutId} not found`
         );
       }
 
-      //6. Check if athletes exist and belong to this organization
-      for (const athleteId of data.athleteIds) {
-        const athlete = await this.athleteService.getAthleteById(athleteId);
+      //5. Get all athletes IDs from organization
+      const athleteIds = await this.organizationService.getAthleteUserIds(organizationId);
 
-        if (!athlete) {
-          throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
-        }
+      //6. Valide all requested athletes belong to this organization
+      const invalidAthleteIds = data.athleteIds.filter(athleteId => !athleteIds.includes(athleteId));
 
-        if (athlete.organization.id !== organization.id) {
-          throw new ForbiddenException('Athlete does not belong to this organization');
+      if (invalidAthleteIds.length > 0) {
+        throw new BadRequestException(`Athletes with IDs ${invalidAthleteIds.join(', ')} do not belong to this organization`);
+      }
+
+      //7. Create training session
+      const trainingSession = new TrainingSession();
+      trainingSession.workout = workout;
+      trainingSession.scheduledDate = new Date(data.scheduledDate);
+      trainingSession.organization = organization;
+
+      const createdTrainingSession = await this.trainingSessionRepository.save(trainingSession);
+
+
+      //8. Create athlete training sessions
+      const athletes = await this.athleteReadRepository.getAll(data.athleteIds);
+
+      for (const a of athletes) {
+        try {
+          const athleteTrainingSession = new AthleteTrainingSession();
+          athleteTrainingSession.athlete = a;
+          athleteTrainingSession.trainingSession = createdTrainingSession;
+          await this.athleteTrainingSessionRepository.save(athleteTrainingSession);
+        } catch (error) {
+          throw new BadRequestException(`Error creating athlete training session for athlete ${a.id}: ${error}`);
         }
       }
 
-      //7. Create session
+      //9. Map training session to DTO
+      const trainingSessionDto = TrainingSessionMapper.toDto(createdTrainingSession);
 
+      //10. Return training session
+      return this.trainingSessionPresenter.presentOne(trainingSessionDto);
+    } catch (error) {
+      return this.trainingSessionPresenter.presentCreationError(error as Error);
     }
   }
 }

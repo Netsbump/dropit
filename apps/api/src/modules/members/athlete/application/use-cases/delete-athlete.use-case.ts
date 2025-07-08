@@ -1,12 +1,14 @@
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ATHLETE_WRITE_REPO, AthleteWriteRepository } from '../ports/athlete-write.repository';
 import { UserService } from '../../../auth/user.service';
+import { AthleteReadRepository } from '../ports/athlete-read.repository';
 
 @Injectable()
 export class DeleteAthleteUseCase {
   constructor(
     @Inject(ATHLETE_WRITE_REPO)
     private readonly athleteWriteRepository: AthleteWriteRepository,
+    private readonly athleteReadRepository: AthleteReadRepository,
     private readonly userService: UserService
   ) {}
 
@@ -19,7 +21,7 @@ export class DeleteAthleteUseCase {
     }
 
     //2. Get Athlete
-    const athlete = await this.athleteWriteRepository.ofId(idAthlete);
+    const athlete = await this.athleteReadRepository.getOne(idAthlete);
 
     if (!athlete) {
       throw new NotFoundException('Athlete not found');
