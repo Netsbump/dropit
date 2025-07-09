@@ -6,9 +6,9 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { Workout } from '../../training/workout/workout.entity';
-import { AthleteTrainingSession } from '../athlete-training-session/athlete-training-session.entity';
-import { Organization } from '../../members/organization/organization.entity';
+import { Workout } from '../../../training/workout/workout.entity';
+import { AthleteTrainingSession } from '../../training-session/domain/athlete-training-session.entity';
+import { Organization } from '../../../members/organization/organization.entity';
 
 @Entity()
 export class TrainingSession {

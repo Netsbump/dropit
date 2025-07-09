@@ -6,8 +6,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/domain/athlete.entity';
-import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
-import { TrainingSession } from '../../performance/training-session/training-session.entity';
+import { AthleteTrainingSession } from '../../performance/training-session/domain/athlete-training-session.entity';
+import { TrainingSession } from '../../performance/training-session/domain/training-session.entity';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
@@ -130,7 +130,13 @@ export class WorkoutService {
     return formattedWorkouts;
   }
 
-  async getWorkout(id: string, organizationId: string): Promise<WorkoutDto> {
+  async getWorkout(id: string, organizationId: string): Promise<Workout | null> {
+    const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
+
+    return await this.em.findOne(Workout, { id, ...filterConditions });
+  }
+
+  async getWorkoutWithDetails(id: string, organizationId: string): Promise<WorkoutDto> {
     const { filterConditions } = await this.organizationService.getCoachFilterData(organizationId);
 
     const workout = await this.em.findOne(
@@ -256,7 +262,7 @@ export class WorkoutService {
       await this.em.flush();
     }
 
-    return this.getWorkout(workoutToCreate.id, organizationId);
+    return this.getWorkoutWithDetails(workoutToCreate.id, organizationId);
   }
 
   async updateWorkout(id: string, workout: UpdateWorkout, organizationId: string): Promise<WorkoutDto> {
@@ -345,7 +351,7 @@ export class WorkoutService {
 
     await this.em.flush();
 
-    return this.getWorkout(id, organizationId);
+    return this.getWorkoutWithDetails(id, organizationId);
   }
 
   async deleteWorkout(id: string, organizationId: string): Promise<void> {

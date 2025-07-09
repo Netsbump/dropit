@@ -3,8 +3,8 @@ import { Module, forwardRef } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { OrganizationModule } from '../../members/organization/organization.module';
-import { AthleteTrainingSession } from '../../performance/athlete-training-session/athlete-training-session.entity';
-import { TrainingSession } from '../../performance/training-session/training-session.entity';
+import { AthleteTrainingSession } from '../../performance/training-session/domain/athlete-training-session.entity';
+import { TrainingSession } from '../../performance/training-session/domain/training-session.entity';
 import { TrainingSessionModule } from '../../performance/training-session/training-session.module';
 import { Complex } from '../complex/complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
@@ -38,5 +38,6 @@ import { WorkoutService } from './workout.service';
   providers: [
     WorkoutService,
   ],
+  exports: [WorkoutService],
 })
 export class WorkoutModule {}

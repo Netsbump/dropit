@@ -2,6 +2,7 @@ import { AthleteDto, CreateAthlete } from '@dropit/schemas';
 import { Inject, Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../domain/athlete.entity';
 import { ATHLETE_WRITE_REPO, AthleteWriteRepository } from '../ports/athlete-write.repository';
+import { ATHLETE_READ_REPO, AthleteReadRepository } from '../ports/athlete-read.repository';
 import { CreatedAthletePresenter } from '../../interface/presenter/create-athlete.presenter';
 import { UserService } from '../../../auth/user.service';
 
@@ -10,6 +11,8 @@ export class CreateAthleteUseCase {
   constructor(
     @Inject(ATHLETE_WRITE_REPO)
     private readonly athleteWriteRepository: AthleteWriteRepository,
+    @Inject(ATHLETE_READ_REPO)
+    private readonly athleteReadRepository: AthleteReadRepository,
     private readonly userService: UserService
   ) {}
 
@@ -23,7 +26,7 @@ export class CreateAthleteUseCase {
     }
 
     // 2. Check if User already has an athlete profile
-    const existingAthlete = await this.athleteWriteRepository.ofId(userId);
+    const existingAthlete = await this.athleteReadRepository.getOne(userId);
     if (existingAthlete) {
       throw new BadRequestException('User already has an athlete profile');
     }

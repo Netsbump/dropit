@@ -14,10 +14,6 @@ export class MikroAthleteWriteRepository implements AthleteWriteRepository {
     return this.em.persistAndFlush(athlete);
   }
 
-  ofId(id: string) {
-    return this.em.findOne(Athlete, { id });
-  }
-
   remove(athlete: Athlete) {
     return this.em.removeAndFlush(athlete);
   }

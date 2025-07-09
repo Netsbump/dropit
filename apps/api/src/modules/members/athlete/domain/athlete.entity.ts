@@ -6,7 +6,7 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { AthleteTrainingSession } from '../../../performance/athlete-training-session/athlete-training-session.entity';
+import { AthleteTrainingSession } from '../../../performance/training-session/domain/athlete-training-session.entity'
 import { CompetitorStatus } from '../../../performance/competitor-status/competitor-status.entity';
 import { PersonalRecord } from '../../../performance/personal-record/personal-record.entity';
 import { PhysicalMetric } from '../../../performance/physical-metric/physical-metric.entity';

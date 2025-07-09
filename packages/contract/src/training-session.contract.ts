@@ -39,24 +39,6 @@ export const trainingSessionContract = {
     },
   },
 
-  getTrainingSessionsByAthlete: {
-    method: 'GET',
-    path: '/training-session/athlete/:athleteId',
-    summary: 'Get training sessions by athlete id',
-    pathParams: z.object({
-      athleteId: z.string(),
-    }),
-    responses: {
-      200: z.array(trainingSessionSchema),
-      404: z.object({
-        message: z.string(),
-      }),
-      500: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-
   createTrainingSession: {
     method: 'POST',
     path: '/training-session',
@@ -65,6 +47,9 @@ export const trainingSessionContract = {
     responses: {
       201: trainingSessionSchema,
       400: z.object({
+        message: z.string(),
+      }),
+      403: z.object({
         message: z.string(),
       }),
       404: z.object({
@@ -89,28 +74,6 @@ export const trainingSessionContract = {
       400: z.object({
         message: z.string(),
       }),
-      404: z.object({
-        message: z.string(),
-      }),
-      500: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-
-  completeTrainingSession: {
-    method: 'PATCH',
-    path: '/training-session/:id/complete',
-    summary: 'Mark a training session as completed',
-    pathParams: z.object({
-      id: z.string(),
-    }),
-    body: z.object({
-      completedDate: z.string().or(z.date()).optional(),
-      notes: z.string().optional(),
-    }),
-    responses: {
-      200: trainingSessionSchema,
       404: z.object({
         message: z.string(),
       }),

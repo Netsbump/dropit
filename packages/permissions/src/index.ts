@@ -16,6 +16,7 @@ const statement = {
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
   trainingSession: ["read", "create", "update", "delete"],
+  athleteTrainingSession: ["read", "update"],
 } as const;
 
 /**
@@ -37,6 +38,7 @@ export const member = ac.newRole({
   session: ["read"],
   personalRecord: ["read", "create"],
   trainingSession: ["read"],
+  athleteTrainingSession: ["read", "update"],
 });
 
 // Rôle Admin (gestion complète sauf suppression d'organisation)
@@ -49,6 +51,7 @@ export const admin = ac.newRole({
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
   trainingSession: ["read", "create", "update", "delete"],
+  athleteTrainingSession: ["read", "update"],
 });
 
 // Rôle Owner (toutes les permissions)
@@ -61,5 +64,6 @@ export const owner = ac.newRole({
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
   trainingSession: ["read", "create", "update", "delete"],
+  athleteTrainingSession: ["read", "update"],
 });
 

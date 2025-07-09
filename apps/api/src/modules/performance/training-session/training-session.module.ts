@@ -1,29 +1,45 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { Athlete } from '../../members/athlete/domain/athlete.entity';
 import { AthleteModule } from '../../members/athlete/athlete.module';
+import { OrganizationModule } from '../../members/organization/organization.module';
 import { Workout } from '../../training/workout/workout.entity';
 import { WorkoutModule } from '../../training/workout/workout.module';
-import { TrainingSessionController } from './training-session.controller';
-import { TrainingSession } from './training-session.entity';
-import { TrainingSessionPresenter } from './training-session.presenter';
-import { TrainingSessionRepository } from './training-session.repository';
-import { TrainingSessionService } from './training-session.service';
-import { TrainingSessionUseCase } from './training-session.use-case';
+import { TrainingSessionController } from './interface/training-session.controller';
+import { TrainingSession } from './domain/training-session.entity';
+import { TrainingSessionPresenter } from './interface/presenters/training-session.presenter';
+import { AthleteTrainingSessionPresenter } from './interface/presenters/athlete-training-session.presenter';
+import { TrainingSessionUseCase } from './application/use-cases/training-session.use-case';
+import { MikroTrainingSessionRepository } from './infrastructure/mikro-training-session.repository';
+import { MikroAthleteTrainingSessionRepository } from './infrastructure/mikro-athlete-training-session.repository';
+import { TRAINING_SESSION_REPO } from './application/ports/training-session.repository';
+import { ATHLETE_TRAINING_SESSION_REPO } from './application/ports/athlete-training-session.repository';
 
 @Module({
   imports: [
     MikroOrmModule.forFeature([TrainingSession, Athlete, Workout]),
-    AthleteModule,
-    WorkoutModule,
+    forwardRef(() => AthleteModule),
+    forwardRef(() => OrganizationModule),
+    forwardRef(() => WorkoutModule),
   ],
   controllers: [TrainingSessionController],
   providers: [
-    TrainingSessionService,
-    TrainingSessionRepository,
-    TrainingSessionPresenter,
+    // implementations MikroORM
+    MikroTrainingSessionRepository,
+    MikroAthleteTrainingSessionRepository,
+
+    // use-cases
     TrainingSessionUseCase,
+
+    // liaisons port -> implementation
+    { provide: TRAINING_SESSION_REPO,  useClass: MikroTrainingSessionRepository },
+    { provide: ATHLETE_TRAINING_SESSION_REPO, useClass: MikroAthleteTrainingSessionRepository },
+
+    // use-cases
+    TrainingSessionUseCase,
+    TrainingSessionPresenter,
+    AthleteTrainingSessionPresenter,
   ],
-  exports: [TrainingSessionService, TrainingSessionRepository],
+  exports: [TRAINING_SESSION_REPO, ATHLETE_TRAINING_SESSION_REPO],
 })
 export class TrainingSessionModule {}

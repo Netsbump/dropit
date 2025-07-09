@@ -52,7 +52,7 @@ export class WorkoutController {
   getWorkout(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
     return tsRestHandler(c.getWorkout, async ({ params }) => {
       try {
-        const workout = await this.workoutService.getWorkout(params.id, organizationId);
+        const workout = await this.workoutService.getWorkoutWithDetails(params.id, organizationId);
 
         return {
           status: 200,
