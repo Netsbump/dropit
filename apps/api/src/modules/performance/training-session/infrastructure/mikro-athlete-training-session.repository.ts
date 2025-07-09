@@ -1,7 +1,9 @@
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { AthleteTrainingSession } from "../domain/athlete-training-session.entity";
 import { AthleteTrainingSessionRepository } from "../application/ports/athlete-training-session.repository";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class MikroAthleteTrainingSessionRepository extends EntityRepository<AthleteTrainingSession> implements AthleteTrainingSessionRepository {
   constructor(public readonly em: EntityManager) {
     super(em, AthleteTrainingSession);

@@ -1,15 +1,22 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
+
 import { Athlete } from '../../members/athlete/domain/athlete.entity';
+import { Workout } from '../../training/workout/workout.entity';
+import { TrainingSession } from './domain/training-session.entity';
+import { AthleteTrainingSession } from './domain/athlete-training-session.entity';
+
 import { AthleteModule } from '../../members/athlete/athlete.module';
 import { OrganizationModule } from '../../members/organization/organization.module';
-import { Workout } from '../../training/workout/workout.entity';
 import { WorkoutModule } from '../../training/workout/workout.module';
+
 import { TrainingSessionController } from './interface/training-session.controller';
-import { TrainingSession } from './domain/training-session.entity';
+
 import { TrainingSessionPresenter } from './interface/presenters/training-session.presenter';
 import { AthleteTrainingSessionPresenter } from './interface/presenters/athlete-training-session.presenter';
+
 import { TrainingSessionUseCase } from './application/use-cases/training-session.use-case';
+
 import { MikroTrainingSessionRepository } from './infrastructure/mikro-training-session.repository';
 import { MikroAthleteTrainingSessionRepository } from './infrastructure/mikro-athlete-training-session.repository';
 import { TRAINING_SESSION_REPO } from './application/ports/training-session.repository';
@@ -17,10 +24,13 @@ import { ATHLETE_TRAINING_SESSION_REPO } from './application/ports/athlete-train
 
 @Module({
   imports: [
-    MikroOrmModule.forFeature([TrainingSession, Athlete, Workout]),
+    MikroOrmModule.forFeature({
+      entities: [TrainingSession,AthleteTrainingSession, Athlete, Workout],
+    }),
     forwardRef(() => AthleteModule),
     forwardRef(() => OrganizationModule),
     forwardRef(() => WorkoutModule),
+
   ],
   controllers: [TrainingSessionController],
   providers: [
@@ -35,8 +45,7 @@ import { ATHLETE_TRAINING_SESSION_REPO } from './application/ports/athlete-train
     { provide: TRAINING_SESSION_REPO,  useClass: MikroTrainingSessionRepository },
     { provide: ATHLETE_TRAINING_SESSION_REPO, useClass: MikroAthleteTrainingSessionRepository },
 
-    // use-cases
-    TrainingSessionUseCase,
+    //presenters
     TrainingSessionPresenter,
     AthleteTrainingSessionPresenter,
   ],
