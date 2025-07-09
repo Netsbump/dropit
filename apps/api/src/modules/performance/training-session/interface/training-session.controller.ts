@@ -1,19 +1,17 @@
 import { apiContract } from '@dropit/contract';
 import {
-  BadRequestException,
   Controller,
-  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { TrainingSessionService } from '../application/training-session.service';
-import { TrainingSessionUseCase } from './../application/training-session.use-case';
+import { TrainingSessionUseCase } from '../application/use-cases/training-session.use-case';
 import { PermissionsGuard } from '../../../permissions/permissions.guard';
 import { RequirePermissions } from '../../../permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../members/organization/organization.decorator';
 import { CurrentUser } from '../../../members/auth/auth.decorator';
 
-const c = apiContract.trainingSession;
+const contractTrainingSession = apiContract.trainingSession;
+const contractAthleteTrainingSession = apiContract.athleteTrainingSession;
 
 /**
  * Training Session Controller
@@ -35,191 +33,123 @@ const c = apiContract.trainingSession;
 @Controller()
 export class TrainingSessionController {
   constructor(
-    private readonly trainingSessionService: TrainingSessionService,
     private readonly trainingSessionUseCase: TrainingSessionUseCase
   ) {}
 
-  @TsRestHandler(c.getTrainingSessions)
+  /**
+   * Retrieves all training sessions for the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns A list of all training sessions for the organization.
+   */
+  @TsRestHandler(contractTrainingSession.getTrainingSessions)
   @RequirePermissions('read')
-  getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessions>> {
-    return tsRestHandler(c.getTrainingSessions, async () => {
+  getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessions>> {
+    return tsRestHandler(contractTrainingSession.getTrainingSessions, async () => {
       return await this.trainingSessionUseCase.getAll(organizationId);
     });
   }
 
-  @TsRestHandler(c.getTrainingSession)
+  /**
+   * Retrieves a specific training session by ID for the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns The training session with the specified ID.
+   */
+  @TsRestHandler(contractTrainingSession.getTrainingSession)
   @RequirePermissions('read')
-  getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSession>> {
-    return tsRestHandler(c.getTrainingSession, async ({ params }) => {
+  getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSession>> {
+    return tsRestHandler(contractTrainingSession.getTrainingSession, async ({ params }) => {
       return await this.trainingSessionUseCase.getOne(params.id, organizationId);
     });
   }
 
-/**
- * Creates a new training session for the current organization.
- *
- * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
- * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
- * @returns The newly created training session.
- */
-  @TsRestHandler(c.createTrainingSession)
+  /**
+   * Retrieves all training sessions for a specific athlete within the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns A list of training sessions for the specified athlete.
+   */
+  @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions)
+  @RequirePermissions('read')
+  getAthleteTrainingSessions(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
+    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions, async ({ params }) => {
+      return await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, userId);
+    });
+  }
+
+  /**
+   * Retrieves a specific training session for a specific athlete within the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns The specific training session for the specified athlete.
+   */
+  @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession)
+  @RequirePermissions('read')
+  getAthleteTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
+    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession, async ({ params }) => {
+      return await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, userId);
+    });
+  }
+
+  /**
+   * Creates a new training session for the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns The newly created training session.
+  */
+  @TsRestHandler(contractTrainingSession.createTrainingSession)
   @RequirePermissions('create')
-  createTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof c.createTrainingSession>> {
-    return tsRestHandler(c.createTrainingSession, async ({ body }) => {
-      return this.trainingSessionUseCase.createOne(body, organizationId, userId);
+  createTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.createTrainingSession>> {
+    return tsRestHandler(contractTrainingSession.createTrainingSession, async ({ body }) => {
+      return await this.trainingSessionUseCase.create(body, organizationId, userId);
     });
   }
 
-  @TsRestHandler(c.getTrainingSessionsByAthlete)
-  @RequirePermissions('read')
-  /*
-   * Get all training sessions by athlete
-   * @param organizationId - The organization id
-   * @param athleteId - The athlete id
-   * @returns The training sessions
-  */
-  getTrainingSessionsByAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessionsByAthlete>> {
-    return tsRestHandler(c.getTrainingSessionsByAthlete, async ({ params }) => {
-      try {
-        const trainingSessions = await this.trainingSessionService.getTrainingSessionsByAthlete(
-          params.athleteId,
-          organizationId
-        );
-        return { status: 200, body: trainingSessions };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
-    });
-  }
-
-  @TsRestHandler(c.getTrainingSessionByAthlete)
-  @RequirePermissions('read')
-  /*
-   * Get one training session by athlete
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @returns The training session
-  */
-  getTrainingSessionByAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getTrainingSessionByAthlete>> {
-    return tsRestHandler(c.getTrainingSessionByAthlete, async ({ params }) => {
-      return this.trainingSessionUseCase.getOneByAthlete(params.id, organizationId);
-    });
-  }
-
-
-
-  @TsRestHandler(c.updateTrainingSession)
+  /**
+   * Updates an existing training session for the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns The updated training session.
+   */
+  @TsRestHandler(contractTrainingSession.updateTrainingSession)
   @RequirePermissions('update')
-  /*
-   * Update a training session
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @param body - The training session data
-   * @returns The updated training session
-  */
-  updateTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateTrainingSession>> {
-    return tsRestHandler(c.updateTrainingSession, async ({ params, body }) => {
-      try {
-        const updatedTrainingSession = await this.trainingSessionService.updateTrainingSession(
-          params.id,
-          body,
-          organizationId
-        );
-        return { status: 200, body: updatedTrainingSession };
-      } catch (error) {
-        if (error instanceof BadRequestException) {
-          return { status: 400, body: { message: error.message } };
-        }
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
+  updateTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.updateTrainingSession>> {
+    return tsRestHandler(contractTrainingSession.updateTrainingSession, async ({ params, body }) => {
+      return await this.trainingSessionUseCase.update(params.id, body, organizationId, userId);
     });
   }
 
-  @TsRestHandler(c.updateTrainingSessionAthlete)
+  /**
+   * Updates a specific training session for a specific athlete.
+   *
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns The updated athlete training session.
+   */
+  @TsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession)
   @RequirePermissions('update')
-  /*
-   * Update a training session by athlete
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @param body - The training session data
-   * @returns The updated training session
-  */
-  updateTrainingSessionAthlete(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateTrainingSessionAthlete>> {
-    return tsRestHandler(c.updateTrainingSessionAthlete, async ({ params, body }) => {
-      return this.trainingSessionService.updateTrainingSessionAthlete(params.id, body, organizationId);
+  updateAthleteTrainingSession(@CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
+    return tsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession, async ({ params, body }) => {
+      return this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, userId);
     });
   }
 
-  @TsRestHandler(c.updateAthleteNotes)
-  @RequirePermissions('update')
-  /*
-   * Update athlete notes
-   * @param organizationId - The organization id
-   * @param id - The training session id  
-   * @param body - The training session data
-   * @returns The updated training session
-  */
-  updateAthleteNotes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.updateAthleteNotes>> {
-    return tsRestHandler(c.updateAthleteNotes, async ({ params, body }) => {
-      return this.trainingSessionService.updateAthleteNotes(params.id, body, organizationId);
-    });
-  }
-
-  @TsRestHandler(c.completeTrainingSession)
-  @RequirePermissions('update')
-  /*
-   * Complete a training session
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @param body - The training session data
-   * @returns The completed training session
-  */
-  completeTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.completeTrainingSession>> {
-    return tsRestHandler(c.completeTrainingSession, async ({ params, body }) => {
-      try {
-        const completedTrainingSession = await this.trainingSessionService.completeTrainingSession(
-          params.id,
-          organizationId,
-          body.completedDate
-        );
-        return { status: 200, body: completedTrainingSession };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
-    });
-  }   
-
-  @TsRestHandler(c.deleteTrainingSession) 
+  /**
+   * Deletes a training session for the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns Confirmation of the deletion operation.
+   */
+  @TsRestHandler(contractTrainingSession.deleteTrainingSession) 
   @RequirePermissions('delete')
-  /*
-   * Delete a training session
-   * @param organizationId - The organization id
-   * @param id - The training session id
-   * @returns The deleted training session
-  */
-    deleteTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.deleteTrainingSession>> {
-    return tsRestHandler(c.deleteTrainingSession, async ({ params }) => {
-      try {
-        await this.trainingSessionService.deleteTrainingSession(params.id, organizationId);
-        return {
-          status: 200,
-          body: { message: 'TrainingSession deleted successfully' },
-        };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return { status: 404, body: { message: error.message } };
-        }
-        throw error;
-      }
+    deleteTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.deleteTrainingSession>> {
+    return tsRestHandler(contractTrainingSession.deleteTrainingSession, async ({ params }) => {
+      return await this.trainingSessionUseCase.delete(params.id, organizationId, userId);
     });
   }
 }

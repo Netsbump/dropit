@@ -262,7 +262,7 @@ export class WorkoutService {
       await this.em.flush();
     }
 
-    return this.getWorkout(workoutToCreate.id, organizationId);
+    return this.getWorkoutWithDetails(workoutToCreate.id, organizationId);
   }
 
   async updateWorkout(id: string, workout: UpdateWorkout, organizationId: string): Promise<WorkoutDto> {
@@ -351,7 +351,7 @@ export class WorkoutService {
 
     await this.em.flush();
 
-    return this.getWorkout(id, organizationId);
+    return this.getWorkoutWithDetails(id, organizationId);
   }
 
   async deleteWorkout(id: string, organizationId: string): Promise<void> {

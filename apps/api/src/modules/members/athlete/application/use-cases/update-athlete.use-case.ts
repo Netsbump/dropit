@@ -2,14 +2,15 @@ import { AthleteDto, UpdateAthlete } from '@dropit/schemas';
 import { ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { UpdatedAthletePresenter } from '../../interface/presenter/update-athlete.presenter';
 import { ATHLETE_WRITE_REPO, AthleteWriteRepository } from '../ports/athlete-write.repository';
+import { ATHLETE_READ_REPO, AthleteReadRepository } from '../ports/athlete-read.repository';
 import { UserService } from '../../../auth/user.service';
-import { AthleteReadRepository } from '../ports/athlete-read.repository';
 
 @Injectable()
 export class UpdateAthleteUseCase {
   constructor(
     @Inject(ATHLETE_WRITE_REPO)
     private readonly athleteWriteRepository: AthleteWriteRepository,  
+    @Inject(ATHLETE_READ_REPO)
     private readonly athleteReadRepository: AthleteReadRepository,
     private readonly userService: UserService
   ) {}

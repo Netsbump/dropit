@@ -1,10 +1,18 @@
 import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
 import { TrainingSession } from "../domain/training-session.entity";
-import { TrainingSessionRepository } from "../application/training-session.repository";
+import { TrainingSessionRepository } from "../application/ports/training-session.repository";
 
 export class MikroTrainingSessionRepository extends EntityRepository<TrainingSession> implements TrainingSessionRepository {
   constructor(public readonly em: EntityManager) {
     super(em, TrainingSession);
+  }
+
+  async getOne(id: string, organizationId: string): Promise<TrainingSession | null> {
+    return await this.em.findOne(
+      TrainingSession, 
+      { id, organization: { id: organizationId } },
+      { populate: ['workout', 'athletes', 'athletes.athlete'] }
+    );
   }
 
   async getAllWithDetails(organizationId: string): Promise<TrainingSession[]> {
@@ -51,23 +59,11 @@ export class MikroTrainingSessionRepository extends EntityRepository<TrainingSes
       );
   }
 
-  async getAllWithDetailsByAthlete(athleteId: string): Promise<TrainingSession[]> {
-    return await this.em.find(TrainingSession, { athletes: { athlete: { id: athleteId } } });
-  }
-
-  async getOneWithDetailsByAthlete(athleteId: string, id: string): Promise<TrainingSession> {
-    return await this.em.findOne(TrainingSession, { id, athletes: { athlete: { id: athleteId } } });
-  }
-
-  async save(trainingSession: TrainingSession): Promise<TrainingSession> {
+  async save(trainingSession: TrainingSession): Promise<void> {
     return await this.em.persistAndFlush(trainingSession);
   }
 
-  async update(id: string, trainingSession: TrainingSession): Promise<TrainingSession> {
-    return await this.em.persistAndFlush(trainingSession);
-  }
-
-  async remove(id: string): Promise<void> {
-    return await this.em.removeAndFlush(id);
+  async remove(trainingSession: TrainingSession): Promise<void> {
+    return await this.em.removeAndFlush(trainingSession);
   }
 }

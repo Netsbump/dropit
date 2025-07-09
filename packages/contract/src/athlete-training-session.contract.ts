@@ -8,8 +8,11 @@ import { z } from 'zod';
 export const athleteTrainingSessionContract = {
   getAthleteTrainingSessions: {
     method: 'GET',
-    path: '/athlete-training-session',
+    path: '/athlete-training-session/athlete/:athleteId',
     summary: 'Get all athlete training sessions',
+    pathParams: z.object({
+      athleteId: z.string(),
+    }),
     responses: {
       200: z.array(athleteTrainingSessionSchema),
       404: z.object({
@@ -31,42 +34,6 @@ export const athleteTrainingSessionContract = {
     }),
     responses: {
       200: athleteTrainingSessionSchema,
-      404: z.object({
-        message: z.string(),
-      }),
-      500: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-
-  getAthleteTrainingSessionsByAthlete: {
-    method: 'GET',
-    path: '/athlete-training-session/athlete/:athleteId',
-    summary: 'Get athlete training sessions by athlete id',
-    pathParams: z.object({
-      athleteId: z.string(),
-    }),
-    responses: {
-      200: z.array(athleteTrainingSessionSchema),
-      404: z.object({
-        message: z.string(),
-      }),
-      500: z.object({
-        message: z.string(),
-      }),
-    },
-  },
-
-  getAthleteTrainingSessionsByTrainingSession: {
-    method: 'GET',
-    path: '/athlete-training-session/training-session/:trainingSessionId',
-    summary: 'Get athlete training sessions by training session id',
-    pathParams: z.object({
-        trainingSessionId: z.string(),
-    }),
-    responses: {
-      200: z.array(athleteTrainingSessionSchema),
       404: z.object({
         message: z.string(),
       }),

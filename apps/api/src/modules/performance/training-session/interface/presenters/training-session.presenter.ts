@@ -17,6 +17,13 @@ export class TrainingSessionPresenter {
     };
   }
 
+  presentSuccess(message: string) {
+    return {
+      status: 200 as const,
+      body: { message },
+    };
+  }
+
   presentCreationError(error: Error) {
 
     if (error instanceof BadRequestException) {

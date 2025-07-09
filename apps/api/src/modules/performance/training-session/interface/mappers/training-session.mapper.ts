@@ -1,6 +1,6 @@
 import { TrainingSessionDto } from '@dropit/schemas';
-import { WorkoutMapper } from '../../../training/workout/workout.mapper';
-import { TrainingSession } from '../domain/training-session.entity';
+import { WorkoutMapper } from '../../../../training/workout/workout.mapper';
+import { TrainingSession } from '../../domain/training-session.entity';
 
 export const TrainingSessionMapper = {
   toDto(trainingSession: TrainingSession): TrainingSessionDto {

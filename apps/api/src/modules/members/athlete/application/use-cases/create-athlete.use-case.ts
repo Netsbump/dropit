@@ -2,15 +2,16 @@ import { AthleteDto, CreateAthlete } from '@dropit/schemas';
 import { Inject, Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../../domain/athlete.entity';
 import { ATHLETE_WRITE_REPO, AthleteWriteRepository } from '../ports/athlete-write.repository';
+import { ATHLETE_READ_REPO, AthleteReadRepository } from '../ports/athlete-read.repository';
 import { CreatedAthletePresenter } from '../../interface/presenter/create-athlete.presenter';
 import { UserService } from '../../../auth/user.service';
-import { AthleteReadRepository } from '../ports/athlete-read.repository';
 
 @Injectable()
 export class CreateAthleteUseCase {
   constructor(
     @Inject(ATHLETE_WRITE_REPO)
     private readonly athleteWriteRepository: AthleteWriteRepository,
+    @Inject(ATHLETE_READ_REPO)
     private readonly athleteReadRepository: AthleteReadRepository,
     private readonly userService: UserService
   ) {}
