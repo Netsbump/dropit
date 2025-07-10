@@ -5,60 +5,77 @@ import {
 } from '@dropit/schemas';
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { EntityManager, wrap } from '@mikro-orm/postgresql';
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../athlete/domain/athlete.entity';
-import { CompetitorStatus } from './competitor-status.entity';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Athlete } from '../../domain/athlete.entity';
+import { CompetitorStatus } from '../../domain/competitor-status.entity';
+import { OrganizationService } from '../../../../identity/organization/organization.service';
+import { COMPETITOR_STATUS_REPO, CompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
+import { CompetitorStatusMapper } from '../../interface/mappers/competitor-status.mapper';
+import { CompetitorStatusPresenter } from '../../interface/presenter/competitor-status.presenter';
 
 @Injectable()
-export class CompetitorStatusService {
-  constructor(private readonly em: EntityManager) {}
+export class CompetitorStatusUseCases {
+  constructor(
+    private readonly em: EntityManager,
+    private readonly organizationService: OrganizationService,
+    @Inject(COMPETITOR_STATUS_REPO)
+    private readonly competitorStatusRepository: CompetitorStatusRepository,
+  ) {}
 
-  async getCompetitorStatuses(): Promise<CompetitorStatusDto[]> {
-    const competitorStatuses = await this.em.findAll(CompetitorStatus, {
-      populate: ['athlete'],
-    });
+  async getAll(organizationId: string) {
+    try {
+      // 1. Get ids of athletes in the organization
+      const athleteUserIds = await this.organizationService.getAthleteUserIds(organizationId);
 
-    if (!competitorStatuses || competitorStatuses.length === 0) {
-      throw new NotFoundException('No competitor statuses found');
+      if (athleteUserIds.length === 0) {
+        throw new NotFoundException('No athletes found in the organization');
+      }
+
+      // 2. Get competitor statuses
+      const competitorStatuses = await this.competitorStatusRepository.getAll(athleteUserIds);
+
+      if (!competitorStatuses || competitorStatuses.length === 0) {
+        throw new NotFoundException('No competitor statuses found');
+      }
+
+      // 3. Map to DTO
+      const competitorStatusesDto = CompetitorStatusMapper.toDtoList(competitorStatuses);
+
+      // 4. Present competitor statuses
+      return CompetitorStatusPresenter.present(competitorStatusesDto);
+    } catch (error) {
+      return CompetitorStatusPresenter.presentError(error as Error);
     }
-
-    return competitorStatuses.map((status) => {
-      return {
-        id: status.id,
-        level: status.level as string,
-        sexCategory: status.sexCategory as string,
-        weightCategory: status.weightCategory ?? 0,
-        updatedAt: status.updatedAt.toISOString(),
-        endDate: status.endDate ? status.endDate.toISOString() : null,
-      };
-    });
   }
 
-  async getCompetitorStatus(id: string): Promise<CompetitorStatusDto> {
-    const competitorStatus = await this.em.findOne(
-      CompetitorStatus,
-      { athlete: id, endDate: null },
-      {
-        populate: ['athlete'],
+  async getOne(athleteId: string, currentUserId: string, organizationId: string) {
+    try {
+
+      // 1. Validate user access
+      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
+      if (!isUserCoach && currentUserId !== athleteId) {
+        throw new NotFoundException(
+          `Access denied. You can only access your own competitor status`
+        );
       }
-    );
 
-    if (!competitorStatus) {
-      throw new NotFoundException(
-        `Active competitor status for athlete with ID ${id} not found`
-      );
+      // 2. Get competitor status using repository
+      const competitorStatus = await this.competitorStatusRepository.getOne(athleteId);
+
+      if (!competitorStatus) {
+        throw new NotFoundException(
+          `Active competitor status for athlete with ID ${athleteId} not found`
+        );
+      }
+
+      // 3. Map to DTO
+      const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+
+      // 4. Present competitor status
+      return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+    } catch (error) {
+      return CompetitorStatusPresenter.presentError(error as Error);
     }
-
-    return {
-      id: competitorStatus.id,
-      level: competitorStatus.level as string,
-      sexCategory: competitorStatus.sexCategory as string,
-      weightCategory: competitorStatus.weightCategory ?? 0,
-      updatedAt: competitorStatus.updatedAt.toISOString(),
-      endDate: competitorStatus.endDate
-        ? competitorStatus.endDate.toISOString()
-        : null,
-    };
   }
 
   async createCompetitorStatus(
