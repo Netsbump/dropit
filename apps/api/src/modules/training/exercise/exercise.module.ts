@@ -5,7 +5,7 @@ import { ExerciseCategoryModule } from '../exercise-category/exercise-category.m
 import { ExerciseController } from './exercise.controller';
 import { Exercise } from './exercise.entity';
 import { ExerciseService } from './exercise.service';
-import { OrganizationModule } from '../../members/organization/organization.module';
+import { OrganizationModule } from '../../identity/organization/organization.module';
 
 @Module({
   imports: [

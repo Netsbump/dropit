@@ -5,7 +5,7 @@ import { Pool } from 'pg';
 import { config } from './env.config';
 import { organization } from 'better-auth/plugins/organization';
 import { ac, owner, admin, member } from '@dropit/permissions';
-import { Member } from '../modules/members/organization/organization.entity';
+import { Member } from '../modules/identity/organization/organization.entity';
 import { EntityManager } from '@mikro-orm/core';
 
 

@@ -6,7 +6,7 @@ import { ExerciseCategoryService } from '../modules/training/exercise-category/e
 import { ExerciseService } from '../modules/training/exercise/exercise.service';
 import { WorkoutCategoryService } from '../modules/training/workout-category/workout-category.service';
 import { WorkoutService } from '../modules/training/workout/workout.service';
-import { OrganizationService } from '../modules/members/organization/organization.service';
+import { OrganizationService } from '../modules/identity/organization/organization.service';
 import { WORKOUT_ELEMENT_TYPES } from '../modules/training/workout-element/workout-element.entity';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
