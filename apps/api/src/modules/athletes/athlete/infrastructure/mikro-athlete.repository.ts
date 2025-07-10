@@ -1,12 +1,12 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PersonalRecord } from '../../../personal-record/personal-record.entity';
-import { Athlete } from '../../domain/athlete.entity';
-import { AthleteReadRepository, AthleteDetails } from '../../application/ports/athlete-read.repository';
+import { PersonalRecord } from '../../personal-record/personal-record.entity';
+import { Athlete } from '../domain/athlete.entity';
+import { AthleteRepository, AthleteDetails } from '../application/ports/athlete.repository';
 
 @Injectable()
-export class MikroAthleteReadRepository extends EntityRepository<Athlete> implements AthleteReadRepository {
+export class MikroAthleteRepository extends EntityRepository<Athlete> implements AthleteRepository {
   constructor(public readonly em: EntityManager) {
     super(em, Athlete);
   }
@@ -16,7 +16,7 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
     return this.em as unknown as SqlEntityManager;
   }
 
-  private getBaseQuery(id?: string, athleteUserIds?: string[]): QueryBuilder<Athlete> {
+  private getBaseQuery(athleteUserId?: string, athleteUserIds?: string[]): QueryBuilder<Athlete> {
     const qb = this.sql.createQueryBuilder(Athlete, 'a');
 
     qb.select([
@@ -39,8 +39,8 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
       qb.where({ 'u.id': { $in: athleteUserIds } });
     }
 
-    if (id) {
-      qb.where({ 'a.id': id });
+    if (athleteUserId) {
+      qb.where({ 'u.id': athleteUserId });
     }
 
     qb.leftJoin('a.user', 'u');
@@ -102,8 +102,9 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
     return athletes as AthleteDetails[];
   }
 
-  async findOneWithDetails(athleteId: string): Promise<AthleteDetails> {
-    const athletes = await this.getBaseQuery(athleteId, undefined).execute('all');
+  async findOneWithDetails(athleteUserId: string): Promise<AthleteDetails> {
+    const athletes = await this.getBaseQuery(athleteUserId, undefined).execute('all');
+    console.log('athletes', athletes)
 
     if (!athletes || athletes.length === 0) {
       throw new NotFoundException('Athlete not found');
@@ -118,5 +119,13 @@ export class MikroAthleteReadRepository extends EntityRepository<Athlete> implem
 
   async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
     return await this.em.find(Athlete, { id: { $in: athleteUserIds } });
+  }
+
+  async save(athlete: Athlete) {
+    return await this.em.persistAndFlush(athlete);
+  }
+
+  async remove(athlete: Athlete) {
+    return await this.em.removeAndFlush(athlete);
   }
 }

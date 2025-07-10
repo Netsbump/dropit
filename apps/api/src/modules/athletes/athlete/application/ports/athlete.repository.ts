@@ -1,6 +1,6 @@
 import { Athlete } from "../../domain/athlete.entity";
 
-export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
+export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 
 export type AthleteBasics = Pick<
   Athlete,
@@ -18,9 +18,11 @@ export type AthleteDetails = AthleteBasics & {
   pr_cleanAndJerk?: number;
 };
 
-export interface AthleteReadRepository {
+export interface AthleteRepository {
   findOneWithDetails(athleteId: string): Promise<AthleteDetails | null>;
   findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
   getOne(athleteId: string): Promise<Athlete | null>;
   getAll(athleteUserIds: string[]): Promise<Athlete[]>;
+  save(athlete: Athlete): Promise<void>;
+  remove(athlete: Athlete): Promise<void>;
 }
