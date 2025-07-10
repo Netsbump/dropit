@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { EntityManager, EntityRepository } from "@mikro-orm/postgresql";
+import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { CompetitorStatus } from "../domain/competitor-status.entity";
 import { CompetitorStatusRepository } from "../application/ports/competitor-status.repository";
 

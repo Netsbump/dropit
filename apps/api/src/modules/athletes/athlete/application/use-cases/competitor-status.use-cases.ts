@@ -1,25 +1,24 @@
 import {
-  CompetitorStatusDto,
   CreateCompetitorStatus,
   UpdateCompetitorStatus,
 } from '@dropit/schemas';
-import { CompetitorLevel, SexCategory } from '@dropit/schemas';
-import { EntityManager, wrap } from '@mikro-orm/postgresql';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../../domain/athlete.entity';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
 import { OrganizationService } from '../../../../identity/organization/organization.service';
 import { COMPETITOR_STATUS_REPO, CompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
 import { CompetitorStatusMapper } from '../../interface/mappers/competitor-status.mapper';
 import { CompetitorStatusPresenter } from '../../interface/presenter/competitor-status.presenter';
+import { AthleteReadRepository } from '../ports/athlete-read.repository';
+import { ATHLETE_READ_REPO } from '../ports/athlete-read.repository';
 
 @Injectable()
 export class CompetitorStatusUseCases {
   constructor(
-    private readonly em: EntityManager,
     private readonly organizationService: OrganizationService,
     @Inject(COMPETITOR_STATUS_REPO)
     private readonly competitorStatusRepository: CompetitorStatusRepository,
+    @Inject(ATHLETE_READ_REPO)
+    private readonly athleteReadRepository: AthleteReadRepository
   ) {}
 
   async getAll(organizationId: string) {
@@ -55,7 +54,7 @@ export class CompetitorStatusUseCases {
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athleteId) {
         throw new NotFoundException(
-          `Access denied. You can only access your own competitor status`
+          "Access denied. You can only access your own competitor status"
         );
       }
 
@@ -78,108 +77,117 @@ export class CompetitorStatusUseCases {
     }
   }
 
-  async createCompetitorStatus(
-    newStatus: CreateCompetitorStatus
-  ): Promise<CompetitorStatusDto> {
-    const athlete = await this.em.findOne(Athlete, {
-      id: newStatus.athleteId,
-    });
+  async create(
+    newStatus: CreateCompetitorStatus,
+    currentUserId: string,
+    organizationId: string
+  ) {
+    try {
+      // 1. Validate user access - only admin/owner can create competitor status
+      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
+      if (!isUserCoach) {
+        throw new NotFoundException(
+          "Access denied. Only coaches can create competitor status"
+        );
+      }
 
-    if (!athlete) {
-      throw new NotFoundException(
-        `Athlete with ID ${newStatus.athleteId} not found`
-      );
+      // 2. Verify athlete belongs to organization
+      await this.organizationService.checkAthleteBelongsToOrganization(newStatus.athleteId, organizationId);
+
+      // 3. Get athlete to verify it exists and get the entity
+      const athlete = await this.athleteReadRepository.getOne(newStatus.athleteId);
+      if (!athlete) {
+        throw new NotFoundException(
+          `Athlete with ID ${newStatus.athleteId} not found`
+        );
+      }
+
+      // 4. Close previous active competitor status if exists
+      const lastCompetitorStatus = await this.competitorStatusRepository.getOne(newStatus.athleteId);
+      if (lastCompetitorStatus) {
+        lastCompetitorStatus.endDate = new Date();
+        await this.competitorStatusRepository.save(lastCompetitorStatus);
+      }
+
+      // 5. Create new competitor status
+      const competitorStatusToCreate = new CompetitorStatus();
+      competitorStatusToCreate.athlete = athlete;
+      competitorStatusToCreate.level = newStatus.level;
+      competitorStatusToCreate.sexCategory = newStatus.sexCategory;
+      competitorStatusToCreate.weightCategory = newStatus.weightCategory;
+
+      await this.competitorStatusRepository.save(competitorStatusToCreate);
+
+      // 6. Get created competitor status
+      const competitorStatusCreated = await this.competitorStatusRepository.getOne(newStatus.athleteId);
+
+      if (!competitorStatusCreated) {
+        throw new NotFoundException('Competitor status not found');
+      }
+
+      // 7. Map to DTO
+      const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatusCreated);
+
+      // 8. Present competitor status
+      return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+    } catch (error) {
+      return CompetitorStatusPresenter.presentError(error as Error);
     }
-
-    const lastCompetitorStatus = await this.em.findOne(CompetitorStatus, {
-      athlete: newStatus.athleteId,
-      endDate: null,
-    });
-
-    if (lastCompetitorStatus) {
-      lastCompetitorStatus.endDate = new Date();
-      await this.em.persistAndFlush(lastCompetitorStatus);
-    }
-
-    const competitorStatusToCreate = new CompetitorStatus();
-
-    competitorStatusToCreate.level = newStatus.level;
-    competitorStatusToCreate.sexCategory = newStatus.sexCategory;
-    competitorStatusToCreate.weightCategory = newStatus.weightCategory;
-
-    await this.em.persistAndFlush(competitorStatusToCreate);
-
-    const competitorStatusCreated = await this.em.findOne(CompetitorStatus, {
-      id: competitorStatusToCreate.id,
-    });
-
-    if (!competitorStatusCreated) {
-      throw new NotFoundException('Competitor status not found');
-    }
-
-    return {
-      id: competitorStatusCreated.id,
-      level: competitorStatusCreated.level as string,
-      sexCategory: competitorStatusCreated.sexCategory as string,
-      weightCategory: competitorStatusCreated.weightCategory ?? 0,
-      updatedAt: competitorStatusCreated.updatedAt.toISOString(),
-      endDate: competitorStatusCreated.endDate
-        ? competitorStatusCreated.endDate.toISOString()
-        : null,
-    };
   }
 
-  async updateCompetitorStatus(
+  async update(
     id: string,
-    status: UpdateCompetitorStatus
-  ): Promise<CompetitorStatusDto> {
-    const competitorStatusToUpdate = await this.em.findOne(CompetitorStatus, {
-      id,
-    });
+    status: UpdateCompetitorStatus,
+    currentUserId: string,
+    organizationId: string
+  ) {
+    try {
+      // 1. Validate user access - only coaches can update competitor status
+      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
+      if (!isUserCoach) {
+        throw new NotFoundException(
+          "Access denied. Only coaches can update competitor status"
+        );
+      }
 
-    if (!competitorStatusToUpdate) {
-      throw new NotFoundException(`Competitor status with ID ${id} not found`);
+      // 2. Get competitor status to update
+      const competitorStatusToUpdate = await this.competitorStatusRepository.getOne(id);
+
+      if (!competitorStatusToUpdate) {
+        throw new NotFoundException(`Competitor status with ID ${id} not found`);
+      }
+
+      // 3. Verify athlete still belongs to organization
+      await this.organizationService.checkAthleteBelongsToOrganization(competitorStatusToUpdate.athlete.id, organizationId);
+
+      // 4. Update competitor status fields
+      if (status.level) {
+        competitorStatusToUpdate.level = status.level;
+      }
+      if (status.sexCategory) {
+        competitorStatusToUpdate.sexCategory = status.sexCategory;
+      }
+      if (status.weightCategory !== undefined) {
+        competitorStatusToUpdate.weightCategory = status.weightCategory;
+      }
+
+      // 5. Save updated competitor status
+      await this.competitorStatusRepository.save(competitorStatusToUpdate);
+
+      // 6. Get updated competitor status
+      const competitorStatusUpdated = await this.competitorStatusRepository.getOne(id);
+
+      if (!competitorStatusUpdated) {
+        throw new NotFoundException('Competitor status not found');
+      }
+
+      // 7. Map to DTO
+      const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatusUpdated);
+
+      // 8. Present competitor status
+      return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+    } catch (error) {
+      return CompetitorStatusPresenter.presentError(error as Error);
     }
-
-    const updateData: Partial<{
-      level: CompetitorLevel;
-      sexCategory: SexCategory;
-      weightCategory?: number;
-    }> = {};
-
-    if (status.level) {
-      updateData.level = status.level;
-    }
-    if (status.sexCategory) {
-      updateData.sexCategory = status.sexCategory;
-    }
-    if (status.weightCategory !== undefined) {
-      updateData.weightCategory = status.weightCategory;
-    }
-
-    wrap(competitorStatusToUpdate).assign(updateData, {
-      mergeObjectProperties: true,
-    });
-
-    await this.em.persistAndFlush(competitorStatusToUpdate);
-
-    const competitorStatusUpdated = await this.em.findOne(CompetitorStatus, {
-      id: competitorStatusToUpdate.id,
-    });
-
-    if (!competitorStatusUpdated) {
-      throw new NotFoundException('Competitor status not found');
-    }
-
-    return {
-      id: competitorStatusUpdated.id,
-      level: competitorStatusUpdated.level as string,
-      sexCategory: competitorStatusUpdated.sexCategory as string,
-      weightCategory: competitorStatusUpdated.weightCategory ?? 0,
-      updatedAt: competitorStatusUpdated.updatedAt.toISOString(),
-      endDate: competitorStatusUpdated.endDate
-        ? competitorStatusUpdated.endDate.toISOString()
-        : null,
-    };
   }
 }

@@ -1,8 +1,6 @@
 import { competitorStatusContract } from '@dropit/contract';
 import {
-  BadRequestException,
   Controller,
-  NotFoundException,
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
@@ -14,6 +12,22 @@ import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.deco
 
 const c = competitorStatusContract;
 
+/**
+ * Competitor Status Controller
+ * 
+ * @description
+ * Handles all competitor status related operations including CRUD operations
+ * for managing athlete competition levels, categories, and weight classes.
+ * 
+ * @remarks
+ * This controller uses Ts REST for type-safe API contracts and integrates
+ * with the permissions system via @UseGuards(PermissionsGuard).
+ * All endpoints require appropriate permissions (read, create, update)
+ * and are scoped to the current organization.
+ * 
+ * @see {@link CompetitorStatusUseCases} for business logic implementation
+ * @see {@link PermissionsGuard} for authorization handling
+ */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class CompetitorStatusController {
@@ -21,6 +35,12 @@ export class CompetitorStatusController {
     private readonly competitorStatusUseCases: CompetitorStatusUseCases
   ) {}
 
+  /**
+   * Retrieves all competitor statuses for athletes in the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns A list of all competitor statuses for athletes in the organization.
+   */
   @TsRestHandler(c.getCompetitorStatuses)
   @RequirePermissions('read')
   getCompetitorStatuses(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
@@ -29,6 +49,15 @@ export class CompetitorStatusController {
     });
   }
 
+  /**
+   * Retrieves a specific competitor status by athlete ID.
+   *
+   * @param currentUser - The current authenticated user (injected via the `@CurrentUser` decorator)
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns The competitor status for the specified athlete.
+   * @remarks
+   * Access is restricted to coaches or the athlete themselves.
+   */
   @TsRestHandler(c.getCompetitorStatus)
   @RequirePermissions('read')
   getCompetitorStatus(
@@ -40,61 +69,44 @@ export class CompetitorStatusController {
     });
   }
 
+  /**
+   * Creates a new competitor status for an athlete.
+   *
+   * @param currentUser - The current authenticated user (injected via the `@CurrentUser` decorator)
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns The newly created competitor status.
+   * @remarks
+   * Only coaches can create competitor statuses. If a previous active status exists,
+   * it will be automatically closed before creating the new one.
+   */
   @TsRestHandler(c.createCompetitorStatus)
   @RequirePermissions('create')
-  createCompetitorStatus(): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
+  createCompetitorStatus(
+    @CurrentUser() currentUser: AuthenticatedUser,
+    @CurrentOrganization() organizationId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
-      try {
-        const newCompetitorStatus =
-          await this.competitorStatusUseCases.createCompetitorStatus(body);
-        return {
-          status: 201,
-          body: newCompetitorStatus,
-        };
-      } catch (error) {
-        if (error instanceof BadRequestException) {
-          return {
-            status: 400,
-            body: { message: error.message },
-          };
-        }
-        if (error instanceof NotFoundException) {
-          return {
-            status: 404,
-            body: { message: error.message },
-          };
-        }
-
-        throw error;
-      }
+      return await this.competitorStatusUseCases.create(body, currentUser.id, organizationId);
     });
   }
 
+  /**
+   * Updates an existing competitor status.
+   *
+   * @param currentUser - The current authenticated user (injected via the `@CurrentUser` decorator)
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @returns The updated competitor status.
+   * @remarks
+   * Only coaches can update competitor statuses. The athlete must belong to the organization.
+   */
   @TsRestHandler(c.updateCompetitorStatus)
   @RequirePermissions('update')
-  updateCompetitorStatus(): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
+  updateCompetitorStatus(
+    @CurrentUser() currentUser: AuthenticatedUser,
+    @CurrentOrganization() organizationId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
-      try {
-        const updatedCompetitorStatus =
-          await this.competitorStatusUseCases.updateCompetitorStatus(
-            params.id,
-            body
-          );
-
-        return {
-          status: 200,
-          body: updatedCompetitorStatus,
-        };
-      } catch (error) {
-        if (error instanceof NotFoundException) {
-          return {
-            status: 404,
-            body: { message: error.message },
-          };
-        }
-
-        throw error;
-      }
+     return await this.competitorStatusUseCases.update(params.id, body, currentUser.id, organizationId);
     });
   }
 }
