@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from '../modules/athletes/athlete/domain/athlete.entity';
-import { PhysicalMetric } from '../modules/athletes/physical-metric/physical-metric.entity';
+import { PhysicalMetric } from '../modules/athletes/athlete/domain/physical-metric.entity';
 
 export async function seedPhysicalMetrics(em: EntityManager): Promise<void> {
   console.log('Seeding physical metrics...');

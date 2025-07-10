@@ -9,7 +9,7 @@ import {
 import { AthleteTrainingSession } from '../../../training/training-session/domain/athlete-training-session.entity'
 import { CompetitorStatus } from '../../competitor-status/competitor-status.entity';
 import { PersonalRecord } from '../../personal-record/personal-record.entity';
-import { PhysicalMetric } from '../../physical-metric/physical-metric.entity';
+import { PhysicalMetric } from './physical-metric.entity';
 import { User } from '../../../identity/auth/auth.entity';
 
 @Entity()
