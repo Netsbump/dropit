@@ -8,7 +8,7 @@ import {
 } from '@nestjs/common';
 import { ExerciseCategory } from '../exercise-category/exercise-category.entity';
 import { Exercise } from './exercise.entity';
-import { OrganizationService } from '../../members/organization/organization.service';
+import { OrganizationService } from '../../identity/organization/organization.service';
 
 @Injectable()
 export class ExerciseService {

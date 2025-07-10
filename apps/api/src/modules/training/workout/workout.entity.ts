@@ -6,10 +6,10 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { TrainingSession } from '../../performance/training-session/domain/training-session.entity';
+import { TrainingSession } from '../training-session/domain/training-session.entity';
 import { WorkoutCategory } from '../workout-category/workout-category.entity';
 import { WorkoutElement } from '../workout-element/workout-element.entity';
-import { User } from '../../members/auth/auth.entity'
+import { User } from '../../identity/auth/auth.entity'
 
 @Entity()
 export class Workout {

@@ -7,10 +7,10 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { ComplexService } from './complex.service';
-import { PermissionsGuard } from '../../permissions/permissions.guard';
-import { RequirePermissions } from '../../permissions/permissions.decorator';
-import { CurrentOrganization } from '../../members/organization/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../members/auth/auth.decorator';
+import { PermissionsGuard } from '../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../identity/organization/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../identity/auth/auth.decorator';
 
 const c = complexContract;
 

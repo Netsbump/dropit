@@ -4,7 +4,7 @@ import { ComplexCategoryService } from '../modules/training/complex-category/com
 import { ComplexService } from '../modules/training/complex/complex.service';
 import { ExerciseCategoryService } from '../modules/training/exercise-category/exercise-category.service';
 import { ExerciseService } from '../modules/training/exercise/exercise.service';
-import { OrganizationService } from '../modules/members/organization/organization.service';
+import { OrganizationService } from '../modules/identity/organization/organization.service';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
 

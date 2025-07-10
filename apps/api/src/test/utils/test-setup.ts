@@ -1,6 +1,6 @@
 import { MikroORM } from '@mikro-orm/core';
-import { Organization, Member } from '../../modules/members/organization/organization.entity';
-import { User } from '../../modules/members/auth/auth.entity';
+import { Organization, Member } from '../../modules/identity/organization/organization.entity';
+import { User } from '../../modules/identity/auth/auth.entity';
 
 export interface TestData {
   organization: Organization;

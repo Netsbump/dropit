@@ -9,7 +9,7 @@ import { ComplexCategory } from '../complex-category/complex-category.entity';
 import { ExerciseComplex } from '../exercise-complex/exercise-complex.entity';
 import { Exercise } from '../exercise/exercise.entity';
 import { Complex } from './complex.entity';
-import { OrganizationService } from '../../members/organization/organization.service';
+import { OrganizationService } from '../../identity/organization/organization.service';
 
 @Injectable()
 export class ComplexService {

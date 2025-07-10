@@ -7,12 +7,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { AuthenticatedUser, Public } from '../../members/auth/auth.decorator';
+import { AuthenticatedUser, Public } from '../../identity/auth/auth.decorator';
 import { WorkoutService } from './workout.service';
-import { PermissionsGuard } from '../../permissions/permissions.guard';
-import { RequirePermissions } from '../../permissions/permissions.decorator';
-import { CurrentOrganization } from '../../members/organization/organization.decorator';
-import { CurrentUser } from '../../members/auth/auth.decorator';
+import { PermissionsGuard } from '../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../identity/organization/organization.decorator';
+import { CurrentUser } from '../../identity/auth/auth.decorator';
 
 const c = workoutContract;
 
