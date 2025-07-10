@@ -1,35 +1,28 @@
-import { TrainingSessionDto } from '@dropit/schemas';
-import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { CompetitorStatusDto } from '@dropit/schemas';
+import { ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
 
-@Injectable()
-export class TrainingSessionPresenter {
-  present(sessions: TrainingSessionDto[]) {
+export const CompetitorStatusPresenter = {
+
+  present(competitorStatuses: CompetitorStatusDto[]) {
     return {
       status: 200 as const,
-      body: sessions,
+      body: competitorStatuses,
     };
-  }
+  },
 
-  presentOne(session: TrainingSessionDto) {
+  presentOne(competitorStatus: CompetitorStatusDto) {
     return {
       status: 200 as const,
-      body: session,
+      body: competitorStatus,
     };
-  }
+  },
 
   presentSuccess(message: string) {
     return {
       status: 200 as const,
       body: { message },
     };
-  }
-
-  presentCreationSuccess(message: string) {
-    return {
-      status: 201 as const,
-      body: { message },
-    };
-  }
+  },
 
   presentCreationError(error: Error) {
 
@@ -50,7 +43,7 @@ export class TrainingSessionPresenter {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }
     };
-  }
+  },
 
   presentError(error: Error) {
 
@@ -64,4 +57,6 @@ export class TrainingSessionPresenter {
       body: { message: 'An error occurred while processing the request' }
     };
   }
+  
+  
 }
