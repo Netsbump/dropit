@@ -9,7 +9,7 @@ import { UserService } from '../../../../identity/auth/user.service';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { AthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
-import { ATHLETE_READ_REPO, AthleteReadRepository } from '../../../../athletes/athlete/application/ports/athlete-read.repository';
+import { ATHLETE_REPO, AthleteRepository } from '../../../../athletes/athlete/application/ports/athlete.repository';
 import { AthleteTrainingSessionMapper } from '../../interface/mappers/athlete-training-session.mapper';
 import { AthleteTrainingSessionPresenter } from '../../interface/presenters/athlete-training-session.presenter';
 
@@ -25,8 +25,8 @@ export class TrainingSessionUseCase {
     private readonly organizationService: OrganizationService,
     private readonly workoutService: WorkoutService,
     private readonly userService: UserService,
-    @Inject(ATHLETE_READ_REPO)
-    private readonly athleteReadRepository: AthleteReadRepository
+    @Inject(ATHLETE_REPO)
+    private readonly athleteRepository: AthleteRepository
   ) {}
 
   async getOne(trainingSessionId: string, organizationId: string) {
@@ -94,7 +94,7 @@ export class TrainingSessionUseCase {
       const isAdmin = await this.organizationService.isUserCoach(userId, organization.id);
 
       //4. Get athlete from repository
-      const athlete = await this.athleteReadRepository.getOne(athleteId);
+      const athlete = await this.athleteRepository.getOne(athleteId);
 
       if (!athlete || !athlete.user) {
         throw new NotFoundException('Athlete not found or not associated with a user');
@@ -140,7 +140,7 @@ export class TrainingSessionUseCase {
       const isAdmin = await this.organizationService.isUserCoach(userId, organization.id);
 
       //4. Get athlete from repository
-      const athlete = await this.athleteReadRepository.getOne(athleteId);
+      const athlete = await this.athleteRepository.getOne(athleteId);
 
       if (!athlete || !athlete.user) {
         throw new NotFoundException('Athlete not found or not associated with a user');
@@ -224,7 +224,7 @@ export class TrainingSessionUseCase {
       }
 
       //9. Create athlete training sessions
-      const athletes = await this.athleteReadRepository.getAll(data.athleteIds);
+      const athletes = await this.athleteRepository.getAll(data.athleteIds);
 
       for (const a of athletes) {
         try {
@@ -293,7 +293,7 @@ export class TrainingSessionUseCase {
         }
 
         // Validate all athletes exist before creating new sessions
-        const athletes = await this.athleteReadRepository.getAll(data.athleteIds);
+        const athletes = await this.athleteRepository.getAll(data.athleteIds);
         const foundAthleteIds = athletes.map(a => a.id);
         const missingAthleteIds = data.athleteIds.filter(id => !foundAthleteIds.includes(id));
         
@@ -351,7 +351,7 @@ export class TrainingSessionUseCase {
       }
 
       //2. Get athlete from repository
-      const athlete = await this.athleteReadRepository.getOne(athleteId);
+      const athlete = await this.athleteRepository.getOne(athleteId);
 
       if (!athlete || !athlete.user) {
         throw new NotFoundException('Athlete not found or not associated with a user');

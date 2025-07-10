@@ -1,52 +1,75 @@
-import { AthleteDetailsDto, AthleteDto } from '@dropit/schemas';
-import { AthleteDetails } from '../../application/ports/athlete-read.repository';
-import { Athlete } from '../../domain/athlete.entity';
+import { AthleteDto, AthleteDetailsDto } from '@dropit/schemas';
+import { ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
 
 export const AthletePresenter = {
-  toDtoDetails(athlete: AthleteDetails): AthleteDetailsDto {
+
+  presentList(athletes: AthleteDto[]) {
     return {
-      id: athlete.id,
-      firstName: athlete.firstName,
-      lastName: athlete.lastName,
-      birthday: new Date(athlete.birthday),
-      email: athlete.email ?? '',
-      image: athlete.image ?? '',
-      country: athlete.country,
-      metrics: athlete.weight ? { weight: athlete.weight } : undefined,
-      personalRecords:
-        athlete.pr_snatch || athlete.pr_cleanAndJerk
-          ? {
-              snatch: athlete.pr_snatch,
-              cleanAndJerk: athlete.pr_cleanAndJerk,
-            }
-          : undefined,
-      competitorStatus:
-        athlete.level || athlete.sex_category || athlete.weight_category
-          ? {
-              level: athlete.level ?? '',
-              sexCategory: athlete.sex_category ?? '',
-              weightCategory: athlete.weight_category
-                ? parseInt(athlete.weight_category)
-                : undefined,
-            }
-          : undefined,
+      status: 200 as const,
+      body: athletes,
     };
   },
 
-  toDtoListDetails(athletes: AthleteDetails[]): AthleteDetailsDto[] {
-    return athletes.map(this.toDtoDetails);
-  },
-
-  toDto(a: Athlete): AthleteDto {
+  presentListDetails(athletes: AthleteDetailsDto[]) {
     return {
-      id: a.id,
-      firstName: a.firstName,
-      lastName: a.lastName,
-      birthday: a.birthday,
+      status: 200 as const,
+      body: athletes,
     };
   },
 
-  toDtoList(athletes: Athlete[]): AthleteDto[] {
-    return athletes.map(this.toDto);
+  presentOne(athlete: AthleteDto) {
+    return {
+      status: 200 as const,
+      body: athlete,
+    };
   },
-};
+
+  presentOneDetails(athlete: AthleteDetailsDto) {
+    return {
+      status: 200 as const,
+      body: athlete,
+    };
+  },
+
+  presentSuccess(message: string) {
+    return {
+      status: 200 as const,
+      body: { message },
+    };
+  },
+
+  presentCreationError(error: Error) {
+
+    if (error instanceof BadRequestException) {
+      return { status: 400 as const, body: { message: error.message } };
+    }
+
+    if (error instanceof ForbiddenException) {
+      return { status: 403 as const, body: { message: error.message } };
+    }
+
+    if (error instanceof NotFoundException) {
+      return { status: 404 as const, body: { message: error.message } };
+    }
+    
+    console.error('Athlete error:', error);
+    return {
+      status: 500 as const,
+      body: { message: 'An error occurred while processing the request' }
+    };
+  },
+
+  presentError(error: Error) {
+
+    if (error instanceof NotFoundException) {
+      return { status: 404 as const, body: { message: error.message } };
+    }
+    
+    console.error('Athlete error:', error);
+    return {
+      status: 500 as const,
+      body: { message: 'An error occurred while processing the request' }
+    };
+  }
+  
+}

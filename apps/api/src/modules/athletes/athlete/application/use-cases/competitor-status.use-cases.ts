@@ -8,8 +8,8 @@ import { OrganizationService } from '../../../../identity/organization/organizat
 import { COMPETITOR_STATUS_REPO, CompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
 import { CompetitorStatusMapper } from '../../interface/mappers/competitor-status.mapper';
 import { CompetitorStatusPresenter } from '../../interface/presenter/competitor-status.presenter';
-import { AthleteReadRepository } from '../ports/athlete-read.repository';
-import { ATHLETE_READ_REPO } from '../ports/athlete-read.repository';
+import { AthleteRepository } from '../ports/athlete.repository';
+import { ATHLETE_REPO } from '../ports/athlete.repository';
 
 @Injectable()
 export class CompetitorStatusUseCases {
@@ -17,8 +17,8 @@ export class CompetitorStatusUseCases {
     private readonly organizationService: OrganizationService,
     @Inject(COMPETITOR_STATUS_REPO)
     private readonly competitorStatusRepository: CompetitorStatusRepository,
-    @Inject(ATHLETE_READ_REPO)
-    private readonly athleteReadRepository: AthleteReadRepository
+    @Inject(ATHLETE_REPO)
+    private readonly athleteRepository: AthleteRepository
   ) {}
 
   async getAll(organizationId: string) {
@@ -54,7 +54,7 @@ export class CompetitorStatusUseCases {
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athleteId) {
         throw new NotFoundException(
-          "Access denied. You can only access your own competitor status"
+          "Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching"
         );
       }
 
@@ -95,7 +95,7 @@ export class CompetitorStatusUseCases {
       await this.organizationService.checkAthleteBelongsToOrganization(newStatus.athleteId, organizationId);
 
       // 3. Get athlete to verify it exists and get the entity
-      const athlete = await this.athleteReadRepository.getOne(newStatus.athleteId);
+      const athlete = await this.athleteRepository.getOne(newStatus.athleteId);
       if (!athlete) {
         throw new NotFoundException(
           `Athlete with ID ${newStatus.athleteId} not found`
