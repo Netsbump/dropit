@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/athlete/domain/athlete.entity';
-import { PersonalRecord } from '../modules/athletes/personal-record/personal-record.entity';
+import { Athlete } from '../modules/athletes/domain/athlete.entity';
+import { PersonalRecord } from '../modules/athletes/domain/personal-record.entity';
 import { Exercise } from '../modules/training/exercise/exercise.entity';
 
 export async function seedPersonalRecords(em: EntityManager): Promise<void> {

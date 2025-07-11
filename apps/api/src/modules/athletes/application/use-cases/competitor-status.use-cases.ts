@@ -4,7 +4,7 @@ import {
 } from '@dropit/schemas';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
-import { OrganizationService } from '../../../../identity/organization/organization.service';
+import { OrganizationService } from '../../../identity/organization/organization.service';
 import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
 import { CompetitorStatusMapper } from '../../interface/mappers/competitor-status.mapper';
 import { CompetitorStatusPresenter } from '../../interface/presenter/competitor-status.presenter';
@@ -49,15 +49,21 @@ export class CompetitorStatusUseCases {
 
   async getOne(athleteId: string, currentUserId: string, organizationId: string) {
     try {
-      // 1. Validate user access
+      // 1. Get athlete to verify it exists and get its userId
+      const athlete = await this.athleteRepository.getOne(athleteId);
+      if (!athlete || !athlete.user) {
+        throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+      }
+
+      // 2. Validate user access
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
-      if (!isUserCoach && currentUserId !== athleteId) {
+      if (!isUserCoach && currentUserId !== athlete.user.id) {
         throw new NotFoundException(
           "Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching"
         );
       }
 
-      // 2. Get competitor status using repository
+      // 3. Get competitor status using repository
       const competitorStatus = await this.competitorStatusRepository.getOne(athleteId);
 
       if (!competitorStatus) {
@@ -66,10 +72,10 @@ export class CompetitorStatusUseCases {
         );
       }
 
-      // 3. Map to DTO
+      // 4. Map to DTO
       const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
 
-      // 4. Present competitor status
+      // 5. Present competitor status
       return CompetitorStatusPresenter.presentOne(competitorStatusDto);
     } catch (error) {
       return CompetitorStatusPresenter.presentError(error as Error);

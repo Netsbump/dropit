@@ -1,9 +1,9 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { PersonalRecord } from '../../personal-record/personal-record.entity';
 import { Athlete } from '../domain/athlete.entity';
-import { IAthleteRepository, AthleteDetails } from '../application/ports/athlete.repository';
+import { PersonalRecord } from '../domain/personal-record.entity';
+import { AthleteDetails, IAthleteRepository } from '../application/ports/athlete.repository';
 
 @Injectable()
 export class MikroAthleteRepository extends EntityRepository<Athlete> implements IAthleteRepository {
@@ -25,7 +25,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
       'a.lastName',
       'a.birthday',
       'a.country',
-      'u.id',
+      'u.id AS userId',
       'u.email',
       'u.image',
       'cs.level',
@@ -33,14 +33,13 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
       'cs.weightCategory',
     ]);
 
-
     // Filtrage par organisation (toujours appliqué)
     if (athleteUserIds) {
       qb.where({ 'u.id': { $in: athleteUserIds } });
     }
 
     if (athleteUserId) {
-      qb.where({ 'u.id': athleteUserId });
+      qb.where({ 'u.id': { $in: [athleteUserId] } });
     }
 
     qb.leftJoin('a.user', 'u');
@@ -104,7 +103,6 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
 
   async findOneWithDetails(athleteUserId: string): Promise<AthleteDetails> {
     const athletes = await this.getBaseQuery(athleteUserId, undefined).execute('all');
-    console.log('athletes', athletes)
 
     if (!athletes || athletes.length === 0) {
       throw new NotFoundException('Athlete not found');
@@ -114,11 +112,11 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
   }
 
   async getOne(athleteId: string): Promise<Athlete | null> {
-    return await this.em.findOne(Athlete, { id: athleteId });
+    return await this.em.findOne(Athlete, { id: athleteId }, { populate: ['user.id'] });
   }
 
   async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
-    return await this.em.find(Athlete, { id: { $in: athleteUserIds } });
+    return await this.em.find(Athlete, { id: { $in: athleteUserIds } }, { populate: ['user.id'] });
   }
 
   async save(athlete: Athlete) {

@@ -4,10 +4,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../../../identity/permissions/permissions.guard';
-import { NoOrganization, RequirePermissions } from '../../../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../../../identity/organization/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../../identity/auth/auth.decorator';
+import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
+import { NoOrganization, RequirePermissions } from '../../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 import { AthleteUseCases } from '../../application/use-cases/athlete-use-cases';
 
 const c = athleteContract;
@@ -44,9 +44,12 @@ export class AthleteController {
    */
   @TsRestHandler(c.getAthletes)
   @RequirePermissions('read')
-  getAthletes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
+  getAthletes(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
-      return await this.athleteUseCases.findAllWithDetails(organizationId);
+      return await this.athleteUseCases.findAllWithDetails(user.id, organizationId);
     });
   }
 

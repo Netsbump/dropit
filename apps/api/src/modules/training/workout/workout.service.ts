@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { Athlete } from '../../athletes/athlete/domain/athlete.entity';
+import { Athlete } from '../../athletes/domain/athlete.entity';
 import { AthleteTrainingSession } from '../training-session/domain/athlete-training-session.entity';
 import { TrainingSession } from '../training-session/domain/training-session.entity';
 import { Complex } from '../complex/complex.entity';

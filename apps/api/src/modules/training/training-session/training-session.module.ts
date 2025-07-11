@@ -1,12 +1,12 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
 
-import { Athlete } from '../../athletes/athlete/domain/athlete.entity';
+import { Athlete } from '../../athletes/domain/athlete.entity';
 import { Workout } from '../../training/workout/workout.entity';
 import { TrainingSession } from './domain/training-session.entity';
 import { AthleteTrainingSession } from './domain/athlete-training-session.entity';
 
-import { AthleteModule } from '../../athletes/athlete/athlete.module';
+import { AthletesModule } from '../../athletes/athletes.module';
 import { OrganizationModule } from '../../identity/organization/organization.module';
 import { WorkoutModule } from '../../training/workout/workout.module';
 
@@ -24,7 +24,7 @@ import { ATHLETE_TRAINING_SESSION_REPO } from './application/ports/athlete-train
     MikroOrmModule.forFeature({
       entities: [TrainingSession,AthleteTrainingSession, Athlete, Workout],
     }),
-    forwardRef(() => AthleteModule),
+    forwardRef(() => AthletesModule),
     forwardRef(() => OrganizationModule),
     forwardRef(() => WorkoutModule),
 

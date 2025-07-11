@@ -8,7 +8,7 @@ import { WorkoutService } from '../../../../training/workout/workout.service';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
-import { ATHLETE_REPO, IAthleteRepository } from '../../../../athletes/athlete/application/ports/athlete.repository';
+import { ATHLETE_REPO, IAthleteRepository } from '../../../../athletes/application/ports/athlete.repository';
 import { AthleteTrainingSessionMapper } from '../../interface/mappers/athlete-training-session.mapper';
 import { AthleteTrainingSessionPresenter } from '../../interface/presenters/athlete-training-session.presenter';
 

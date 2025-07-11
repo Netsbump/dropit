@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Media } from '../../core/media/media.entity';
-import { PersonalRecord } from '../../athletes/personal-record/personal-record.entity';
+import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
 import { ExerciseCategory } from '../exercise-category/exercise-category.entity';
 import { ExerciseComplex } from '../exercise-complex/exercise-complex.entity';
 import { User } from '../../identity/auth/auth.entity';

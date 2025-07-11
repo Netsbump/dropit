@@ -1,7 +1,7 @@
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Module, forwardRef } from '@nestjs/common';
-import { Athlete } from '../../athletes/athlete/domain/athlete.entity';
-import { AthleteModule } from '../../athletes/athlete/athlete.module';
+import { Athlete } from '../../athletes/domain/athlete.entity';
+import { AthletesModule } from '../../athletes/athletes.module';
 import { OrganizationModule } from '../../identity/organization/organization.module';
 import { AthleteTrainingSession } from '../training-session/domain/athlete-training-session.entity';
 import { TrainingSession } from '../training-session/domain/training-session.entity';
@@ -28,7 +28,7 @@ import { WorkoutService } from './workout.service';
       WorkoutCategory,
       WorkoutElement,
     ]),
-    forwardRef(() => AthleteModule),
+    forwardRef(() => AthletesModule),
     forwardRef(() => TrainingSessionModule),
     forwardRef(() => WorkoutCategoryModule),
     forwardRef(() => ExerciseModule),

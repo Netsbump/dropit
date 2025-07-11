@@ -5,10 +5,10 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { CompetitorStatusUseCases } from '../../application/use-cases/competitor-status.use-cases';
-import { PermissionsGuard } from '../../../../identity/permissions/permissions.guard';
-import { RequirePermissions } from '../../../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../../../identity/organization/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../../identity/auth/auth.decorator';
+import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = competitorStatusContract;
 
