@@ -1,21 +1,20 @@
 import { AthleteTrainingSessionDto } from '@dropit/schemas';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { NotFoundException } from '@nestjs/common';
 
-@Injectable()
-export class AthleteTrainingSessionPresenter {
+export const AthleteTrainingSessionPresenter = {
   present(sessions: AthleteTrainingSessionDto[]) {
     return {
       status: 200 as const,
       body: sessions,
     };
-  }
+  },
 
   presentOne(session: AthleteTrainingSessionDto) {
     return {
       status: 200 as const,
       body: session,
     };
-  }
+  },
 
   presentError(error: Error) {
 

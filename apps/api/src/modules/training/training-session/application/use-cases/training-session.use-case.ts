@@ -19,8 +19,6 @@ export class TrainingSessionUseCase {
     private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    private readonly trainingSessionPresenter: TrainingSessionPresenter,
-    private readonly athleteTrainingSessionPresenter: AthleteTrainingSessionPresenter,
     private readonly organizationService: OrganizationService,
     private readonly workoutService: WorkoutService,
     @Inject(ATHLETE_REPO)
@@ -42,9 +40,9 @@ export class TrainingSessionUseCase {
       const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
 
       //5. Present session
-      return this.trainingSessionPresenter.presentOne(trainingSessionDto);
+      return TrainingSessionPresenter.presentOne(trainingSessionDto);
     } catch (error) {
-      return this.trainingSessionPresenter.presentError(error as Error);
+      return TrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -62,9 +60,9 @@ export class TrainingSessionUseCase {
       const trainingSessionsDto = TrainingSessionMapper.toDtoList(trainingSessions);
 
       //4. Present sessions
-      return this.trainingSessionPresenter.present(trainingSessionsDto);
+      return TrainingSessionPresenter.present(trainingSessionsDto);
     } catch (error) {
-      return this.trainingSessionPresenter.presentError(error as Error);
+      return TrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -97,9 +95,9 @@ export class TrainingSessionUseCase {
       const athleteTrainingSessionsDto = AthleteTrainingSessionMapper.toDtoList(athleteTrainingSessions);
 
       //7. Present athlete training sessions
-      return this.athleteTrainingSessionPresenter.present(athleteTrainingSessionsDto);
+      return AthleteTrainingSessionPresenter.present(athleteTrainingSessionsDto);
     } catch (error) {
-      return this.athleteTrainingSessionPresenter.presentError(error as Error);
+      return AthleteTrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -132,9 +130,9 @@ export class TrainingSessionUseCase {
       const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
 
       //7. Present session
-      return this.athleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
+      return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
     } catch (error) {
-      return this.athleteTrainingSessionPresenter.presentError(error as Error);
+      return AthleteTrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -202,9 +200,9 @@ export class TrainingSessionUseCase {
       const trainingSessionDto = TrainingSessionMapper.toDto(createdTrainingSession);
 
       //10. Return training session
-      return this.trainingSessionPresenter.presentOne(trainingSessionDto);
+      return TrainingSessionPresenter.presentOne(trainingSessionDto);
     } catch (error) {
-      return this.trainingSessionPresenter.presentCreationError(error as Error);
+      return TrainingSessionPresenter.presentCreationError(error as Error);
     }
   }
 
@@ -285,9 +283,9 @@ export class TrainingSessionUseCase {
       const trainingSessionDto = TrainingSessionMapper.toDto(updatedTrainingSession);
 
       //10. Return training session
-      return this.trainingSessionPresenter.presentOne(trainingSessionDto);
+      return TrainingSessionPresenter.presentOne(trainingSessionDto);
     } catch (error) {
-      return this.trainingSessionPresenter.presentError(error as Error);
+      return TrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -331,9 +329,9 @@ export class TrainingSessionUseCase {
       const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(updatedAthleteTrainingSession);
 
       //8. Return athlete training session
-      return this.athleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
+      return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
     } catch (error) {
-      return this.athleteTrainingSessionPresenter.presentError(error as Error);
+      return AthleteTrainingSessionPresenter.presentError(error as Error);
     }
   }
 
@@ -357,9 +355,9 @@ export class TrainingSessionUseCase {
      await this.trainingSessionRepository.remove(trainingSessionToDelete);
 
      //4. Return success message
-     return this.trainingSessionPresenter.presentSuccess('Training session deleted successfully');
+     return TrainingSessionPresenter.presentSuccess('Training session deleted successfully');
     } catch (error) {
-      return this.trainingSessionPresenter.presentError(error as Error);
+      return TrainingSessionPresenter.presentError(error as Error);
     }
   }
 }
