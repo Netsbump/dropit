@@ -1,10 +1,10 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Complex } from '../modules/training/complex/complex.entity';
+import { Complex } from '../modules/training/domain/complex.entity';
 import { Exercise } from '../modules/training/exercise/exercise.entity';
 import { WorkoutCategory } from '../modules/training/workout-category/workout-category.entity';
 import { WORKOUT_ELEMENT_TYPES } from '../modules/training/workout-element/workout-element.entity';
 import { WorkoutElement } from '../modules/training/workout-element/workout-element.entity';
-import { Workout } from '../modules/training/workout/workout.entity';
+import { Workout } from '../modules/training/domain/workout.entity';
 import { seedComplexes } from './complex.seeder';
 
 export async function seedWorkouts(em: EntityManager): Promise<void> {

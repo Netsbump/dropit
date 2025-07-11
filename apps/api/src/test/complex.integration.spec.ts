@@ -1,7 +1,7 @@
 import { ExerciseCategoryDto, ComplexCategoryDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
-import { ComplexCategoryService } from '../modules/training/complex-category/complex-category.service';
-import { ComplexService } from '../modules/training/complex/complex.service';
+import { ComplexCategoryService } from '../modules/training/application/use-cases/complex-category.use-cases';
+import { ComplexService } from '../modules/training/application/use-cases/complex.use-cases';
 import { ExerciseCategoryService } from '../modules/training/exercise-category/exercise-category.service';
 import { ExerciseService } from '../modules/training/exercise/exercise.service';
 import { OrganizationService } from '../modules/identity/organization/organization.service';

@@ -11,6 +11,7 @@ const statement = {
   // Mes ressources métier
   workout: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
+  exerciseCategory: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
@@ -32,9 +33,6 @@ export const ac = createAccessControl(statement);
 // Rôle Member (lecture seule + création de ses propres records)
 export const member = ac.newRole({
   ...memberAc.statements,
-  workout: ["read"],
-  exercise: ["read"],
-  complex: ["read"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read"],
   personalRecord: ["read", "create"],
@@ -48,6 +46,7 @@ export const admin = ac.newRole({
   ...adminAc.statements,
   workout: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
+  exerciseCategory: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],

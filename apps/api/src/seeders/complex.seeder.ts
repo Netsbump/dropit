@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ComplexCategory } from '../modules/training/complex-category/complex-category.entity';
-import { Complex } from '../modules/training/complex/complex.entity';
+import { ComplexCategory } from '../modules/training/domain/complex-category.entity';
+import { Complex } from '../modules/training/domain/complex.entity';
 import { ExerciseComplex } from '../modules/training/exercise-complex/exercise-complex.entity';
 import { seedExercises } from './exercise.seeder';
 
