@@ -18,6 +18,7 @@ export const athleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   birthday: z.date(),
+  userId: z.string(),
 });
 
 export type AthleteDto = z.infer<typeof athleteSchema>;
@@ -57,6 +58,7 @@ export const athleteListItemSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
+  userId: z.string(),
 });
 
 export type AthleteListItemDto = z.infer<typeof athleteListItemSchema>;

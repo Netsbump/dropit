@@ -15,5 +15,6 @@ import { OrganizationModule } from '../../identity/organization/organization.mod
   ],
   controllers: [ExerciseController],
   providers: [ExerciseService],
+  exports: [ExerciseService],
 })
 export class ExerciseModule {}

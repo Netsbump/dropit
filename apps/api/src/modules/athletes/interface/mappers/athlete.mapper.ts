@@ -38,12 +38,13 @@ export const AthleteMapper = {
     return athletes.map(this.toDtoDetails);
   },
 
-  toDto(a: Athlete): AthleteDto {
+  toDto(athlete: Athlete): AthleteDto {
     return {
-      id: a.id,
-      firstName: a.firstName,
-      lastName: a.lastName,
-      birthday: a.birthday,
+      id: athlete.id,
+      firstName: athlete.firstName,
+      lastName: athlete.lastName,
+      birthday: athlete.birthday,
+      userId: athlete.user.id,
     };
   },
 
