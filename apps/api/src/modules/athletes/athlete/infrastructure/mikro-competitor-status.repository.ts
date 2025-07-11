@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { CompetitorStatus } from "../domain/competitor-status.entity";
-import { CompetitorStatusRepository } from "../application/ports/competitor-status.repository";
+import { ICompetitorStatusRepository } from "../application/ports/competitor-status.repository";
 
 @Injectable()
-export class MikroCompetitorStatusRepository extends EntityRepository<CompetitorStatus> implements CompetitorStatusRepository {
+export class MikroCompetitorStatusRepository extends EntityRepository<CompetitorStatus> implements ICompetitorStatusRepository {
   constructor(public readonly em: EntityManager) {
     super(em, CompetitorStatus);
   }

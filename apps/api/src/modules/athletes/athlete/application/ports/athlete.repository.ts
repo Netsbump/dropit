@@ -18,7 +18,7 @@ export type AthleteDetails = AthleteBasics & {
   pr_cleanAndJerk?: number;
 };
 
-export interface AthleteRepository {
+export interface IAthleteRepository {
   findOneWithDetails(athleteId: string): Promise<AthleteDetails | null>;
   findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
   getOne(athleteId: string): Promise<Athlete | null>;

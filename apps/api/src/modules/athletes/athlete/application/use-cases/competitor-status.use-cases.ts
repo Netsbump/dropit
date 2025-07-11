@@ -5,10 +5,10 @@ import {
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
 import { OrganizationService } from '../../../../identity/organization/organization.service';
-import { COMPETITOR_STATUS_REPO, CompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
+import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from '../../application/ports/competitor-status.repository';
 import { CompetitorStatusMapper } from '../../interface/mappers/competitor-status.mapper';
 import { CompetitorStatusPresenter } from '../../interface/presenter/competitor-status.presenter';
-import { AthleteRepository } from '../ports/athlete.repository';
+import { IAthleteRepository } from '../ports/athlete.repository';
 import { ATHLETE_REPO } from '../ports/athlete.repository';
 
 @Injectable()
@@ -16,9 +16,9 @@ export class CompetitorStatusUseCases {
   constructor(
     private readonly organizationService: OrganizationService,
     @Inject(COMPETITOR_STATUS_REPO)
-    private readonly competitorStatusRepository: CompetitorStatusRepository,
+    private readonly competitorStatusRepository: ICompetitorStatusRepository,
     @Inject(ATHLETE_REPO)
-    private readonly athleteRepository: AthleteRepository
+    private readonly athleteRepository: IAthleteRepository
   ) {}
 
   async getAll(organizationId: string) {
@@ -49,7 +49,6 @@ export class CompetitorStatusUseCases {
 
   async getOne(athleteId: string, currentUserId: string, organizationId: string) {
     try {
-
       // 1. Validate user access
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athleteId) {

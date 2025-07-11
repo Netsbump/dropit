@@ -1,10 +1,10 @@
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { AthleteTrainingSession } from "../domain/athlete-training-session.entity";
-import { AthleteTrainingSessionRepository } from "../application/ports/athlete-training-session.repository";
+import { IAthleteTrainingSessionRepository } from "../application/ports/athlete-training-session.repository";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
-export class MikroAthleteTrainingSessionRepository extends EntityRepository<AthleteTrainingSession> implements AthleteTrainingSessionRepository {
+export class MikroAthleteTrainingSessionRepository extends EntityRepository<AthleteTrainingSession> implements IAthleteTrainingSessionRepository {
   constructor(public readonly em: EntityManager) {
     super(em, AthleteTrainingSession);
   }
