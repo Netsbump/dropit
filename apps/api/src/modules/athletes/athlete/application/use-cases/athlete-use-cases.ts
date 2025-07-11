@@ -45,7 +45,6 @@ export class AthleteUseCases {
 
   async findOneWithDetails(athleteId: string, currentUserId: string, organizationId: string) {
     try {
-
       // 1. Validate user access
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athleteId) {
@@ -116,7 +115,7 @@ export class AthleteUseCases {
 
   async create(data: CreateAthlete, userId: string) {
     try {
-      //1. Check if User exists 
+      //1. Get User from repository
       const user = await this.userService.getUserById(userId);
 
       if (!user) {
@@ -154,30 +153,24 @@ export class AthleteUseCases {
 
   async update(idAthlete: string, data: UpdateAthlete, userId: string) {
     try {
-      //1. Get User
-      const user = await this.userService.getUserById(userId);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      //2. Get Athlete
+      //1. Get Athlete
       const athlete = await this.athleteRepository.getOne(idAthlete);
 
       if (!athlete) {
         throw new NotFoundException('Athlete not found');
       }
 
-      //3. Check if Athlete has a user  
+      //2. Check if Athlete has a user  
       if (!athlete.user) {
         throw new NotFoundException('Athlete has no user');
       }
 
-      //4. Check if Athlete belongs to User
+      //3. Check if Athlete belongs to User
       if (athlete.user.id !== userId) {
         throw new ForbiddenException('Athlete does not belong to User');
       }
 
-      //5. Update Athlete
+      //4. Update Athlete
       if (data.firstName !== undefined) {
         athlete.firstName = data.firstName;
       }
@@ -194,13 +187,13 @@ export class AthleteUseCases {
         athlete.country = data.country;
       }
 
-      //6. Save Athlete
+      //5. Save Athlete
       await this.athleteRepository.save(athlete);
 
-      //7. Map to DTO
+      //6. Map to DTO
       const athleteDto = AthleteMapper.toDto(athlete);
 
-      //8. Present Athlete
+      //7. Present Athlete
       return AthletePresenter.presentOne(athleteDto);
     } catch (error) {
       return AthletePresenter.presentError(error as Error);
@@ -209,33 +202,27 @@ export class AthleteUseCases {
 
   async delete(idAthlete: string, userId: string) {
     try {
-      //1. Get User
-      const user = await this.userService.getUserById(userId);
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
-
-      //2. Get Athlete
+      //1. Get Athlete
       const athlete = await this.athleteRepository.getOne(idAthlete);
 
       if (!athlete) {
         throw new NotFoundException('Athlete not found');
       }
 
-      //3. Check if Athlete has a user  
+      //2. Check if Athlete has a user  
       if (!athlete.user) {
         throw new NotFoundException('Athlete has no user');
       }
 
-      //4. Check if Athlete belongs to User
+      //3. Check if Athlete belongs to User
       if (athlete.user.id !== userId) {
         throw new ForbiddenException('Athlete does not belong to User');
       }
 
-      //5. Delete Athlete
+      //4. Delete Athlete
       await this.athleteRepository.remove(athlete);
 
-      //6. Present Athlete
+      //5. Present Athlete
       return AthletePresenter.presentSuccess('Athlete deleted successfully');
     } catch (error) {
       return AthletePresenter.presentError(error as Error);

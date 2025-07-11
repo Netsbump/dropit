@@ -49,7 +49,6 @@ export class CompetitorStatusUseCases {
 
   async getOne(athleteId: string, currentUserId: string, organizationId: string) {
     try {
-
       // 1. Validate user access
       const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athleteId) {
