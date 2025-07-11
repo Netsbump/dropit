@@ -4,14 +4,14 @@ import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
 import { AthletePresenter } from "../../interface/presenter/athlete.presenter";
 import { OrganizationService } from "../../../../identity/organization/organization.service";
 import { UserService } from "../../../../identity/auth/user.service";
-import { ATHLETE_REPO, AthleteRepository } from "../ports/athlete.repository";
+import { ATHLETE_REPO, IAthleteRepository } from "../ports/athlete.repository";
 import { AthleteMapper } from "../../interface/mappers/athlete.mapper";
 
 @Injectable()
 export class AthleteUseCases {
   constructor(
     @Inject(ATHLETE_REPO)
-    private readonly athleteRepository: AthleteRepository,
+    private readonly athleteRepository: IAthleteRepository,
     private readonly organizationService: OrganizationService,
     private readonly userService: UserService
   ) {}

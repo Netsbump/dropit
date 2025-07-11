@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TrainingSessionPresenter } from '../../interface/presenters/training-session.presenter';
-import { TrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
+import { ITrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
 import { OrganizationService } from '../../../../identity/organization/organization.service';
 import { TrainingSessionMapper } from '../../interface/mappers/training-session.mapper';
 import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
@@ -8,8 +8,8 @@ import { WorkoutService } from '../../../../training/workout/workout.service';
 import { UserService } from '../../../../identity/auth/user.service';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
-import { AthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
-import { ATHLETE_REPO, AthleteRepository } from '../../../../athletes/athlete/application/ports/athlete.repository';
+import { IAthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
+import { ATHLETE_REPO, IAthleteRepository } from '../../../../athletes/athlete/application/ports/athlete.repository';
 import { AthleteTrainingSessionMapper } from '../../interface/mappers/athlete-training-session.mapper';
 import { AthleteTrainingSessionPresenter } from '../../interface/presenters/athlete-training-session.presenter';
 
@@ -17,16 +17,16 @@ import { AthleteTrainingSessionPresenter } from '../../interface/presenters/athl
 export class TrainingSessionUseCase {
   constructor(
     @Inject(TRAINING_SESSION_REPO)
-    private readonly trainingSessionRepository: TrainingSessionRepository,
+    private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
-    private readonly athleteTrainingSessionRepository: AthleteTrainingSessionRepository,
+    private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
     private readonly trainingSessionPresenter: TrainingSessionPresenter,
     private readonly athleteTrainingSessionPresenter: AthleteTrainingSessionPresenter,
     private readonly organizationService: OrganizationService,
     private readonly workoutService: WorkoutService,
     private readonly userService: UserService,
     @Inject(ATHLETE_REPO)
-    private readonly athleteRepository: AthleteRepository
+    private readonly athleteRepository: IAthleteRepository
   ) {}
 
   async getOne(trainingSessionId: string, organizationId: string) {
