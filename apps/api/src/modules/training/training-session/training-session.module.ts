@@ -12,9 +12,6 @@ import { WorkoutModule } from '../../training/workout/workout.module';
 
 import { TrainingSessionController } from './interface/training-session.controller';
 
-import { TrainingSessionPresenter } from './interface/presenters/training-session.presenter';
-import { AthleteTrainingSessionPresenter } from './interface/presenters/athlete-training-session.presenter';
-
 import { TrainingSessionUseCase } from './application/use-cases/training-session.use-case';
 
 import { MikroTrainingSessionRepository } from './infrastructure/mikro-training-session.repository';
@@ -44,10 +41,6 @@ import { ATHLETE_TRAINING_SESSION_REPO } from './application/ports/athlete-train
     // liaisons port -> implementation
     { provide: TRAINING_SESSION_REPO,  useClass: MikroTrainingSessionRepository },
     { provide: ATHLETE_TRAINING_SESSION_REPO, useClass: MikroAthleteTrainingSessionRepository },
-
-    //presenters
-    TrainingSessionPresenter,
-    AthleteTrainingSessionPresenter,
   ],
   exports: [TRAINING_SESSION_REPO, ATHLETE_TRAINING_SESSION_REPO],
 })
