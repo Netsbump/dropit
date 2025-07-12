@@ -1,32 +1,33 @@
 # Tests d'Intégration
 
-## 🎯 Architecture
+## Architecture
 
-Cette architecture de tests d'intégration permet d'avoir des tests **isolés** mais **ordonnés** avec des **dépendances explicites**.
+Les tests d'intégration utilisent les **use cases** de l'architecture clean pour tester la logique métier complète.
 
-### 📁 Structure des fichiers
+## Structure des fichiers
 
 ```
 test/
-├── index.integration.spec.ts     # 🎯 Point d'entrée principal (Jest orchestrateur)
-├── organization.integration.spec.ts   # 🏢 Setup org + users
-├── exercise.integration.spec.ts       # 💪 Tests exercices (services directs)
-├── complex.integration.spec.ts        # 🔗 Tests complexes (services directs)
-├── workout.integration.spec.ts        # 🏋️ Tests workouts (services directs)
+├── index.integration.spec.ts     # Point d'entrée principal (Jest orchestrateur)
+├── organization.integration.spec.ts   # Setup org + users
+├── exercise.integration.spec.ts       # Tests exercices (use cases)
+├── complex.integration.spec.ts        # Tests complexes (use cases)
+├── workout.integration.spec.ts        # Tests workouts (use cases)
 ├── utils/
-│   └── test-setup.ts             # 🛠️ Utilitaires de setup + données de test
-└── jest-integration.json         # ⚙️ Configuration Jest
+│   ├── test-setup.ts             # Utilitaires de setup + données de test
+│   └── test-use-cases.ts         # Factory pour créer les use cases
+└── jest-integration.json         # Configuration Jest
 ```
 
-### 🔄 Flux d'exécution
+## Flux d'exécution
 
 1. **`index.integration.spec.ts`** → Orchestrateur Jest principal
 2. **`organization.integration.spec.ts`** → Setup base (org + users)
-3. **`exercise.integration.spec.ts`** → Tests exercices (services)
-4. **`complex.integration.spec.ts`** → Tests complexes (services)
-5. **`workout.integration.spec.ts`** → Tests workouts (services)
+3. **`exercise.integration.spec.ts`** → Tests exercices (use cases)
+4. **`complex.integration.spec.ts`** → Tests complexes (use cases)
+5. **`workout.integration.spec.ts`** → Tests workouts (use cases)
 
-## 🚀 Utilisation
+## Utilisation
 
 ### Lancer tous les tests d'intégration avec Docker dédié
 
@@ -34,44 +35,83 @@ test/
 pnpm test:integration:docker
 ```
 
-## ✨ Caractéristiques
+## Ce qui est testé
 
-### 🔒 **Isolation totale**
-- Chaque test nettoie sa propre base de données
-- Aucune dépendance entre les fichiers de test
-- Chaque test peut être lancé indépendamment
+### Organization Tests
+- Création d'organisation et utilisateurs de test
+- Relations Member entre utilisateurs et organisation
+- Rôles admin/member
 
-### 📋 **Ordre logique**
-- Les tests s'exécutent dans un ordre prédéfini via Jest
-- Les dépendances sont explicites et documentées
-- Chaque test peut appeler les fonctions de setup des tests précédents
+### Exercise Tests
+- CRUD complet des exercices
+- Création de catégories d'exercices
+- Recherche d'exercices
+- Validation des permissions par organisation
 
-### 🛠️ **Setup automatique**
-- Nettoyage automatique de la base de données
-- Création automatique des données de test
-- Gestion des relations entre entités
+### Complex Tests
+- CRUD complet des complexes
+- Création de catégories de complexes
+- Association d'exercices dans les complexes
+- Ordre et répétitions des exercices
 
-### 🔍 **Tests directs des services**
-- **Pas d'API HTTP** : Tests directs des services NestJS
-- **Plus rapides** : Pas de surcharge HTTP/validation
-- **Plus fiables** : Pas de problèmes de routing/guards
-- **Plus simples** : Pas de gestion des requêtes HTTP
+### Workout Tests
+- CRUD complet des workouts
+- Création de catégories de workouts
+- Éléments de workout (exercices et complexes)
+- Paramètres des éléments (sets, reps, rest, poids)
 
-### 🔍 **Vérifications complètes**
-- Tests CRUD complets pour chaque entité
-- Vérification des relations entre entités
-- Tests de permissions et filtres par organisation
+## Approche technique
 
-## 🔧 Configuration
+### Factory pour les Use Cases
+
+```typescript
+const factory = new TestUseCaseFactory(orm);
+const exerciseUseCase = factory.createExerciseUseCase();
+const complexUseCase = factory.createComplexUseCase();
+const workoutUseCase = factory.createWorkoutUseCases();
+```
+
+### Structure des retours
+
+```typescript
+// Succès
+{
+  status: 200,
+  body: { /* données */ }
+}
+
+// Erreur
+{
+  status: 400 | 403 | 404 | 500,
+  body: { message: "Message d'erreur" }
+}
+```
+
+### Pattern de test
+
+```typescript
+// Utiliser les use cases
+const result = await useCase.create(data, orgId, userId);
+
+// Vérifier le résultat
+if (result.status === 200) {
+  const data = result.body;
+  expect(data).toBeDefined();
+} else {
+  throw new Error(`Failed: ${result.body.message}`);
+}
+```
+
+## Configuration
 
 ### Base de données de test
 - Base de données PostgreSQL dédiée pour les tests
 - Nettoyage automatique entre chaque test
 - Données de test cohérentes et réutilisables
 
-### Services testés
-- **ExerciseService** : CRUD des exercices
-- **ComplexService** : CRUD des complexes
-- **WorkoutService** : CRUD des workouts
+### Use Cases testés
+- **ExerciseUseCase** : CRUD des exercices
+- **ComplexUseCase** : CRUD des complexes
+- **WorkoutUseCases** : CRUD des workouts
 - **OrganizationService** : Gestion des organisations
-- **CategoryServices** : Gestion des catégories 
+- **CategoryUseCases** : Gestion des catégories 

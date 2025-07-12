@@ -44,7 +44,7 @@ export class OrganizationService {
 
   /**
    * Génère les conditions de filtrage pour les entités créées par les coachs
-   * @param coachUserIds - IDs des coachs
+   * @param coachUserIds - IDs users des coachs
    * @returns Conditions $or pour MikroORM
    */
   getCoachFilterConditions(coachUserIds: string[]) {
@@ -79,8 +79,8 @@ export class OrganizationService {
    */
   async isUserCoach(userId: string, organizationId: string): Promise<boolean> {
     const member = await this.em.findOne(Member, {
-      user: { id: userId },
-      organization: { id: organizationId },
+      user: userId,
+      organization: organizationId,
       role: { $in: ['admin', 'owner'] }
     });
     

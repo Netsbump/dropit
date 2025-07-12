@@ -109,13 +109,18 @@ describe('PermissionsGuard', () => {
   });
 
   describe('Permission Mapping Tests', () => {
-    it('should correctly map member permissions for workout resource', async () => {
+    it('should correctly map member permissions for athlete resource', async () => {
+      const athleteContext = {
+        ...mockContext,
+        getClass: () => ({ name: 'AthleteController' }),
+      } as unknown as ExecutionContext;
+
       jest.spyOn(reflector, 'get')
         .mockReturnValueOnce(['read']) // REQUIRED_PERMISSIONS (vérifié en premier)
         .mockReturnValueOnce(false); // NO_ORGANIZATION (vérifié en second)
       jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
 
-      const result = await guard.canActivate(mockContext);
+      const result = await guard.canActivate(athleteContext);
 
       expect(result).toBe(true);
       expect(entityManager.findOne).toHaveBeenCalledWith(Member, {
@@ -236,14 +241,28 @@ describe('PermissionsGuard', () => {
 
   describe('Role-based Access Tests', () => {
     describe('Member Role Tests', () => {
-      it('should allow member to read workouts', async () => {
+      it('should allow member to read athletes', async () => {
+        const athleteContext = {
+          ...mockContext,
+          getClass: () => ({ name: 'AthleteController' }),
+        } as unknown as ExecutionContext;
+
         jest.spyOn(reflector, 'get')
           .mockReturnValueOnce(false) // NO_ORGANIZATION
           .mockReturnValueOnce(['read']); // REQUIRED_PERMISSIONS
         jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
 
-        const result = await guard.canActivate(mockContext);
+        const result = await guard.canActivate(athleteContext);
         expect(result).toBe(true);
+      });
+
+      it('should deny member from reading workouts', async () => {
+        jest.spyOn(reflector, 'get')
+          .mockReturnValueOnce(['read']) // REQUIRED_PERMISSIONS
+          .mockReturnValueOnce(false); // NO_ORGANIZATION
+        jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
+
+        await expect(guard.canActivate(mockContext)).rejects.toThrow(ForbiddenException);
       });
 
       it('should deny member from creating workouts', async () => {
@@ -380,12 +399,17 @@ describe('PermissionsGuard', () => {
 
   describe('Multiple Permissions Tests', () => {
     it('should allow access if user has at least one required permission (OR logic)', async () => {
+      const athleteContext = {
+        ...mockContext,
+        getClass: () => ({ name: 'AthleteController' }),
+      } as unknown as ExecutionContext;
+
       jest.spyOn(reflector, 'get')
         .mockReturnValueOnce(['read', 'create']) // REQUIRED_PERMISSIONS
         .mockReturnValueOnce(false); // NO_ORGANIZATION
       jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
 
-      const result = await guard.canActivate(mockContext);
+      const result = await guard.canActivate(athleteContext);
       expect(result).toBe(true);
     });
 
@@ -496,7 +520,7 @@ describe('PermissionsGuard', () => {
 
   describe('Permission Package Integration Tests', () => {
     it('should use correct permission mappings from @dropit/permissions package', () => {
-      expect((member.statements as Record<string, string[]>).workout).toEqual(['read']);
+      expect((member.statements as Record<string, string[]>).athlete).toEqual(['read', 'create', 'update', 'delete']);
       expect((admin.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
       expect((owner.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
     });
@@ -505,7 +529,12 @@ describe('PermissionsGuard', () => {
       const resources = ['workout', 'exercise', 'complex', 'athlete', 'session', 'personalRecord'] as const;
       
       for (const resource of resources) {
-        expect((member.statements as Record<string, string[]>)[resource]).toBeDefined();
+        // Member n'a pas accès à workout, exercise, complex (seulement admin/owner)
+        if (resource === 'workout' || resource === 'exercise' || resource === 'complex') {
+          expect((member.statements as Record<string, string[]>)[resource]).toBeUndefined();
+        } else {
+          expect((member.statements as Record<string, string[]>)[resource]).toBeDefined();
+        }
         expect((admin.statements as Record<string, string[]>)[resource]).toBeDefined();
         expect((owner.statements as Record<string, string[]>)[resource]).toBeDefined();
       }

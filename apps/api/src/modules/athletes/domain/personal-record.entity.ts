@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { Athlete } from './athlete.entity';
-import { Exercise } from '../../training/exercise/exercise.entity';
+import { Exercise } from '../../training/domain/exercise.entity';
 
 @Entity()
 export class PersonalRecord {

@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ComplexCategory } from '../modules/training/complex-category/complex-category.entity';
-import { Complex } from '../modules/training/complex/complex.entity';
-import { ExerciseComplex } from '../modules/training/exercise-complex/exercise-complex.entity';
+import { ComplexCategory } from '../modules/training/domain/complex-category.entity';
+import { Complex } from '../modules/training/domain/complex.entity';
+import { ExerciseComplex } from '../modules/training/domain/exercise-complex.entity';
 import { seedExercises } from './exercise.seeder';
 
 export async function seedComplexes(
   em: EntityManager
 ): Promise<Record<string, Complex>> {
-  // Récupérer les exercices
+
   const exercisesMap = await seedExercises(em);
 
   const complexCategories = [
@@ -33,6 +33,7 @@ export async function seedComplexes(
   for (const complexCategory of complexCategories) {
     const categoryToCreate = new ComplexCategory();
     categoryToCreate.name = complexCategory.name;
+    categoryToCreate.createdBy = null;
     await em.persistAndFlush(categoryToCreate);
     complexCategoriesMap[complexCategory.name] = categoryToCreate;
     console.log('Complex category created:', categoryToCreate);

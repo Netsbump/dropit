@@ -4,7 +4,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { Athlete } from './domain/athlete.entity';
 import { CompetitorStatus } from './domain/competitor-status.entity';
 import { PersonalRecord } from './domain/personal-record.entity';
-import { Exercise } from '../training/exercise/exercise.entity';
+import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
 import { ATHLETE_REPO } from './application/ports/athlete.repository';
@@ -24,16 +24,16 @@ import { CompetitorStatusUseCases } from './application/use-cases/competitor-sta
 import { AthleteUseCases } from './application/use-cases/athlete-use-cases';
 import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
 import { OrganizationModule } from '../identity/organization/organization.module';
-import { ExerciseModule } from '../training/exercise/exercise.module';
+import { TrainingModule } from '../training/training.module';
 
 @Module({
   imports: [
     // on déclare aussi les custom-repositories ici
     MikroOrmModule.forFeature({
-      entities: [Athlete, PersonalRecord, CompetitorStatus,Exercise],
+      entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
     }),
     forwardRef(() => OrganizationModule),
-    forwardRef(() => ExerciseModule),
+    forwardRef(() => TrainingModule),
   ],
 
   controllers: [AthleteController, CompetitorStatusController, PersonalRecordController],

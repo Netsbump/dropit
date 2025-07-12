@@ -1,24 +1,24 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Complex } from '../modules/training/complex/complex.entity';
-import { Exercise } from '../modules/training/exercise/exercise.entity';
-import { WorkoutCategory } from '../modules/training/workout-category/workout-category.entity';
-import { WORKOUT_ELEMENT_TYPES } from '../modules/training/workout-element/workout-element.entity';
-import { WorkoutElement } from '../modules/training/workout-element/workout-element.entity';
-import { Workout } from '../modules/training/workout/workout.entity';
+import { Complex } from '../modules/training/domain/complex.entity';
+import { Exercise } from '../modules/training/domain/exercise.entity';
+import { WorkoutCategory } from '../modules/training/domain/workout-category.entity';
+import { WORKOUT_ELEMENT_TYPES } from '../modules/training/domain/workout-element.entity';
+import { WorkoutElement } from '../modules/training/domain/workout-element.entity';
+import { Workout } from '../modules/training/domain/workout.entity';
 import { seedComplexes } from './complex.seeder';
 
 export async function seedWorkouts(em: EntityManager): Promise<void> {
-  // Récupérer les complexes et les exercices
+
   const complexesMap = await seedComplexes(em);
 
-  // Les exercices sont déjà créés par seedComplexes
+  // Exercises are already created by seedComplexes
   const exercisesMap: Record<string, Exercise> = {};
   const exercises = await em.find(Exercise, {});
   for (const exercise of exercises) {
     exercisesMap[exercise.name] = exercise;
   }
 
-  // Création des catégories de workout
+  // Creation of workout categories
   const workoutCategories = [
     {
       name: 'Saison',
@@ -38,12 +38,13 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   for (const workoutCategory of workoutCategories) {
     const categoryToCreate = new WorkoutCategory();
     categoryToCreate.name = workoutCategory.name;
+    categoryToCreate.createdBy = null;
     await em.persistAndFlush(categoryToCreate);
     workoutCategoriesMap[workoutCategory.name] = categoryToCreate;
     console.log('Workout category created:', categoryToCreate);
   }
 
-  // Création des workouts
+  // Creation of workouts
   const workoutsToCreate = [
     {
       title: 'Entraînement Technique Lourd',
