@@ -42,6 +42,7 @@ export class WorkoutCategoryUseCase {
     try {
       // 1. Verify user is a coach of the organization
       const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+
       if (!isCoach) {
         throw new ForbiddenException('User is not a coach of this organization');
       }

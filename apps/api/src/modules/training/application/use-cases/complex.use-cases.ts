@@ -3,12 +3,12 @@ import { ComplexPresenter } from '../../interface/presenters/complex.presenter';
 import { IComplexRepository, COMPLEX_REPO } from '../ports/complex.repository';
 import { IComplexCategoryRepository, COMPLEX_CATEGORY_REPO } from '../ports/complex-category.repository';
 import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository';
+import { IExerciseComplexRepository, EXERCISE_COMPLEX_REPO } from '../ports/exercise-complex.repository';
 import { OrganizationService } from '../../../identity/organization/organization.service';
 import { ComplexMapper } from '../../interface/mappers/complex.mapper';
 import { CreateComplex, UpdateComplex } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
 import { ExerciseComplex } from '../../domain/exercise-complex.entity';
-import { EntityManager } from '@mikro-orm/core';
 
 @Injectable()
 export class ComplexUseCase {
@@ -19,8 +19,9 @@ export class ComplexUseCase {
     private readonly complexCategoryRepository: IComplexCategoryRepository,
     @Inject(EXERCISE_REPO)
     private readonly exerciseRepository: IExerciseRepository,
+    @Inject(EXERCISE_COMPLEX_REPO)
+    private readonly exerciseComplexRepository: IExerciseComplexRepository,
     private readonly organizationService: OrganizationService,
-    private readonly em: EntityManager
   ) {}
 
   async getOne(complexId: string, organizationId: string, userId: string) {
@@ -184,10 +185,7 @@ export class ComplexUseCase {
       if (data.exercises) {
         // Delete the old exercises
         const existingExercises = complexToUpdate.exercises.getItems();
-        for (const exerciseComplex of existingExercises) {
-          this.em.remove(exerciseComplex);
-        }
-        await this.em.flush();
+        await this.exerciseComplexRepository.removeMany(existingExercises);
         complexToUpdate.exercises.removeAll();
 
         // Add the new exercises
@@ -244,9 +242,7 @@ export class ComplexUseCase {
 
       // 3. Delete the exercises of the complex
       const exercises = complexToDelete.exercises.getItems();
-      for (const exerciseComplex of exercises) {
-        this.em.remove(exerciseComplex);
-      }
+      await this.exerciseComplexRepository.removeMany(exercises);
 
       // 4. Delete the complex
       await this.complexRepository.remove(complexToDelete);

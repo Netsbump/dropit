@@ -8,7 +8,7 @@ import { ExerciseCategoryUseCase } from '../../application/use-cases/exercise-ca
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = exerciseCategoryContract;
 
@@ -45,10 +45,10 @@ export class ExerciseCategoryController {
   @RequirePermissions('read')
   getExerciseCategories(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
     return tsRestHandler(c.getExerciseCategories, async () => {
-      return await this.exerciseCategoryUseCase.getAll(organizationId, userId);
+      return await this.exerciseCategoryUseCase.getAll(organizationId, user.id);
     });
   }
 
@@ -64,10 +64,10 @@ export class ExerciseCategoryController {
   @RequirePermissions('read')
   getExerciseCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
     return tsRestHandler(c.getExerciseCategory, async ({ params }) => {
-      return await this.exerciseCategoryUseCase.getOne(params.id, organizationId, userId);
+      return await this.exerciseCategoryUseCase.getOne(params.id, organizationId, user.id);
     });
   }
 
@@ -83,10 +83,10 @@ export class ExerciseCategoryController {
   @RequirePermissions('create')
   createExerciseCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createExerciseCategory>> {
     return tsRestHandler(c.createExerciseCategory, async ({ body }) => {
-      return await this.exerciseCategoryUseCase.create(body, organizationId, userId);
+      return await this.exerciseCategoryUseCase.create(body, organizationId, user.id);
     });
   }
 
@@ -103,10 +103,10 @@ export class ExerciseCategoryController {
   @RequirePermissions('update')
   updateExerciseCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateExerciseCategory>> {
     return tsRestHandler(c.updateExerciseCategory, async ({ params, body }) => {
-      return await this.exerciseCategoryUseCase.update(params.id, body, organizationId, userId);
+      return await this.exerciseCategoryUseCase.update(params.id, body, organizationId, user.id);
     });
   }
 
@@ -122,10 +122,10 @@ export class ExerciseCategoryController {
   @RequirePermissions('delete')
   deleteExerciseCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteExerciseCategory>> {
     return tsRestHandler(c.deleteExerciseCategory, async ({ params }) => {
-      return await this.exerciseCategoryUseCase.delete(params.id, organizationId, userId);
+      return await this.exerciseCategoryUseCase.delete(params.id, organizationId, user.id);
     });
   }
 }

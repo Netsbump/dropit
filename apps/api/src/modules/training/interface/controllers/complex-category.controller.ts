@@ -8,7 +8,7 @@ import { ComplexCategoryUseCase } from '../../application/use-cases/complex-cate
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = complexCategoryContract;
 
@@ -45,10 +45,10 @@ export class ComplexCategoryController {
   @RequirePermissions('read')
   getComplexCategories(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
     return tsRestHandler(c.getComplexCategories, async () => {
-      return await this.complexCategoryUseCase.getAll(organizationId, userId);
+      return await this.complexCategoryUseCase.getAll(organizationId, user.id);
     });
   }
 
@@ -64,10 +64,10 @@ export class ComplexCategoryController {
   @RequirePermissions('read')
   getComplexCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
     return tsRestHandler(c.getComplexCategory, async ({ params }) => {
-      return await this.complexCategoryUseCase.getOne(params.id, organizationId, userId);
+      return await this.complexCategoryUseCase.getOne(params.id, organizationId, user.id);
     });
   }
 
@@ -83,10 +83,10 @@ export class ComplexCategoryController {
   @RequirePermissions('create')
   createComplexCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createComplexCategory>> {
     return tsRestHandler(c.createComplexCategory, async ({ body }) => {
-      return await this.complexCategoryUseCase.create(body, organizationId, userId);
+      return await this.complexCategoryUseCase.create(body, organizationId, user.id);
     });
   }
 
@@ -103,10 +103,10 @@ export class ComplexCategoryController {
   @RequirePermissions('update')
   updateComplexCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateComplexCategory>> {
     return tsRestHandler(c.updateComplexCategory, async ({ params, body }) => {
-      return await this.complexCategoryUseCase.update(params.id, body, organizationId, userId);
+      return await this.complexCategoryUseCase.update(params.id, body, organizationId, user.id);
     });
   }
 
@@ -122,10 +122,10 @@ export class ComplexCategoryController {
   @RequirePermissions('delete')
   deleteComplexCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteComplexCategory>> {
     return tsRestHandler(c.deleteComplexCategory, async ({ params }) => {
-      return await this.complexCategoryUseCase.delete(params.id, organizationId, userId);
+      return await this.complexCategoryUseCase.delete(params.id, organizationId, user.id);
     });
   }
 }

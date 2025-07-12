@@ -1,6 +1,18 @@
 import { WorkoutDto } from '@dropit/schemas';
 import { Workout } from '../../domain/workout.entity';
 import { ExerciseComplex } from '../../domain/exercise-complex.entity';
+import { WorkoutElement } from '../../domain/workout-element.entity';
+import { Exercise } from '../../domain/exercise.entity';
+import { Complex } from '../../domain/complex.entity';
+
+// Type guards for WorkoutElement discrimination
+const isExerciseElement = (element: WorkoutElement): element is WorkoutElement & { exercise: Exercise } => {
+  return element.type === 'exercise' && element.exercise !== undefined;
+};
+
+const isComplexElement = (element: WorkoutElement): element is WorkoutElement & { complex: Complex } => {
+  return element.type === 'complex' && element.complex !== undefined;
+};
 
 export const WorkoutMapper = {
   toDto(workout: Workout): WorkoutDto {
@@ -14,7 +26,7 @@ export const WorkoutMapper = {
         startWeight_percent: element.startWeight_percent,
       };
 
-      if (element.exercise) {
+      if (isExerciseElement(element)) {
         return {
           ...baseElement,
           type: 'exercise' as const,
@@ -31,20 +43,21 @@ export const WorkoutMapper = {
             shortName: element.exercise.shortName,
           },
         };
-      } else {
-        // La contrainte DB garantit qu'il y a soit exercise soit complex
+      }
+
+      if (isComplexElement(element)) {
         return {
           ...baseElement,
           type: 'complex' as const,
           complex: {
-            id: element.complex!.id,
-            name: element.complex!.name,
-            description: element.complex!.description,
+            id: element.complex.id,
+            name: element.complex.name,
+            description: element.complex.description,
             complexCategory: {
-              id: element.complex!.complexCategory.id,
-              name: element.complex!.complexCategory.name,
+              id: element.complex.complexCategory.id,
+              name: element.complex.complexCategory.name,
             },
-            exercises: element.complex!.exercises.getItems().map((ex: ExerciseComplex) => ({
+            exercises: element.complex.exercises.getItems().map((ex: ExerciseComplex) => ({
               id: ex.exercise.id,
               name: ex.exercise.name,
               description: ex.exercise.description,
@@ -61,6 +74,9 @@ export const WorkoutMapper = {
           },
         };
       }
+
+      // This should never happen due to DB constraints, but TypeScript needs it
+      throw new Error(`Invalid workout element type: ${element.type}`);
     });
 
     return {

@@ -15,8 +15,6 @@ export class MikroExerciseRepository extends EntityRepository<Exercise> implemen
     const coachMembers = await this.em.find(Member, {
       organization: { id: organizationId },
       role: { $in: ['admin', 'owner'] }
-    }, {
-      populate: ['user']
     });
   
     const coachUserIds = coachMembers.map(member => member.user.id);

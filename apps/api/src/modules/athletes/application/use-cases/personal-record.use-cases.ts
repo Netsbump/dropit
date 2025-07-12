@@ -3,16 +3,15 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecord,
 } from '@dropit/schemas';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PersonalRecord } from '../../domain/personal-record.entity';
 import { OrganizationService } from '../../../identity/organization/organization.service';
 import { PersonalRecordMapper } from '../../interface/mappers/personal-record.mapper';
 import { PersonalRecordPresenter } from '../../interface/presenter/personal-record.presenter';
 import { IPersonalRecordRepository, PERSONAL_RECORD_REPO } from '../../application/ports/personal-record.repository';
 import { IAthleteRepository, ATHLETE_REPO } from '../ports/athlete.repository';
-import { Inject } from '@nestjs/common';
-import { ExerciseService } from '../../../training/exercise/exercise.service'
-import { Exercise } from '../../../training/exercise/exercise.entity';
+import { Exercise } from '../../../training/domain/exercise.entity';
+import { IExerciseRepository, EXERCISE_REPO } from '../../../training/application/ports/exercise.repository';
 
 @Injectable()
 export class PersonalRecordUseCases {
@@ -22,7 +21,8 @@ export class PersonalRecordUseCases {
     private readonly personalRecordRepository: IPersonalRecordRepository,
     @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    private readonly exerciseService: ExerciseService,
+    @Inject(EXERCISE_REPO)
+    private readonly exerciseRepository: IExerciseRepository,
   ) {}
 
   async getAll(currentUserId: string, organizationId: string) {
@@ -227,7 +227,7 @@ export class PersonalRecordUseCases {
       personalRecord.athlete = athlete;
       
       // 5. Get exercise and set it
-      const exercise = await this.exerciseService.getExercise(data.exerciseId, organizationId);
+      const exercise = await this.exerciseRepository.getOne(data.exerciseId, organizationId);
       if (!exercise) {
         throw new NotFoundException(
           `Exercise with ID ${data.exerciseId} not found`

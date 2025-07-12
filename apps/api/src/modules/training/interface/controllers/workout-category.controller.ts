@@ -8,7 +8,7 @@ import { WorkoutCategoryUseCase } from '../../application/use-cases/workout-cate
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = workoutCategoryContract;
 
@@ -45,10 +45,10 @@ export class WorkoutCategoryController {
   @RequirePermissions('read')
   getWorkoutCategories(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategories>> {
     return tsRestHandler(c.getWorkoutCategories, async () => {
-      return await this.workoutCategoryUseCase.getAll(userId, organizationId);
+      return await this.workoutCategoryUseCase.getAll(user.id, organizationId);
     });
   }
 
@@ -64,10 +64,10 @@ export class WorkoutCategoryController {
   @RequirePermissions('read')
   getWorkoutCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategory>> {
     return tsRestHandler(c.getWorkoutCategory, async ({ params }) => {
-      return await this.workoutCategoryUseCase.getOne(params.id, userId, organizationId);
+      return await this.workoutCategoryUseCase.getOne(params.id, user.id, organizationId);
     });
   }
 
@@ -83,10 +83,10 @@ export class WorkoutCategoryController {
   @RequirePermissions('create')
   createWorkoutCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createWorkoutCategory>> {
     return tsRestHandler(c.createWorkoutCategory, async ({ body }) => {
-      return await this.workoutCategoryUseCase.create(body, organizationId, userId);
+      return await this.workoutCategoryUseCase.create(body, organizationId, user.id);
     });
   }
 
@@ -103,10 +103,10 @@ export class WorkoutCategoryController {
   @RequirePermissions('update')
   updateWorkoutCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateWorkoutCategory>> {
     return tsRestHandler(c.updateWorkoutCategory, async ({ params, body }) => {
-      return await this.workoutCategoryUseCase.update(params.id, body, organizationId, userId);
+      return await this.workoutCategoryUseCase.update(params.id, body, organizationId, user.id);
     });
   }
 
@@ -122,10 +122,10 @@ export class WorkoutCategoryController {
   @RequirePermissions('delete')
   deleteWorkoutCategory(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteWorkoutCategory>> {
     return tsRestHandler(c.deleteWorkoutCategory, async ({ params }) => {
-      return await this.workoutCategoryUseCase.delete(params.id, organizationId, userId);
+      return await this.workoutCategoryUseCase.delete(params.id, organizationId, user.id);
     });
   }
 }

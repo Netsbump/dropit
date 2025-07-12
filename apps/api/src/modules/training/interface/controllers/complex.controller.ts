@@ -8,7 +8,7 @@ import { ComplexUseCase } from '../../application/use-cases/complex.use-cases';
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = complexContract;
 
@@ -45,10 +45,10 @@ export class ComplexController {
   @RequirePermissions('read')
   getComplexes(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
     return tsRestHandler(c.getComplexes, async () => {
-      return await this.complexUseCase.getAll(organizationId, userId);
+      return await this.complexUseCase.getAll(organizationId, user.id);
     });
   }
 
@@ -64,10 +64,10 @@ export class ComplexController {
   @RequirePermissions('read')
   getComplex(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
     return tsRestHandler(c.getComplex, async ({ params }) => {
-      return await this.complexUseCase.getOne(params.id, organizationId, userId);
+      return await this.complexUseCase.getOne(params.id, organizationId, user.id);
     });
   }
 
@@ -83,10 +83,10 @@ export class ComplexController {
   @RequirePermissions('create')
   createComplex(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createComplex>> {
     return tsRestHandler(c.createComplex, async ({ body }) => {
-      return await this.complexUseCase.create(body, organizationId, userId);
+      return await this.complexUseCase.create(body, organizationId, user.id);
     });
   }
 
@@ -103,10 +103,10 @@ export class ComplexController {
   @RequirePermissions('update')
   updateComplex(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() userId: string
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateComplex>> {
     return tsRestHandler(c.updateComplex, async ({ params, body }) => {
-      return await this.complexUseCase.update(params.id, body, organizationId, userId);
+      return await this.complexUseCase.update(params.id, body, organizationId, user.id);
     });
   }
 

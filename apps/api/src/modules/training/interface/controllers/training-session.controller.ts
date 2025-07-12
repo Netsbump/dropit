@@ -8,7 +8,7 @@ import { TrainingSessionUseCase } from '../../application/use-cases/training-ses
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const contractTrainingSession = apiContract.trainingSession;
 const contractAthleteTrainingSession = apiContract.athleteTrainingSession;
@@ -73,9 +73,12 @@ export class TrainingSessionController {
    */
   @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions)
   @RequirePermissions('read')
-  getAthleteTrainingSessions(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
+  getAthleteTrainingSessions(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
     return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions, async ({ params }) => {
-      return await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, userId);
+      return await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, user.id);
     });
   }
 
@@ -88,9 +91,12 @@ export class TrainingSessionController {
    */
   @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession)
   @RequirePermissions('read')
-  getAthleteTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
+  getAthleteTrainingSession(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
     return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession, async ({ params }) => {
-      return await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, userId);
+      return await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, user.id);
     });
   }
 
@@ -103,9 +109,12 @@ export class TrainingSessionController {
   */
   @TsRestHandler(contractTrainingSession.createTrainingSession)
   @RequirePermissions('create')
-  createTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.createTrainingSession>> {
+  createTrainingSession(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.createTrainingSession>> {
     return tsRestHandler(contractTrainingSession.createTrainingSession, async ({ body }) => {
-      return await this.trainingSessionUseCase.create(body, organizationId, userId);
+      return await this.trainingSessionUseCase.create(body, organizationId, user.id);
     });
   }
 
@@ -118,9 +127,12 @@ export class TrainingSessionController {
    */
   @TsRestHandler(contractTrainingSession.updateTrainingSession)
   @RequirePermissions('update')
-  updateTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.updateTrainingSession>> {
+  updateTrainingSession(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.updateTrainingSession>> {
     return tsRestHandler(contractTrainingSession.updateTrainingSession, async ({ params, body }) => {
-      return await this.trainingSessionUseCase.update(params.id, body, organizationId, userId);
+      return await this.trainingSessionUseCase.update(params.id, body, organizationId, user.id);
     });
   }
 
@@ -132,9 +144,11 @@ export class TrainingSessionController {
    */
   @TsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession)
   @RequirePermissions('update')
-  updateAthleteTrainingSession(@CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
+  updateAthleteTrainingSession(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
     return tsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession, async ({ params, body }) => {
-      return this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, userId);
+      return this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, user.id);
     });
   }
 
@@ -147,9 +161,12 @@ export class TrainingSessionController {
    */
   @TsRestHandler(contractTrainingSession.deleteTrainingSession) 
   @RequirePermissions('delete')
-    deleteTrainingSession(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.deleteTrainingSession>> {
+  deleteTrainingSession(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.deleteTrainingSession>> {
     return tsRestHandler(contractTrainingSession.deleteTrainingSession, async ({ params }) => {
-      return await this.trainingSessionUseCase.delete(params.id, organizationId, userId);
+      return await this.trainingSessionUseCase.delete(params.id, organizationId, user.id);
     });
   }
 }
