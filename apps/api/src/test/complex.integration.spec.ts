@@ -1,12 +1,13 @@
 import { ExerciseCategoryDto, ComplexCategoryDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
-import { ComplexCategoryService } from '../modules/training/application/use-cases/complex-category.use-cases';
-import { ComplexService } from '../modules/training/application/use-cases/complex.use-cases';
-import { ExerciseCategoryService } from '../modules/training/exercise-category/exercise-category.service';
-import { ExerciseService } from '../modules/training/exercise/exercise.service';
+import { ComplexCategoryUseCase } from '../modules/training/application/use-cases/complex-category.use-cases';
+import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
+import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
+import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
 import { OrganizationService } from '../modules/identity/organization/organization.service';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
+import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**
  * Exécute les tests d'intégration pour les complexes
@@ -14,10 +15,10 @@ import { cleanDatabase, TestData } from './utils/test-setup';
 export async function runComplexTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running complex integration tests...');
   
-  let exerciseCategoryService: ExerciseCategoryService;
-  let exerciseService: ExerciseService;
-  let complexCategoryService: ComplexCategoryService;
-  let complexService: ComplexService;
+  let exerciseCategoryUseCase: ExerciseCategoryUseCase;
+  let exerciseUseCase: ExerciseUseCase;
+  let complexCategoryUseCase: ComplexCategoryUseCase;
+  let complexUseCase: ComplexUseCase;
   let organizationService: OrganizationService;
   let testData: TestData;
   let exerciseCategory: ExerciseCategoryDto;
@@ -30,54 +31,75 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     // Setup l'organisation (dépendance)
     testData = await setupOrganization(orm);
     
-    // Créer les services directement
-    organizationService = new OrganizationService(orm.em);
-    exerciseCategoryService = new ExerciseCategoryService(orm.em);
-    exerciseService = new ExerciseService(orm.em, organizationService);
-    complexCategoryService = new ComplexCategoryService(orm.em);
-    complexService = new ComplexService(orm.em, organizationService);
+    // Utiliser la factory pour créer les use cases
+    const factory = new TestUseCaseFactory(orm);
+    organizationService = factory.createOrganizationService();
+    exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
+    exerciseUseCase = factory.createExerciseUseCase();
+    complexCategoryUseCase = factory.createComplexCategoryUseCase();
+    complexUseCase = factory.createComplexUseCase();
 
-    // Créer une catégorie d'exercice
-    exerciseCategory = await exerciseCategoryService.createExerciseCategory({ 
+    // Créer une catégorie d'exercice via use case
+    const exerciseCategoryResult = await exerciseCategoryUseCase.create({ 
       name: 'Haltérophilie' 
-    });
+    }, testData.organization.id, testData.adminUser.id);
+    
+    if (exerciseCategoryResult.status === 200) {
+      exerciseCategory = exerciseCategoryResult.body;
+    } else {
+      throw new Error(`Failed to create exercise category: ${exerciseCategoryResult.body.message}`);
+    }
 
-    // Créer une catégorie de complex
-    complexCategory = await complexCategoryService.createComplexCategory({ 
+    // Créer une catégorie de complex via use case
+    const complexCategoryResult = await complexCategoryUseCase.create({ 
       name: 'Complexes Haltérophilie' 
-    });
+    }, testData.organization.id, testData.adminUser.id);
+    
+    if (complexCategoryResult.status === 200) {
+      complexCategory = complexCategoryResult.body;
+    } else {
+      throw new Error(`Failed to create complex category: ${complexCategoryResult.body.message}`);
+    }
     
     expect(complexCategory).toBeDefined();
     expect(complexCategory.id).toBeDefined();
     expect(complexCategory.name).toBe('Complexes Haltérophilie');
 
-    // Test 1: Créer des exercices pour les complexes
+    // Test 1: Créer des exercices pour les complexes via use case
     console.log('🧪 Testing exercise creation for complexes...');
-    const exercise1 = await exerciseService.createExercise({
+    const exercise1Result = await exerciseUseCase.create({
       name: 'Squat',
       description: 'Basic squat exercise',
       exerciseCategory: exerciseCategory.id,
-    }, testData.adminUser.id);
+    }, testData.organization.id, testData.adminUser.id);
 
-    const exercise2 = await exerciseService.createExercise({
+    const exercise2Result = await exerciseUseCase.create({
       name: 'Deadlift',
       description: 'Basic deadlift exercise',
       exerciseCategory: exerciseCategory.id,
-    }, testData.adminUser.id);
+    }, testData.organization.id, testData.adminUser.id);
 
-    const exercise3 = await exerciseService.createExercise({
+    const exercise3Result = await exerciseUseCase.create({
       name: 'Bench Press',
       description: 'Basic bench press exercise',
       exerciseCategory: exerciseCategory.id,
-    }, testData.adminUser.id);
+    }, testData.organization.id, testData.adminUser.id);
+
+    if (exercise1Result.status !== 200 || exercise2Result.status !== 200 || exercise3Result.status !== 200) {
+      throw new Error('Failed to create exercises');
+    }
+
+    const exercise1 = exercise1Result.body;
+    const exercise2 = exercise2Result.body;
+    const exercise3 = exercise3Result.body;
 
     expect(exercise1).toBeDefined();
     expect(exercise2).toBeDefined();
     expect(exercise3).toBeDefined();
 
-    // Test 2: Créer un complex via service
-    console.log('🧪 Testing complex creation via service...');
-    const complex1 = await complexService.createComplex({
+    // Test 2: Créer un complex via use case
+    console.log('🧪 Testing complex creation via use case...');
+    const complex1Result = await complexUseCase.create({
       name: 'Arraché simple',
       complexCategory: complexCategory.id,
       exercises: [
@@ -100,26 +122,39 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       description: 'Pour monter en gamme tranquillement',
     }, testData.organization.id, testData.adminUser.id);
 
+    if (complex1Result.status !== 200) {
+      throw new Error(`Failed to create complex: ${complex1Result.body.message}`);
+    }
+
+    const complex1 = complex1Result.body;
+
     expect(complex1).toBeDefined();
     expect(complex1.id).toBeDefined();
     expect(complex1.name).toBe('Arraché simple');
     expect(complex1.exercises).toHaveLength(3);
 
     // Test 3: Créer un autre complex
-    console.log('🧪 Testing second complex creation via service...');
-    const exercise4 = await exerciseService.createExercise({
+    console.log('🧪 Testing second complex creation via use case...');
+    const exercise4Result = await exerciseUseCase.create({
       name: 'Push-up',
       description: 'Basic push-up',
       exerciseCategory: exerciseCategory.id,
-    }, testData.adminUser.id);
+    }, testData.organization.id, testData.adminUser.id);
 
-    const exercise5 = await exerciseService.createExercise({
+    const exercise5Result = await exerciseUseCase.create({
       name: 'Pull-up',
       description: 'Basic pull-up',
       exerciseCategory: exerciseCategory.id,
-    }, testData.adminUser.id);
+    }, testData.organization.id, testData.adminUser.id);
 
-    const complex2 = await complexService.createComplex({
+    if (exercise4Result.status !== 200 || exercise5Result.status !== 200) {
+      throw new Error('Failed to create exercises for second complex');
+    }
+
+    const exercise4 = exercise4Result.body;
+    const exercise5 = exercise5Result.body;
+
+    const complex2Result = await complexUseCase.create({
       name: 'Complex Push-Pull',
       description: 'Complexe push-pull',
       complexCategory: complexCategory.id,
@@ -129,40 +164,74 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       ],
     }, testData.organization.id, testData.adminUser.id);
 
+    if (complex2Result.status !== 200) {
+      throw new Error(`Failed to create second complex: ${complex2Result.body.message}`);
+    }
+
+    const complex2 = complex2Result.body;
+
     expect(complex2).toBeDefined();
     expect(complex2.name).toBe('Complex Push-Pull');
     expect(complex2.exercises).toHaveLength(2);
 
-    // Test 4: Récupérer tous les complexes via service
-    console.log('🧪 Testing complex retrieval via service...');
-    const complexes = await complexService.getComplexes(testData.organization.id);
+    // Test 4: Récupérer tous les complexes via use case
+    console.log('🧪 Testing complex retrieval via use case...');
+    const complexesResult = await complexUseCase.getAll(testData.organization.id, testData.adminUser.id);
+    
+    if (complexesResult.status !== 200) {
+      throw new Error(`Failed to get complexes: ${complexesResult.body.message}`);
+    }
+
+    const complexes = complexesResult.body;
     expect(complexes.length).toBeGreaterThanOrEqual(2);
 
     // Test 5: Récupérer un complex spécifique
-    console.log('🧪 Testing single complex retrieval via service...');
-    const singleComplex = await complexService.getComplex(complex1.id, testData.organization.id);
+    console.log('🧪 Testing single complex retrieval via use case...');
+    const singleComplexResult = await complexUseCase.getOne(complex1.id, testData.organization.id, testData.adminUser.id);
+    
+    if (singleComplexResult.status !== 200) {
+      throw new Error(`Failed to get single complex: ${singleComplexResult.body.message}`);
+    }
+
+    const singleComplex = singleComplexResult.body;
     expect(singleComplex.id).toBe(complex1.id);
     expect(singleComplex.name).toBe('Arraché simple');
 
-    // Test 6: Mettre à jour un complex via service
-    console.log('🧪 Testing complex update via service...');
-    const updatedComplex = await complexService.updateComplex(
+    // Test 6: Mettre à jour un complex via use case
+    console.log('🧪 Testing complex update via use case...');
+    const updatedComplexResult = await complexUseCase.update(
       complex1.id,
       {
         name: 'Arraché simple Modifié',
         description: 'Description modifiée',
       },
-      testData.organization.id
+      testData.organization.id,
+      testData.adminUser.id
     );
 
+    if (updatedComplexResult.status !== 200) {
+      throw new Error(`Failed to update complex: ${updatedComplexResult.body.message}`);
+    }
+
+    const updatedComplex = updatedComplexResult.body;
     expect(updatedComplex.name).toBe('Arraché simple Modifié');
     expect(updatedComplex.description).toBe('Description modifiée');
 
-    // Test 7: Supprimer un complex via service
-    console.log('🧪 Testing complex deletion via service...');
-    await complexService.deleteComplex(complex2.id, testData.organization.id);
+    // Test 7: Supprimer un complex via use case
+    console.log('🧪 Testing complex deletion via use case...');
+    const deleteResult = await complexUseCase.delete(complex2.id, testData.organization.id, testData.adminUser.id);
+    
+    if (deleteResult.status !== 200) {
+      throw new Error(`Failed to delete complex: ${deleteResult.body.message}`);
+    }
 
-    const remainingComplexes = await complexService.getComplexes(testData.organization.id);
+    const remainingComplexesResult = await complexUseCase.getAll(testData.organization.id, testData.adminUser.id);
+    
+    if (remainingComplexesResult.status !== 200) {
+      throw new Error(`Failed to get remaining complexes: ${remainingComplexesResult.body.message}`);
+    }
+
+    const remainingComplexes = remainingComplexesResult.body;
     expect(remainingComplexes.length).toBe(complexes.length - 1);
 
     console.log('✅ Complex integration tests completed successfully');
