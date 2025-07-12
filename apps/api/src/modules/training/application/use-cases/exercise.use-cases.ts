@@ -17,12 +17,20 @@ export class ExerciseUseCase {
     private readonly organizationService: OrganizationService
   ) {}
 
-  async getOne(exerciseId: string, organizationId: string) {
+  async getOne(exerciseId: string, organizationId: string, userId: string) {
     try {
-      //1. Get exercise from repository
+
+      // 1. Check if the user is coach of this organization
+      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+    
+      if (!isCoach) {
+        throw new ForbiddenException('User is not coach of this organization');
+      }
+
+      // 2. Get exercise (filtering is managed in the repository)
       const exercise = await this.exerciseRepository.getOne(exerciseId, organizationId);
 
-      //2. Validate exercise
+      //3. Validate exercise
       if (!exercise) {
         throw new NotFoundException('Exercise not found');
       }
@@ -37,41 +45,55 @@ export class ExerciseUseCase {
     }
   }
 
-  async getAll(organizationId: string) {
+  async getAll(organizationId: string, userId: string) {
     try {
-      //1. Get exercises from repository
+      // 1. Check if the user is coach of this organization
+      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      
+      if (!isCoach) {
+        throw new ForbiddenException('User is not coach of this organization');
+      }
+
+      // 2. Get exercises from repository
       const exercises = await this.exerciseRepository.getAll(organizationId);
 
-      //2. Validate exercises
+      // 3. Validate exercises
       if (!exercises || exercises.length === 0) {
         throw new NotFoundException('No exercises found');
       }
 
-      //3. Map exercises to DTO
+      // 4. Map exercises to DTO
       const exercisesDto = ExerciseMapper.toDtoList(exercises);
 
-      //4. Present exercises
-      return ExercisePresenter.present(exercisesDto);
+      // 5. Present exercises
+      return ExercisePresenter.presentList(exercisesDto);
     } catch (error) {
       return ExercisePresenter.presentError(error as Error);
     }
   }
 
-  async search(query: string, organizationId: string) {
+  async search(query: string, organizationId: string, userId: string) {
     try {
-      //1. Search exercises from repository
+      // 1. Check if the user is coach of this organization
+      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      
+      if (!isCoach) {
+        throw new ForbiddenException('User is not coach of this organization');
+      }
+
+      // 2. Search exercises from repository
       const exercises = await this.exerciseRepository.search(query, organizationId);
 
-      //2. Validate exercises
+      // 3. Validate exercises
       if (!exercises) {
         throw new NotFoundException('Exercises not found');
       }
 
-      //3. Map exercises to DTO
+      // 4. Map exercises to DTO
       const exercisesDto = ExerciseMapper.toDtoList(exercises);
 
-      //4. Present exercises
-      return ExercisePresenter.present(exercisesDto);
+      // 5. Present exercises
+      return ExercisePresenter.presentList(exercisesDto);
     } catch (error) {
       return ExercisePresenter.presentError(error as Error);
     }
@@ -92,7 +114,7 @@ export class ExerciseUseCase {
       }
 
       //3. Get exercise category via repository
-      const exerciseCategory = await this.exerciseCategoryRepository.getOne(data.exerciseCategory);
+      const exerciseCategory = await this.exerciseCategoryRepository.getOne(data.exerciseCategory, organizationId);
 
       if (!exerciseCategory) {
         throw new NotFoundException(
@@ -114,7 +136,7 @@ export class ExerciseUseCase {
         exercise.shortName = data.shortName;
       }
       
-      // Assigner le coach créateur
+      // Assign the creator user
       const user = await this.organizationService.getUserById(userId);
       exercise.createdBy = user;
       

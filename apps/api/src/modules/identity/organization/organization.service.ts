@@ -44,7 +44,7 @@ export class OrganizationService {
 
   /**
    * Génère les conditions de filtrage pour les entités créées par les coachs
-   * @param coachUserIds - IDs des coachs
+   * @param coachUserIds - IDs users des coachs
    * @returns Conditions $or pour MikroORM
    */
   getCoachFilterConditions(coachUserIds: string[]) {

@@ -84,7 +84,7 @@ export class WorkoutController {
   @RequirePermissions('create')
   createWorkout(
     @CurrentOrganization() organizationId: string,
-    @CurrentUser() user: any
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
       return await this.workoutUseCases.createWorkout(body, organizationId, user.id);

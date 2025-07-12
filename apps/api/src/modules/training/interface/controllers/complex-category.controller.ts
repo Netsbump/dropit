@@ -37,13 +37,18 @@ export class ComplexCategoryController {
   /**
    * Retrieves all complex categories.
    *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns A list of all complex categories.
    */
   @TsRestHandler(c.getComplexCategories)
   @RequirePermissions('read')
-  getComplexCategories(): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
+  getComplexCategories(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
     return tsRestHandler(c.getComplexCategories, async () => {
-      return await this.complexCategoryUseCase.getAll();
+      return await this.complexCategoryUseCase.getAll(organizationId, userId);
     });
   }
 
@@ -51,13 +56,18 @@ export class ComplexCategoryController {
    * Retrieves a specific complex category by ID.
    *
    * @param params - Contains the complex category ID
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns The complex category with the specified ID.
    */
   @TsRestHandler(c.getComplexCategory)
   @RequirePermissions('read')
-  getComplexCategory(): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
+  getComplexCategory(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
     return tsRestHandler(c.getComplexCategory, async ({ params }) => {
-      return await this.complexCategoryUseCase.getOne(params.id);
+      return await this.complexCategoryUseCase.getOne(params.id, organizationId, userId);
     });
   }
 

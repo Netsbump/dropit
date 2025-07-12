@@ -1,11 +1,13 @@
 import {
   Collection,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { Workout } from './workout.entity';
+import { User } from '../../identity/auth/auth.entity';
 
 @Entity()
 export class WorkoutCategory {
@@ -20,6 +22,9 @@ export class WorkoutCategory {
     (workout) => workout.category
   )
   workouts = new Collection<Workout>(this);
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy!: User | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

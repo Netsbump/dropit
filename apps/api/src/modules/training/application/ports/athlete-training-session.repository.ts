@@ -5,7 +5,6 @@ export const ATHLETE_TRAINING_SESSION_REPO = Symbol('ATHLETE_TRAINING_SESSION_RE
 export interface IAthleteTrainingSessionRepository {
   getAllWithDetails(athleteId: string): Promise<AthleteTrainingSession[]>;
   getOneWithDetails(athleteId: string, trainingSessionId: string): Promise<AthleteTrainingSession | null>;
-
   save(athleteTrainingSession: AthleteTrainingSession): Promise<void>;
   remove(athleteTrainingSession: AthleteTrainingSession): Promise<void>;
 }

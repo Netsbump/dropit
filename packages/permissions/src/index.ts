@@ -2,17 +2,19 @@ import { createAccessControl } from "better-auth/plugins/access";
 import { defaultStatements, ownerAc, adminAc, memberAc } from 'better-auth/plugins/organization/access';
 
 /**
- * Définition des ressources et actions pour notre application
+ * Definition of resources and actions for our application
  */
 const statement = {
-  // Ressources par défaut de Better Auth
+  // Default resources of Better Auth
   ...defaultStatements,
   
-  // Mes ressources métier
+  // My business resources
   workout: ["read", "create", "update", "delete"],
+  workoutCategory: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
   exerciseCategory: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
+  complexCategory: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
@@ -22,15 +24,11 @@ const statement = {
 } as const;
 
 /**
- * Création du contrôleur d'accès
+ * Creation of access controller and definition of roles
  */
 export const ac = createAccessControl(statement);
 
-/**
- * Définition des rôles
- */
-
-// Rôle Member (lecture seule + création de ses propres records)
+// Role Member (Athlete)
 export const member = ac.newRole({
   ...memberAc.statements,
   athlete: ["read", "create", "update", "delete"],
@@ -41,13 +39,15 @@ export const member = ac.newRole({
   competitorStatus: ["read"],
 });
 
-// Rôle Admin (gestion complète sauf suppression d'organisation)
+// Role Admin (Coach)
 export const admin = ac.newRole({
   ...adminAc.statements,
   workout: ["read", "create", "update", "delete"],
+  workoutCategory: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
   exerciseCategory: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
+  complexCategory: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],
@@ -56,12 +56,15 @@ export const admin = ac.newRole({
   competitorStatus: ["read", "create", "update"],
 });
 
-// Rôle Owner (toutes les permissions)
+// Role Owner (All permissions)
 export const owner = ac.newRole({
   ...ownerAc.statements,
   workout: ["read", "create", "update", "delete"],
+  workoutCategory: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
+  exerciseCategory: ["read", "create", "update", "delete"],
   complex: ["read", "create", "update", "delete"],
+  complexCategory: ["read", "create", "update", "delete"],
   athlete: ["read", "create", "update", "delete"],
   session: ["read", "create", "update", "delete"],
   personalRecord: ["read", "create", "update", "delete"],

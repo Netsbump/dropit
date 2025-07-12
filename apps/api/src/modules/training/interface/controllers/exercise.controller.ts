@@ -4,11 +4,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ExerciseUseCase } from '../application/use-cases/exercise.use-cases';
-import { PermissionsGuard } from '../../identity/permissions/permissions.guard';
-import { RequirePermissions } from '../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../identity/auth/auth.decorator';
+import { ExerciseUseCase } from '../../application/use-cases/exercise.use-cases';
+import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
+import { CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = exerciseContract;
 
@@ -38,13 +38,17 @@ export class ExerciseController {
    * Retrieves all exercises for the current organization.
    *
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns A list of all exercises for the organization.
    */
   @TsRestHandler(c.getExercises)
   @RequirePermissions('read')
-  getExercises(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
+  getExercises(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
-      return await this.exerciseUseCase.getAll(organizationId);
+      return await this.exerciseUseCase.getAll(organizationId, userId);
     });
   }
 
@@ -57,9 +61,9 @@ export class ExerciseController {
    */
   @TsRestHandler(c.getExercise)
   @RequirePermissions('read')
-  getExercise(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
+  getExercise(@CurrentOrganization() organizationId: string, @CurrentUser() userId: string): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
-      return await this.exerciseUseCase.getOne(params.id, organizationId);
+      return await this.exerciseUseCase.getOne(params.id, organizationId, userId);
     });
   }
 
@@ -126,14 +130,18 @@ export class ExerciseController {
    *
    * @param query - Contains the search query
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns A list of exercises matching the search query.
    */
   @TsRestHandler(c.searchExercises)
   @RequirePermissions('read')
-  searchExercises(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
+  searchExercises(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
       // Contrat : query = { like: z.string() }
-      return await this.exerciseUseCase.search(query.like, organizationId);
+      return await this.exerciseUseCase.search(query.like, organizationId, userId);
     });
   }
 }

@@ -38,13 +38,17 @@ export class ComplexController {
    * Retrieves all complexes for the current organization.
    *
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns A list of all complexes for the organization.
    */
   @TsRestHandler(c.getComplexes)
   @RequirePermissions('read')
-  getComplexes(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
+  getComplexes(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
     return tsRestHandler(c.getComplexes, async () => {
-      return await this.complexUseCase.getAll(organizationId);
+      return await this.complexUseCase.getAll(organizationId, userId);
     });
   }
 
@@ -53,13 +57,17 @@ export class ComplexController {
    *
    * @param params - Contains the complex ID
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns The complex with the specified ID.
    */
   @TsRestHandler(c.getComplex)
   @RequirePermissions('read')
-  getComplex(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
+  getComplex(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
     return tsRestHandler(c.getComplex, async ({ params }) => {
-      return await this.complexUseCase.getOne(params.id, organizationId);
+      return await this.complexUseCase.getOne(params.id, organizationId, userId);
     });
   }
 

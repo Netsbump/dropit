@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
-import { ExerciseCategory } from '../modules/training/exercise-category/exercise-category.entity';
-import { Exercise } from '../modules/training/exercise/exercise.entity';
+import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
+import { Exercise } from '../modules/training/domain/exercise.entity';
 
 export async function seedExerciseCategories(
   em: EntityManager
@@ -19,6 +19,7 @@ export async function seedExerciseCategories(
     if (!existingCategory) {
       const exerciseCategoryToCreate = new ExerciseCategory();
       exerciseCategoryToCreate.name = exerciseCategory;
+      exerciseCategoryToCreate.createdBy = null;
       em.persist(exerciseCategoryToCreate);
       categories[exerciseCategory] = exerciseCategoryToCreate;
     } else {
@@ -41,6 +42,7 @@ export async function seedExercises(
   for (const exerciseCategory of types) {
     const exerciseCategoryToCreate = new ExerciseCategory();
     exerciseCategoryToCreate.name = exerciseCategory;
+    exerciseCategoryToCreate.createdBy = null;
     await em.persistAndFlush(exerciseCategoryToCreate);
     categories[exerciseCategory] = exerciseCategoryToCreate;
     console.log('Exercise category created:', exerciseCategoryToCreate);

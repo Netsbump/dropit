@@ -2,7 +2,7 @@ import { ExerciseDto } from '@dropit/schemas';
 import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
 
 export const ExercisePresenter = {
-  present(exercises: ExerciseDto[]) {
+  presentList(exercises: ExerciseDto[]) {
     return {
       status: 200 as const,
       body: exercises,

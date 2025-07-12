@@ -1,11 +1,13 @@
 import {
   Collection,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
 import { Complex } from './complex.entity';
+import { User } from '../../identity/auth/auth.entity';
 
 @Entity()
 export class ComplexCategory {
@@ -20,6 +22,9 @@ export class ComplexCategory {
 
   @Property()
   name!: string;
+
+  @ManyToOne(() => User, { nullable: true })
+  createdBy!: User | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

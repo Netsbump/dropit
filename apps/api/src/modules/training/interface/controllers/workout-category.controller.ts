@@ -4,11 +4,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { WorkoutCategoryUseCase } from '../application/use-cases/workout-category.use-cases';
-import { PermissionsGuard } from '../../identity/permissions/permissions.guard';
-import { RequirePermissions } from '../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../identity/auth/auth.decorator';
+import { WorkoutCategoryUseCase } from '../../application/use-cases/workout-category.use-cases';
+import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
+import { CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = workoutCategoryContract;
 
@@ -37,13 +37,18 @@ export class WorkoutCategoryController {
   /**
    * Retrieves all workout categories.
    *
-   * @returns A list of all workout categories.
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
+   * @returns A list of all workout categories accessible to the user.
    */
   @TsRestHandler(c.getWorkoutCategories)
   @RequirePermissions('read')
-  getWorkoutCategories(): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategories>> {
+  getWorkoutCategories(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategories>> {
     return tsRestHandler(c.getWorkoutCategories, async () => {
-      return await this.workoutCategoryUseCase.getAll();
+      return await this.workoutCategoryUseCase.getAll(userId, organizationId);
     });
   }
 
@@ -51,13 +56,18 @@ export class WorkoutCategoryController {
    * Retrieves a specific workout category by ID.
    *
    * @param params - Contains the workout category ID
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns The workout category with the specified ID.
    */
   @TsRestHandler(c.getWorkoutCategory)
   @RequirePermissions('read')
-  getWorkoutCategory(): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategory>> {
+  getWorkoutCategory(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getWorkoutCategory>> {
     return tsRestHandler(c.getWorkoutCategory, async ({ params }) => {
-      return await this.workoutCategoryUseCase.getOne(params.id);
+      return await this.workoutCategoryUseCase.getOne(params.id, userId, organizationId);
     });
   }
 

@@ -4,11 +4,11 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ExerciseCategoryUseCase } from '../application/use-cases/exercise-category.use-cases';
-import { PermissionsGuard } from '../../identity/permissions/permissions.guard';
-import { RequirePermissions } from '../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../identity/auth/auth.decorator';
+import { ExerciseCategoryUseCase } from '../../application/use-cases/exercise-category.use-cases';
+import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
+import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
+import { CurrentUser } from '../../../identity/auth/auth.decorator';
 
 const c = exerciseCategoryContract;
 
@@ -37,13 +37,18 @@ export class ExerciseCategoryController {
   /**
    * Retrieves all exercise categories.
    *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns A list of all exercise categories.
    */
   @TsRestHandler(c.getExerciseCategories)
   @RequirePermissions('read')
-  getExerciseCategories(): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
+  getExerciseCategories(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
     return tsRestHandler(c.getExerciseCategories, async () => {
-      return await this.exerciseCategoryUseCase.getAll();
+      return await this.exerciseCategoryUseCase.getAll(organizationId, userId);
     });
   }
 
@@ -51,13 +56,18 @@ export class ExerciseCategoryController {
    * Retrieves a specific exercise category by ID.
    *
    * @param params - Contains the exercise category ID
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns The exercise category with the specified ID.
    */
   @TsRestHandler(c.getExerciseCategory)
   @RequirePermissions('read')
-  getExerciseCategory(): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
+  getExerciseCategory(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() userId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
     return tsRestHandler(c.getExerciseCategory, async ({ params }) => {
-      return await this.exerciseCategoryUseCase.getOne(params.id);
+      return await this.exerciseCategoryUseCase.getOne(params.id, organizationId, userId);
     });
   }
 

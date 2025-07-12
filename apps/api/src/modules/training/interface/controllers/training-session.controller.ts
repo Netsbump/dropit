@@ -4,7 +4,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { TrainingSessionUseCase } from '../application/use-cases/training-session.use-cases';
+import { TrainingSessionUseCase } from '../../application/use-cases/training-session.use-cases';
 import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
 import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
