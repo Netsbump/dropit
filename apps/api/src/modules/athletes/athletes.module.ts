@@ -23,7 +23,7 @@ import { PersonalRecordController } from './interface/controllers/personal-recor
 import { CompetitorStatusUseCases } from './application/use-cases/competitor-status.use-cases';
 import { AthleteUseCases } from './application/use-cases/athlete-use-cases';
 import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
-import { OrganizationModule } from '../identity/organization/organization.module';
+import { IdentityModule } from '../identity/identity.module';
 import { TrainingModule } from '../training/training.module';
 
 @Module({
@@ -32,7 +32,7 @@ import { TrainingModule } from '../training/training.module';
     MikroOrmModule.forFeature({
       entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
     }),
-    forwardRef(() => OrganizationModule),
+    forwardRef(() => IdentityModule),
     forwardRef(() => TrainingModule),
   ],
 

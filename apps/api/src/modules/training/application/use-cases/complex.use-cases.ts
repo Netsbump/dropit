@@ -4,7 +4,8 @@ import { IComplexRepository, COMPLEX_REPO } from '../ports/complex.repository';
 import { IComplexCategoryRepository, COMPLEX_CATEGORY_REPO } from '../ports/complex-category.repository';
 import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository';
 import { IExerciseComplexRepository, EXERCISE_COMPLEX_REPO } from '../ports/exercise-complex.repository';
-import { OrganizationService } from '../../../identity/organization/organization.service';
+import { MemberUseCases } from '../../../identity/application/member.use-cases';
+import { UserUseCases } from '../../../identity/application/user.use-cases';
 import { ComplexMapper } from '../../interface/mappers/complex.mapper';
 import { CreateComplex, UpdateComplex } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
@@ -21,29 +22,33 @@ export class ComplexUseCase {
     private readonly exerciseRepository: IExerciseRepository,
     @Inject(EXERCISE_COMPLEX_REPO)
     private readonly exerciseComplexRepository: IExerciseComplexRepository,
-    private readonly organizationService: OrganizationService,
+    private readonly userUseCases: UserUseCases,
+    private readonly memberUseCases: MemberUseCases,
   ) {}
 
   async getOne(complexId: string, organizationId: string, userId: string) {
     try {
       // 1. Check if the user is coach of this organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
       
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      // 2. Get the complex (the filtering is managed in the repository)
-      const complex = await this.complexRepository.getOne(complexId, organizationId);
+      // 2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      // 3. Get the complex (the filtering is managed in the repository)
+      const complex = await this.complexRepository.getOne(complexId, coachFilterConditions);
       
       if (!complex) {
         throw new NotFoundException('Complex not found or access denied');
       }
 
-      // 3. Map and present the complex
+      // 4. Map and present the complex
       const dto = ComplexMapper.toDto(complex);
 
-      // 4. Present the complex
+      // 5. Present the complex
       return ComplexPresenter.presentOne(dto);
     } catch (error) {
       return ComplexPresenter.presentError(error as Error);
@@ -53,23 +58,26 @@ export class ComplexUseCase {
   async getAll(organizationId: string, userId: string) {
     try {
       // 1. Check if the user is coach of this organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
       
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      // 2. Get the complexes (the filtering is managed in the repository)
-      const complexes = await this.complexRepository.getAll(organizationId);
+      // 2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      // 3. Get the complexes (the filtering is managed in the repository)
+      const complexes = await this.complexRepository.getAll(coachFilterConditions);
       
       if (!complexes || complexes.length === 0) {
         throw new NotFoundException('No complexes found');
       }
 
-      // 3. Map and present the complexes
+      // 4. Map and present the complexes
       const dtos = ComplexMapper.toDtoList(complexes);
 
-      // 4. Present the complexes
+      // 5. Present the complexes
       return ComplexPresenter.present(dtos);
     } catch (error) {
       return ComplexPresenter.presentError(error as Error);
@@ -79,7 +87,7 @@ export class ComplexUseCase {
   async create(data: CreateComplex, organizationId: string, userId: string) {
     try {
       // 1. Check if the user is coach of this organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
       
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
@@ -93,27 +101,30 @@ export class ComplexUseCase {
         throw new BadRequestException('Exercises are required');
       }
 
-      // 3. Get the complex category
-      const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, organizationId);
+      // 3. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      // 4. Get the complex category
+      const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, coachFilterConditions);
       if (!complexCategory) {
         throw new NotFoundException(
           `Complex category with ID ${data.complexCategory} not found`
         );
       }
 
-      // 4. Create the complex
+      // 5. Create the complex
       const complex = new Complex();
       complex.name = data.name;
       complex.complexCategory = complexCategory;
       complex.description = data.description || '';
 
-      // 5. Assign the creator user
-      const user = await this.organizationService.getUserById(userId);
+      // 6. Assign the creator user
+      const user = await this.userUseCases.getOne(userId);
       complex.createdBy = user;
 
-      // 6. Add the exercises to the complex
+      // 7. Add the exercises to the complex
       for (const exerciseData of data.exercises) {
-        const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, organizationId);
+        const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, coachFilterConditions);
         if (!exercise) {
           throw new NotFoundException(
             `Exercise with ID ${exerciseData.exerciseId} not found or access denied`
@@ -129,19 +140,19 @@ export class ComplexUseCase {
         complex.exercises.add(exerciseComplex);
       }
 
-      // 7. Save the complex
+      // 8. Save the complex
       await this.complexRepository.save(complex);
 
-      // 8. Get the created complex
-      const created = await this.complexRepository.getOne(complex.id, organizationId);
+      // 9. Get the created complex
+      const created = await this.complexRepository.getOne(complex.id, coachFilterConditions);
       if (!created) {
         throw new NotFoundException('Complex not found');
       }
 
-      // 9. Map the complex
+      // 10. Map the complex
       const dto = ComplexMapper.toDto(created);
 
-      // 10. Present the complex
+      // 11. Present the complex
       return ComplexPresenter.presentOne(dto);
     } catch (error) {
       return ComplexPresenter.presentCreationError(error as Error);
@@ -151,18 +162,21 @@ export class ComplexUseCase {
   async update(complexId: string, data: UpdateComplex, organizationId: string, userId: string) {
     try {
       // 1. Check if the user is coach of this organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      // 2. Get the complex to update
-      const complexToUpdate = await this.complexRepository.getOne(complexId, organizationId);
+      // 2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      // 3. Get the complex to update
+      const complexToUpdate = await this.complexRepository.getOne(complexId, coachFilterConditions);
       if (!complexToUpdate) {
         throw new NotFoundException('Complex not found or access denied');
       }
 
-      // 3. Update the complex properties
+      // 4. Update the complex properties
       if (data.name) {
         complexToUpdate.name = data.name;
       }
@@ -172,7 +186,7 @@ export class ComplexUseCase {
       }
 
       if (data.complexCategory) {
-        const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, organizationId);
+        const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, coachFilterConditions);
         if (!complexCategory) {
           throw new NotFoundException(
             `Complex category with ID ${data.complexCategory} not found`
@@ -181,7 +195,7 @@ export class ComplexUseCase {
         complexToUpdate.complexCategory = complexCategory;
       }
 
-      // 4. Update the exercises if provided
+      // 5. Update the exercises if provided
       if (data.exercises) {
         // Delete the old exercises
         const existingExercises = complexToUpdate.exercises.getItems();
@@ -190,7 +204,7 @@ export class ComplexUseCase {
 
         // Add the new exercises
         for (const exerciseData of data.exercises) {
-          const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, organizationId);
+          const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, coachFilterConditions);
           if (!exercise) {
             throw new NotFoundException(
               `Exercise with ID ${exerciseData.exerciseId} not found or access denied`
@@ -207,19 +221,19 @@ export class ComplexUseCase {
         }
       }
 
-      // 5. Save the modifications
+      // 6. Save the modifications
       await this.complexRepository.save(complexToUpdate);
 
-      // 6. Get the updated complex
-      const updated = await this.complexRepository.getOne(complexId, organizationId);
+      // 7. Get the updated complex
+      const updated = await this.complexRepository.getOne(complexId, coachFilterConditions);
       if (!updated) {
         throw new NotFoundException('Updated complex not found');
       }
 
-      // 7. Map the complex
+      // 8. Map the complex
       const dto = ComplexMapper.toDto(updated);
 
-      // 8. Present the complex
+      // 9. Present the complex
       return ComplexPresenter.presentOne(dto);
     } catch (error) {
       return ComplexPresenter.presentError(error as Error);
@@ -229,25 +243,28 @@ export class ComplexUseCase {
   async delete(complexId: string, organizationId: string, userId: string) {
     try {
       // 1. Check if the user is coach of this organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      // 2. Get the complex to delete
-      const complexToDelete = await this.complexRepository.getOne(complexId, organizationId);
+      // 2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      // 3. Get the complex to delete
+      const complexToDelete = await this.complexRepository.getOne(complexId, coachFilterConditions);
       if (!complexToDelete) {
         throw new NotFoundException('Complex not found or access denied');
       }
 
-      // 3. Delete the exercises of the complex
+      // 4. Delete the exercises of the complex
       const exercises = complexToDelete.exercises.getItems();
       await this.exerciseComplexRepository.removeMany(exercises);
 
-      // 4. Delete the complex
+      // 5. Delete the complex
       await this.complexRepository.remove(complexToDelete);
 
-      // 5. Present the success message
+      // 6. Present the success message
       return ComplexPresenter.presentSuccess('Complex deleted successfully');
     } catch (error) {
       return ComplexPresenter.presentError(error as Error);

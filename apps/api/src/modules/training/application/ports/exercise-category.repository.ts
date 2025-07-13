@@ -1,10 +1,11 @@
 import { ExerciseCategory } from "../../domain/exercise-category.entity";
+import { CoachFilterConditions } from "../../../identity/application/ports/member.repository";
 
 export const EXERCISE_CATEGORY_REPO = Symbol('EXERCISE_CATEGORY_REPO');
 
 export interface IExerciseCategoryRepository {
-  getOne(id: string, organizationId: string): Promise<ExerciseCategory | null>;
-  getAll(organizationId: string): Promise<ExerciseCategory[]>;
+  getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<ExerciseCategory | null>;
+  getAll(coachFilterConditions: CoachFilterConditions): Promise<ExerciseCategory[]>;
   save(exerciseCategory: ExerciseCategory): Promise<void>;
   remove(exerciseCategory: ExerciseCategory): Promise<void>;
 }

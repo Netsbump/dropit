@@ -4,10 +4,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
-import { NoOrganization, RequirePermissions } from '../../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../identity/auth/auth.decorator';
+import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
+import { NoOrganization, RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
 import { AthleteUseCases } from '../../application/use-cases/athlete-use-cases';
 
 const c = athleteContract;

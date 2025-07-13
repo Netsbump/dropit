@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from  '../modules/athletes/domain/athlete.entity';
 import { faker } from '@faker-js/faker';
-import { User } from '../modules/identity/auth/auth.entity';
+import { User } from '../modules/identity/domain/auth/user.entity';
 import { hashPassword } from 'better-auth/crypto';
-import { Account } from '../modules/identity/auth/auth.entity';
+import { Account } from '../modules/identity/domain/auth/account.entity';
 
 export async function seedAthletes(
   em: EntityManager

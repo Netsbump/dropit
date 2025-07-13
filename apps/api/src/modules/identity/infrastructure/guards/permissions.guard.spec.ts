@@ -2,9 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { EntityManager } from '@mikro-orm/core';
-import { PermissionsGuard } from './permissions.guard';
+import { PermissionsGuard } from '../guards/permissions.guard';
 import { member, admin, owner } from '@dropit/permissions';
-import { Member, Organization, Invitation } from '../organization/organization.entity';
+import { Member } from '../../domain/organization/member.entity';
+import { Organization } from '../../domain/organization/organization.entity';
+import { Invitation } from '../../domain/organization/invitation.entity';
 import { Collection } from '@mikro-orm/core';
 
 describe('PermissionsGuard', () => {
