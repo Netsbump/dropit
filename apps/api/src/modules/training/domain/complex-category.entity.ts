@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Complex } from './complex.entity';
-import { User } from '../../identity/auth/auth.entity';
+import { User } from '../../identity/domain/auth/user.entity';
 
 @Entity()
 export class ComplexCategory {

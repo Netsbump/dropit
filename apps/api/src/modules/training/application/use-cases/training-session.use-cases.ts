@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TrainingSessionPresenter } from '../../interface/presenters/training-session.presenter';
 import { ITrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
-import { OrganizationService } from '../../../identity/organization/organization.service';
+import { OrganizationUseCases } from '../../../identity/application/organization.use-cases';
 import { TrainingSessionMapper } from '../../interface/mappers/training-session.mapper';
 import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
@@ -11,6 +11,7 @@ import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/
 import { AthleteTrainingSessionMapper } from '../../interface/mappers/athlete-training-session.mapper';
 import { AthleteTrainingSessionPresenter } from '../../interface/presenters/athlete-training-session.presenter';
 import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
+import { MemberUseCases } from '../../../identity/application/member.use-cases';
 
 @Injectable()
 export class TrainingSessionUseCase {
@@ -19,11 +20,12 @@ export class TrainingSessionUseCase {
     private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    private readonly organizationService: OrganizationService,
+    private readonly organizationUseCases: OrganizationUseCases,
     @Inject(WORKOUT_REPO)
     private readonly workoutRepository: IWorkoutRepository,
     @Inject(ATHLETE_REPO)
-    private readonly athleteRepository: IAthleteRepository
+    private readonly athleteRepository: IAthleteRepository,
+    private readonly memberUseCases: MemberUseCases
   ) {}
 
   async getOne(trainingSessionId: string, organizationId: string) {
@@ -70,7 +72,7 @@ export class TrainingSessionUseCase {
   async getAthleteTrainingSessions(athleteId: string, organizationId: string, userId: string) {
     try {
       //1. Check if current user is admin of the organization
-      const isAdmin = await this.organizationService.isUserCoach(userId, organizationId);
+      const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       //2. Get athlete from repository
       const athlete = await this.athleteRepository.getOne(athleteId);
@@ -105,7 +107,7 @@ export class TrainingSessionUseCase {
   async getOneAthleteTrainingSession(trainingSessionId: string, athleteId: string, organizationId: string, userId: string) {
     try {
       //1. Check if current user is admin of the organization
-      const isAdmin = await this.organizationService.isUserCoach(userId, organizationId);
+      const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       //2. Get athlete from repository
       const athlete = await this.athleteRepository.getOne(athleteId);
@@ -140,17 +142,20 @@ export class TrainingSessionUseCase {
   async create(data: CreateTrainingSession, organizationId: string, userId: string) {
     try {
       //1. Get organization from repository
-      const organization = await this.organizationService.getOrganizationById(organizationId);
+      const organization = await this.organizationUseCases.getOne(organizationId);
 
       //2. Check if the user is admin of this organization
-      const isAdmin = await this.organizationService.isUserCoach(userId, organizationId);
+      const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isAdmin) {
         throw new ForbiddenException('User is not admin of this organization');
       }
 
-      //3. Check if workout exists
-      const workout = await this.workoutRepository.getOne(data.workoutId, organizationId);
+      //3. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //4. Check if workout exists
+      const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
 
       if (!workout) {
         throw new NotFoundException(
@@ -158,8 +163,8 @@ export class TrainingSessionUseCase {
         );
       }
 
-      //4. Get all athletes IDs from organization
-      const athleteIds = await this.organizationService.getAthleteUserIds(organizationId);
+      //5. Get all athletes IDs from organization
+      const athleteIds = await this.memberUseCases.getAthleteUserIds(organizationId);
 
       //5. Valide all requested athletes belong to this organization
       const invalidAthleteIds = data.athleteIds.filter(athleteId => !athleteIds.includes(athleteId));
@@ -210,7 +215,7 @@ export class TrainingSessionUseCase {
   async update(sessionId: string, data: UpdateTrainingSession, organizationId: string, userId: string) {
     try {
       //1. Check if the user is admin of this organization
-      const isAdmin = await this.organizationService.isUserCoach(userId, organizationId);
+      const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isAdmin) {
         throw new ForbiddenException('User is not admin of this organization');
@@ -225,7 +230,12 @@ export class TrainingSessionUseCase {
   
       //3. Update workout if needed
       if (data.workoutId) {
-        const workout = await this.workoutRepository.getOne(data.workoutId, organizationId);
+        //3. Get filter conditions via use case
+        const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+        //4. Get workout from repository
+        const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
+
         if (!workout) {
           throw new NotFoundException(
             `Workout with ID ${data.workoutId} not found`
@@ -339,7 +349,7 @@ export class TrainingSessionUseCase {
   async delete(trainingSessionId: string, organizationId: string, userId: string) {
     try {
      //1. Check if the user is admin of this organization
-     const isAdmin = await this.organizationService.isUserCoach(userId, organizationId);
+     const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
      if (!isAdmin) {
        throw new ForbiddenException('User is not admin of this organization');

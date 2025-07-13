@@ -9,7 +9,7 @@ import {
 import { TrainingSession } from './training-session.entity';
 import { WorkoutCategory } from './workout-category.entity';
 import { WorkoutElement } from './workout-element.entity';
-import { User } from '../../identity/auth/auth.entity'
+import { User } from '../../identity/domain/auth/user.entity'
 
 @Entity()
 export class Workout {

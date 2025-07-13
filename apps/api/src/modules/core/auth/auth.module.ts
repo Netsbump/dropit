@@ -10,35 +10,33 @@ import {
   DiscoveryModule,
   DiscoveryService,
   MetadataScanner,
-  APP_GUARD,
 } from '@nestjs/core';
 import type {
   AuthContext,
   MiddlewareContext,
   MiddlewareOptions,
 } from 'better-auth';
-
 import { toNodeHandler } from 'better-auth/node';
 import { createAuthMiddleware } from 'better-auth/plugins';
-import { EmailModule } from '../../core/email/email.module';
-import { AFTER_HOOK_KEY, BEFORE_HOOK_KEY, HOOK_KEY } from './auth.decorator';
-import { AuthGuard } from './auth.guard';
-import { AuthService } from './auth.service';
-import { UserService } from './user.service';
 
+import { EmailModule } from '../email/email.module';
+import { AuthService } from './auth.service';
+import { AFTER_HOOK_KEY, BEFORE_HOOK_KEY, HOOK_KEY } from '../../identity/infrastructure/decorators/auth.decorator';
+
+/**
+ * Module d'authentification core
+ * 
+ * Configure better-auth avec :
+ * - Initialisation du service
+ * - Configuration du middleware
+ * - Gestion des hooks d'authentification
+ * - Discovery des providers
+ */
 @Global()
 @Module({
   imports: [DiscoveryModule, EmailModule],
-  providers: [
-    AuthService, 
-    AuthGuard,
-    UserService,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
-  ],
-  exports: [AuthService, AuthGuard, UserService],
+  providers: [AuthService],
+  exports: [AuthService],
 })
 export class AuthModule implements NestModule, OnModuleInit {
   constructor(
@@ -128,22 +126,4 @@ export class AuthModule implements NestModule, OnModuleInit {
       }
     });
   }
-
-  /**
-   * Méthode statique permettant d'importer le module de façon asynchrone
-   */
-  static forRootAsync() {
-    return {
-      module: AuthModule,
-      imports: [],
-      providers: [
-        AuthService,
-        {
-          provide: 'AUTH_OPTIONS',
-          useClass: AuthService,
-        },
-      ],
-      exports: [AuthService, 'AUTH_OPTIONS'],
-    };
-  }
-}
+} 

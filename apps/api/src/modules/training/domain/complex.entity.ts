@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { ComplexCategory } from './complex-category.entity';
 import { ExerciseComplex } from './exercise-complex.entity';
-import { User } from '../../identity/auth/auth.entity';
+import { User } from '../../identity/domain/auth/user.entity';
 
 @Entity()
 export class Complex {

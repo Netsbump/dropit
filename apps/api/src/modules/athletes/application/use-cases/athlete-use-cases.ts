@@ -2,8 +2,8 @@ import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundEx
 import { Athlete } from "../../domain/athlete.entity";
 import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
 import { AthletePresenter } from "../../interface/presenter/athlete.presenter";
-import { OrganizationService } from "../../../identity/organization/organization.service";
-import { UserService } from "../../../identity/auth/user.service";
+import { UserUseCases } from "../../../identity/application/user.use-cases";
+import { MemberUseCases } from "../../../identity/application/member.use-cases";
 import { ATHLETE_REPO, IAthleteRepository } from "../ports/athlete.repository";
 import { AthleteMapper } from "../../interface/mappers/athlete.mapper";
 
@@ -12,8 +12,8 @@ export class AthleteUseCases {
   constructor(
     @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    private readonly organizationService: OrganizationService,
-    private readonly userService: UserService
+    private readonly userUseCases: UserUseCases,
+    private readonly memberUseCases: MemberUseCases
   ) {}
 
   async findOne(athleteId: string, currentUserId: string, organizationId: string) {
@@ -26,7 +26,7 @@ export class AthleteUseCases {
       }
 
       // 2. Validate user access
-      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
+      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athlete.user.id) {
         throw new NotFoundException(
           "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
@@ -34,7 +34,7 @@ export class AthleteUseCases {
       }
 
       // 3. Check if athleteId is in organization
-      await this.organizationService.checkAthleteBelongsToOrganization(athlete.user.id, organizationId);
+      await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
 
       const athleteDto = AthleteMapper.toDto(athlete);
 
@@ -53,7 +53,7 @@ export class AthleteUseCases {
       }
 
       // 2. Validate user access
-      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
+      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
       if (!isUserCoach && currentUserId !== athlete.user.id) {
         throw new NotFoundException(
           "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
@@ -61,7 +61,7 @@ export class AthleteUseCases {
       }
 
       // 3. Check if athleteId is in organization
-      await this.organizationService.checkAthleteBelongsToOrganization(athlete.user.id, organizationId);
+      await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
 
       // 4. Get athlete with details from repository
       const athleteWithDetails = await this.athleteRepository.findOneWithDetails(athlete.user.id);
@@ -81,8 +81,8 @@ export class AthleteUseCases {
   async findAllWithDetails(currentUserId: string, organizationId: string) {
     try {
       // 1. Verify user belongs to the organization (either as coach or athlete)
-      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
-      const athleteUserIds = await this.organizationService.getAthleteUserIds(organizationId);
+      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+      const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
       const isUserAthlete = athleteUserIds.includes(currentUserId);
       
       if (!isUserCoach && !isUserAthlete) {
@@ -108,8 +108,8 @@ export class AthleteUseCases {
   async findAll(currentUserId: string, organizationId: string) {
     try {
       // 1. Verify user belongs to the organization (either as coach or athlete)
-      const isUserCoach = await this.organizationService.isUserCoach(currentUserId, organizationId);
-      const athleteUserIds = await this.organizationService.getAthleteUserIds(organizationId);
+      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+      const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
       const isUserAthlete = athleteUserIds.includes(currentUserId);
       
       if (!isUserCoach && !isUserAthlete) {
@@ -135,7 +135,7 @@ export class AthleteUseCases {
   async create(data: CreateAthlete, userId: string) {
     try {
       //1. Get User from repository
-      const user = await this.userService.getUserById(userId);
+      const user = await this.userUseCases.getOne(userId);
 
       if (!user) {
         throw new NotFoundException('User not found');

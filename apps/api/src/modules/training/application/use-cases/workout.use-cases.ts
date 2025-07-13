@@ -16,7 +16,9 @@ import { Workout } from '../../domain/workout.entity';
 import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
 import { Inject } from '@nestjs/common';
 import { WorkoutPresenter } from '../../interface/presenters/workout.presenter';
-import { OrganizationService } from '../../../identity/organization/organization.service';
+import { MemberUseCases } from '../../../identity/application/member.use-cases';
+import { UserUseCases } from '../../../identity/application/user.use-cases';
+import { OrganizationUseCases } from '../../../identity/application/organization.use-cases';
 import { WorkoutMapper } from '../../interface/mappers/workout.mapper';
 import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/workout-category.repository';
 import { EXERCISE_REPO, IExerciseRepository } from '../ports/exercise.repository';
@@ -46,29 +48,34 @@ export class WorkoutUseCases {
     private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    private readonly organizationService: OrganizationService
+    private readonly userUseCases: UserUseCases,
+    private readonly memberUseCases: MemberUseCases,
+    private readonly organizationUseCases: OrganizationUseCases
   ) {}
 
   async getWorkouts(organizationId: string, userId: string) {
     try {
       //1. Check if user is coach of the organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      //2. Get workouts from repository
-      const workouts = await this.workoutRepository.getAll(organizationId);
+      //2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //3. Get workouts from repository
+      const workouts = await this.workoutRepository.getAll(coachFilterConditions);
 
       if (!workouts) {
         throw new NotFoundException('Workouts not found');
       }
 
-      //3. Map workouts to DTO
+      //4. Map workouts to DTO
       const workoutsDto = WorkoutMapper.toDtoList(workouts);
 
-      //4. Present workouts
+      //5. Present workouts
       return WorkoutPresenter.presentList(workoutsDto);
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);
@@ -78,23 +85,26 @@ export class WorkoutUseCases {
   async getWorkout(workoutId: string, organizationId: string, userId: string) {
     try {
       //1. Check if user is coach of the organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      //2. Get workout from repository
-      const workout = await this.workoutRepository.getOne(workoutId, organizationId);
+      //2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //3. Get workout from repository
+      const workout = await this.workoutRepository.getOne(workoutId, coachFilterConditions);
 
       if (!workout) {
         throw new NotFoundException('Workout not found or access denied');
       }
 
-      //3. Map workout to DTO
+      //4. Map workout to DTO
       const workoutDto = WorkoutMapper.toDto(workout);
 
-      //4. Present workout
+      //5. Present workout
       return WorkoutPresenter.presentOne(workoutDto);
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);
@@ -104,23 +114,26 @@ export class WorkoutUseCases {
   async getWorkoutWithDetails(id: string, organizationId: string, userId: string) {
     try {
       //1. Check if user is coach of the organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      //2. Get workout from repository
-      const workout = await this.workoutRepository.getOneWithDetails(id, organizationId);
+      //2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //3. Get workout from repository
+      const workout = await this.workoutRepository.getOneWithDetails(id, coachFilterConditions);
 
       if (!workout) {
         throw new NotFoundException('Workout not found or access denied');
       }
 
-      //3. Map workout to DTO
+      //4. Map workout to DTO
       const workoutDto = WorkoutMapper.toDto(workout);
 
-      //4. Present workout
+      //5. Present workout
       return WorkoutPresenter.presentOne(workoutDto);
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);
@@ -130,7 +143,7 @@ export class WorkoutUseCases {
   async createWorkout(workout: CreateWorkout, organizationId: string, userId: string) {
     try {
       //1. Check if user is coach of the organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
@@ -141,8 +154,11 @@ export class WorkoutUseCases {
         throw new BadRequestException('Workout must have at least one element');
       }
 
-      //3. Get workout category
-      const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, userId, organizationId);
+      //3. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //4. Get workout category
+      const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, coachFilterConditions);
 
       if (!category) {
         throw new NotFoundException(
@@ -150,17 +166,17 @@ export class WorkoutUseCases {
         );
       }
 
-      //4. Create workout
+      //5. Create workout
       const workoutToCreate = new Workout();
       workoutToCreate.title = workout.title;
       workoutToCreate.description = workout.description || '';
       workoutToCreate.category = category;
 
-      //5. Assign creator user
-      const user = await this.organizationService.getUserById(userId);
+      //6. Assign creator user
+      const user = await this.userUseCases.getOne(userId);
       workoutToCreate.createdBy = user;
 
-      //6. Create workout elements
+      //7. Create workout elements
       for (const element of workout.elements) {
         const workoutElement = new WorkoutElement();
         workoutElement.type = element.type;
@@ -173,7 +189,7 @@ export class WorkoutUseCases {
         workoutElement.endWeight_percent = element.endWeight_percent;
 
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-          const exercise = await this.exerciseRepository.getOne(element.id, organizationId);
+          const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
           if (!exercise) {
             throw new NotFoundException(
               `Exercise with ID ${element.id} not found or access denied`
@@ -181,7 +197,7 @@ export class WorkoutUseCases {
           }
           workoutElement.exercise = exercise;
         } else {
-          const complex = await this.complexRepository.getOne(element.id, organizationId);
+          const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
           if (!complex) {
             throw new NotFoundException(
               `Complex with ID ${element.id} not found or access denied`
@@ -194,14 +210,14 @@ export class WorkoutUseCases {
         await this.workoutElementRepository.save(workoutElement);
       }
 
-      //7. Save workout
+      //8. Save workout
       const createdWorkout = await this.workoutRepository.save(workoutToCreate);
 
-      //8. Create training session if requested
-      if (workout.trainingSession) {
-        const organization = await this.organizationService.getOrganizationById(organizationId);
+              //9. Create training session if requested
+        if (workout.trainingSession) {
+          const organization = await this.organizationUseCases.getOne(organizationId);
         
-        //7.1. Check if all athletes exist
+        //9.1. Check if all athletes exist
         const athletes: Athlete[] = [];
         for (const athleteId of workout.trainingSession.athleteIds) {
           const athlete = await this.athleteRepository.getOne(athleteId);
@@ -211,7 +227,7 @@ export class WorkoutUseCases {
           athletes.push(athlete);
         }
 
-        //7.2. Create training session
+        //9.2. Create training session
         const trainingSession = new TrainingSession();
         trainingSession.workout = createdWorkout;
         trainingSession.organization = organization;
@@ -219,7 +235,7 @@ export class WorkoutUseCases {
 
         await this.trainingSessionRepository.save(trainingSession);
 
-        //7.3. Create links with athletes
+        //9.3. Create links with athletes
         for (const athlete of athletes) {
           const athleteTrainingSession = new AthleteTrainingSession();
           athleteTrainingSession.athlete = athlete;
@@ -227,22 +243,22 @@ export class WorkoutUseCases {
           await this.athleteTrainingSessionRepository.save(athleteTrainingSession);
         }
 
-        //7.4. Save training session
+        //9.4. Save training session
         await this.trainingSessionRepository.save(trainingSession);
       }
 
       
-      //8. Get created workout
-      const workoutCreated = await this.workoutRepository.getOneWithDetails(createdWorkout.id, organizationId);
+      //10. Get created workout
+      const workoutCreated = await this.workoutRepository.getOneWithDetails(createdWorkout.id, coachFilterConditions);
 
       if (!workoutCreated) {
         throw new NotFoundException('Workout not found');
       }
 
-      //9. Map workout to DTO
+      //11. Map workout to DTO
       const workoutCreatedDto = WorkoutMapper.toDto(workoutCreated);
 
-      //10. Present workout
+      //12. Present workout
       return WorkoutPresenter.presentOne(workoutCreatedDto);
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);
@@ -252,20 +268,23 @@ export class WorkoutUseCases {
   async updateWorkout(id: string, workout: UpdateWorkout, organizationId: string, userId: string) {
     try {
       //1. Check if user is coach of the organization
-      const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
       if (!isCoach) {
         throw new ForbiddenException('User is not coach of this organization');
       }
 
-      //2. Get workout to update from repository
-      const workoutToUpdate = await this.workoutRepository.getOne(id, organizationId);
+      //2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //3. Get workout to update from repository
+      const workoutToUpdate = await this.workoutRepository.getOne(id, coachFilterConditions);
       
       if (!workoutToUpdate) {
         throw new NotFoundException('Workout not found or access denied');
       }
 
-      //3. Update workout
+      //4. Update workout
       if (workout.title) {
         workoutToUpdate.title = workout.title;
       }
@@ -275,7 +294,7 @@ export class WorkoutUseCases {
       }
 
       if (workout.workoutCategory) {
-        const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, userId, organizationId);
+        const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, coachFilterConditions);
         if (!category) {
           throw new NotFoundException(
             `Workout category with ID ${workout.workoutCategory} not found or access denied`
@@ -284,19 +303,19 @@ export class WorkoutUseCases {
         workoutToUpdate.category = category;
       }
 
-      //4. Update workout elements
+      //5. Update workout elements
       if (workout.elements) {
-        //4.1. Delete old elements
+        //5.1. Delete old elements
         const existingElements = workoutToUpdate.elements.getItems();
         for (const element of existingElements) {
           await this.workoutElementRepository.remove(element.id, organizationId);
         }
 
-        //4.2. Save workout
+        //5.2. Save workout
         await this.workoutRepository.save(workoutToUpdate);
         workoutToUpdate.elements.removeAll();
 
-        //4.3. Create new elements
+        //5.3. Create new elements
         for (const element of workout.elements) {
           const workoutElement = new WorkoutElement();
           workoutElement.type = element.type;
@@ -310,7 +329,7 @@ export class WorkoutUseCases {
           workoutElement.workout = workoutToUpdate;
 
           if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-            const exercise = await this.exerciseRepository.getOne(element.id, organizationId);
+            const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
             if (!exercise) {
               throw new NotFoundException(
                 `Exercise with ID ${element.id} not found or access denied`
@@ -318,7 +337,7 @@ export class WorkoutUseCases {
             }
             workoutElement.exercise = exercise;
           } else {
-            const complex = await this.complexRepository.getOne(element.id, organizationId);
+            const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
             if (!complex) {
               throw new NotFoundException(
                 `Complex with ID ${element.id} not found or access denied`
@@ -331,20 +350,20 @@ export class WorkoutUseCases {
         }
       }
 
-      //5. Save workout
+      //6. Save workout
       await this.workoutRepository.save(workoutToUpdate);
 
-      //6. Get updated workout
-      const workoutUpdated = await this.workoutRepository.getOneWithDetails(id, organizationId);
+      //7. Get updated workout
+      const workoutUpdated = await this.workoutRepository.getOneWithDetails(id, coachFilterConditions);
 
       if (!workoutUpdated) {
         throw new NotFoundException('Workout not found');
       }
 
-      //7. Map workout to DTO
+      //8. Map workout to DTO
       const workoutUpdatedDto = WorkoutMapper.toDto(workoutUpdated);
 
-      //8. Present workout
+      //9. Present workout
       return WorkoutPresenter.presentOne(workoutUpdatedDto);
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);
@@ -354,23 +373,26 @@ export class WorkoutUseCases {
   async deleteWorkout(workoutId: string, organizationId: string, userId: string) {
     try {
       //1. Check if the user is coach of this organization
-     const isCoach = await this.organizationService.isUserCoach(userId, organizationId);
+     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
      if (!isCoach) {
        throw new ForbiddenException('User is not coach of this organization');
      }
 
-      //2. Get workout to delete from repository
-      const workoutToDelete = await this.workoutRepository.getOne(workoutId, organizationId);
+      //2. Get filter conditions via use case
+      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+      //3. Get workout to delete from repository
+      const workoutToDelete = await this.workoutRepository.getOne(workoutId, coachFilterConditions);
 
       if (!workoutToDelete) {
         throw new NotFoundException('Workout not found or access denied');
       }
 
-      //3. Delete workout
-      await this.workoutRepository.remove(workoutToDelete.id, organizationId);
+      //4. Delete workout
+      await this.workoutRepository.remove(workoutId, coachFilterConditions);
 
-      //4. Return success message
+      //5. Return success message
       return WorkoutPresenter.presentSuccess('Workout deleted successfully');
     } catch (error) {
       return WorkoutPresenter.presentError(error as Error);

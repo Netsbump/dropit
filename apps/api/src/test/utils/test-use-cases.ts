@@ -6,7 +6,7 @@ import { ExerciseUseCase } from '../../modules/training/application/use-cases/ex
 import { WorkoutCategoryUseCase } from '../../modules/training/application/use-cases/workout-category.use-cases';
 import { WorkoutUseCases } from '../../modules/training/application/use-cases/workout.use-cases';
 import { TrainingSessionUseCase } from '../../modules/training/application/use-cases/training-session.use-cases';
-import { OrganizationService } from '../../modules/identity/organization/organization.service';
+import { OrganizationService } from '../../modules/identity/application/organization.use-cases';
 import { MikroExerciseCategoryRepository } from '../../modules/training/infrastructure/mikro-exercise-category.repository';
 import { MikroExerciseRepository } from '../../modules/training/infrastructure/mikro-exercise.repository';
 import { MikroComplexCategoryRepository } from '../../modules/training/infrastructure/mikro-complex-category.repository';

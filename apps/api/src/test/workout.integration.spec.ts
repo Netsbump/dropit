@@ -6,7 +6,7 @@ import { ExerciseCategoryUseCase } from '../modules/training/application/use-cas
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
 import { WorkoutCategoryUseCase } from '../modules/training/application/use-cases/workout-category.use-cases';
 import { WorkoutUseCases } from '../modules/training/application/use-cases/workout.use-cases';
-import { OrganizationService } from '../modules/identity/organization/organization.service';
+import { OrganizationService } from '../modules/identity/application/organization.use-cases';
 import { WORKOUT_ELEMENT_TYPES } from '../modules/training/domain/workout-element.entity';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';

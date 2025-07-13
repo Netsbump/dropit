@@ -2,8 +2,8 @@ import { CanActivate, ExecutionContext, Injectable, ForbiddenException } from '@
 import { Reflector } from '@nestjs/core';
 import { member, admin, owner } from '@dropit/permissions';
 import { EntityManager } from '@mikro-orm/core';
-import { Member } from '../organization/organization.entity';
-import { NO_ORGANIZATION } from './permissions.decorator';
+import { Member } from '../../domain/organization/member.entity';
+import { NO_ORGANIZATION } from '../decorators/permissions.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {

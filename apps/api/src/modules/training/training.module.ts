@@ -2,7 +2,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
 
 import { AthletesModule } from '../athletes/athletes.module';
-import { OrganizationModule } from '../identity/organization/organization.module';
+import { IdentityModule } from '../identity/identity.module';
 
 import { Athlete } from '../athletes/domain/athlete.entity';
 import { Workout } from './domain/workout.entity';
@@ -71,7 +71,7 @@ import { WORKOUT_REPO } from './application/ports/workout.repository';
       ],
     }),
     forwardRef(() => AthletesModule),
-    forwardRef(() => OrganizationModule),
+    forwardRef(() => IdentityModule),
   ],
   controllers: [
     TrainingSessionController,

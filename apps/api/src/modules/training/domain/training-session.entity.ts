@@ -8,7 +8,7 @@ import {
 } from '@mikro-orm/core';
 import { Workout } from './workout.entity';
 import { AthleteTrainingSession } from './athlete-training-session.entity';
-import { Organization } from '../../identity/organization/organization.entity';
+import { Organization } from '../../identity/domain/organization/organization.entity';
 
 @Entity()
 export class TrainingSession {

@@ -5,11 +5,11 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { WorkoutUseCases } from '../../application/use-cases/workout.use-cases';
-import { PermissionsGuard } from '../../../identity/permissions/permissions.guard';
-import { RequirePermissions } from '../../../identity/permissions/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/organization/organization.decorator';
-import { CurrentUser } from '../../../identity/auth/auth.decorator';
-import { AuthenticatedUser } from '../../../identity/auth/auth.decorator';
+import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
+import { CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { AuthenticatedUser } from '../../../identity/infrastructure/decorators/auth.decorator';
 
 const c = workoutContract;
 

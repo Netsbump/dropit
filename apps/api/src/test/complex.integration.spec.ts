@@ -4,7 +4,7 @@ import { ComplexCategoryUseCase } from '../modules/training/application/use-case
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationService } from '../modules/identity/organization/organization.service';
+import { OrganizationService } from '../modules/identity/application/organization.use-cases';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';

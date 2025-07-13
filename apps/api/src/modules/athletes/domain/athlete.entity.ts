@@ -10,7 +10,7 @@ import { AthleteTrainingSession } from '../../training/domain/athlete-training-s
 import { CompetitorStatus } from './competitor-status.entity';
 import { PersonalRecord } from './personal-record.entity';
 import { PhysicalMetric } from './physical-metric.entity';
-import { User } from '../../identity/auth/auth.entity';
+import { User } from '../../identity/domain/auth/user.entity';
 
 @Entity()
 export class Athlete {

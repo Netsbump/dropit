@@ -1,7 +1,7 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Auth } from 'better-auth';
 import { createAuthConfig } from '../../../config/better-auth.config';
-import { EmailService } from '../../core/email/email.service';
+import { EmailService } from '../email/email.service';
 import { EntityManager } from '@mikro-orm/core';
 
 @Injectable()
