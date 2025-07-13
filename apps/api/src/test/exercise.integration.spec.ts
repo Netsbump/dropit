@@ -2,7 +2,7 @@ import { CreateExercise, ExerciseCategoryDto, ExerciseDto } from '@dropit/schema
 import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationService } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
@@ -15,7 +15,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
   
   let exerciseCategoryUseCase: ExerciseCategoryUseCase;
   let exerciseUseCase: ExerciseUseCase;
-  let organizationService: OrganizationService;
+  let organizationUseCases: OrganizationUseCases;
   let testData: TestData;
   let exerciseCategory: ExerciseCategoryDto;
 
@@ -28,7 +28,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
 
     // Utiliser la factory pour créer les use cases
     const factory = new TestUseCaseFactory(orm);
-    organizationService = factory.createOrganizationService();
+    organizationUseCases = factory.createOrganizationUseCases();
     exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
     exerciseUseCase = factory.createExerciseUseCase();
 

@@ -4,7 +4,7 @@ import { ComplexCategoryUseCase } from '../modules/training/application/use-case
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationService } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
 import { setupOrganization } from './organization.integration.spec';
 import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
@@ -19,7 +19,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
   let exerciseUseCase: ExerciseUseCase;
   let complexCategoryUseCase: ComplexCategoryUseCase;
   let complexUseCase: ComplexUseCase;
-  let organizationService: OrganizationService;
+  let organizationUseCases: OrganizationUseCases;
   let testData: TestData;
   let exerciseCategory: ExerciseCategoryDto;
   let complexCategory: ComplexCategoryDto;
@@ -33,7 +33,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     
     // Utiliser la factory pour créer les use cases
     const factory = new TestUseCaseFactory(orm);
-    organizationService = factory.createOrganizationService();
+    organizationUseCases = factory.createOrganizationUseCases();
     exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
     exerciseUseCase = factory.createExerciseUseCase();
     complexCategoryUseCase = factory.createComplexCategoryUseCase();
