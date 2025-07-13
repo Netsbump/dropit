@@ -1,7 +1,9 @@
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
+import { Injectable } from "@nestjs/common";
 import { User } from "../../domain/auth/user.entity";
 import { IUserRepository } from "../../application/ports/user.repository";
 
+@Injectable()
 export class MikroUserRepository extends EntityRepository<User> implements IUserRepository {
   constructor(public readonly em: EntityManager) {
     super(em, User);
