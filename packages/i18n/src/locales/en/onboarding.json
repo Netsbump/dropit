@@ -1,0 +1,129 @@
+{
+  "onboarding": {
+    "welcome": {
+      "title": "Welcome to DropIt!",
+      "subtitle": "What would you like to do? Choose your role to get started"
+    },
+    "roles": {
+      "coach": {
+        "title": "I am a coach",
+        "description": "Create my club and manage my athletes",
+        "button": "Create my club",
+        "features": {
+          "create_organization": "Create your organization",
+          "manage_athletes": "Manage your athletes",
+          "create_programs": "Create programs",
+          "track_performance": "Track performance"
+        }
+      },
+      "athlete": {
+        "title": "I am an athlete",
+        "description": "Join a club and follow my training",
+        "button": "Join a club",
+        "features": {
+          "join_club": "Join your club",
+          "follow_training": "Follow your training",
+          "record_performance": "Record your performance",
+          "communicate_coach": "Communicate with your coach"
+        }
+      }
+    },
+    "footer": {
+      "unsure": "Not sure?",
+      "learn_more": "Learn more about roles"
+    }
+  },
+  "create_organization": {
+    "title": "Create an organization",
+    "description": "Set up your coaching organization to start managing your athletes and programs.",
+    "button": "Create organization",
+    "success": {
+      "title": "Organization created",
+      "description": "Your organization has been created successfully."
+    },
+    "error": {
+      "title": "Creation failed",
+      "description": "Organization creation failed. Please try again."
+    },
+    "fields": {
+      "name": "Organization name",
+      "name_placeholder": "Enter organization name",
+      "slug": "URL identifier",
+      "slug_placeholder": "Ex: my-coaching-organization",
+      "description": "Description",
+      "description_placeholder": "Enter organization description"
+    },
+    "validation": {
+      "name_min": "Name must contain at least 2 characters",
+      "slug_min": "Slug must contain at least 2 characters"
+    }
+  },
+  "join_organization": {
+    "title": "Join a club",
+    "description": "Enter the invitation code you received by email",
+    "button": "Join club",
+    "loading": "Validating...",
+    "success": {
+      "title": "Invitation accepted!",
+      "description": "You have successfully joined the club."
+    },
+    "error": {
+      "title": "Error",
+      "description": "Unable to join the club",
+      "validation_failed": "Error during code validation"
+    },
+    "fields": {
+      "code": "Invitation code",
+      "code_placeholder": "Ex: DROPIT-ABC123"
+    },
+    "validation": {
+      "code_required": "Invitation code is required"
+    },
+    "help": {
+      "no_code": "Don't have an invitation code?",
+      "contact_coach": "Contact your coach to receive an invitation by email."
+    }
+  },
+  "download_app": {
+    "title": "DropIt Mobile App",
+    "description": "Download the mobile app to follow your training and stay connected with your coach",
+    "download_section": {
+      "title": "Download the app",
+      "subtitle": "Choose your preferred platform"
+    },
+    "platforms": {
+      "ios": {
+        "label": "Download on",
+        "store": "App Store"
+      },
+      "android": {
+        "label": "Available on",
+        "store": "Google Play"
+      },
+      "web": {
+        "label": "Or use",
+        "store": "Web Version"
+      }
+    },
+    "features": {
+      "title": "Features",
+      "subtitle": "Everything you can do with the mobile app",
+      "list": [
+        "Real-time training tracking",
+        "Performance history",
+        "Personalized programs from your coach",
+        "Session notifications",
+        "Mobile-optimized interface"
+      ]
+    },
+    "stats": {
+      "rating": "⭐ 4.8/5",
+      "downloads": "📱 10k+ downloads",
+      "optimized": "App optimized for iOS and Android"
+    },
+    "footer": {
+      "support": "Having issues?",
+      "contact": "Contact our support"
+    }
+  }
+} 

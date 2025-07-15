@@ -13,10 +13,13 @@ import { createFileRoute } from '@tanstack/react-router'
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as OnboardingImport } from './routes/onboarding'
+import { Route as JoinOrganizationImport } from './routes/join-organization'
+import { Route as DownloadAppImport } from './routes/download-app'
+import { Route as CreateOrganizationImport } from './routes/create-organization'
 import { Route as homeImport } from './routes/__home'
 import { Route as authImport } from './routes/__auth'
 import { Route as IndexImport } from './routes/index'
-import { Route as homeSetupOrganizationImport } from './routes/__home.setup-organization'
 import { Route as homeProgramsImport } from './routes/__home.programs'
 import { Route as homePlanningImport } from './routes/__home.planning'
 import { Route as homeDashboardImport } from './routes/__home.dashboard'
@@ -36,6 +39,30 @@ const authPrivacyLazyImport = createFileRoute('/__auth/privacy')()
 const authLoginLazyImport = createFileRoute('/__auth/login')()
 
 // Create/Update Routes
+
+const OnboardingRoute = OnboardingImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const JoinOrganizationRoute = JoinOrganizationImport.update({
+  id: '/join-organization',
+  path: '/join-organization',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const DownloadAppRoute = DownloadAppImport.update({
+  id: '/download-app',
+  path: '/download-app',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const CreateOrganizationRoute = CreateOrganizationImport.update({
+  id: '/create-organization',
+  path: '/create-organization',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const homeRoute = homeImport.update({
   id: '/__home',
@@ -84,12 +111,6 @@ const authLoginLazyRoute = authLoginLazyImport
     getParentRoute: () => authRoute,
   } as any)
   .lazy(() => import('./routes/__auth.login.lazy').then((d) => d.Route))
-
-const homeSetupOrganizationRoute = homeSetupOrganizationImport.update({
-  id: '/setup-organization',
-  path: '/setup-organization',
-  getParentRoute: () => homeRoute,
-} as any)
 
 const homeProgramsRoute = homeProgramsImport.update({
   id: '/programs',
@@ -176,6 +197,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homeImport
       parentRoute: typeof rootRoute
     }
+    '/create-organization': {
+      id: '/create-organization'
+      path: '/create-organization'
+      fullPath: '/create-organization'
+      preLoaderRoute: typeof CreateOrganizationImport
+      parentRoute: typeof rootRoute
+    }
+    '/download-app': {
+      id: '/download-app'
+      path: '/download-app'
+      fullPath: '/download-app'
+      preLoaderRoute: typeof DownloadAppImport
+      parentRoute: typeof rootRoute
+    }
+    '/join-organization': {
+      id: '/join-organization'
+      path: '/join-organization'
+      fullPath: '/join-organization'
+      preLoaderRoute: typeof JoinOrganizationImport
+      parentRoute: typeof rootRoute
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingImport
+      parentRoute: typeof rootRoute
+    }
     '/__home/about': {
       id: '/__home/about'
       path: '/about'
@@ -209,13 +258,6 @@ declare module '@tanstack/react-router' {
       path: '/programs'
       fullPath: '/programs'
       preLoaderRoute: typeof homeProgramsImport
-      parentRoute: typeof homeImport
-    }
-    '/__home/setup-organization': {
-      id: '/__home/setup-organization'
-      path: '/setup-organization'
-      fullPath: '/setup-organization'
-      preLoaderRoute: typeof homeSetupOrganizationImport
       parentRoute: typeof homeImport
     }
     '/__auth/login': {
@@ -336,7 +378,6 @@ interface homeRouteChildren {
   homeDashboardRoute: typeof homeDashboardRoute
   homePlanningRoute: typeof homePlanningRoute
   homeProgramsRoute: typeof homeProgramsRouteWithChildren
-  homeSetupOrganizationRoute: typeof homeSetupOrganizationRoute
   homeWorkoutsWorkoutIdRoute: typeof homeWorkoutsWorkoutIdRoute
 }
 
@@ -346,7 +387,6 @@ const homeRouteChildren: homeRouteChildren = {
   homeDashboardRoute: homeDashboardRoute,
   homePlanningRoute: homePlanningRoute,
   homeProgramsRoute: homeProgramsRouteWithChildren,
-  homeSetupOrganizationRoute: homeSetupOrganizationRoute,
   homeWorkoutsWorkoutIdRoute: homeWorkoutsWorkoutIdRoute,
 }
 
@@ -355,12 +395,15 @@ const homeRouteWithChildren = homeRoute._addFileChildren(homeRouteChildren)
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof homeRouteWithChildren
+  '/create-organization': typeof CreateOrganizationRoute
+  '/download-app': typeof DownloadAppRoute
+  '/join-organization': typeof JoinOrganizationRoute
+  '/onboarding': typeof OnboardingRoute
   '/about': typeof homeAboutRoute
   '/athletes': typeof homeAthletesRouteWithChildren
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
   '/programs': typeof homeProgramsRouteWithChildren
-  '/setup-organization': typeof homeSetupOrganizationRoute
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
@@ -375,12 +418,15 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof homeRouteWithChildren
+  '/create-organization': typeof CreateOrganizationRoute
+  '/download-app': typeof DownloadAppRoute
+  '/join-organization': typeof JoinOrganizationRoute
+  '/onboarding': typeof OnboardingRoute
   '/about': typeof homeAboutRoute
   '/athletes': typeof homeAthletesRouteWithChildren
   '/dashboard': typeof homeDashboardRoute
   '/planning': typeof homePlanningRoute
   '/programs': typeof homeProgramsRouteWithChildren
-  '/setup-organization': typeof homeSetupOrganizationRoute
   '/login': typeof authLoginLazyRoute
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
@@ -397,12 +443,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/__auth': typeof authRouteWithChildren
   '/__home': typeof homeRouteWithChildren
+  '/create-organization': typeof CreateOrganizationRoute
+  '/download-app': typeof DownloadAppRoute
+  '/join-organization': typeof JoinOrganizationRoute
+  '/onboarding': typeof OnboardingRoute
   '/__home/about': typeof homeAboutRoute
   '/__home/athletes': typeof homeAthletesRouteWithChildren
   '/__home/dashboard': typeof homeDashboardRoute
   '/__home/planning': typeof homePlanningRoute
   '/__home/programs': typeof homeProgramsRouteWithChildren
-  '/__home/setup-organization': typeof homeSetupOrganizationRoute
   '/__auth/login': typeof authLoginLazyRoute
   '/__auth/privacy': typeof authPrivacyLazyRoute
   '/__auth/signup': typeof authSignupLazyRoute
@@ -419,12 +468,15 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | ''
+    | '/create-organization'
+    | '/download-app'
+    | '/join-organization'
+    | '/onboarding'
     | '/about'
     | '/athletes'
     | '/dashboard'
     | '/planning'
     | '/programs'
-    | '/setup-organization'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -438,12 +490,15 @@ export interface FileRouteTypes {
   to:
     | '/'
     | ''
+    | '/create-organization'
+    | '/download-app'
+    | '/join-organization'
+    | '/onboarding'
     | '/about'
     | '/athletes'
     | '/dashboard'
     | '/planning'
     | '/programs'
-    | '/setup-organization'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -458,12 +513,15 @@ export interface FileRouteTypes {
     | '/'
     | '/__auth'
     | '/__home'
+    | '/create-organization'
+    | '/download-app'
+    | '/join-organization'
+    | '/onboarding'
     | '/__home/about'
     | '/__home/athletes'
     | '/__home/dashboard'
     | '/__home/planning'
     | '/__home/programs'
-    | '/__home/setup-organization'
     | '/__auth/login'
     | '/__auth/privacy'
     | '/__auth/signup'
@@ -480,12 +538,20 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   authRoute: typeof authRouteWithChildren
   homeRoute: typeof homeRouteWithChildren
+  CreateOrganizationRoute: typeof CreateOrganizationRoute
+  DownloadAppRoute: typeof DownloadAppRoute
+  JoinOrganizationRoute: typeof JoinOrganizationRoute
+  OnboardingRoute: typeof OnboardingRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   authRoute: authRouteWithChildren,
   homeRoute: homeRouteWithChildren,
+  CreateOrganizationRoute: CreateOrganizationRoute,
+  DownloadAppRoute: DownloadAppRoute,
+  JoinOrganizationRoute: JoinOrganizationRoute,
+  OnboardingRoute: OnboardingRoute,
 }
 
 export const routeTree = rootRoute
@@ -500,7 +566,11 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/__auth",
-        "/__home"
+        "/__home",
+        "/create-organization",
+        "/download-app",
+        "/join-organization",
+        "/onboarding"
       ]
     },
     "/": {
@@ -523,9 +593,20 @@ export const routeTree = rootRoute
         "/__home/dashboard",
         "/__home/planning",
         "/__home/programs",
-        "/__home/setup-organization",
         "/__home/workouts/$workoutId"
       ]
+    },
+    "/create-organization": {
+      "filePath": "create-organization.tsx"
+    },
+    "/download-app": {
+      "filePath": "download-app.tsx"
+    },
+    "/join-organization": {
+      "filePath": "join-organization.tsx"
+    },
+    "/onboarding": {
+      "filePath": "onboarding.tsx"
     },
     "/__home/about": {
       "filePath": "__home.about.tsx",
@@ -554,10 +635,6 @@ export const routeTree = rootRoute
         "/__home/programs/exercises",
         "/__home/programs/workouts"
       ]
-    },
-    "/__home/setup-organization": {
-      "filePath": "__home.setup-organization.tsx",
-      "parent": "/__home"
     },
     "/__auth/login": {
       "filePath": "__auth.login.lazy.tsx",

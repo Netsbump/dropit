@@ -100,32 +100,5 @@
       "columns": "Colonnes",
       "selected_rows": "{{count}} sur {{total}} ligne(s) sélectionnée(s)"
     }
-  },
-  "organization": {
-    "setup": {
-      "title": "Créez votre organisation",
-      "description": "Configurez votre organisation de coaching pour commencer à gérer vos athlètes et vos programmes."
-    },
-    "create": {
-      "title": "Créer une organisation",
-      "description": "Ajoutez une nouvelle organisation à votre compte.",
-      "button": "Créer l'organisation",
-      "success": {
-        "title": "Organisation créée",
-        "description": "Votre organisation a été créée avec succès."
-      },
-      "error": {
-        "title": "Échec de la création",
-        "description": "La création de l'organisation a échoué. Veuillez réessayer."
-      }
-    },
-    "fields": {
-      "name": "Nom de l'organisation",
-      "name_placeholder": "Entrez le nom de l'organisation",
-      "slug": "Identifiant URL",
-      "slug_placeholder": "Ex: mon-organisation-de-coaching",
-      "description": "Description",
-      "description_placeholder": "Entrez la description de l'organisation"
-    }
   }
 }
