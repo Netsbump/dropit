@@ -1,0 +1,129 @@
+{
+  "onboarding": {
+    "welcome": {
+      "title": "Bienvenue sur DropIt !",
+      "subtitle": "Que souhaitez-vous faire ? Choisissez votre rôle pour commencer"
+    },
+    "roles": {
+      "coach": {
+        "title": "Je suis coach",
+        "description": "Créer mon club et gérer mes athlètes",
+        "button": "Créer mon club",
+        "features": {
+          "create_organization": "Créer votre organisation",
+          "manage_athletes": "Gérer vos athlètes",
+          "create_programs": "Créer des programmes",
+          "track_performance": "Suivre les performances"
+        }
+      },
+      "athlete": {
+        "title": "Je suis athlète",
+        "description": "Rejoindre un club et suivre mes entraînements",
+        "button": "Rejoindre un club",
+        "features": {
+          "join_club": "Rejoindre votre club",
+          "follow_training": "Suivre vos entraînements",
+          "record_performance": "Enregistrer vos performances",
+          "communicate_coach": "Communiquer avec votre coach"
+        }
+      }
+    },
+    "footer": {
+      "unsure": "Vous n'êtes pas sûr ?",
+      "learn_more": "En savoir plus sur les rôles"
+    }
+  },
+  "create_organization": {
+    "title": "Créer une organisation",
+    "description": "Configurez votre organisation de coaching pour commencer à gérer vos athlètes et vos programmes.",
+    "button": "Créer l'organisation",
+    "success": {
+      "title": "Organisation créée",
+      "description": "Votre organisation a été créée avec succès."
+    },
+    "error": {
+      "title": "Échec de la création",
+      "description": "La création de l'organisation a échoué. Veuillez réessayer."
+    },
+    "fields": {
+      "name": "Nom de l'organisation",
+      "name_placeholder": "Entrez le nom de l'organisation",
+      "slug": "Identifiant URL",
+      "slug_placeholder": "Ex: mon-organisation-de-coaching",
+      "description": "Description",
+      "description_placeholder": "Entrez la description de l'organisation"
+    },
+    "validation": {
+      "name_min": "Le nom doit contenir au moins 2 caractères",
+      "slug_min": "Le slug doit contenir au moins 2 caractères"
+    }
+  },
+  "join_organization": {
+    "title": "Rejoindre un club",
+    "description": "Entrez le code d'invitation que vous avez reçu par email",
+    "button": "Rejoindre le club",
+    "loading": "Validation en cours...",
+    "success": {
+      "title": "Invitation acceptée !",
+      "description": "Vous avez rejoint le club avec succès."
+    },
+    "error": {
+      "title": "Erreur",
+      "description": "Impossible de rejoindre le club",
+      "validation_failed": "Erreur lors de la validation du code"
+    },
+    "fields": {
+      "code": "Code d'invitation",
+      "code_placeholder": "Ex: DROPIT-ABC123"
+    },
+    "validation": {
+      "code_required": "Le code d'invitation est requis"
+    },
+    "help": {
+      "no_code": "Vous n'avez pas de code d'invitation ?",
+      "contact_coach": "Contactez votre coach pour recevoir une invitation par email."
+    }
+  },
+  "download_app": {
+    "title": "Application Mobile DropIt",
+    "description": "Téléchargez l'application mobile pour suivre vos entraînements et rester connecté avec votre coach",
+    "download_section": {
+      "title": "Télécharger l'application",
+      "subtitle": "Choisissez votre plateforme préférée"
+    },
+    "platforms": {
+      "ios": {
+        "label": "Télécharger sur",
+        "store": "App Store"
+      },
+      "android": {
+        "label": "Disponible sur",
+        "store": "Google Play"
+      },
+      "web": {
+        "label": "Ou utiliser",
+        "store": "Version Web"
+      }
+    },
+    "features": {
+      "title": "Fonctionnalités",
+      "subtitle": "Tout ce que vous pouvez faire avec l'application mobile",
+      "list": [
+        "Suivi de vos entraînements en temps réel",
+        "Historique de vos performances",
+        "Programmes personnalisés par votre coach",
+        "Notifications pour vos séances",
+        "Interface optimisée pour mobile"
+      ]
+    },
+    "stats": {
+      "rating": "⭐ 4.8/5",
+      "downloads": "📱 10k+ téléchargements",
+      "optimized": "Application optimisée pour iOS et Android"
+    },
+    "footer": {
+      "support": "Vous rencontrez des problèmes ?",
+      "contact": "Contactez notre support"
+    }
+  }
+} 

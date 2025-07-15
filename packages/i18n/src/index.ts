@@ -5,11 +5,13 @@ import { initReactI18next } from 'react-i18next';
 import enAthletes from './locales/en/athletes.json';
 import en from './locales/en/common.json';
 import enPlanning from './locales/en/planning.json';
+import enOnboarding from './locales/en/onboarding.json';
+import enAuth from './locales/en/auth.json';
 import frAthletes from './locales/fr/athletes.json';
 import fr from './locales/fr/common.json';
 import frPlanning from './locales/fr/planning.json';
 import frAuth from './locales/fr/auth.json';
-import enAuth from './locales/en/auth.json';
+import frOnboarding from './locales/fr/onboarding.json';
 
 export const defaultNS = 'common';
 export const resources = {
@@ -18,12 +20,14 @@ export const resources = {
     athletes: enAthletes,
     planning: enPlanning,
     auth: enAuth,
+    onboarding: enOnboarding,
   },
   fr: {
     common: fr,
     athletes: frAthletes,
     planning: frPlanning,
     auth: frAuth,
+    onboarding: frOnboarding,
   },
 } as const;
 
