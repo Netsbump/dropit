@@ -2,7 +2,6 @@ import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
 import { User } from "../auth/user.entity";
 import { Organization } from "./organization.entity";
 
-
 /**
  * Store invitations to join an organization
  */
@@ -20,15 +19,12 @@ export class Invitation {
   @ManyToOne(() => Organization, { fieldName: 'organizationId' })
   organization!: Organization;
 
-  @Property({ default: 'member' })
-  role = 'member';
+  @Property()
+  role!: string;
 
-  @Property({ default: 'pending' })
-  status = 'pending';
+  @Property()
+  status!: string;
 
   @Property({ fieldName: 'expiresAt' })
   expiresAt!: Date;
-
-  @Property({ fieldName: 'createdAt' })
-  createdAt: Date = new Date();
 } 

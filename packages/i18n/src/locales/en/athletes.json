@@ -5,7 +5,7 @@
     "no_results": "No athletes found",
     "search_placeholder": "Search an athlete...",
     "all_categories": "All categories",
-    "create_athlete": "Create an athlete"
+    "create_athlete": "Invite an athlete"
   },
   "details": {
     "title": "Athlete details",
@@ -48,21 +48,25 @@
     "level": "Level",
     "birthday": "Year"
   },
-  "form": {
-    "title": "Create an athlete",
-    "description": "Add a new athlete to your database",
-    "first_name": "First name",
-    "first_name_placeholder": "Enter first name",
-    "last_name": "Last name",
-    "last_name_placeholder": "Enter last name",
-    "birthday": "Birthday",
-    "country": "Country",
-    "country_placeholder": "Enter country",
-    "button_create": "Create",
-    "button_cancel": "Cancel"
-  },
-  "creation": {
-    "title": "Create an athlete",
-    "description": "Add a new athlete to your database"
+  "invitation": {
+    "title": "Invite an athlete",
+    "description": "Send an email invitation for an athlete to join your organization",
+    "email": "Email address",
+    "email_placeholder": "athlete@example.com",
+    "email_required": "Invalid email address",
+    "how_it_works": "How it works?",
+    "how_it_works_steps": {
+      "0": "The athlete will receive an email with an invitation link",
+      "1": "They can create an account or log in if they already have one",
+      "2": "Once logged in, they will be automatically added to your organization",
+      "3": "They will have access to the mobile app to track their training"
+    },
+    "button_send": "Send invitation",
+    "button_cancel": "Cancel",
+    "sending": "Sending...",
+    "success_title": "Invitation sent!",
+    "success_description": "The invitation has been sent to {email}. The athlete will receive an email with a link to join the organization.",
+    "error_title": "Error sending invitation",
+    "error_description": "Unable to send invitation"
   }
 }

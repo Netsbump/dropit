@@ -1,4 +1,3 @@
-
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { authClient } from '@/lib/auth-client';
 import { Button } from '@/shared/components/ui/button';

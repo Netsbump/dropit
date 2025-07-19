@@ -9,6 +9,7 @@ import { OrganizationUseCases } from './application/organization.use-cases';
 import { MemberUseCases } from './application/member.use-cases';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
 import { USER_REPO } from './application/ports/user.repository';
+import { IdentityInterfaceModule } from './interface/interface.module';
 
 // Entities
 import { Organization } from './domain/organization/organization.entity';
@@ -34,6 +35,7 @@ import { MEMBER_REPO } from './application/ports/member.repository';
 @Module({
   imports: [
     AuthModule,
+    IdentityInterfaceModule,
     MikroOrmModule.forFeature([Organization, Member, Invitation, User])
   ],
   providers: [

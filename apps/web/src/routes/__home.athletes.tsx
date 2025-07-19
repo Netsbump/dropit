@@ -3,7 +3,7 @@ import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
-import { AthleteCreationForm } from '../features/athletes/athlete-creation-form';
+import { AthleteInvitationForm } from '../features/athletes/athlete-invitation-form';
 import { columns } from '../features/athletes/columns';
 import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
@@ -80,10 +80,10 @@ function AthletesPage() {
       <DialogCreation
         open={createAthleteModalOpen}
         onOpenChange={setCreateAthleteModalOpen}
-        title={t('athletes:creation.title')}
-        description={t('athletes:creation.description')}
+        title={t('athletes:invitation.title')}
+        description={t('athletes:invitation.description')}
       >
-        <AthleteCreationForm
+        <AthleteInvitationForm
           onSuccess={handleCreationSuccess}
           onCancel={() => setCreateAthleteModalOpen(false)}
         />

@@ -5,7 +5,7 @@
     "no_results": "Aucun athlète trouvé",
     "search_placeholder": "Rechercher un athlète...",
     "all_categories": "Toutes les catégories",
-    "create_athlete": "Créer un athlète"
+    "create_athlete": "Inviter un athlète"
   },
   "details": {
     "title": "Détails de l'athlète",
@@ -48,21 +48,25 @@
     "birthday": "Année",
     "country": "Pays"
   },
-  "form": {
-    "title": "Créer un athlète",
-    "description": "Ajoutez un nouvel athlète à votre base de données",
-    "first_name": "Prénom",
-    "first_name_placeholder": "Entrez le prénom",
-    "last_name": "Nom",
-    "last_name_placeholder": "Entrez le nom",
-    "birthday": "Date de naissance",
-    "country": "Pays",
-    "country_placeholder": "Entrez le pays",
-    "button_create": "Créer",
-    "button_cancel": "Annuler"
-  },
-  "creation": {
-    "title": "Créer un athlète",
-    "description": "Ajoutez un nouvel athlète à votre base de données"
+  "invitation": {
+    "title": "Inviter un athlète",
+    "description": "Envoyez une invitation par email pour qu'un athlète rejoigne votre organisation",
+    "email": "Adresse email",
+    "email_placeholder": "athlete@example.com",
+    "email_required": "Adresse email invalide",
+    "how_it_works": "Comment ça marche ?",
+    "how_it_works_steps": {
+      "0": "L'athlète recevra un email avec un lien d'invitation",
+      "1": "Il pourra créer un compte ou se connecter s'il en a déjà un",
+      "2": "Une fois connecté, il sera automatiquement ajouté à votre organisation",
+      "3": "Il aura accès à l'application mobile pour suivre ses entraînements"
+    },
+    "button_send": "Envoyer l'invitation",
+    "button_cancel": "Annuler",
+    "sending": "Envoi en cours...",
+    "success_title": "Invitation envoyée !",
+    "success_description": "L'invitation a été envoyée à {email}. L'athlète recevra un email avec un lien pour rejoindre l'organisation.",
+    "error_title": "Erreur lors de l'envoi",
+    "error_description": "Impossible d'envoyer l'invitation"
   }
 }

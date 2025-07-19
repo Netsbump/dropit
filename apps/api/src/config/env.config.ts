@@ -29,6 +29,9 @@ export const configValidationSchema = z.object({
   // API
   API_PORT: z.coerce.number(),
 
+  // App URL
+  APP_URL: z.string().default('http://localhost:5173'),
+
   // Database
   DATABASE_PASSWORD: z.string(),
   DATABASE_USER: z.string(),
@@ -58,6 +61,7 @@ if (!configParsed.success) {
 export const config = {
   env: configParsed.data.NODE_ENV,
   apiPort: configParsed.data.API_PORT,
+  appUrl: configParsed.data.APP_URL,
   betterAuth: {
     secret: configParsed.data.BETTER_AUTH_SECRET,
     trustedOrigins: configParsed.data.TRUSTED_ORIGINS,

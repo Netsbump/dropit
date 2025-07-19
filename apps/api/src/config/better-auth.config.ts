@@ -18,6 +18,16 @@ interface BetterAuthOptionsDynamic {
     data: { user: User; url: string; token: string },
     request: Request | undefined
   ) => Promise<void>;
+  sendInvitationEmail?: (
+    data: { 
+      id: string; 
+      email: string; 
+      inviter: { user: { name: string; email: string } }; 
+      organization: { name: string };
+      inviteLink?: string;
+    },
+    request: Request | undefined
+  ) => Promise<void>;
 }
 
 export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: EntityManager) {
@@ -57,6 +67,7 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
         return options?.sendResetPassword?.(data, request);
       },
     },
+    
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -93,7 +104,30 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
           owner,
           admin,
           member,
-        }
+        },
+        // NOUVEAU : Configuration de l'envoi d'email d'invitation
+        async sendInvitationEmail(data, request) {
+          if (!options?.sendInvitationEmail) {
+            console.warn('📧 [BetterAuth] sendInvitationEmail not configured');
+            return;
+          }
+          
+          // Construire le lien d'invitation
+          const inviteLink = `${config.appUrl}/accept-invitation/${data.id}`;
+          
+          console.log('📧 [BetterAuth] Sending invitation email:', {
+            invitationId: data.id,
+            email: data.email,
+            organization: data.organization.name,
+            inviteLink,
+          });
+          
+          // Appeler la fonction d'envoi d'email configurée
+          await options.sendInvitationEmail({
+            ...data,
+            inviteLink,
+          }, request);
+        },
       })
     ],
     databaseHooks: {
