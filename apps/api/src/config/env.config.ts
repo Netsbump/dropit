@@ -42,6 +42,11 @@ export const configValidationSchema = z.object({
   // BetterAuth
   BETTER_AUTH_SECRET: z.string(),
   TRUSTED_ORIGINS: z.string().transform((val) => val.split(',')),
+
+  // Email (Brevo)
+  BREVO_API_KEY: z.string().optional(),
+  BREVO_FROM_EMAIL: z.string().default('levasseur.sten@gmail.com'),
+  BREVO_FROM_NAME: z.string().default('Dropit'),
 });
 
 export type ConfigSchema = z.infer<typeof configValidationSchema>;
@@ -73,5 +78,10 @@ export const config = {
     password: configParsed.data.DATABASE_PASSWORD,
     name: configParsed.data.DATABASE_NAME,
     connectionStringUrl: `postgresql://${configParsed.data.DATABASE_USER}:${configParsed.data.DATABASE_PASSWORD}@${configParsed.data.DATABASE_HOST}:${configParsed.data.DATABASE_PORT}/${configParsed.data.DATABASE_NAME}`,
+  },
+  email: {
+    brevoApiKey: configParsed.data.BREVO_API_KEY,
+    fromEmail: configParsed.data.BREVO_FROM_EMAIL,
+    fromName: configParsed.data.BREVO_FROM_NAME,
   },
 } as const;

@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import * as SibApiV3Sdk from '@getbrevo/brevo';
+import { config } from '../../../config/env.config';
 
 export interface EmailData {
   to: string;
@@ -17,14 +19,27 @@ export interface InvitationEmailData {
 
 @Injectable()
 export class EmailService {
-  private readonly fromEmail = 'noreply@dropit.com';
+  private readonly fromEmail = config.email.fromEmail;
+  private readonly fromName = config.email.fromName;
+  private brevoApi: SibApiV3Sdk.TransactionalEmailsApi | null = null;
+
+  constructor() {
+    // Initialiser Brevo API si la clé est configurée
+    if (config.email.brevoApiKey) {
+      this.brevoApi = new SibApiV3Sdk.TransactionalEmailsApi();
+      this.brevoApi.setApiKey(SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey, config.email.brevoApiKey);
+      console.log('📧 [EmailService] Brevo API initialized');
+    } else {
+      console.log('📧 [EmailService] Brevo API key not configured, using logs only');
+    }
+  }
 
   async sendEmail(emailData: EmailData): Promise<void> {
     const { to, subject, content, from = this.fromEmail } = emailData;
     
-    // En développement, on log les emails
-    if (process.env.NODE_ENV === 'development') {
-      console.log('📧 [EmailService] Email would be sent:', {
+    // En développement sans clé Brevo, on log les emails
+    if (process.env.NODE_ENV === 'development' && !config.email.brevoApiKey) {
+      console.log('📧 [EmailService] Email would be sent (development mode):', {
         from,
         to,
         subject,
@@ -34,9 +49,31 @@ export class EmailService {
       return;
     }
 
-    // TODO: Implémenter l'envoi réel avec Brevo
-    console.log('📧 [EmailService] Real email sending not implemented yet');
-    console.log('📧 [EmailService] Email data:', { from, to, subject });
+    // Envoi réel avec Brevo
+    if (this.brevoApi) {
+      try {
+        const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();
+        sendSmtpEmail.to = [{ email: to }];
+        sendSmtpEmail.subject = subject;
+        sendSmtpEmail.htmlContent = content;
+        sendSmtpEmail.sender = { 
+          name: this.fromName, 
+          email: from 
+        };
+
+        const result = await this.brevoApi.sendTransacEmail(sendSmtpEmail);
+        console.log('📧 [EmailService] Email sent successfully via Brevo:', {
+          messageId: result.body.messageId,
+          to,
+          subject,
+        });
+      } catch (error) {
+        console.error('❌ [EmailService] Error sending email via Brevo:', error);
+        throw new Error(`Failed to send email: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      }
+    } else {
+      console.warn('📧 [EmailService] Brevo API not available, email not sent');
+    }
   }
 
   async sendInvitationEmail(data: InvitationEmailData): Promise<void> {
