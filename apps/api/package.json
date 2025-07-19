@@ -28,8 +28,9 @@
   },
   "dependencies": {
     "@dropit/contract": "workspace:*",
-    "@dropit/schemas": "workspace:*",
     "@dropit/permissions": "workspace:*",
+    "@dropit/schemas": "workspace:*",
+    "@getbrevo/brevo": "^2.5.0",
     "@mikro-orm/cli": "6.4.7",
     "@mikro-orm/core": "6.4.7",
     "@mikro-orm/migrations": "6.4.7",
@@ -90,7 +91,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node",
-    "setupFilesAfterEnv": ["../jest.setup.js"]
+    "setupFilesAfterEnv": [
+      "../jest.setup.js"
+    ]
   },
   "mikro-orm": {
     "useTsNode": true,

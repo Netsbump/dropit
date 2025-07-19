@@ -21,6 +21,7 @@ const statement = {
   trainingSession: ["read", "create", "update", "delete"],
   athleteTrainingSession: ["read", "update"],
   competitorStatus: ["read", "create", "update"],
+  invitation: ["read", "create", "update", "delete"],
 } as const;
 
 /**
@@ -37,6 +38,7 @@ export const member = ac.newRole({
   trainingSession: ["read"],
   athleteTrainingSession: ["read", "update"],
   competitorStatus: ["read"],
+  invitation: ["read"],
 });
 
 // Role Admin (Coach)
@@ -54,6 +56,7 @@ export const admin = ac.newRole({
   trainingSession: ["read", "create", "update", "delete"],
   athleteTrainingSession: ["read", "update"],
   competitorStatus: ["read", "create", "update"],
+  invitation: ["read", "create", "update", "delete"],
 });
 
 // Role Owner (All permissions)
@@ -71,5 +74,6 @@ export const owner = ac.newRole({
   trainingSession: ["read", "create", "update", "delete"],
   athleteTrainingSession: ["read", "update"],
   competitorStatus: ["read", "create", "update"],
+  invitation: ["read", "create", "update", "delete"],
 });
 

@@ -10,6 +10,7 @@ import { MemberUseCases } from './application/member.use-cases';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
 import { USER_REPO } from './application/ports/user.repository';
 
+
 // Entities
 import { Organization } from './domain/organization/organization.entity';
 import { Member } from './domain/organization/member.entity';
@@ -57,6 +58,7 @@ import { MEMBER_REPO } from './application/ports/member.repository';
       useClass: AuthGuard,
     },
   ],
+
   exports: [
     // Use-cases
     OrganizationUseCases,

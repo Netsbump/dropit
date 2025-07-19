@@ -48,6 +48,18 @@ export class AuthService implements OnModuleInit {
           content: `Hello ${data.user.name}, please verify your email by clicking on the link below: ${data.url}`,
         });
       },
+      // NOUVEAU : Configuration pour l'envoi d'email d'invitation
+      sendInvitationEmail: async (data) => {
+        console.log('📧 [AuthService] Sending invitation email via EmailService');
+        
+        return this.emailService.sendInvitationEmail({
+          to: data.email,
+          inviterName: data.inviter.user.name,
+          inviterEmail: data.inviter.user.email,
+          organizationName: data.organization.name,
+          inviteLink: data.inviteLink || '',
+        });
+      },
     }, this.em) as unknown as Auth;
   }
 
