@@ -58,6 +58,7 @@ import { MEMBER_REPO } from './application/ports/member.repository';
       useClass: AuthGuard,
     },
   ],
+
   exports: [
     // Use-cases
     OrganizationUseCases,
