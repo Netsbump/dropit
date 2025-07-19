@@ -30,6 +30,7 @@ import { Route as homeProgramsWorkoutsImport } from './routes/__home.programs.wo
 import { Route as homeProgramsExercisesImport } from './routes/__home.programs.exercises'
 import { Route as homeProgramsComplexImport } from './routes/__home.programs.complex'
 import { Route as homeAthletesAthleteIdImport } from './routes/__home.athletes.$athleteId'
+import { Route as authAcceptInvitationInvitationIdImport } from './routes/__auth.accept-invitation.$invitationId'
 
 // Create Virtual Routes
 
@@ -172,6 +173,13 @@ const homeAthletesAthleteIdRoute = homeAthletesAthleteIdImport.update({
   getParentRoute: () => homeAthletesRoute,
 } as any)
 
+const authAcceptInvitationInvitationIdRoute =
+  authAcceptInvitationInvitationIdImport.update({
+    id: '/accept-invitation/$invitationId',
+    path: '/accept-invitation/$invitationId',
+    getParentRoute: () => authRoute,
+  } as any)
+
 // Populate the FileRoutesByPath interface
 
 declare module '@tanstack/react-router' {
@@ -288,6 +296,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authTermsLazyImport
       parentRoute: typeof authImport
     }
+    '/__auth/accept-invitation/$invitationId': {
+      id: '/__auth/accept-invitation/$invitationId'
+      path: '/accept-invitation/$invitationId'
+      fullPath: '/accept-invitation/$invitationId'
+      preLoaderRoute: typeof authAcceptInvitationInvitationIdImport
+      parentRoute: typeof authImport
+    }
     '/__home/athletes/$athleteId': {
       id: '/__home/athletes/$athleteId'
       path: '/$athleteId'
@@ -333,6 +348,7 @@ interface authRouteChildren {
   authPrivacyLazyRoute: typeof authPrivacyLazyRoute
   authSignupLazyRoute: typeof authSignupLazyRoute
   authTermsLazyRoute: typeof authTermsLazyRoute
+  authAcceptInvitationInvitationIdRoute: typeof authAcceptInvitationInvitationIdRoute
 }
 
 const authRouteChildren: authRouteChildren = {
@@ -340,6 +356,7 @@ const authRouteChildren: authRouteChildren = {
   authPrivacyLazyRoute: authPrivacyLazyRoute,
   authSignupLazyRoute: authSignupLazyRoute,
   authTermsLazyRoute: authTermsLazyRoute,
+  authAcceptInvitationInvitationIdRoute: authAcceptInvitationInvitationIdRoute,
 }
 
 const authRouteWithChildren = authRoute._addFileChildren(authRouteChildren)
@@ -408,6 +425,7 @@ export interface FileRoutesByFullPath {
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
   '/terms': typeof authTermsLazyRoute
+  '/accept-invitation/$invitationId': typeof authAcceptInvitationInvitationIdRoute
   '/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
   '/programs/complex': typeof homeProgramsComplexRoute
   '/programs/exercises': typeof homeProgramsExercisesRoute
@@ -431,6 +449,7 @@ export interface FileRoutesByTo {
   '/privacy': typeof authPrivacyLazyRoute
   '/signup': typeof authSignupLazyRoute
   '/terms': typeof authTermsLazyRoute
+  '/accept-invitation/$invitationId': typeof authAcceptInvitationInvitationIdRoute
   '/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
   '/programs/complex': typeof homeProgramsComplexRoute
   '/programs/exercises': typeof homeProgramsExercisesRoute
@@ -456,6 +475,7 @@ export interface FileRoutesById {
   '/__auth/privacy': typeof authPrivacyLazyRoute
   '/__auth/signup': typeof authSignupLazyRoute
   '/__auth/terms': typeof authTermsLazyRoute
+  '/__auth/accept-invitation/$invitationId': typeof authAcceptInvitationInvitationIdRoute
   '/__home/athletes/$athleteId': typeof homeAthletesAthleteIdRoute
   '/__home/programs/complex': typeof homeProgramsComplexRoute
   '/__home/programs/exercises': typeof homeProgramsExercisesRoute
@@ -481,6 +501,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/signup'
     | '/terms'
+    | '/accept-invitation/$invitationId'
     | '/athletes/$athleteId'
     | '/programs/complex'
     | '/programs/exercises'
@@ -503,6 +524,7 @@ export interface FileRouteTypes {
     | '/privacy'
     | '/signup'
     | '/terms'
+    | '/accept-invitation/$invitationId'
     | '/athletes/$athleteId'
     | '/programs/complex'
     | '/programs/exercises'
@@ -526,6 +548,7 @@ export interface FileRouteTypes {
     | '/__auth/privacy'
     | '/__auth/signup'
     | '/__auth/terms'
+    | '/__auth/accept-invitation/$invitationId'
     | '/__home/athletes/$athleteId'
     | '/__home/programs/complex'
     | '/__home/programs/exercises'
@@ -582,7 +605,8 @@ export const routeTree = rootRoute
         "/__auth/login",
         "/__auth/privacy",
         "/__auth/signup",
-        "/__auth/terms"
+        "/__auth/terms",
+        "/__auth/accept-invitation/$invitationId"
       ]
     },
     "/__home": {
@@ -650,6 +674,10 @@ export const routeTree = rootRoute
     },
     "/__auth/terms": {
       "filePath": "__auth.terms.lazy.tsx",
+      "parent": "/__auth"
+    },
+    "/__auth/accept-invitation/$invitationId": {
+      "filePath": "__auth.accept-invitation.$invitationId.tsx",
       "parent": "/__auth"
     },
     "/__home/athletes/$athleteId": {
