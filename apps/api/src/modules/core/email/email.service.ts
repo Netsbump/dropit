@@ -43,7 +43,7 @@ export class EmailService {
         from,
         to,
         subject,
-        content: content.substring(0, 200) + '...', // Log partiel pour éviter le spam
+        content: `${content.substring(0, 100)}...`, // Log partiel pour éviter le spam
         timestamp: new Date().toISOString(),
       });
       return;
