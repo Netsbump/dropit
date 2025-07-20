@@ -1,15 +1,59 @@
-# Flux d'Invitation d'Athlète
+# Rejoindre une organisation ou ajouter des membres
 
-Ce document décrit le flux complet d'invitation d'un athlète, depuis le clic utilisateur jusqu'à l'envoi de l'email.
+Ce document regroupe toute la documentation technique relative à l'ajout d'un athlète dans son club et au fonctionnement du système d'invitations.
 
-## Diagramme de Séquence
+## User Stories
+
+### Onboarding utilisateur
+
+**En tant qu'utilisateur nouvellement connecté sans organisation**, je veux choisir mon rôle dans l'écosystème afin de rejoindre ou créer un club.
+
+**Scénarios :**
+- **Créer un club** : L'utilisateur devient coach et accède au dashboard web (backoffice d'administration)
+- **Rejoindre un club** : L'utilisateur devient athlète et est redirigé vers l'application mobile
+
+### Création d'organisation
+
+**En tant que coach**, je veux créer mon club afin d'administrer mes athlètes.
+
+**Flux :**
+1. Route : `/create-organization`
+2. Formulaire de création avec informations du club
+3. Attribution automatique du rôle `coach`
+4. Redirection vers `/dashboard` (dashboard web - backoffice d'administration du club)
+
+### Adhésion à une organisation
+
+**En tant qu'athlète**, je veux rejoindre un club existant afin de bénéficier du coaching.
+
+**Flux :**
+1. Route : `/join-organization`
+2. Choix : sélection du club + message OU code d'invitation
+3. **Desktop** : redirection vers `/download-app` (téléchargement de l'app mobile)
+4. **Mobile** : notification d'attente + accès limité au dashboard mobile (visualisation des entraînements)
+
+### Téléchargement de l'application mobile
+
+**En tant qu'athlète**, je veux télécharger l'application mobile afin d'accéder à mon dashboard mobile et visualiser mes entraînements.
+
+**Page :** `/download-app` avec liens vers App Store et Google Play
+
+---
+
+## Flux techniques
+
+### Flux d'Invitation d'Athlète
+
+Le flux complet d'invitation d'un athlète, depuis le clic utilisateur jusqu'à l'envoi de l'email.
+
+### Diagramme de Séquence
 
 ```mermaid
 sequenceDiagram
     participant U as Utilisateur (Coach)
-    participant F as Frontend React
+    participant F as Frontend
     participant BA as Better Auth Client
-    participant API as API NestJS
+    participant API as API
     participant GA as AuthGuard
     participant PG as PermissionsGuard
     participant BA_S as Better Auth Server
@@ -51,31 +95,33 @@ sequenceDiagram
     F-->>U: Modal fermé
 ```
 
-## Composants Impliqués
+### Composants Impliqués
 
-### Frontend
+#### Frontend
 - **Formulaire** : `AthleteInvitationForm` (React + react-hook-form)
 - **Client** : `authClient.organization.inviteMember()`
 - **UI** : Modal, toast, validation
 
-### Backend
+#### Backend
 - **Route** : `POST /auth/organization/invite-member` (Better Auth)
 - **Guards** : `AuthGuard` + `PermissionsGuard`
 - **Service** : `EmailService` avec Brevo
 - **Base** : Table `invitation` (Better Auth)
 
-### Configuration
+#### Configuration
 - **Better Auth** : Plugin `organization` avec hook `sendInvitationEmail`
 - **Email** : Template HTML + configuration Brevo
 - **Permissions** : `create` sur ressource `invitation`
 
-## Points Clés
+### Points Clés
 
 1. **Sécurité** : Double vérification (auth + permissions)
 2. **Automatisation** : Better Auth gère tout le processus
 3. **Email** : Template HTML professionnel via Brevo
 4. **Lien** : `http://localhost:5173/accept-invitation/{id}`
 5. **Expiration** : 7 jours par défaut
+
+---
 
 ## Flux d'Acceptation d'Invitation
 
@@ -156,9 +202,9 @@ sequenceDiagram
     F->>F: Affichage "Invitation invalide - Recontacter votre coach"
 ```
 
-## Composants Impliqués
+### Composants Impliqués
 
-### Frontend
+#### Frontend
 - **Page** : `AcceptInvitationPage` avec tabs login/signup
 - **Composants** : `LoginForm` et `SignupForm` réutilisables
 - **État local** : `isCheckingInvitation` et `invitationError` pour gérer les états
@@ -167,44 +213,15 @@ sequenceDiagram
   - Athlètes (`member`) → `/download-app`
   - Coaches (`admin`/`owner`) → `/dashboard`
 
-### Backend
+#### Backend
 - **Routes** : 
   - `GET /auth/organization/get-invitation` (Better Auth)
   - `POST /auth/organization/accept-invitation` (Better Auth)
   - `POST /auth/login` et `POST /auth/signup` (Better Auth)
 - **Base** : Tables `invitation` et `member` (Better Auth)
 
-### Configuration
+#### Configuration
 - **Better Auth** : Plugin `organization` avec gestion automatique
 - **Permissions** : Vérification automatique des rôles
 - **Session** : Gestion automatique après authentification
 
-## Points Clés
-
-1. **UX fluide** : Login/signup intégrés dans la page d'acceptation
-2. **Sécurité** : Aucune requête d'invitation avant authentification
-3. **Vérification post-auth** : Récupération et validation de l'invitation après connexion
-4. **Automatisation** : Better Auth gère tout le processus
-5. **Redirection intelligente** : 
-   - `role: 'member'` → `/download-app` (athlètes)
-   - `role: 'admin'` ou `'owner'` → `/dashboard` (coaches)
-6. **Gestion d'erreurs simplifiée** : Message unique "Recontacter votre coach" en cas d'erreur
-7. **États de chargement** : Affichage "Vérification de l'invitation..." pendant la vérification
-
-## Prochaines Étapes
-
-1. ✅ **Invitation créée** - Fonctionne
-2. ✅ **Configuration Brevo** - Fonctionne
-3. ✅ **Route d'acceptation** - Fonctionne
-4. ✅ **Flux complet** - Fonctionne
-5. ✅ **Vérification post-auth** - Fonctionne
-6. ✅ **Gestion d'erreurs simplifiée** - Fonctionne
-
-## Changements Récents
-
-### Flux d'Acceptation Optimisé
-- **Suppression des requêtes pré-auth** : Plus d'erreur 401
-- **Vérification post-authentification** : Sécurité renforcée
-- **États locaux** : `isCheckingInvitation` et `invitationError`
-- **Message d'erreur unique** : "Recontacter votre coach"
-- **UX améliorée** : Loading "Vérification de l'invitation..." 
