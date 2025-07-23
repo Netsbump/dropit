@@ -1,8 +1,8 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
 import { authClient } from '../lib/auth-client';
 import { useTranslation } from '@dropit/i18n';
 import { LoginForm } from '@/shared/components/auth/login-form';
+import { useEffect } from 'react';
 
 export const Route = createLazyFileRoute('/__auth/login')({
   component: Login,
@@ -15,12 +15,35 @@ function Login() {
 
   useEffect(() => {
     if (!isPending && sessionData) {
-      navigate({ to: '/dashboard', replace: true });
+      redirectBasedOnRole();
     }
   }, [sessionData, navigate, isPending]);
 
+  const redirectBasedOnRole = async () => {
+    try {
+      const activeMember = await authClient.organization.getActiveMember();
+      if (activeMember?.data) {
+        const userRole = activeMember.data.role;
+
+        console.log(userRole);
+        if (userRole === 'member') {
+          navigate({ to: '/download-app', replace: true });
+        } else if (userRole === 'owner' || userRole === 'admin') {
+          navigate({ to: '/dashboard', replace: true });
+        } else {
+          navigate({ to: '/onboarding', replace: true });
+        }
+      } else {
+        navigate({ to: '/onboarding', replace: true });
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      navigate({ to: '/onboarding', replace: true });
+    }
+  };
+
   const handleLoginSuccess = () => {
-    navigate({ to: '/dashboard', replace: true });
+    redirectBasedOnRole();
   };
 
   return (

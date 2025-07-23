@@ -57,7 +57,7 @@ export function AppSidebar() {
         description: 'You have been logged out successfully',
       });
 
-      navigate({ to: '/login', replace: true });
+      navigate({ to: '/', replace: true });
     } catch (error) {
       console.error('Erreur lors de la déconnexion:', error);
 
@@ -68,7 +68,7 @@ export function AppSidebar() {
         variant: 'destructive',
       });
 
-      navigate({ to: '/login', replace: true });
+      navigate({ to: '/', replace: true });
     }
   };
 

@@ -1,6 +1,8 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
 import { SignupForm } from '@/shared/components/auth/signup-form';
+import { authClient } from '../lib/auth-client';
+import { useEffect } from 'react';
 
 export const Route = createLazyFileRoute('/__auth/signup')({
   component: Signup,
@@ -9,9 +11,38 @@ export const Route = createLazyFileRoute('/__auth/signup')({
 function Signup() {
   const { t } = useTranslation(['auth']);
   const navigate = useNavigate();
+  const { data: sessionData, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && sessionData) {
+      redirectBasedOnRole();
+    }
+  }, [sessionData, navigate, isPending]);
+
+  const redirectBasedOnRole = async () => {
+    try {
+      const activeMember = await authClient.organization.getActiveMember();
+      if (activeMember?.data) {
+        const userRole = activeMember.data.role;
+        
+        if (userRole === 'member') {
+          navigate({ to: '/download-app', replace: true });
+        } else if (userRole === 'owner' || userRole === 'admin') {
+          navigate({ to: '/dashboard', replace: true });
+        } else {
+          navigate({ to: '/onboarding', replace: true });
+        }
+      } else {
+        navigate({ to: '/onboarding', replace: true });
+      }
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      navigate({ to: '/onboarding', replace: true });
+    }
+  };
 
   const handleSignupSuccess = () => {
-    navigate({ to: '/dashboard', replace: true });
+    redirectBasedOnRole();
   };
 
   return (
