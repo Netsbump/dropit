@@ -17,7 +17,7 @@ function Login() {
     if (!isPending && sessionData) {
       redirectBasedOnRole();
     }
-  }, [sessionData, navigate, isPending]);
+  }, [sessionData, isPending]);
 
   const redirectBasedOnRole = async () => {
     try {
