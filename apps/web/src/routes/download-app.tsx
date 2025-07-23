@@ -5,6 +5,7 @@ import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
 import { Smartphone, Download, Apple, Chrome, ArrowRight, CheckCircle, Star } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
+import { useState, useEffect } from "react";
 
 export const Route = createFileRoute('/download-app')({
   beforeLoad: async () => {
@@ -12,14 +13,45 @@ export const Route = createFileRoute('/download-app')({
     if (!session) {
       throw redirect({ to: '/login' });
     }
+    
+    try {
+      // Vérifier si l'utilisateur a un membre actif dans une organisation
+      const activeMember = await authClient.organization.getActiveMember();
+      if (!activeMember?.data) {
+        throw redirect({ to: '/onboarding' });
+      }
+    } catch (error) {
+      // Si erreur lors de la récupération du membre actif, rediriger vers onboarding
+      throw redirect({ to: '/onboarding' });
+    }
   },
   component: DownloadAppPage,
 }); 
 
 function DownloadAppPage() {
   const { t } = useTranslation('onboarding');
+  const [activeMember, setActiveMember] = useState<{ role: string } | null>(null);
 
   const features = t('download_app.features.list', { returnObjects: true }) as string[];
+  
+  // Récupérer le membre actif au montage du composant
+  useEffect(() => {
+    const fetchActiveMember = async () => {
+      try {
+        const response = await authClient.organization.getActiveMember();
+        if (response.data) {
+          setActiveMember(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching active member:', error);
+      }
+    };
+    
+    fetchActiveMember();
+  }, []);
+  
+  // Vérifier si l'utilisateur est un membre (athlète)
+  const isAthlete = activeMember?.role === 'member';
 
   const handleDownload = (platform: 'ios' | 'android' | 'web') => {
     // TODO: Implémenter les liens de téléchargement
@@ -45,11 +77,22 @@ function DownloadAppPage() {
             <Smartphone className="h-8 w-8 text-blue-600" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            {t('download_app.title')}
+            {isAthlete ? 'Bienvenue sur DropIt !' : t('download_app.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {t('download_app.description')}
+            {isAthlete 
+              ? 'En tant qu\'athlète, votre expérience optimale se trouve sur notre application mobile. Téléchargez l\'app pour accéder à tous vos entraînements, performances et communications avec votre coach.'
+              : t('download_app.description')
+            }
           </p>
+          {isAthlete && (
+            <div className="mt-4 p-4 bg-blue-50 rounded-lg max-w-2xl mx-auto">
+              <p className="text-sm text-blue-700">
+                💡 L'interface web est réservée aux coachs pour la gestion des programmes d'entraînement. 
+                Votre espace athlète vous attend sur mobile !
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="grid md:grid-cols-2 gap-8 items-start">
