@@ -1,13 +1,12 @@
-import { User, betterAuth } from 'better-auth';
-import { createAuthMiddleware } from 'better-auth/api';
-import { openAPI } from 'better-auth/plugins';
-import { Pool } from 'pg';
-import { config } from './env.config';
-import { organization } from 'better-auth/plugins/organization';
-import { ac, owner, admin, member } from '@dropit/permissions';
-import { Member } from '../modules/identity/domain/organization/member.entity';
-import { EntityManager } from '@mikro-orm/core';
-
+import { User, betterAuth } from "better-auth";
+import { createAuthMiddleware } from "better-auth/api";
+import { openAPI } from "better-auth/plugins";
+import { Pool } from "pg";
+import { config } from "./env.config";
+import { organization } from "better-auth/plugins/organization";
+import { ac, owner, admin, member } from "@dropit/permissions";
+import { Member } from "../modules/identity/domain/organization/member.entity";
+import { EntityManager } from "@mikro-orm/core";
 
 interface BetterAuthOptionsDynamic {
   sendResetPassword?: (
@@ -19,10 +18,10 @@ interface BetterAuthOptionsDynamic {
     request: Request | undefined
   ) => Promise<void>;
   sendInvitationEmail?: (
-    data: { 
-      id: string; 
-      email: string; 
-      inviter: { user: { name: string; email: string } }; 
+    data: {
+      id: string;
+      email: string;
+      inviter: { user: { name: string; email: string } };
       organization: { name: string };
       inviteLink?: string;
     },
@@ -30,7 +29,10 @@ interface BetterAuthOptionsDynamic {
   ) => Promise<void>;
 }
 
-export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: EntityManager) {
+export function createAuthConfig(
+  options?: BetterAuthOptionsDynamic,
+  em?: EntityManager
+) {
   return betterAuth({
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
@@ -39,8 +41,8 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
     cookies: {
       enabled: true,
       httpOnly: true, // Empêche l'accès via JavaScript (protection XSS)
-      secure: config.env === 'production', // HTTPS en prod
-      sameSite: 'lax', // Protection CSRF de base
+      secure: config.env === "production", // HTTPS en prod
+      sameSite: "lax", // Protection CSRF de base
       maxAge: 60 * 60 * 24 * 7, // 7 jours (en secondes)
     },
 
@@ -52,7 +54,7 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
     user: {
       additionalFields: {
         isSuperAdmin: {
-          type: 'boolean',
+          type: "boolean",
           required: false,
           defaultValue: false,
           input: false, // don't allow user to set isSuperAdmin
@@ -67,7 +69,7 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
         return options?.sendResetPassword?.(data, request);
       },
     },
-    
+
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -90,13 +92,13 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
     },
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === '/auth/login') {
-          console.info('before');
+        if (ctx.path === "/auth/login") {
+          console.info("before");
         }
       }),
     },
     plugins: [
-      openAPI(), 
+      openAPI(),
       organization({
         // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
         ac: ac as any,
@@ -108,44 +110,59 @@ export function createAuthConfig(options?: BetterAuthOptionsDynamic, em?: Entity
         // NOUVEAU : Configuration de l'envoi d'email d'invitation
         async sendInvitationEmail(data, request) {
           if (!options?.sendInvitationEmail) {
-            console.warn('📧 [BetterAuth] sendInvitationEmail not configured');
+            console.warn("📧 [BetterAuth] sendInvitationEmail not configured");
             return;
           }
-          
+
           // Construire le lien d'invitation
           const inviteLink = `${config.appUrl}/accept-invitation/${data.id}`;
-          
-          console.log('📧 [BetterAuth] Sending invitation email:', {
+
+          console.log("📧 [BetterAuth] Sending invitation email:", {
             invitationId: data.id,
             email: data.email,
             organization: data.organization.name,
             inviteLink,
           });
-          
+
           // Appeler la fonction d'envoi d'email configurée
-          await options.sendInvitationEmail({
-            ...data,
-            inviteLink,
-          }, request);
+          await options.sendInvitationEmail(
+            {
+              ...data,
+              inviteLink,
+            },
+            request
+          );
         },
-      })
+      }),
     ],
     databaseHooks: {
       session: {
         create: {
-          before: async (session, context) => {
-            if (!em) return { data: {} };
-            const emFork = em.fork(); // 👈 important pour MikroORM
-            // Récupère la première orga du user
-            const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
-            return {
-              data: {
-                activeOrganizationId: memberRecord?.organization.id ?? null,
-              }
-            };
-          }
-        }
-      }
+          before: async (session) => {
+            if (!em) return { data: session };
+            
+            try {
+              const emFork = em.fork();
+              const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
+              
+              console.log('🔧 [BetterAuth Hook] Setting activeOrganizationId:', {
+                userId: session.userId,
+                organizationId: memberRecord?.organization.id || null
+              });
+              
+              return {
+                data: {
+                  ...session,
+                  activeOrganizationId: memberRecord?.organization.id ?? null,
+                },
+              };
+            } catch (error) {
+              console.error('❌ [BetterAuth Hook] Error setting activeOrganizationId:', error);
+              return { data: session };
+            }
+          },
+        },
+      },
     },
   });
 }

@@ -31,7 +31,7 @@ modules/auth/
 
 ## Configuration
 
-La configuration de better-auth est définie dans `auth.service.ts` et comprend:
+La configuration de better-auth est définie dans `better-auth.config.ts` et comprend:
 
 - **secret**: Clé secrète pour signer les JWT
 - **trustedOrigins**: Domaines autorisés pour les requêtes cross-origin
@@ -40,7 +40,8 @@ La configuration de better-auth est définie dans `auth.service.ts` et comprend:
 - **database**: Connexion à la base de données PostgreSQL
 - **rateLimit**: Paramètres de limitation des requêtes
 - **hooks**: Points d'extension pour logiques personnalisées
-- **plugins**: Modules additionnels (openAPI)
+- **plugins**: Modules additionnels (openAPI, organisation)
+- **databaseHooks**: Hooks de session pour gérer l'organisation active
 
 Exemple de configuration:
 
@@ -771,4 +772,89 @@ function WorkoutManagement() {
 - ✅ **Performance** : Moins de requêtes côté serveur
 - ✅ **UX** : Interface adaptée aux permissions
 - ✅ **Maintenable** : Une seule source de vérité pour les permissions
+
+---
+
+## 🔧 **Gestion de l'Organisation Active**
+
+### **Problème : activeOrganizationId null par défaut**
+
+Par défaut, better-auth définit `activeOrganizationId` à `null` lors de la création d'une session, même si l'utilisateur appartient à une organisation. Cela provoque des redirections incorrectes vers `/onboarding` au lieu des routes appropriées (`/dashboard` pour owner/admin, `/download-app` pour member).
+
+### **Solution : Hook databaseHooks.session.create.before**
+
+Pour résoudre ce problème, nous utilisons un hook de session qui définit automatiquement l'organisation active lors de la connexion :
+
+```typescript
+// better-auth.config.ts
+databaseHooks: {
+  session: {
+    create: {
+      before: async (session) => {
+        if (!em) return { data: session };
+        
+        try {
+          const emFork = em.fork();
+          const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
+          
+          console.log('🔧 [BetterAuth Hook] Setting activeOrganizationId:', {
+            userId: session.userId,
+            organizationId: memberRecord?.organization.id || null
+          });
+          
+          return {
+            data: {
+              ...session,
+              activeOrganizationId: memberRecord?.organization.id ?? null,
+            },
+          };
+        } catch (error) {
+          console.error('❌ [BetterAuth Hook] Error setting activeOrganizationId:', error);
+          return { data: session };
+        }
+      },
+    },
+  },
+},
+```
+
+### **Pourquoi ce hook est nécessaire ?**
+
+D'après la [documentation officielle better-auth](https://www.better-auth.com/docs/plugins/organization), **l'activeOrganizationId est null par défaut** lors de la création de session. La documentation recommande explicitement d'utiliser les `databaseHooks` pour définir l'organisation active :
+
+> "By default, when a user signs in, the active organization is set to `null`. You can set the active organization using database hooks during session creation."
+
+### **Flux d'exécution**
+
+1. **Utilisateur se connecte** → Better-auth déclenche `session.create.before`
+2. **Le hook recherche** l'appartenance de l'utilisateur à une organisation via MikroORM
+3. **L'organisation trouvée** est injectée dans `activeOrganizationId`
+4. **La session est créée** avec l'organisation active correctement définie
+5. **Le frontend peut maintenant** rediriger correctement selon le rôle
+
+### **Impact sur les redirections**
+
+Sans ce hook :
+```javascript
+// activeOrganizationId = null → redirection vers /onboarding
+const activeMember = await authClient.organization.getActiveMember();
+// activeMember?.data sera null même si l'utilisateur a une organisation
+```
+
+Avec ce hook :
+```javascript
+// activeOrganizationId = "org-uuid" → redirection correcte
+const activeMember = await authClient.organization.getActiveMember();
+// activeMember?.data contient le rôle (owner/admin/member)
+```
+
+### **Gestion d'erreurs**
+
+Le hook inclut une gestion d'erreurs robuste :
+- **Try-catch** pour éviter les plantages de session
+- **Logs détaillés** pour le debugging
+- **Fallback** vers session normale en cas d'erreur
+- **Vérification EntityManager** pour éviter les erreurs d'injection
+
+Cette implémentation garantit que les utilisateurs sont toujours redirigés vers la bonne interface selon leur rôle organisationnel.
 
