@@ -143,6 +143,7 @@ export function createAuthConfig(
             if (!em) return;
 
             // Skip athlete creation for super admins
+            // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
             if ((user as any).isSuperAdmin) {
               console.log('🔧 [BetterAuth Hook] Skipping athlete creation for super admin:', user.email);
               return;
