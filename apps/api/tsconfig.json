@@ -9,7 +9,7 @@
     "incremental": true,
     // "declaration": false,
     // "declarationMap": false,
-    // "composite": false,
+    "composite": false,
   },
   "exclude": ["dist"]
 }
