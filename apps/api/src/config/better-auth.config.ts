@@ -6,6 +6,7 @@ import { config } from "./env.config";
 import { organization } from "better-auth/plugins/organization";
 import { ac, owner, admin, member } from "@dropit/permissions";
 import { Member } from "../modules/identity/domain/organization/member.entity";
+import { Athlete } from "../modules/athletes/domain/athlete.entity";
 import { EntityManager } from "@mikro-orm/core";
 
 interface BetterAuthOptionsDynamic {
@@ -136,6 +137,49 @@ export function createAuthConfig(
       }),
     ],
     databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            if (!em) return;
+
+            // Skip athlete creation for super admins
+            if ((user as any).isSuperAdmin) {
+              console.log('🔧 [BetterAuth Hook] Skipping athlete creation for super admin:', user.email);
+              return;
+            }
+
+            try {
+              const emFork = em.fork();
+              
+              // Check if athlete already exists
+              const existingAthlete = await emFork.findOne(Athlete, { user: { id: user.id } });
+              if (existingAthlete) {
+                console.log('🔧 [BetterAuth Hook] Athlete already exists for user:', user.email);
+                return;
+              }
+
+              // Extract first and last name from user.name
+              const nameParts = user.name.trim().split(' ');
+              const firstName = nameParts[0] || user.name;
+              const lastName = nameParts.slice(1).join(' ') || '';
+
+              // Create new athlete profile
+              const athlete = emFork.create(Athlete, {
+                firstName,
+                lastName,
+                user: user.id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              });
+              
+              await emFork.persistAndFlush(athlete);
+              console.log('🔧 [BetterAuth Hook] Created athlete profile for user:', user.email);
+            } catch (error) {
+              console.error('❌ [BetterAuth Hook] Error creating athlete profile:', error);
+            }
+          },
+        },
+      },
       session: {
         create: {
           before: async (session) => {

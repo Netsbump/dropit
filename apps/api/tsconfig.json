@@ -7,9 +7,9 @@
     "target": "ES2021",
     "outDir": "./dist",
     "incremental": true,
-    "declaration": false,
-    "declarationMap": false,
-    "composite": false,
+    // "declaration": false,
+    // "declarationMap": false,
+    // "composite": false,
   },
   "exclude": ["dist"]
 }
