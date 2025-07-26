@@ -1,6 +1,6 @@
-import { User, betterAuth, BetterAuthOptions, MiddlewareInputContext, MiddlewareOptions } from "better-auth";
+import { User, betterAuth } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
-import { openAPI, customSession } from "better-auth/plugins";
+import { openAPI } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "./env.config";
 import { organization } from "better-auth/plugins/organization";
@@ -28,34 +28,36 @@ interface BetterAuthOptionsDynamic {
     },
     request: Request | undefined
   ) => Promise<void>;
-  beforeHook?: ((inputContext: MiddlewareInputContext<MiddlewareOptions>) => Promise<unknown>);
-  afterHook?: ((inputContext: MiddlewareInputContext<MiddlewareOptions>) => Promise<unknown>);
 }
-
-export type BetterAuthSession = Awaited<ReturnType<ReturnType<typeof createAuthConfig>['api']['getSession']>>;
-export type LoggedInBetterAuthSession = NonNullable<BetterAuthSession>;
-
-export type BetterAuthType = ReturnType<typeof createAuthConfig>;
-
 export function createAuthConfig(
   options?: BetterAuthOptionsDynamic,
   em?: EntityManager
 ) {
-  const authConfig = {
+  return betterAuth({
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
-
+    // Configuration des cookies HttpOnly
+    cookies: {
+      enabled: true,
+      httpOnly: true, // Empêche l'accès via JavaScript (protection XSS)
+      secure: config.env === "production", // HTTPS en prod
+      sameSite: "lax", // Protection CSRF de base
+      maxAge: 60 * 60 * 24 * 7, // 7 jours (en secondes)
+    },
+    // Support du Bearer token également (pour le mobile)
+    bearerToken: {
+      enabled: true,
+    },
     user: {
       additionalFields: {
         isSuperAdmin: {
           type: "boolean",
           required: false,
           defaultValue: false,
-          input: false,
+          input: false, // don't allow user to set isSuperAdmin
         },
       },
     },
-
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {
@@ -63,7 +65,6 @@ export function createAuthConfig(
         return options?.sendResetPassword?.(data, request);
       },
     },
-
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -72,34 +73,18 @@ export function createAuthConfig(
         return options?.sendVerificationEmail?.(data, request);
       },
     },
-
     database: new Pool({
       connectionString: config.database.connectionStringUrl,
     }),
-
     advanced: {
       database: {
-        generateId: false,
-      },
-      // Configuration des cookies selon la doc better-auth
-      cookiePrefix: "dropit",
-      cookies: {
-        session_token: {
-          attributes: {
-            httpOnly: true,
-            secure: config.env === "production",
-            sameSite: "lax",
-            maxAge: 60 * 60 * 24 * 7, // 7 jours
-          },
-        },
+        generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
       },
     },
-
     rateLimit: {
       window: 50,
       max: 100,
     },
-
     hooks: {
       before: createAuthMiddleware(async (ctx) => {
         if (ctx.path === "/auth/login") {
@@ -107,7 +92,6 @@ export function createAuthConfig(
         }
       }),
     },
-
     plugins: [
       openAPI(),
       organization({
@@ -118,13 +102,21 @@ export function createAuthConfig(
           admin,
           member,
         },
+        // NOUVEAU : Configuration de l'envoi d'email d'invitation
         async sendInvitationEmail(data, request) {
           if (!options?.sendInvitationEmail) {
             console.warn("📧 [BetterAuth] sendInvitationEmail not configured");
             return;
           }
-
+          // Construire le lien d'invitation
           const inviteLink = `${config.appUrl}/accept-invitation/${data.id}`;
+          console.log("📧 [BetterAuth] Sending invitation email:", {
+            invitationId: data.id,
+            email: data.email,
+            organization: data.organization.name,
+            inviteLink,
+          });
+          // Appeler la fonction d'envoi d'email configurée
           await options.sendInvitationEmail(
             {
               ...data,
@@ -134,14 +126,7 @@ export function createAuthConfig(
           );
         },
       }),
-      customSession(async ({ user, session }) => {
-        return {
-          user,
-          session,
-        };
-      }),
     ],
-
     databaseHooks: {
       user: {
         create: {
@@ -157,7 +142,7 @@ export function createAuthConfig(
 
             try {
               const emFork = em.fork();
-              
+
               // Check if athlete already exists
               const existingAthlete = await emFork.findOne(Athlete, { user: { id: user.id } });
               if (existingAthlete) {
@@ -178,7 +163,7 @@ export function createAuthConfig(
                 createdAt: new Date(),
                 updatedAt: new Date(),
               });
-              
+
               await emFork.persistAndFlush(athlete);
               console.log('🔧 [BetterAuth Hook] Created athlete profile for user:', user.email);
             } catch (error) {
@@ -215,11 +200,6 @@ export function createAuthConfig(
         },
       },
     },
-  } satisfies BetterAuthOptions;
-
-  return betterAuth(authConfig) as ReturnType<
-    typeof betterAuth<typeof authConfig>
-  >;
+  });
 }
-
 export const auth = createAuthConfig();
