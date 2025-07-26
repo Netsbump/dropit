@@ -32,7 +32,6 @@ interface BetterAuthOptionsDynamic {
   afterHook?: ((inputContext: MiddlewareInputContext<MiddlewareOptions>) => Promise<unknown>);
 }
 
-// Session type workaround similar to your lead dev's approach
 export type BetterAuthSession = Awaited<ReturnType<ReturnType<typeof createAuthConfig>['api']['getSession']>>;
 export type LoggedInBetterAuthSession = NonNullable<BetterAuthSession>;
 
@@ -42,9 +41,21 @@ export function createAuthConfig(
   options?: BetterAuthOptionsDynamic,
   em?: EntityManager
 ) {
-  const authOptions = {
+  const authConfig = {
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
+
+    user: {
+      additionalFields: {
+        isSuperAdmin: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+      },
+    },
+
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {
@@ -52,6 +63,7 @@ export function createAuthConfig(
         return options?.sendResetPassword?.(data, request);
       },
     },
+
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -60,20 +72,42 @@ export function createAuthConfig(
         return options?.sendVerificationEmail?.(data, request);
       },
     },
+
     database: new Pool({
       connectionString: config.database.connectionStringUrl,
     }),
+
     advanced: {
-      generateId: false,
+      database: {
+        generateId: false,
+      },
+      // Configuration des cookies selon la doc better-auth
+      cookiePrefix: "dropit",
+      cookies: {
+        session_token: {
+          attributes: {
+            httpOnly: true,
+            secure: config.env === "production",
+            sameSite: "lax",
+            maxAge: 60 * 60 * 24 * 7, // 7 jours
+          },
+        },
+      },
     },
+
     rateLimit: {
       window: 50,
       max: 100,
     },
+
     hooks: {
-      before: options?.beforeHook,
-      after: options?.afterHook,
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === "/auth/login") {
+          console.info("before");
+        }
+      }),
     },
+
     plugins: [
       openAPI(),
       organization({
@@ -100,7 +134,14 @@ export function createAuthConfig(
           );
         },
       }),
+      customSession(async ({ user, session }) => {
+        return {
+          user,
+          session,
+        };
+      }),
     ],
+
     databaseHooks: {
       user: {
         create: {
@@ -176,54 +217,9 @@ export function createAuthConfig(
     },
   } satisfies BetterAuthOptions;
 
-  // Use customSession plugin to properly handle session data
-  return betterAuth({
-    ...authOptions,
-    user: {
-      additionalFields: {
-        isSuperAdmin: {
-          type: "boolean",
-          required: false,
-          defaultValue: false,
-          input: false,
-        },
-      },
-    },
-    // Configuration des cookies HttpOnly
-    cookies: {
-      enabled: true,
-      httpOnly: true,
-      secure: config.env === "production",
-      sameSite: "lax",
-      maxAge: 60 * 60 * 24 * 7,
-    },
-    // Support du Bearer token
-    bearerToken: {
-      enabled: true,
-    },
-    advanced: {
-      database: {
-        generateId: false,
-      },
-    },
-    hooks: {
-      before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === "/auth/login") {
-          console.info("before");
-        }
-      }),
-    },
-    plugins: [
-      ...(authOptions.plugins ?? []),
-      customSession(async ({ user, session }) => {
-        return {
-          user,
-          session,
-        };
-      }, authOptions),
-    ],
-  // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
-  } as any);
+  return betterAuth(authConfig) as ReturnType<
+    typeof betterAuth<typeof authConfig>
+  >;
 }
 
 export const auth = createAuthConfig();
