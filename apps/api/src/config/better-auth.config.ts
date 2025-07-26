@@ -6,6 +6,7 @@ import { config } from "./env.config";
 import { organization } from "better-auth/plugins/organization";
 import { ac, owner, admin, member } from "@dropit/permissions";
 import { Member } from "../modules/identity/domain/organization/member.entity";
+import { Athlete } from "../modules/athletes/domain/athlete.entity";
 import { EntityManager } from "@mikro-orm/core";
 
 interface BetterAuthOptionsDynamic {
@@ -28,7 +29,6 @@ interface BetterAuthOptionsDynamic {
     request: Request | undefined
   ) => Promise<void>;
 }
-
 export function createAuthConfig(
   options?: BetterAuthOptionsDynamic,
   em?: EntityManager
@@ -36,7 +36,6 @@ export function createAuthConfig(
   return betterAuth({
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
-
     // Configuration des cookies HttpOnly
     cookies: {
       enabled: true,
@@ -45,12 +44,10 @@ export function createAuthConfig(
       sameSite: "lax", // Protection CSRF de base
       maxAge: 60 * 60 * 24 * 7, // 7 jours (en secondes)
     },
-
     // Support du Bearer token également (pour le mobile)
     bearerToken: {
       enabled: true,
     },
-
     user: {
       additionalFields: {
         isSuperAdmin: {
@@ -61,7 +58,6 @@ export function createAuthConfig(
         },
       },
     },
-
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {
@@ -69,7 +65,6 @@ export function createAuthConfig(
         return options?.sendResetPassword?.(data, request);
       },
     },
-
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -113,17 +108,14 @@ export function createAuthConfig(
             console.warn("📧 [BetterAuth] sendInvitationEmail not configured");
             return;
           }
-
           // Construire le lien d'invitation
           const inviteLink = `${config.appUrl}/accept-invitation/${data.id}`;
-
           console.log("📧 [BetterAuth] Sending invitation email:", {
             invitationId: data.id,
             email: data.email,
             organization: data.organization.name,
             inviteLink,
           });
-
           // Appeler la fonction d'envoi d'email configurée
           await options.sendInvitationEmail(
             {
@@ -136,6 +128,50 @@ export function createAuthConfig(
       }),
     ],
     databaseHooks: {
+      user: {
+        create: {
+          after: async (user) => {
+            if (!em) return;
+
+            // Skip athlete creation for super admins
+            // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
+            if ((user as any).isSuperAdmin) {
+              console.log('🔧 [BetterAuth Hook] Skipping athlete creation for super admin:', user.email);
+              return;
+            }
+
+            try {
+              const emFork = em.fork();
+
+              // Check if athlete already exists
+              const existingAthlete = await emFork.findOne(Athlete, { user: { id: user.id } });
+              if (existingAthlete) {
+                console.log('🔧 [BetterAuth Hook] Athlete already exists for user:', user.email);
+                return;
+              }
+
+              // Extract first and last name from user.name
+              const nameParts = user.name.trim().split(' ');
+              const firstName = nameParts[0] || user.name;
+              const lastName = nameParts.slice(1).join(' ') || '';
+
+              // Create new athlete profile
+              const athlete = emFork.create(Athlete, {
+                firstName,
+                lastName,
+                user: user.id,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              });
+
+              await emFork.persistAndFlush(athlete);
+              console.log('🔧 [BetterAuth Hook] Created athlete profile for user:', user.email);
+            } catch (error) {
+              console.error('❌ [BetterAuth Hook] Error creating athlete profile:', error);
+            }
+          },
+        },
+      },
       session: {
         create: {
           before: async (session) => {
@@ -166,5 +202,4 @@ export function createAuthConfig(
     },
   });
 }
-
 export const auth = createAuthConfig();

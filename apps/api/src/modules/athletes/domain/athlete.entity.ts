@@ -23,8 +23,8 @@ export class Athlete {
   @Property()
   lastName!: string;
 
-  @Property()
-  birthday!: Date;
+  @Property({ nullable: true })
+  birthday?: Date;
 
   @Property({ nullable: true })
   country?: string;

@@ -128,7 +128,7 @@ export function AthleteDetail({
             <div className="space-y-2">
               <Label>{t('athletes:details.birthday')}</Label>
               <p className="text-sm">
-                {formatDate(new Date(athlete.birthday), 'Pp', { locale: fr })}
+                {athlete.birthday ? formatDate(new Date(athlete.birthday), 'Pp', { locale: fr }) : '-'}
               </p>
             </div>
 

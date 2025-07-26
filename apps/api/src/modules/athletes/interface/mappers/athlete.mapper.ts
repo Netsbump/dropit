@@ -9,7 +9,7 @@ export const AthleteMapper = {
       id: athlete.id,
       firstName: athlete.firstName,
       lastName: athlete.lastName,
-      birthday: new Date(athlete.birthday),
+      birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
       email: athlete.email ?? '',
       image: athlete.image ?? '',
       country: athlete.country,
@@ -43,7 +43,7 @@ export const AthleteMapper = {
       id: athlete.id,
       firstName: athlete.firstName,
       lastName: athlete.lastName,
-      birthday: athlete.birthday,
+      birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
       userId: athlete.user.id,
     };
   },

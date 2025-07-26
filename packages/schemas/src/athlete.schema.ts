@@ -17,7 +17,7 @@ export const athleteSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.date(),
+  birthday: z.date().optional(),
   userId: z.string(),
 });
 
@@ -29,7 +29,7 @@ export const athleteDetailsSchema = z.object({
   lastName: z.string(),
   email: z.string().email(),
   image: z.string().optional(),
-  birthday: z.date(),
+  birthday: z.date().optional(),
   country: z.string().optional(),
   metrics: z
     .object({
