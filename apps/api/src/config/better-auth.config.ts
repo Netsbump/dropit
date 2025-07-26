@@ -1,6 +1,6 @@
-import { User, betterAuth } from "better-auth";
+import { User, betterAuth, BetterAuthOptions, MiddlewareInputContext, MiddlewareOptions } from "better-auth";
 import { createAuthMiddleware } from "better-auth/api";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, customSession } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "./env.config";
 import { organization } from "better-auth/plugins/organization";
@@ -28,41 +28,23 @@ interface BetterAuthOptionsDynamic {
     },
     request: Request | undefined
   ) => Promise<void>;
+  beforeHook?: ((inputContext: MiddlewareInputContext<MiddlewareOptions>) => Promise<unknown>);
+  afterHook?: ((inputContext: MiddlewareInputContext<MiddlewareOptions>) => Promise<unknown>);
 }
+
+// Session type workaround similar to your lead dev's approach
+export type BetterAuthSession = Awaited<ReturnType<ReturnType<typeof createAuthConfig>['api']['getSession']>>;
+export type LoggedInBetterAuthSession = NonNullable<BetterAuthSession>;
+
+export type BetterAuthType = ReturnType<typeof createAuthConfig>;
 
 export function createAuthConfig(
   options?: BetterAuthOptionsDynamic,
   em?: EntityManager
 ) {
-  return betterAuth({
+  const authOptions = {
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
-
-    // Configuration des cookies HttpOnly
-    cookies: {
-      enabled: true,
-      httpOnly: true, // Empêche l'accès via JavaScript (protection XSS)
-      secure: config.env === "production", // HTTPS en prod
-      sameSite: "lax", // Protection CSRF de base
-      maxAge: 60 * 60 * 24 * 7, // 7 jours (en secondes)
-    },
-
-    // Support du Bearer token également (pour le mobile)
-    bearerToken: {
-      enabled: true,
-    },
-
-    user: {
-      additionalFields: {
-        isSuperAdmin: {
-          type: "boolean",
-          required: false,
-          defaultValue: false,
-          input: false, // don't allow user to set isSuperAdmin
-        },
-      },
-    },
-
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {
@@ -70,7 +52,6 @@ export function createAuthConfig(
         return options?.sendResetPassword?.(data, request);
       },
     },
-
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -83,20 +64,15 @@ export function createAuthConfig(
       connectionString: config.database.connectionStringUrl,
     }),
     advanced: {
-      database: {
-        generateId: false, // Fix pour Better Auth 1.2.7 - nouvelle syntaxe
-      },
+      generateId: false,
     },
     rateLimit: {
       window: 50,
       max: 100,
     },
     hooks: {
-      before: createAuthMiddleware(async (ctx) => {
-        if (ctx.path === "/auth/login") {
-          console.info("before");
-        }
-      }),
+      before: options?.beforeHook,
+      after: options?.afterHook,
     },
     plugins: [
       openAPI(),
@@ -108,24 +84,13 @@ export function createAuthConfig(
           admin,
           member,
         },
-        // NOUVEAU : Configuration de l'envoi d'email d'invitation
         async sendInvitationEmail(data, request) {
           if (!options?.sendInvitationEmail) {
             console.warn("📧 [BetterAuth] sendInvitationEmail not configured");
             return;
           }
 
-          // Construire le lien d'invitation
           const inviteLink = `${config.appUrl}/accept-invitation/${data.id}`;
-
-          console.log("📧 [BetterAuth] Sending invitation email:", {
-            invitationId: data.id,
-            email: data.email,
-            organization: data.organization.name,
-            inviteLink,
-          });
-
-          // Appeler la fonction d'envoi d'email configurée
           await options.sendInvitationEmail(
             {
               ...data,
@@ -209,7 +174,56 @@ export function createAuthConfig(
         },
       },
     },
-  });
+  } satisfies BetterAuthOptions;
+
+  // Use customSession plugin to properly handle session data
+  return betterAuth({
+    ...authOptions,
+    user: {
+      additionalFields: {
+        isSuperAdmin: {
+          type: "boolean",
+          required: false,
+          defaultValue: false,
+          input: false,
+        },
+      },
+    },
+    // Configuration des cookies HttpOnly
+    cookies: {
+      enabled: true,
+      httpOnly: true,
+      secure: config.env === "production",
+      sameSite: "lax",
+      maxAge: 60 * 60 * 24 * 7,
+    },
+    // Support du Bearer token
+    bearerToken: {
+      enabled: true,
+    },
+    advanced: {
+      database: {
+        generateId: false,
+      },
+    },
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path === "/auth/login") {
+          console.info("before");
+        }
+      }),
+    },
+    plugins: [
+      ...(authOptions.plugins ?? []),
+      customSession(async ({ user, session }) => {
+        return {
+          user,
+          session,
+        };
+      }, authOptions),
+    ],
+  // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
+  } as any);
 }
 
 export const auth = createAuthConfig();
