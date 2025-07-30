@@ -116,113 +116,112 @@ ping traefik.dropit-app.fr
 
 ## Étapes de Déploiement
 
-### 1. Préparation du Serveur
+### 1. Préparation du Serveur ✅
 
 ```bash
 # Mise à jour du système
 sudo apt update && sudo apt upgrade -y
-
-# Installation de Docker
-curl -fsSL https://get.docker.com -o get-docker.sh
-sudo sh get-docker.sh
-sudo usermod -aG docker $USER
-
-# Installation de Docker Compose
-sudo apt install docker-compose-plugin
-
-# Redémarrage pour appliquer les changements
-sudo reboot
 ```
 
-### 2. Configuration DNS
+### 2. Installation de Dokploy ✅
 
-Configurez votre DNS pour pointer vers votre VPS :
+**Qu'est-ce que Dokploy ?**
 
-```
-Type: A
-Name: @
-Value: [IP_DE_VOTRE_VPS]
-TTL: 300
+Dokploy est une plateforme open-source de gestion de conteneurs Docker et d'applications sur serveur. C'est une alternative self-hosted à des solutions comme Vercel ou Netlify, permettant de déployer facilement des applications web avec un interface graphique.
 
-Type: A  
-Name: api
-Value: [IP_DE_VOTRE_VPS]
-TTL: 300
-```
+**Avantages pour ce projet :**
+- Interface web intuitive pour gérer les déploiements
+- Support natif de Docker et Docker Compose
+- Reverse proxy Traefik intégré avec SSL automatique
+- Monitoring des applications
+- Gestion des domaines et certificats SSL/TLS
+- Backups automatiques
 
-### 3. Clonage et Configuration
+#### Prérequis système
+
+**Configuration serveur minimale :**
+- RAM : 2 GB minimum (recommandé pour la stabilité)
+- Stockage : 30 GB minimum (espace pour OS + conteneurs + données)
+- OS : Debian Bookworm (✅ compatible)
+- Utilisateur : accès sudo (✅ déjà configuré)
+
+**Ports utilisés :**
+- Port 3000 : Dashboard Dokploy (interface d'administration)
+- Port 80/443 : Traefik (proxy intégré, géré automatiquement)
+
+#### Installation
+
+**Commande d'installation officielle :**
 
 ```bash
-# Cloner le repository
-git clone [URL_DE_VOTRE_REPO] dropit
-cd dropit
-
-# Copier et configurer l'environnement
-cp .env.example .env.production
+# Installation en une seule commande (nécessite les droits root)
+curl -sSL https://dokploy.com/install.sh | sudo sh
 ```
 
-### 4. Configuration des Variables d'Environnement
+**Ce que fait le script :**
+1. Installe Docker et Docker Compose si non présents
+2. Télécharge et configure Dokploy
+3. Démarre les services nécessaires
+4. Configure le reverse proxy Traefik
 
-Éditez le fichier `.env.production` :
+**Temps d'installation estimé :** 2-5 minutes selon la connexion
 
-```bash
-# Base
-NODE_ENV=production
-PORT=3000
+#### Accès au dashboard
 
-# Database
-DATABASE_URL=postgresql://dropit:your_secure_password@postgres:5432/dropit
-POSTGRES_USER=dropit
-POSTGRES_PASSWORD=your_secure_password
-POSTGRES_DB=dropit
+Une fois l'installation terminée :
 
-# Redis
-REDIS_URL=redis://redis:6379
+1. **Accéder à l'interface :**
+   ```
+   http://[IP_DU_VPS]:3000
+   ```
+   
+2. **Création du compte administrateur :**
+   - Premier accès : création automatique du compte admin
+   - Choisir un mot de passe fort
+   - L'interface sera accessible uniquement avec ces identifiants
 
-# Typesense
-TYPESENSE_HOST=typesense
-TYPESENSE_PORT=8108
-TYPESENSE_PROTOCOL=http
-TYPESENSE_API_KEY=your_typesense_api_key
+3. **Sécurisation (optionnel) :**
+   - Configurer un sous-domaine dédié : `dokploy.dropit-app.fr`
+   - Activer HTTPS via Traefik
+   - Restreindre l'accès par IP si nécessaire
 
-# Better Auth
-BETTER_AUTH_SECRET=your_very_long_random_secret_here
-BETTER_AUTH_TRUSTED_ORIGINS=https://dropit.example.com,https://api.dropit.example.com
+**Apprentissage :** Dokploy simplifie énormément le déploiement en fournissant une interface graphique pour gérer Docker, les domaines et les certificats SSL. C'est un bon compromis entre simplicité et contrôle pour un projet comme le nôtre.
 
-# Email (Brevo)
-BREVO_API_KEY=your_brevo_api_key
+#### Résolution des problèmes rencontrés
 
-# Frontend
-VITE_API_URL=https://api.dropit.example.com
+**Problème 1 : Limites de téléchargement Docker Hub**
+- **Erreur** : `toomanyrequests: You have reached your unauthenticated pull rate limit`
+- **Solution** : Créer un compte Docker Hub gratuit et se connecter avec `sudo docker login`
+- **Apprentissage** : Les comptes gratuits ont 200 pulls/6h vs 100 pour les anonymes
 
-# Traefik/Domain
-DOMAIN=dropit.example.com
-```
+**Problème 2 : Port 3000 inaccessible depuis internet**
+- **Cause** : Firewall Infomaniak bloque le port par défaut
+- **Solution** : Panel Infomaniak → VPS → Firewall → Ajouter règle TCP port 3000
+- **Apprentissage** : Toujours vérifier les firewalls cloud en plus du firewall système
 
-### 5. Structure des Fichiers Docker
+#### Installation réussie
 
-L'architecture inclut :
-- `Dockerfile.api` - Container NestJS
-- `Dockerfile.web` - Container frontend statique
-- `docker-compose.prod.yml` - Orchestration complète
-- `traefik/` - Configuration Traefik
+**Services installés et fonctionnels :**
+- ✅ Docker Engine + Docker Swarm
+- ✅ PostgreSQL 16 (base de données Dokploy)
+- ✅ Redis 7 (cache et sessions)
+- ✅ Traefik v3.1.2 (reverse proxy)
+- ✅ Dokploy (interface de gestion)
 
-### 6. Déploiement
+**Accès au dashboard :**
+- **URL temporaire** : http://83.228.204.62:3000
+- **Compte admin** : Créé avec succès
+- **Sous-domaine configuré** : dokploy.dropit-app.fr (DNS propagé)
 
-```bash
-# Build et démarrage des services
-docker compose -f docker-compose.prod.yml up -d
+**Note de sécurité :** Le dashboard Dokploy est actuellement accessible en HTTP. La configuration HTTPS sera ajoutée ultérieurement pour sécuriser l'interface d'administration.
 
-# Vérification des logs
-docker compose -f docker-compose.prod.yml logs -f
+### 3. Configuration du Déploiement DropIt
 
-# Initialisation de la base de données
-docker compose -f docker-compose.prod.yml exec api pnpm db:fresh
-```
+*Cette section sera complétée lors du déploiement de l'application.*
 
-## Services Déployés
+## Services à déployer
 
-### Frontend (Nginx + Static)
+### Frontend (Nginx + Static) => ou dockerfile ? c'est quoi le mieux 
 - URL: `https://dropit.example.com`
 - Port interne: 80
 - Contenu: Build statique Vite
@@ -237,100 +236,37 @@ docker compose -f docker-compose.prod.yml exec api pnpm db:fresh
 - Volumes persistants
 - Backups automatiques
 
-### Cache (Redis)
+### Cache (Redis) => pas tout de suite
 - Port interne: 6379
 - Utilisé pour les sessions
 
-### Recherche (Typesense)
+### Recherche (Typesense)  => pas tout de suite
 - Port interne: 8108
 - Index de recherche
 
-### Reverse Proxy (Traefik)
+### Reverse Proxy (Traefik) => natif sur dockploy
 - Ports: 80, 443
 - SSL automatique via Let's Encrypt
 - Dashboard: `https://traefik.dropit.example.com`
 
 ## Gestion et Maintenance
 
-### Commandes Utiles
 
-```bash
-# Voir les logs
-docker compose -f docker-compose.prod.yml logs -f [service]
-
-# Redémarrer un service
-docker compose -f docker-compose.prod.yml restart [service]
-
-# Mettre à jour l'application
-git pull
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
-
-# Backup de la base de données
-docker compose -f docker-compose.prod.yml exec postgres pg_dump -U dropit dropit > backup_$(date +%Y%m%d).sql
-
-# Monitoring des ressources
-docker stats
-```
 
 ### Surveillance
 
-- **Logs centralisés** : Tous les logs sont accessibles via Docker
-- **Health Checks** : Vérification automatique de l'état des services
-- **Alertes SSL** : Renouvellement automatique via Let's Encrypt
+Logs dockploy ?
 
 ## Sécurité
 
 ### Bonnes Pratiques Appliquées
 
 1. **Réseau isolé** : Services dans un réseau Docker privé
-2. **Secrets sécurisés** : Variables d'environnement chiffrées
+2. **Secrets sécurisés** : Variables d'environnement chiffrées avec envx ?
 3. **SSL/TLS** : HTTPS obligatoire avec redirection
 4. **Firewall** : Seuls les ports 80/443 exposés
 5. **Images minimales** : Images Docker optimisées
 6. **Non-root** : Containers exécutés avec utilisateur non-privilégié
-
-### Configuration Firewall
-
-```bash
-# UFW Configuration
-sudo ufw default deny incoming
-sudo ufw default allow outgoing
-sudo ufw allow ssh
-sudo ufw allow 80
-sudo ufw allow 443
-sudo ufw enable
-```
-
-## Troubleshooting
-
-### Problèmes Courants
-
-1. **Certificat SSL non généré**
-   ```bash
-   # Vérifier les logs Traefik
-   docker compose -f docker-compose.prod.yml logs traefik
-   ```
-
-2. **Base de données non accessible**
-   ```bash
-   # Vérifier la connectivité
-   docker compose -f docker-compose.prod.yml exec api pnpm db:migration:list
-   ```
-
-3. **API non disponible**
-   ```bash
-   # Vérifier les health checks
-   curl https://api.dropit.example.com/api/health
-   ```
-
-### Contacts et Support
-
-- **Logs d'erreur** : Consultez `docker compose logs`
-- **Monitoring** : Dashboard Traefik pour l'état des services
-- **Backups** : Scripts automatiques configurés
-
----
 
 ## Next Steps
 
