@@ -7,9 +7,8 @@ Ce guide documente mon expérience complète de déploiement de l'application Dr
 **Stack de déploiement :**
 - VPS : Infomaniak (Debian Bookworm)
 - Domaine : dropit-app.fr (Infomaniak)
-- Containers : Docker + Docker Compose
+- Containers : Docker + Docker Swarm (Dokploy auto)
 - Reverse Proxy : Traefik avec SSL automatique
-- Hébergement : Conteneurs isolés sur réseau privé
 
 ## Architecture de Déploiement
 
@@ -56,7 +55,7 @@ Routes Traefik:
 ### Sur le VPS
 - Debian bookworm 64bits
 - Profil utilisateur non root mais avec sudo
-- Docker et Docker Compose installés
+- Dokploy installé (installe automatiquement docker, docker swarm, redis, postgres, etc)
 
 ### Nom de domaine et DNS
 
@@ -112,7 +111,7 @@ ping api.dropit-app.fr
 ping traefik.dropit-app.fr
 ```
 
-**Apprentissage :** Le nom `hostname-infomaniak.infomaniak.ch` dans la réponse ping est normal - c'est le reverse DNS du serveur Infomaniak. L'IP correspond bien au VPS.
+Le nom `hostname-infomaniak.infomaniak.ch` dans la réponse ping est normal - c'est le reverse DNS du serveur Infomaniak. L'IP correspond bien au VPS.
 
 ## Étapes de Déploiement
 
@@ -146,7 +145,7 @@ Dokploy est une plateforme open-source de gestion de conteneurs Docker et d'appl
 - Utilisateur : accès sudo (✅ déjà configuré)
 
 **Ports utilisés :**
-- Port 3000 : Dashboard Dokploy (interface d'administration)
+- Port 3000 : Dashboard Dokploy (interface d'administration) 
 - Port 80/443 : Traefik (proxy intégré, géré automatiquement)
 
 #### Installation
@@ -185,7 +184,7 @@ Une fois l'installation terminée :
    - Activer HTTPS via Traefik
    - Restreindre l'accès par IP si nécessaire
 
-**Apprentissage :** Dokploy simplifie énormément le déploiement en fournissant une interface graphique pour gérer Docker, les domaines et les certificats SSL. C'est un bon compromis entre simplicité et contrôle pour un projet comme le nôtre.
+Dokploy simplifie énormément le déploiement en fournissant une interface graphique pour gérer Docker, les domaines et les certificats SSL. C'est un bon compromis entre simplicité et contrôle pour un projet comme le nôtre.
 
 #### Résolution des problèmes rencontrés
 
@@ -283,14 +282,6 @@ apps/api/
 ├── Dockerfile              # Configuration Docker multi-stage
 ├── .dockerignore           # Exclusions pour optimiser le contexte
 └── [code existant]
-
-scripts/
-├── init-db.sql            # Initialisation PostgreSQL
-└── deploy.sh              # Script de déploiement automatisé
-
-./
-├── docker-compose.prod.yml   # Orchestration production
-└── .env.production.example   # Variables d'environnement exemple
 ```
 
 ### 🐘 Base de Données PostgreSQL
@@ -324,75 +315,59 @@ volumes:
       device: ./data/postgres  # Stockage local pour Dokploy
 ```
 
-### 🔧 Orchestration Docker Compose
+### 🎯 Approche Services Séparés (Dokploy)
 
-#### Architecture réseau
-
-**Réseau isolé :** `dropit-network`
-```yaml
-networks:
-  dropit-network:
-    driver: bridge
-    ipam:
-      config:
-        - subnet: 172.20.0.0/16
-```
+1. **PostgreSQL** : Service natif Dokploy 
+2. **API NestJS** : Service Docker 
+3. **Frontend** : Site statique
 
 **Avantages :**
-- **Isolation** : Services non accessibles depuis l'extérieur
-- **Communication interne** : Résolution DNS automatique (`database`, `api`)
-- **Sécurité** : Seuls les ports nécessaires exposés
+- **Simplicité** : Chaque service géré indépendamment
+- **Stabilité** : Pas de rate limits, services Dokploy optimisés
+- **Debug facile** : Logs et monitoring par service
+- **Scaling** : Possibilité de scaler individuellement
 
-#### Health checks et dépendances
+### 🛠️ Déploiement sur Dokploy
 
-**PostgreSQL Health Check :**
-```yaml
-healthcheck:
-  test: ["CMD-SHELL", "pg_isready -U dropit -d dropit"]
-  interval: 10s
-  timeout: 5s
-  retries: 5
-  start_period: 30s
-```
+**Étapes de déploiement :**
+1. **PostgreSQL** : Création du service base de données
+2. **API** : Service Docker simple avec Dockerfile
+3. **Frontend** : Site statique 
+4. **Domaines** : Configuration SSL automatique
 
-**API avec dépendance :**
-```yaml
-depends_on:
-  database:
-    condition: service_healthy  # Attend que PostgreSQL soit prêt
-```
+## TODO : Reprise du déploiement
 
-#### Labels Traefik pour Dokploy
+**Prochaines étapes à réaliser :**
 
-```yaml
-labels:
-  - "traefik.enable=true"
-  - "traefik.http.routers.dropit-api.rule=Host(`api.dropit-app.fr`)"
-  - "traefik.http.routers.dropit-api.tls=true"
-  - "traefik.http.routers.dropit-api.tls.certresolver=letsencrypt"
-```
+### 1. Créer service PostgreSQL natif sur Dokploy ✅ PRIORITÉ HAUTE
+- Utiliser le service PostgreSQL intégré de Dokploy
+- Configurer : DB_NAME=dropit, DB_USER=dropit, DB_PASSWORD=[généré]
+- Noter les infos de connexion pour l'API
 
-**Intégration Dokploy :**
-- **SSL automatique** : Let's Encrypt via Traefik
-- **Routing** : `api.dropit-app.fr` → Container API:3000
-- **Load balancing** : Prise en charge native
+### 2. Créer service API simple (sans compose) sur Dokploy ✅ PRIORITÉ HAUTE  
+- Type : Docker
+- Repository : github.com/Netsbump/dropit.git
+- Branch : main (ou develop selon workflow choisi)
+- Dockerfile : apps/api/Dockerfile
+- Variables d'environnement : DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, etc.
+- Domain : api.dropit-app.fr
 
-### 🚀 Script de déploiement automatisé
+### 3. Créer le projet Frontend statique sur Dokploy ✅ PRIORITÉ MOYENNE
+- Type : Static Site
+- Build du frontend en local : cd apps/web && pnpm build
+- Upload du dossier dist/
+- Domain : dropit-app.fr
 
-#### Fonctionnalités du script `deploy.sh`
+### 4. Configurer les domaines et SSL ✅ PRIORITÉ MOYENNE
+- Vérifier DNS : dropit-app.fr, api.dropit-app.fr
+- Activer SSL automatique Let's Encrypt
+- Tester les connexions HTTPS
 
-```bash
-./scripts/deploy.sh deploy    # Déploiement complet
-./scripts/deploy.sh build     # Build des images seulement
-./scripts/deploy.sh migrate   # Migrations DB seulement
-./scripts/deploy.sh logs api  # Logs en temps réel
-```
-
-**Vérifications automatiques :**
-1. **Prérequis** : Docker, Docker Compose, fichier `.env.production`
-2. **Health checks** : Attente que PostgreSQL et API soient opérationnels
-3. **Timeouts** : Échec si services non prêts en 60s
-4. **Migrations** : Application automatique des migrations DB
+### 5. Tests et vérifications finales ✅ PRIORITÉ BASSE
+- API health check : https://api.dropit-app.fr/api/health
+- Frontend accessible : https://dropit-app.fr  
+- Base de données connectée
+- Migrations appliquées
 
 ### 📋 Variables d'environnement
 
@@ -416,49 +391,10 @@ labels:
 - **Approche** : Simplicité et performance optimales
 - **URL cible** : `https://dropit-app.fr`
 
-### 🌐 Déploiement Frontend React/Vite
-
-#### Décision architecturale : Build statique
-
-**Problématique :** Faut-il dockeriser le frontend ou utiliser du contenu statique ?
-
-**Options évaluées :**
-
-1. **Dockerfile + Nginx personnalisé**
-   - ✅ Cohérence avec l'API dockerisée
-   - ✅ Contrôle total de la configuration Nginx
-   - ✅ Variables d'environnement au runtime
-   - ❌ Plus complexe à maintenir
-   - ❌ Container qui consomme des ressources H24
-   - ❌ Overkill pour du contenu statique
-
-2. **Build statique + Nginx automatique Dokploy** ⭐ **CHOIX RETENU**
-   - ✅ Plus simple et rapide à déployer
-   - ✅ Moins de ressources serveur consommées
-   - ✅ Interface Dokploy dédiée aux sites statiques
-   - ✅ Performance optimale pour le contenu statique
-   - ✅ Cache CDN plus facile à implémenter
-   - ❌ Variables d'environnement limitées au build time
-
 #### Processus de déploiement
 
-**1. Build local avec variables d'environnement**
 
-```bash
-# Configuration des variables pour la production
-cd apps/web
-echo "VITE_API_URL=https://api.dropit-app.fr" > .env.production
-echo "VITE_APP_URL=https://dropit-app.fr" >> .env.production
-
-# Build optimisé pour la production
-pnpm build
-
-# Vérification du dossier de sortie
-ls -la dist/
-# Résultat: index.html, assets/, favicon.ico, etc.
-```
-
-**2. Configuration Dokploy**
+**1. Configuration Dokploy**
 
 Via l'interface web Dokploy :
 
@@ -471,7 +407,7 @@ Via l'interface web Dokploy :
    SSL: Activé (Let's Encrypt automatique)
    ```
 
-**3. Nginx automatique**
+**2. Nginx automatique**
 
 Dokploy configure automatiquement :
 - **Serveur Nginx** pour servir les fichiers statiques
@@ -543,119 +479,6 @@ Routes Traefik finales:
 • dokploy.dropit-app.fr   → Dashboard Dokploy
 ```
 
-#### Script de déploiement frontend
-
-**Création d'un script dédié :**
-
-```bash
-# scripts/deploy-frontend.sh
-#!/bin/bash
-
-set -e
-
-log() {
-    echo -e "\033[0;34m[FRONTEND]\033[0m $1"
-}
-
-success() {
-    echo -e "\033[0;32m[SUCCESS]\033[0m $1"
-}
-
-error() {
-    echo -e "\033[0;31m[ERROR]\033[0m $1"
-}
-
-# Build du frontend
-build_frontend() {
-    log "Construction du frontend React/Vite..."
-    
-    cd apps/web
-    
-    # Vérification des variables d'environnement
-    if [ ! -f ".env.production" ]; then
-        error "Fichier .env.production manquant dans apps/web/"
-        echo "Créez le fichier avec les variables nécessaires :"
-        echo "VITE_API_URL=https://api.dropit-app.fr"
-        echo "VITE_APP_URL=https://dropit-app.fr"
-        exit 1
-    fi
-    
-    # Installation des dépendances
-    pnpm install
-    
-    # Build de production
-    pnpm run build --mode production
-    
-    # Vérification du build
-    if [ ! -d "dist" ]; then
-        error "Dossier dist/ non généré"
-        exit 1
-    fi
-    
-    success "Frontend buildé avec succès dans apps/web/dist/"
-    
-    cd ../..
-}
-
-# Affichage des instructions Dokploy
-show_dokploy_instructions() {
-    log "Instructions pour le déploiement sur Dokploy :"
-    echo ""
-    echo "1. Accéder au dashboard Dokploy : https://dokploy.dropit-app.fr"
-    echo "2. Créer un nouveau projet : 'DropIt Frontend'"
-    echo "3. Type de service : 'Static Site'"
-    echo "4. Configuration :"
-    echo "   - Source : Upload du dossier apps/web/dist/"
-    echo "   - Domain : dropit-app.fr"
-    echo "   - SSL : Activé (Let's Encrypt)"
-    echo "5. Déployer"
-    echo ""
-    success "Le frontend sera accessible sur https://dropit-app.fr"
-}
-
-# Fonction principale
-main() {
-    case "${1:-build}" in
-        "build")
-            build_frontend
-            show_dokploy_instructions
-            ;;
-        "help"|"--help")
-            echo "Usage: $0 [build]"
-            echo ""
-            echo "Commandes disponibles:"
-            echo "  build   - Build le frontend et affiche les instructions Dokploy"
-            echo "  help    - Affiche cette aide"
-            ;;
-        *)
-            echo "Commande inconnue: $1"
-            echo "Utilisez '$0 help' pour voir les options disponibles"
-            exit 1
-            ;;
-    esac
-}
-
-main "$@"
-```
-
-#### Bonnes pratiques appliquées
-
-**1. Performance**
-- **Chunking automatique** : Vite sépare le code en chunks optimaux
-- **Tree shaking** : Code mort éliminé automatiquement
-- **Compression** : Gzip/Brotli activé via Nginx Dokploy
-- **Cache headers** : Assets avec cache longue durée
-
-**2. Sécurité**
-- **Variables d'environnement** : Pas de secrets exposés côté client
-- **HTTPS obligatoire** : Redirection automatique
-- **Headers sécurisés** : CSP, HSTS configurés par Dokploy
-
-**3. Maintenance**
-- **Build reproductible** : Versions figées dans package.json
-- **Hot reload local** : `pnpm dev` pour le développement
-- **Déploiement simple** : Upload de fichiers via interface
-
 #### Cache Redis (futur)
 - **Usage** : Sessions utilisateur, cache queries
 - **Image** : `redis:7-alpine`
@@ -668,46 +491,22 @@ main "$@"
 
 ## Gestion et Maintenance
 
-
+Panel Admin Dokploy
 
 ### Surveillance
 
-Logs dockploy ?
+Logs dockploy 
 
 ## Sécurité
 
 ### Bonnes Pratiques Appliquées
 
 1. **Réseau isolé** : Services dans un réseau Docker privé
-2. **Secrets sécurisés** : Variables d'environnement chiffrées avec envx ?
+2. **Secrets sécurisés** : Variables d'environnement
 3. **SSL/TLS** : HTTPS obligatoire avec redirection
 4. **Firewall** : Seuls les ports 80/443 exposés
 5. **Images minimales** : Images Docker optimisées
 6. **Non-root** : Containers exécutés avec utilisateur non-privilégié
-
-## Récapitulatif des Choix Techniques
-
-### Frontend : Pourquoi le build statique ?
-
-**Question initiale :** "Faut-il dockeriser le frontend ou utiliser du statique ?"
-
-**Analyse comparative :**
-
-| Critère | Dockerfile + Nginx | Build statique + Dokploy | Gagnant |
-|---------|-------------------|--------------------------|---------|
-| **Simplicité** | Configuration complexe | Upload de fichiers | 🟢 Statique |
-| **Performance** | Container + overhead | Nginx optimisé | 🟢 Statique |
-| **Ressources** | RAM/CPU utilisées H24 | Aucune ressource runtime | 🟢 Statique |
-| **Maintenance** | Dockerfile + nginx.conf | Aucune config | 🟢 Statique |
-| **Cohérence** | Tout dockerisé | Hybride | 🔴 Docker |
-| **Contrôle** | Config Nginx custom | Config automatique | 🔴 Docker |
-| **Variables env** | Runtime possible | Build-time uniquement | 🔴 Docker |
-
-**Conclusion :** Pour une application React/Vite, le build statique est optimal car :
-- Le frontend n'a pas besoin de logique serveur
-- Les variables d'environnement sont suffisantes au build-time
-- La simplicité prime sur la cohérence architecturale
-- Dokploy excelle dans la gestion de sites statiques
 
 ### Bénéfices des fichiers Docker créés
 
@@ -715,18 +514,6 @@ Logs dockploy ?
 
 1. **`.dockerignore`** : Optimise tous les builds (API, outils, CI/CD)
 2. **`init-db.sql`** : Configure PostgreSQL automatiquement
-3. **`deploy.sh`** : Tests locaux et debugging
-4. **`docker-compose.prod.yml`** : Orchestration complète de l'infrastructure backend
-
-### Architecture finale hybride
-
-**Backend containerisé + Frontend statique = Approche pragmatique**
-
-Cette architecture tire parti du meilleur des deux mondes :
-- **Complexité maîtrisée** : Backend dans Docker, frontend simple
-- **Performance optimale** : Statique pour le frontend, isolation pour l'API
-- **Maintenance réduite** : Moins de configurations à maintenir
-- **Évolutivité** : Facile d'ajouter Redis/Typesense en containers
 
 ## Next Steps
 
@@ -735,20 +522,3 @@ Après le déploiement initial :
 2. ✅ Mettre en place les backups automatiques
 3. ✅ Tester le processus de récupération
 4. ✅ Documenter les procédures de maintenance
-
-### Roadmap technique
-
-**Phase 1 - Déploiement initial (en cours)**
-- ✅ API NestJS dockerisée
-- ✅ PostgreSQL avec optimisations
-- 🔄 Frontend statique sur Dokploy
-
-**Phase 2 - Optimisations (à venir)**
-- Cache Redis pour les sessions
-- Typesense pour la recherche
-- Monitoring avec Prometheus/Grafana
-
-**Phase 3 - Automation (futur)**
-- CI/CD avec GitHub Actions
-- Tests automatisés sur déploiement
-- Backups automatiques vers S3
