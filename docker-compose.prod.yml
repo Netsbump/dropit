@@ -1,0 +1,130 @@
+# =============================================================================
+# DOCKER-COMPOSE PRODUCTION - DROPIT
+# =============================================================================
+# Configuration pour déploiement sur Dokploy
+# Services: API NestJS + PostgreSQL
+
+version: '3.8'
+
+services:
+  # ---------------------------------------------------------------------------
+  # BASE DE DONNÉES POSTGRESQL
+  # ---------------------------------------------------------------------------
+  database:
+    image: postgres:16-alpine
+    container_name: dropit-db
+    restart: unless-stopped
+    
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME:-dropit}
+      POSTGRES_USER: ${DATABASE_USER:-dropit}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    
+    volumes:
+      # Données persistantes
+      - postgres_data:/var/lib/postgresql/data
+      # Scripts d'initialisation (optionnel)
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    
+    ports:
+      - "5432:5432"
+    
+    networks:
+      - dropit-network
+    
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-dropit} -d ${DATABASE_NAME:-dropit}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+  # ---------------------------------------------------------------------------
+  # API NESTJS
+  # ---------------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+      target: runner
+    
+    container_name: dropit-api
+    restart: unless-stopped
+    
+    environment:
+      # Configuration de base
+      NODE_ENV: production
+      PORT: 3000
+      
+      # Base de données
+      DATABASE_URL: postgresql://${DATABASE_USER:-dropit}:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME:-dropit}
+      DATABASE_HOST: database
+      DATABASE_PORT: 5432
+      DATABASE_NAME: ${DATABASE_NAME:-dropit}
+      DATABASE_USER: ${DATABASE_USER:-dropit}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      
+      # Better Auth
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      BETTER_AUTH_URL: ${BETTER_AUTH_URL:-https://api.dropit-app.fr}
+      BETTER_AUTH_TRUSTED_ORIGINS: ${BETTER_AUTH_TRUSTED_ORIGINS:-https://dropit-app.fr,https://api.dropit-app.fr}
+      
+      # Email (Brevo)
+      BREVO_API_KEY: ${BREVO_API_KEY}
+      BREVO_SENDER_EMAIL: ${BREVO_SENDER_EMAIL:-admin@dropit-app.fr}
+      BREVO_SENDER_NAME: ${BREVO_SENDER_NAME:-DropIt}
+      
+      # Application
+      FRONTEND_URL: ${FRONTEND_URL:-https://dropit-app.fr}
+      API_URL: ${API_URL:-https://api.dropit-app.fr}
+    
+    ports:
+      - "3000:3000"
+    
+    networks:
+      - dropit-network
+    
+    dependsOn:
+      database:
+        condition: service_healthy
+    
+    volumes:
+      # Logs (optionnel)
+      - ./logs/api:/app/logs
+    
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    labels:
+      # Traefik (pour Dokploy)
+      - "traefik.enable=true"
+      - "traefik.http.routers.dropit-api.rule=Host(`api.dropit-app.fr`)"
+      - "traefik.http.routers.dropit-api.tls=true"
+      - "traefik.http.routers.dropit-api.tls.certresolver=letsencrypt"
+      - "traefik.http.services.dropit-api.loadbalancer.server.port=3000"
+
+# =============================================================================
+# VOLUMES PERSISTANTS
+# =============================================================================
+volumes:
+  postgres_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./data/postgres
+
+# =============================================================================
+# RÉSEAUX
+# =============================================================================
+networks:
+  dropit-network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

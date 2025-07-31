@@ -1,0 +1,45 @@
+# =============================================================================
+# .DOCKERIGNORE - API NESTJS DROPIT
+# =============================================================================
+# Exclusion des fichiers inutiles pour optimiser le contexte Docker
+
+# Dépendances (seront installées dans le container)
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Code source TypeScript (seul le dist/ est nécessaire en prod)
+src
+*.ts
+*.spec.ts
+
+# Tests
+test
+coverage
+*.test.js
+
+# Configuration de développement
+.env.local
+.env.development
+.env.test
+jest.setup.js
+tsconfig.json
+tsconfig.build.json
+nest-cli.json
+
+# Fichiers temporaires et caches
+temp
+*.log
+.DS_Store
+.vscode
+.idea
+
+# Git
+.git
+.gitignore
+README.md
+
+# Autres
+Dockerfile*
+docker-compose*
