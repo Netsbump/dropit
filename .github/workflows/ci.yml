@@ -105,10 +105,10 @@ jobs:
         env:
           API_PORT: 3001
           NODE_ENV: test
-          DATABASE_USER: ${{ secrets.TEST_POSTGRES_USER }}
-          DATABASE_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
-          DATABASE_NAME: dropit_test
-          DATABASE_HOST: localhost
-          DATABASE_PORT: 5433
+          DB_USER: ${{ secrets.TEST_POSTGRES_USER }}
+          DB_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+          DB_NAME: dropit_test
+          DB_HOST: localhost
+          DB_PORT: 5433
           BETTER_AUTH_SECRET: test-secret-for-ci
           TRUSTED_ORIGINS: "http://localhost:3000"

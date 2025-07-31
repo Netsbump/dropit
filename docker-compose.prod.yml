@@ -16,9 +16,9 @@ services:
     restart: unless-stopped
     
     environment:
-      POSTGRES_DB: ${DATABASE_NAME:-dropit}
-      POSTGRES_USER: ${DATABASE_USER:-dropit}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DB_NAME:-dropit}
+      POSTGRES_USER: ${DB_USER:-dropit}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
       PGDATA: /var/lib/postgresql/data/pgdata
     
     volumes:
@@ -34,7 +34,7 @@ services:
       - dropit-network
     
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-dropit} -d ${DATABASE_NAME:-dropit}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-dropit} -d ${DB_NAME:-dropit}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -58,12 +58,11 @@ services:
       PORT: 3000
       
       # Base de données
-      DATABASE_URL: postgresql://${DATABASE_USER:-dropit}:${DATABASE_PASSWORD}@database:5432/${DATABASE_NAME:-dropit}
-      DATABASE_HOST: database
-      DATABASE_PORT: 5432
-      DATABASE_NAME: ${DATABASE_NAME:-dropit}
-      DATABASE_USER: ${DATABASE_USER:-dropit}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DB_HOST: database
+      DB_PORT: 5432
+      DB_NAME: ${DB_NAME:-dropit}
+      DB_USER: ${DB_USER:-dropit}
+      DB_PASSWORD: ${DB_PASSWORD}
       
       # Better Auth
       BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
@@ -85,7 +84,7 @@ services:
     networks:
       - dropit-network
     
-    dependsOn:
+    depends_on:
       database:
         condition: service_healthy
     

@@ -2,10 +2,10 @@ services:
   test-db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_NAME: ${DATABASE_NAME_TEST}
-      POSTGRES_USER: ${DATABASE_USER_TEST}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD_TEST}
+      POSTGRES_NAME: ${DB_NAME_TEST}
+      POSTGRES_USER: ${DB_USER_TEST}
+      POSTGRES_PASSWORD: ${DB_PASSWORD_TEST}
     ports:
-      - "${DATABASE_PORT_TEST}:5432"
+      - "${DB_PORT_TEST}:5432"
     tmpfs:
       - /var/lib/postgresql/data
