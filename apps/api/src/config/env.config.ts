@@ -33,11 +33,11 @@ export const configValidationSchema = z.object({
   APP_URL: z.string().default('http://localhost:5173'),
 
   // Database
-  DATABASE_PASSWORD: z.string(),
-  DATABASE_USER: z.string(),
-  DATABASE_NAME: z.string(),
-  DATABASE_HOST: z.string(),
-  DATABASE_PORT: z.coerce.number(),
+  DB_PASSWORD: z.string(),
+  DB_USER: z.string(),
+  DB_NAME: z.string(),
+  DB_HOST: z.string(),
+  DB_PORT: z.coerce.number(),
 
   // BetterAuth
   BETTER_AUTH_SECRET: z.string(),
@@ -72,12 +72,12 @@ export const config = {
     trustedOrigins: configParsed.data.TRUSTED_ORIGINS,
   },
   database: {
-    host: configParsed.data.DATABASE_HOST,
-    port: configParsed.data.DATABASE_PORT,
-    user: configParsed.data.DATABASE_USER,
-    password: configParsed.data.DATABASE_PASSWORD,
-    name: configParsed.data.DATABASE_NAME,
-    connectionStringUrl: `postgresql://${configParsed.data.DATABASE_USER}:${configParsed.data.DATABASE_PASSWORD}@${configParsed.data.DATABASE_HOST}:${configParsed.data.DATABASE_PORT}/${configParsed.data.DATABASE_NAME}`,
+    host: configParsed.data.DB_HOST,
+    port: configParsed.data.DB_PORT,
+    user: configParsed.data.DB_USER,
+    password: configParsed.data.DB_PASSWORD,
+    name: configParsed.data.DB_NAME,
+    connectionStringUrl: `postgresql://${configParsed.data.DB_USER}:${configParsed.data.DB_PASSWORD}@${configParsed.data.DB_HOST}:${configParsed.data.DB_PORT}/${configParsed.data.DB_NAME}`,
   },
   email: {
     brevoApiKey: configParsed.data.BREVO_API_KEY,

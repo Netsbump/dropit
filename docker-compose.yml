@@ -2,11 +2,11 @@ services:
   db:
     image: postgres:15-alpine
     environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_NAME: ${DATABASE_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_NAME: ${DB_NAME}
     ports:
-      - "${DATABASE_PORT:-5432}:5432"
+      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
