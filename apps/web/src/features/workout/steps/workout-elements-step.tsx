@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/shared/components/ui/card';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
 import {
   Tabs,
@@ -220,7 +220,7 @@ export function WorkoutElementsStep({
                           <div>
                             <h5 className="font-medium text-sm">{exercise.name}</h5>
                             <p className="text-xs text-muted-foreground">
-                              {exercise.muscleGroup}
+                              {exercise.exerciseCategory.name}
                             </p>
                           </div>
                           <Button
