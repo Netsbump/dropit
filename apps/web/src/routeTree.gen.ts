@@ -25,6 +25,7 @@ import { Route as homePlanningImport } from './routes/__home.planning'
 import { Route as homeDashboardImport } from './routes/__home.dashboard'
 import { Route as homeAthletesImport } from './routes/__home.athletes'
 import { Route as homeAboutImport } from './routes/__home.about'
+import { Route as homeWorkoutsCreateImport } from './routes/__home.workouts.create'
 import { Route as homeWorkoutsWorkoutIdImport } from './routes/__home.workouts.$workoutId'
 import { Route as homeProgramsWorkoutsImport } from './routes/__home.programs.workouts'
 import { Route as homeProgramsExercisesImport } from './routes/__home.programs.exercises'
@@ -140,6 +141,12 @@ const homeAthletesRoute = homeAthletesImport.update({
 const homeAboutRoute = homeAboutImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => homeRoute,
+} as any)
+
+const homeWorkoutsCreateRoute = homeWorkoutsCreateImport.update({
+  id: '/workouts/create',
+  path: '/workouts/create',
   getParentRoute: () => homeRoute,
 } as any)
 
@@ -338,6 +345,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof homeWorkoutsWorkoutIdImport
       parentRoute: typeof homeImport
     }
+    '/__home/workouts/create': {
+      id: '/__home/workouts/create'
+      path: '/workouts/create'
+      fullPath: '/workouts/create'
+      preLoaderRoute: typeof homeWorkoutsCreateImport
+      parentRoute: typeof homeImport
+    }
   }
 }
 
@@ -396,6 +410,7 @@ interface homeRouteChildren {
   homePlanningRoute: typeof homePlanningRoute
   homeProgramsRoute: typeof homeProgramsRouteWithChildren
   homeWorkoutsWorkoutIdRoute: typeof homeWorkoutsWorkoutIdRoute
+  homeWorkoutsCreateRoute: typeof homeWorkoutsCreateRoute
 }
 
 const homeRouteChildren: homeRouteChildren = {
@@ -405,6 +420,7 @@ const homeRouteChildren: homeRouteChildren = {
   homePlanningRoute: homePlanningRoute,
   homeProgramsRoute: homeProgramsRouteWithChildren,
   homeWorkoutsWorkoutIdRoute: homeWorkoutsWorkoutIdRoute,
+  homeWorkoutsCreateRoute: homeWorkoutsCreateRoute,
 }
 
 const homeRouteWithChildren = homeRoute._addFileChildren(homeRouteChildren)
@@ -431,6 +447,7 @@ export interface FileRoutesByFullPath {
   '/programs/exercises': typeof homeProgramsExercisesRoute
   '/programs/workouts': typeof homeProgramsWorkoutsRoute
   '/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
+  '/workouts/create': typeof homeWorkoutsCreateRoute
 }
 
 export interface FileRoutesByTo {
@@ -455,6 +472,7 @@ export interface FileRoutesByTo {
   '/programs/exercises': typeof homeProgramsExercisesRoute
   '/programs/workouts': typeof homeProgramsWorkoutsRoute
   '/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
+  '/workouts/create': typeof homeWorkoutsCreateRoute
 }
 
 export interface FileRoutesById {
@@ -481,6 +499,7 @@ export interface FileRoutesById {
   '/__home/programs/exercises': typeof homeProgramsExercisesRoute
   '/__home/programs/workouts': typeof homeProgramsWorkoutsRoute
   '/__home/workouts/$workoutId': typeof homeWorkoutsWorkoutIdRoute
+  '/__home/workouts/create': typeof homeWorkoutsCreateRoute
 }
 
 export interface FileRouteTypes {
@@ -507,6 +526,7 @@ export interface FileRouteTypes {
     | '/programs/exercises'
     | '/programs/workouts'
     | '/workouts/$workoutId'
+    | '/workouts/create'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -530,6 +550,7 @@ export interface FileRouteTypes {
     | '/programs/exercises'
     | '/programs/workouts'
     | '/workouts/$workoutId'
+    | '/workouts/create'
   id:
     | '__root__'
     | '/'
@@ -554,6 +575,7 @@ export interface FileRouteTypes {
     | '/__home/programs/exercises'
     | '/__home/programs/workouts'
     | '/__home/workouts/$workoutId'
+    | '/__home/workouts/create'
   fileRoutesById: FileRoutesById
 }
 
@@ -617,7 +639,8 @@ export const routeTree = rootRoute
         "/__home/dashboard",
         "/__home/planning",
         "/__home/programs",
-        "/__home/workouts/$workoutId"
+        "/__home/workouts/$workoutId",
+        "/__home/workouts/create"
       ]
     },
     "/create-organization": {
@@ -698,6 +721,10 @@ export const routeTree = rootRoute
     },
     "/__home/workouts/$workoutId": {
       "filePath": "__home.workouts.$workoutId.tsx",
+      "parent": "/__home"
+    },
+    "/__home/workouts/create": {
+      "filePath": "__home.workouts.create.tsx",
       "parent": "/__home"
     }
   }
