@@ -1,100 +1,76 @@
 # =============================================================================
-# DOCKERFILE - API NESTJS DROPIT
+# DOCKERFILE - API NESTJS DROPIT (Version optimisée)
 # =============================================================================
-# Image multi-stage pour optimiser la taille finale et la sécurité
-# Base: Node.js 20 Alpine (légère et sécurisée)
+# Inspiré des meilleures pratiques pour monorepos
 
 # -----------------------------------------------------------------------------
-# STAGE 1: Dependencies & Build
+# STAGE 1: Base avec pnpm
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS builder
-
-# Métadonnées
-LABEL maintainer="DropIt Team"
-LABEL description="DropIt API - NestJS Application"
-
-# Installation des outils système nécessaires
-RUN apk add --no-cache \
-    python3 \
-    make \
-    g++ \
-    && rm -rf /var/cache/apk/*
-
-# Configuration de pnpm
+FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@latest --activate
-
-# Définition du répertoire de travail
+# Version fixe pour éviter les conflits de lockfile
+RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 WORKDIR /app
 
-# Copie des fichiers de configuration du monorepo
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+# -----------------------------------------------------------------------------
+# STAGE 2: Builder - Installation et build
+# -----------------------------------------------------------------------------
+FROM base AS builder
 
-# Copie des packages partagés (nécessaires pour la construction)
-COPY packages/ ./packages/
+# Installation des outils système nécessaires
+RUN apk add --no-cache python3 make g++
 
-# Copie du package.json de l'API
-COPY apps/api/package.json ./apps/api/
+# pnpm fetch nécessite seulement le lockfile
+COPY pnpm-lock.yaml pnpm-workspace.yaml ./
+RUN pnpm fetch --ignore-scripts
 
-# Installation des dépendances (avec cache pnpm optimisé)
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile --prod=false
+# Copier le code source après fetch
+COPY . .
+RUN pnpm install -r --offline --prefer-offline --ignore-scripts
 
-# Copie du code source de l'API
-COPY apps/api/ ./apps/api/
-
-# Build des packages partagés d'abord
-RUN pnpm --filter "@dropit/contract" build
+# Build des packages dans le bon ordre (pnpm gère les dépendances)
 RUN pnpm --filter "@dropit/schemas" build
+RUN pnpm --filter "@dropit/contract" build  
 RUN pnpm --filter "@dropit/permissions" build
 
 # Build de l'API
 RUN pnpm --filter api build
 
+# Créer un dossier de déploiement avec seulement les deps nécessaires
+RUN pnpm deploy --prod --filter="./apps/api" /app/deploy
+
+# Copier manuellement le dossier dist car pnpm deploy ne l'inclut pas toujours
+RUN cp -r /app/apps/api/dist /app/deploy/dist
+
 # -----------------------------------------------------------------------------
-# STAGE 2: Production Runtime
+# STAGE 3: Production - Image finale ultra-légère
 # -----------------------------------------------------------------------------
-FROM node:20-alpine AS runner
+FROM base AS runner
 
-# Installation des dépendances système runtime uniquement
-RUN apk add --no-cache \
-    dumb-init \
-    && rm -rf /var/cache/apk/*
+# Installation de dumb-init pour gestion des signaux
+RUN apk add --no-cache dumb-init
 
-# Configuration de pnpm
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@latest --activate
+# Création utilisateur non-root
+RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
 
-# Création d'un utilisateur non-root pour la sécurité
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001
-
-# Définition du répertoire de travail
 WORKDIR /app
 
-# Copie des fichiers de configuration
-COPY --from=builder /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml ./
+# Copier les fichiers de production depuis le stage deploy
+COPY --from=builder /app/deploy/node_modules ./node_modules
+COPY --from=builder /app/deploy/dist ./dist
+COPY --from=builder /app/deploy/package.json ./package.json
 
-# Copie des packages partagés buildés
-COPY --from=builder /app/packages/ ./packages/
-
-# Copie du package.json de l'API
-COPY --from=builder /app/apps/api/package.json ./apps/api/
-
-# Installation des dépendances de production uniquement
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile --prod=true
-
-# Copie de l'application buildée
-COPY --from=builder /app/apps/api/dist/ ./apps/api/dist/
+# Copier les packages buildés (nécessaires pour les imports workspace)
+COPY --from=builder /app/packages/schemas/dist ./node_modules/@dropit/schemas/dist
+COPY --from=builder /app/packages/contract/dist ./node_modules/@dropit/contract/dist  
+COPY --from=builder /app/packages/permissions/dist ./node_modules/@dropit/permissions/dist
 
 # Configuration des permissions
 RUN chown -R nestjs:nodejs /app
 USER nestjs
 
-# Configuration des variables d'environnement
+# Variables d'environnement
 ENV NODE_ENV=production
 ENV PORT=3000
 
@@ -105,8 +81,8 @@ EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
     CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
 
-# Point d'entrée avec dumb-init pour une gestion propre des signaux
+# Point d'entrée avec dumb-init
 ENTRYPOINT ["dumb-init", "--"]
 
 # Commande de démarrage
-CMD ["node", "apps/api/dist/main.js"]
+CMD ["node", "dist/main.js"]
