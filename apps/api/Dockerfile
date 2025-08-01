@@ -23,7 +23,7 @@ RUN apk add --no-cache \
 # Configuration de pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Définition du répertoire de travail
 WORKDIR /app
@@ -65,7 +65,7 @@ RUN apk add --no-cache \
 # Configuration de pnpm
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@latest --activate
 
 # Création d'un utilisateur non-root pour la sécurité
 RUN addgroup -g 1001 -S nodejs && \
