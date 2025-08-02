@@ -35,7 +35,7 @@ const steps = [
   {
     id: 'planning',
     name: 'Planification',
-    description: 'Programmer et attribuer',
+    description: 'Définir les dates et attribuer',
   },
 ];
 

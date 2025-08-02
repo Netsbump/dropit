@@ -161,18 +161,37 @@ export function WorkoutElementsStep({
                       items={fields.map((field) => field.id)}
                       strategy={verticalListSortingStrategy}
                     >
-                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        {fields.map((field, index) => (
-                          <SortableWorkoutElement
-                            key={field.id}
-                            id={field.id}
-                            index={index}
-                            control={form.control}
-                            onRemove={remove}
-                            exercises={exercises}
-                            complexes={complexes}
-                          />
-                        ))}
+                      <div className="flex gap-4">
+                        <div className="flex-1 space-y-4">
+                          {fields.map((field, index) => 
+                            index % 2 === 0 ? (
+                              <SortableWorkoutElement
+                                key={field.id}
+                                id={field.id}
+                                index={index}
+                                control={form.control}
+                                onRemove={remove}
+                                exercises={exercises}
+                                complexes={complexes}
+                              />
+                            ) : null
+                          )}
+                        </div>
+                        <div className="flex-1 space-y-4">
+                          {fields.map((field, index) => 
+                            index % 2 === 1 ? (
+                              <SortableWorkoutElement
+                                key={field.id}
+                                id={field.id}
+                                index={index}
+                                control={form.control}
+                                onRemove={remove}
+                                exercises={exercises}
+                                complexes={complexes}
+                              />
+                            ) : null
+                          )}
+                        </div>
                       </div>
                     </SortableContext>
                   </DndContext>

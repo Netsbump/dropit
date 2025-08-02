@@ -277,7 +277,11 @@ export function SortableWorkoutElement({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''}`}
+      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''} ${
+        control._formValues.elements[index].type === WORKOUT_ELEMENT_TYPES.COMPLEX
+          ? 'min-h-[200px]'
+          : 'min-h-[100px]'
+      }`}
     >
       <CardContent className="p-4 flex gap-4">
         <div
