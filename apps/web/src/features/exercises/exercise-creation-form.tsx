@@ -71,14 +71,20 @@ export function ExerciseCreationForm({
     },
   });
 
-  const handleSubmit = (formValues: z.infer<typeof formExerciseSchema>) => {
+  const handleSubmit = async (formValues: z.infer<typeof formExerciseSchema>) => {
     setIsLoading(true);
 
     try {
-      createExerciseMutation(formValues);
+      await createExerciseMutation(formValues);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    form.handleSubmit(handleSubmit)(e);
   };
 
   const formExerciseSchema = createExerciseSchema;
@@ -97,7 +103,7 @@ export function ExerciseCreationForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(handleSubmit)}
+        onSubmit={handleFormSubmit}
         className="grid gap-4 py-4"
       >
         <FormField

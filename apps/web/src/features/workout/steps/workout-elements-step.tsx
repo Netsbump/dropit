@@ -14,12 +14,15 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableContext } from '@dnd-kit/sortable';
 import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
 import { createWorkoutSchema } from '@dropit/schemas';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
 import { useState } from 'react';
 import { z } from 'zod';
 import { SortableWorkoutElement } from '../sortable-workout-element';
+import { DialogCreation } from '../../exercises/dialog-creation';
+import { ExerciseCreationForm } from '../../exercises/exercise-creation-form';
+import { ComplexCreationForm } from '../../complex/complex-creation-form';
 
 // Importer le schéma étendu depuis le stepper parent
 const extendedWorkoutSchema = createWorkoutSchema.extend({
@@ -49,6 +52,9 @@ export function WorkoutElementsStep({
   const [exerciseSearch, setExerciseSearch] = useState('');
   const [complexSearch, setComplexSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'exercise' | 'complex'>('exercise');
+  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
+  const queryClient = useQueryClient();
 
   // Queries pour récupérer les données nécessaires
   const { data: exercises } = useQuery({
@@ -107,6 +113,18 @@ export function WorkoutElementsStep({
       rest: 60,
       startWeight_percent: 70,
     });
+  };
+
+  const handleExerciseCreationSuccess = async (exerciseId: string) => {
+    // Rafraîchir la liste des exercices
+    await queryClient.invalidateQueries({ queryKey: ['exercises'] });
+    setCreateExerciseModalOpen(false);
+  };
+
+  const handleComplexCreationSuccess = async () => {
+    // Rafraîchir la liste des complexes
+    await queryClient.invalidateQueries({ queryKey: ['complexes'] });
+    setCreateComplexModalOpen(false);
   };
 
   // Filtrer les exercices et complexes selon la recherche
@@ -174,6 +192,23 @@ export function WorkoutElementsStep({
                         />
                       </div>
                       
+                      <div className="mb-3 flex-shrink-0">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCreateExerciseModalOpen(true);
+                          }}
+                          className="w-full"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Créer un nouvel exercice
+                        </Button>
+                      </div>
+                      
                       <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
                         {filteredExercises.map((exercise) => (
                           <div 
@@ -211,6 +246,23 @@ export function WorkoutElementsStep({
                           onChange={(e) => setComplexSearch(e.target.value)}
                           className="pl-10"
                         />
+                      </div>
+                      
+                      <div className="mb-3 flex-shrink-0">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCreateComplexModalOpen(true);
+                          }}
+                          className="w-full"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Créer un nouveau complexe
+                        </Button>
                       </div>
                       
                       <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
@@ -254,7 +306,10 @@ export function WorkoutElementsStep({
             </p>
           </div>
           
-          <Card className="flex-1 flex flex-col min-h-0">
+          <Card className="flex-1 flex flex-col min-h-0 relative">
+            {fields.length > 0 && (
+              <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-gray-200 transform -translate-x-1/2 z-10" />
+            )}
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               {fields.length === 0 ? (
                 <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">
@@ -274,37 +329,29 @@ export function WorkoutElementsStep({
                       items={fields.map((field) => field.id)}
                       strategy={verticalListSortingStrategy}
                     >
-                      <div className="flex gap-4">
-                        <div className="flex-1 space-y-4">
-                          {fields.map((field, index) => 
-                            index % 2 === 0 ? (
-                              <SortableWorkoutElement
-                                key={field.id}
-                                id={field.id}
-                                index={index}
-                                control={form.control}
-                                onRemove={remove}
-                                exercises={exercises}
-                                complexes={complexes}
-                              />
-                            ) : null
-                          )}
-                        </div>
-                        <div className="flex-1 space-y-4">
-                          {fields.map((field, index) => 
-                            index % 2 === 1 ? (
-                              <SortableWorkoutElement
-                                key={field.id}
-                                id={field.id}
-                                index={index}
-                                control={form.control}
-                                onRemove={remove}
-                                exercises={exercises}
-                                complexes={complexes}
-                              />
-                            ) : null
-                          )}
-                        </div>
+                      <div
+                        className="grid grid-cols-2 gap-4"
+                        style={{ gridAutoFlow: 'dense' }}
+                      >
+                        {fields.map((field, index) => (
+                          <div
+                            key={field.id}
+                            style={{
+                              gridRow: `span ${
+                                field.type === WORKOUT_ELEMENT_TYPES.COMPLEX ? 2 : 1
+                              }`,
+                            }}
+                          >
+                            <SortableWorkoutElement
+                              id={field.id}
+                              index={index}
+                              control={form.control}
+                              onRemove={remove}
+                              exercises={exercises}
+                              complexes={complexes}
+                            />
+                          </div>
+                        ))}
                       </div>
                     </SortableContext>
                   </DndContext>
@@ -327,6 +374,32 @@ export function WorkoutElementsStep({
           <Button onClick={onNext}>Suivant</Button>
         </div>
       </div>
+
+      {/* Modales de création */}
+      <DialogCreation
+        open={createExerciseModalOpen}
+        onOpenChange={setCreateExerciseModalOpen}
+        title="Créer un exercice"
+        description="Ajoutez un nouvel exercice à votre catalogue."
+      >
+        <ExerciseCreationForm
+          onSuccess={handleExerciseCreationSuccess}
+          onCancel={() => setCreateExerciseModalOpen(false)}
+        />
+      </DialogCreation>
+
+      <DialogCreation
+        open={createComplexModalOpen}
+        onOpenChange={setCreateComplexModalOpen}
+        title="Créer un complexe"
+        description="Ajoutez un nouveau complexe à votre catalogue."
+        maxWidth="lg"
+      >
+        <ComplexCreationForm
+          onSuccess={handleComplexCreationSuccess}
+          onCancel={() => setCreateComplexModalOpen(false)}
+        />
+      </DialogCreation>
     </div>
   );
 }

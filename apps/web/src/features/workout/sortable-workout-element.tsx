@@ -24,7 +24,7 @@ import {
   createWorkoutSchema,
 } from '@dropit/schemas';
 import { GripVertical, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -63,7 +63,8 @@ export function SortableWorkoutElement({
   const [editingReps, setEditingReps] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingRest, setEditingRest] = useState(false);
-  const [editingElement, setEditingElement] = useState(true);
+  const [editingElement, setEditingElement] = useState(false);
+  const selectRef = useRef<HTMLButtonElement>(null);
 
   const {
     attributes,
@@ -228,10 +229,15 @@ export function SortableWorkoutElement({
                   }
                   setEditingElement(false);
                 }}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setEditingElement(false);
+                  }
+                }}
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger ref={selectRef}>
                     <SelectValue
                       placeholder={`Choisir un ${
                         type === WORKOUT_ELEMENT_TYPES.EXERCISE
@@ -258,7 +264,13 @@ export function SortableWorkoutElement({
             ) : (
               <button
                 type="button"
-                onClick={() => setEditingElement(true)}
+                onClick={() => {
+                  setEditingElement(true);
+                  // Forcer l'ouverture du Select après un court délai
+                  setTimeout(() => {
+                    selectRef.current?.click();
+                  }, 0);
+                }}
                 className="font-medium hover:underline text-left w-full"
               >
                 {type === WORKOUT_ELEMENT_TYPES.EXERCISE

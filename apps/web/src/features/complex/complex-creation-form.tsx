@@ -196,7 +196,7 @@ export function ComplexCreationForm({
     });
   };
 
-  const handleSubmit = (formValues: z.infer<typeof createComplexSchema>) => {
+  const handleSubmit = async (formValues: z.infer<typeof createComplexSchema>) => {
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',
@@ -207,10 +207,24 @@ export function ComplexCreationForm({
     }
     setIsLoading(true);
     try {
-      createComplexMutation(formValues);
+      await createComplexMutation(formValues);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    form.handleSubmit(
+      (data) => {
+        console.log('Form submitted successfully:', data);
+        handleSubmit(data);
+      },
+      (errors) => {
+        console.log('Form validation errors:', errors);
+      }
+    )(e);
   };
 
   // Récupérer les exercices déjà sélectionnés (y compris les deux premiers)
@@ -221,15 +235,7 @@ export function ComplexCreationForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(
-          (data) => {
-            console.log('Form submitted successfully:', data);
-            handleSubmit(data);
-          },
-          (errors) => {
-            console.log('Form validation errors:', errors);
-          }
-        )}
+        onSubmit={handleFormSubmit}
         className="grid gap-4 py-4"
       >
         <FormField
