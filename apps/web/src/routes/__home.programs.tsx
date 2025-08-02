@@ -60,7 +60,7 @@ function ProgramsLayout() {
         </nav>
       </div>
 
-      <div className="mt-6">
+      <div className="mt-6 h-full flex flex-col">
         <Outlet />
       </div>
     </>

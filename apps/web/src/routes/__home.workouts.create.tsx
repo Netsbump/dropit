@@ -68,7 +68,7 @@ function CreateWorkoutPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Navigation Bar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div>
         <div className="flex items-center h-14 gap-4">
           <Button variant="outline" size="icon" onClick={handleCancel}>
             <ArrowLeft className="h-4 w-4" />
@@ -83,8 +83,8 @@ function CreateWorkoutPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div>
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full">
           <WorkoutCreationStepper
             onSuccess={handleCreationSuccess}
             onCancel={handleCancel}
