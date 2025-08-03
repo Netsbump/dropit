@@ -311,9 +311,6 @@ export function WorkoutElementsStep({
           </div>
           
           <Card className="flex-1 flex flex-col min-h-0 relative">
-            {fields.length > 0 && (
-              <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-gray-200 transform -translate-x-1/2 z-10" />
-            )}
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               {fields.length === 0 ? (
                 <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">
@@ -323,7 +320,7 @@ export function WorkoutElementsStep({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="flex-1 overflow-x-auto min-h-0">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -334,18 +331,13 @@ export function WorkoutElementsStep({
                       strategy={verticalListSortingStrategy}
                     >
                       <div
-                        className="grid grid-cols-2 gap-4"
-                        style={{ gridAutoFlow: 'dense' }}
+                        className="flex flex-col flex-wrap gap-4 h-full"
                       >
                         {fields.map((field, index) => (
                           <div
-                            key={field.id}
-                            style={{
-                              gridRow: `span ${
-                                field.type === WORKOUT_ELEMENT_TYPES.COMPLEX ? 2 : 1
-                              }`,
-                            }}
-                          >
+                          key={field.id}
+                          className="w-[49%]"
+                        >
                             <SortableWorkoutElement
                               id={field.id}
                               index={index}
