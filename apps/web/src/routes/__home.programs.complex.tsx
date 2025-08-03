@@ -55,7 +55,7 @@ function ComplexPage() {
   })
 
   const filteredComplexes = complexes?.filter((complex) => {
-    const matchesSearch = complex.name
+    const matchesSearch = complex.complexCategory?.name
       .toLowerCase()
       .includes(filter.toLowerCase())
     const matchesCategory =

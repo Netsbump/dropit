@@ -8,7 +8,6 @@ const createExerciseComplexSchema = z.object({
 });
 
 export const createComplexSchema = z.object({
-  name: z.string(),
   complexCategory: z.string(),
   exercises: z.array(createExerciseComplexSchema),
   description: z.string().optional(),
@@ -17,7 +16,6 @@ export const createComplexSchema = z.object({
 export type CreateComplex = z.infer<typeof createComplexSchema>;
 
 export const updateComplexSchema = z.object({
-  name: z.string().optional(),
   complexCategory: z.string().optional(),
   exercises: z.array(createExerciseComplexSchema).optional(),
   description: z.string().optional(),
@@ -32,7 +30,6 @@ const exerciseComplexSchema = exerciseSchema.extend({
 
 export const complexSchema = z.object({
   id: z.string(),
-  name: z.string(),
   complexCategory: z.object({
     id: z.string(),
     name: z.string(),

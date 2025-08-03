@@ -169,7 +169,7 @@ export class ExerciseUseCase {
       const exerciseDto = ExerciseMapper.toDto(createdExercise);
 
       //7. Return exercise
-      return ExercisePresenter.presentOne(exerciseDto);
+      return ExercisePresenter.presentCreationSuccess(exerciseDto);
     } catch (error) {
       return ExercisePresenter.presentCreationError(error as Error);
     }

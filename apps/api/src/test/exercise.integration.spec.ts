@@ -55,7 +55,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
       exerciseCategory: exerciseCategory.id,
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise1Result.status !== 200) {
+    if (exercise1Result.status !== 201) {
       throw new Error(`Failed to create exercise1: ${exercise1Result.body.message}`);
     }
 
@@ -71,7 +71,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
       exerciseCategory: exerciseCategory.id,
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise2Result.status !== 200) {
+    if (exercise2Result.status !== 201) {
       throw new Error(`Failed to create exercise2: ${exercise2Result.body.message}`);
     }
 
@@ -87,7 +87,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
       shortName: 'FS',
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise3Result.status !== 200) {
+    if (exercise3Result.status !== 201) {
       throw new Error(`Failed to create exercise3: ${exercise3Result.body.message}`);
     }
 

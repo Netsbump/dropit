@@ -256,7 +256,7 @@ export function SortableWorkoutElement({
                       ))
                     : complexes.map((complex) => (
                         <SelectItem key={complex.id} value={complex.id}>
-                          {complex.name}
+                          {complex.complexCategory?.name || 'Complex'}
                         </SelectItem>
                       ))}
                 </SelectContent>
@@ -275,7 +275,7 @@ export function SortableWorkoutElement({
               >
                 {type === WORKOUT_ELEMENT_TYPES.EXERCISE
                   ? exercises.find((e) => e.id === field.value)?.name
-                  : complexes.find((c) => c.id === field.value)?.name}
+                  : complexes.find((c) => c.id === field.value)?.complexCategory?.name || 'Complex'}
               </button>
             )}
             <FormMessage />
