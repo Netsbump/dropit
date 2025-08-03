@@ -51,7 +51,6 @@ export const WorkoutMapper = {
           type: 'complex' as const,
           complex: {
             id: element.complex.id,
-            name: element.complex.name,
             description: element.complex.description,
             complexCategory: {
               id: element.complex.complexCategory.id,

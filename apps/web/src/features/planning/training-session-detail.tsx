@@ -205,7 +205,7 @@ export function TrainingSessionDetail({
                     {element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? (
                       <div className="font-medium">{element.exercise.name}</div>
                     ) : (
-                      <div className="font-medium">{element.complex.name}</div>
+                      <div className="font-medium">{element.complex.complexCategory?.name || 'Complex'}</div>
                     )}
 
                     <div className="flex flex-wrap gap-1 mt-1">

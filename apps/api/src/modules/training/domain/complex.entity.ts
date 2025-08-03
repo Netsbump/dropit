@@ -24,9 +24,6 @@ export class Complex {
   )
   exercises = new Collection<ExerciseComplex>(this);
 
-  @Property()
-  name!: string;
-
   @Property({ nullable: true })
   description?: string;
 

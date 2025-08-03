@@ -57,14 +57,15 @@ export function WorkoutInfoStep({
     <div className="space-y-6">
       <div className="grid gap-4">
         <h3 className="text-lg font-semibold">Informations générales</h3>
+        <div className="bg-white rounded-lg border shadow-sm flex flex-col gap-6 p-6">
         <FormField
           control={form.control}
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Titre</FormLabel>
-              <FormControl className="bg-white">
-                <Input placeholder="Titre de l'entraînement" {...field} />
+              <FormLabel>Nom</FormLabel>
+              <FormControl className="bg-background">
+                <Input placeholder="Nom de l'entraînement" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -77,7 +78,7 @@ export function WorkoutInfoStep({
           render={({ field }) => (
             <FormItem>
               <FormLabel>Description</FormLabel>
-              <FormControl className="bg-white">
+              <FormControl className="bg-background">
                 <Textarea
                   placeholder="Description, commentaires de l'entraînement"
                   className="min-h-[120px]"
@@ -96,7 +97,7 @@ export function WorkoutInfoStep({
             <FormItem>
               <FormLabel>Catégorie</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
-                <FormControl className="bg-white">
+                <FormControl className="bg-background">
                   <SelectTrigger>
                     <SelectValue placeholder="Sélectionner une catégorie" />
                   </SelectTrigger>
@@ -111,11 +112,12 @@ export function WorkoutInfoStep({
               </Select>
               <FormMessage />
             </FormItem>
-          )}
-        />
+            )}
+          />
+        </div>
       </div>
 
-      <div className="flex justify-between">
+      <div className="bg-white rounded-lg border shadow-sm flex justify-between px-6 py-4">
         <Button variant="outline" onClick={onCancel}>
           Annuler
         </Button>

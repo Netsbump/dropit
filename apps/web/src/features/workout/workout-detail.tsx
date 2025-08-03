@@ -112,7 +112,7 @@ export function WorkoutDetail({
                               {element.sets} séries
                             </Badge>
                             <span className="font-medium">
-                              {element.complex.name}
+                              {element.complex.complexCategory?.name || 'Complex'}
                             </span>
                           </div>
                           <p className="text-sm text-muted-foreground">

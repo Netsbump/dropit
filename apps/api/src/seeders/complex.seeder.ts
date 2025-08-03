@@ -6,7 +6,7 @@ import { seedExercises } from './exercise.seeder';
 
 export async function seedComplexes(
   em: EntityManager
-): Promise<Record<string, Complex>> {
+): Promise<Complex[]> {
 
   const exercisesMap = await seedExercises(em);
 
@@ -41,7 +41,6 @@ export async function seedComplexes(
 
   const complexesToCreate = [
     {
-      name: 'EMOM Technique Arraché',
       category: 'EMOM',
       description: "Focus sur la technique de l'arraché",
       exercises: [
@@ -60,7 +59,6 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'Complex Épaulé-Jeté',
       category: 'Technique Épaulé-Jeté',
       description: "Focus sur la technique de l'épaulé-jeté",
       exercises: [
@@ -83,7 +81,6 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'TABATA Force',
       category: 'TABATA',
       description: 'Focus sur la force',
       exercises: [
@@ -102,7 +99,6 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'Technique Arraché Complet',
       category: 'Technique Arraché',
       description: "Focus sur la technique de l'arraché",
       exercises: [
@@ -121,7 +117,6 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'EMOM Épaulé',
       category: 'EMOM',
       description: "Focus sur l'épaulé",
       exercises: [
@@ -141,10 +136,9 @@ export async function seedComplexes(
     },
   ];
 
-  const complexesMap: Record<string, Complex> = {};
+  const complexesCreated: Complex[] = [];
   for (const complexData of complexesToCreate) {
     const complex = new Complex();
-    complex.name = complexData.name;
     complex.description = complexData.description;
     complex.complexCategory = complexCategoriesMap[complexData.category];
     complex.createdBy = null;
@@ -163,9 +157,9 @@ export async function seedComplexes(
       await em.persistAndFlush(exerciseComplex);
     }
 
-    console.log('Complex created:', complex.name);
-    complexesMap[complex.name] = complex;
+    console.log('Complex created:', complex);
+    complexesCreated.push(complex);
   }
 
-  return complexesMap;
+  return complexesCreated;
 }

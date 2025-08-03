@@ -68,23 +68,23 @@ function CreateWorkoutPage() {
   return (
     <div className="h-full flex flex-col">
       {/* Navigation Bar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <div>
         <div className="flex items-center h-14 gap-4">
           <Button variant="outline" size="icon" onClick={handleCancel}>
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <h1 className="text-lg font-semibold">
-              {t('workout.creation.title')}
-              {selectedDate && ` - ${format(selectedDate, 'PPP', { locale })}`}
+            <h1 className="text-2xl font-bold">
+                {t('workout.creation.title')}
+                {selectedDate && ` - ${format(selectedDate, 'PPP', { locale })}`}
             </h1>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-6">
+      <div className="flex-1 overflow-hidden">
+        <div className="h-full">
           <WorkoutCreationStepper
             onSuccess={handleCreationSuccess}
             onCancel={handleCancel}

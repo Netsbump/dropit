@@ -45,7 +45,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { GripVertical, PlusCircle, Trash2, Edit } from 'lucide-react';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -195,7 +195,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   const form = useForm<z.infer<typeof updateComplexSchema>>({
     resolver: zodResolver(updateComplexSchema),
     defaultValues: {
-      name: complex.name,
       description: complex.description ?? '',
       complexCategory: complex.complexCategory.id,
       exercises: complex.exercises.map((e, index) => ({
@@ -303,20 +302,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           {/* Informations principales */}
           <Card className="bg-background rounded-md shadow-none">
             <CardContent className="space-y-4 pt-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="description"
@@ -526,16 +511,28 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       {/* Informations principales */}
       <Card className="bg-background rounded-md shadow-none">
         <CardContent className="space-y-4 pt-6">
-          <div className="space-y-2">
-            <Label>Nom</Label>
-            <p className="text-sm">{complex.name}</p>
-          </div>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight">
+                  Complex
+                </h2>
+                <p className="text-muted-foreground">
+                  {complex.complexCategory?.name || 'Sans catégorie'}
+                </p>
+              </div>
+              <Button onClick={() => setIsEditing(true)}>
+                <Edit className="h-4 w-4 mr-2" />
+                Modifier
+              </Button>
+            </div>
 
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <p className="text-sm text-muted-foreground">
-              {complex.description || 'Pas de description'}
-            </p>
+            <div className="space-y-2">
+              <Label>Description</Label>
+              <p className="text-sm text-muted-foreground">
+                {complex.description || 'Pas de description'}
+              </p>
+            </div>
           </div>
         </CardContent>
       </Card>

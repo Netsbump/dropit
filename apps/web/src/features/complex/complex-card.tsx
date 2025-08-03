@@ -28,7 +28,9 @@ export function ComplexCard({ complex, onClick }: ComplexCardProps) {
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{complex.name}</CardTitle>
+        <CardTitle className="text-sm font-medium">
+          {complex.complexCategory?.name || 'Sans catégorie'}
+        </CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-8 w-8 p-0">

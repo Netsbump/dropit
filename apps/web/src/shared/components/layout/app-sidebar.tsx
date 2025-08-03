@@ -21,7 +21,7 @@ import {
 } from '@/shared/components/ui/sidebar';
 import { toast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
-import { Link, useNavigate } from '@tanstack/react-router';
+import { Link, useMatches, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
   Calendar,
@@ -37,6 +37,7 @@ import { useEffect, useState } from 'react';
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const matches = useMatches();
   const [userEmail, setUserEmail] = useState<string | null>(null);
 
   useEffect(() => {
@@ -100,6 +101,26 @@ export function AppSidebar() {
     },
   ];
 
+  // Fonction pour vérifier si un item est actif
+  const isActiveItem = (itemUrl: string) => {
+    const currentPath = matches[matches.length - 1]?.pathname || '';
+    
+    // Gestion spéciale pour les routes imbriquées
+    if (itemUrl === '/programs/workouts') {
+      return currentPath.startsWith('/programs/') || currentPath.startsWith('/workouts/');
+    }
+    
+    if (itemUrl === '/athletes') {
+      return currentPath.startsWith('/athletes');
+    }
+    
+    if (itemUrl === '/dashboard') {
+      return currentPath === '/dashboard' || currentPath === '/';
+    }
+    
+    return currentPath === itemUrl;
+  };
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -121,16 +142,24 @@ export function AppSidebar() {
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {items.map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
-                    <Link to={item.url} className="flex items-center gap-2">
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
+              {items.map((item) => {
+                const isActive = isActiveItem(item.url);
+                return (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton 
+                      asChild
+                      className={isActive ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' : ''}
+                    >
+                      <Link to={item.url} className="flex items-center gap-2">
+                        <item.icon className={`h-4 w-4 ${isActive ? 'text-blue-600' : ''}`} />
+                        <span className={isActive ? 'text-blue-600 font-medium' : ''}>
+                          {item.title}
+                        </span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                );
+              })}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

@@ -47,7 +47,7 @@ export function ExerciseCreationForm({
     },
   });
 
-  const { mutate: createExerciseMutation } = useMutation({
+  const { mutateAsync: createExerciseMutation } = useMutation({
     mutationFn: async (data: CreateExercise) => {
       const response = await api.exercise.createExercise({ body: data });
       if (response.status !== 201) {
@@ -56,6 +56,7 @@ export function ExerciseCreationForm({
       return response.body;
     },
     onSuccess: (data) => {
+      console.log('Exercice créé avec succès:', data);
       toast({
         title: 'Exercice créé avec succès',
         description: "L'exercice a été créé avec succès",
@@ -71,11 +72,11 @@ export function ExerciseCreationForm({
     },
   });
 
-  const handleSubmit = (formValues: z.infer<typeof formExerciseSchema>) => {
+  const handleSubmit = async (formValues: z.infer<typeof formExerciseSchema>) => {
     setIsLoading(true);
 
     try {
-      createExerciseMutation(formValues);
+      await createExerciseMutation(formValues);
     } finally {
       setIsLoading(false);
     }

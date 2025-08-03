@@ -24,7 +24,7 @@ import {
   createWorkoutSchema,
 } from '@dropit/schemas';
 import { GripVertical, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -63,7 +63,8 @@ export function SortableWorkoutElement({
   const [editingReps, setEditingReps] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingRest, setEditingRest] = useState(false);
-  const [editingElement, setEditingElement] = useState(true);
+  const [editingElement, setEditingElement] = useState(false);
+  const selectRef = useRef<HTMLButtonElement>(null);
 
   const {
     attributes,
@@ -228,10 +229,15 @@ export function SortableWorkoutElement({
                   }
                   setEditingElement(false);
                 }}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setEditingElement(false);
+                  }
+                }}
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger ref={selectRef}>
                     <SelectValue
                       placeholder={`Choisir un ${
                         type === WORKOUT_ELEMENT_TYPES.EXERCISE
@@ -250,7 +256,7 @@ export function SortableWorkoutElement({
                       ))
                     : complexes.map((complex) => (
                         <SelectItem key={complex.id} value={complex.id}>
-                          {complex.name}
+                          {complex.complexCategory?.name || 'Complex'}
                         </SelectItem>
                       ))}
                 </SelectContent>
@@ -258,12 +264,18 @@ export function SortableWorkoutElement({
             ) : (
               <button
                 type="button"
-                onClick={() => setEditingElement(true)}
+                onClick={() => {
+                  setEditingElement(true);
+                  // Forcer l'ouverture du Select après un court délai
+                  setTimeout(() => {
+                    selectRef.current?.click();
+                  }, 0);
+                }}
                 className="font-medium hover:underline text-left w-full"
               >
                 {type === WORKOUT_ELEMENT_TYPES.EXERCISE
                   ? exercises.find((e) => e.id === field.value)?.name
-                  : complexes.find((c) => c.id === field.value)?.name}
+                  : complexes.find((c) => c.id === field.value)?.complexCategory?.name || 'Complex'}
               </button>
             )}
             <FormMessage />
@@ -277,7 +289,11 @@ export function SortableWorkoutElement({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''}`}
+      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''} ${
+        control._formValues.elements[index].type === WORKOUT_ELEMENT_TYPES.COMPLEX
+          ? 'min-h-[200px]'
+          : 'min-h-[100px]'
+      }`}
     >
       <CardContent className="p-4 flex gap-4">
         <div

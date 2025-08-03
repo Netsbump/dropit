@@ -63,31 +63,36 @@ function WorkoutPage() {
 
   // Sinon on affiche la grille des workouts
   return (
-    <div className="relative flex-1">
-      <WorkoutFilters
-        onFilterChange={setFilter}
-        onCategoryChange={setCategoryFilter}
-        onCreateClick={handleCreateClick}
-        categories={categories}
-        disabled={isLoading || !workouts?.length}
-      />
-
-      {isLoading ? (
-        <div className="flex items-center justify-center h-32">
-          {t('common.loading')}
-        </div>
-      ) : !workouts?.length ? (
-        <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-          <p>{t('workout.filters.no_results')}</p>
-          <p className="text-sm">{t('common.start_create')}</p>
-        </div>
-      ) : (
-        <WorkoutGrid
-          workouts={filteredWorkouts || []}
-          onWorkoutClick={handleWorkoutClick}
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0">
+        <WorkoutFilters
+          onFilterChange={setFilter}
+          onCategoryChange={setCategoryFilter}
+          onCreateClick={handleCreateClick}
+          categories={categories}
+          disabled={isLoading || !workouts?.length}
         />
-      )}
+      </div>
 
+      <div className="flex-1 h-full">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-32">
+            {t('common.loading')}
+          </div>
+        ) : !workouts?.length ? (
+          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+            <p>{t('workout.filters.no_results')}</p>
+            <p className="text-sm">{t('common.start_create')}</p>
+          </div>
+        ) : (
+          <div className="flex-1 overflow-auto h-full">
+            <WorkoutGrid
+              workouts={filteredWorkouts || []}
+              onWorkoutClick={handleWorkoutClick}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }

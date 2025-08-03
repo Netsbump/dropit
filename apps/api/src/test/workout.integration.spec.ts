@@ -93,7 +93,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
       exerciseCategory: exerciseCategory.id,
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise1Result.status !== 200 || exercise2Result.status !== 200) {
+    if (exercise1Result.status !== 201 || exercise2Result.status !== 201) {
       throw new Error('Failed to create exercises');
     }
 
@@ -101,7 +101,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     const exercise2 = exercise2Result.body;
 
     const complexResult = await complexUseCase.create({
-      name: 'Complex Test',
       complexCategory: complexCategory.id,
       exercises: [
         {
@@ -117,7 +116,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
       ],
     }, testData.organization.id, testData.adminUser.id);
 
-    if (complexResult.status !== 200) {
+    if (complexResult.status !== 201) {
       throw new Error(`Failed to create complex: ${complexResult.body.message}`);
     }
 

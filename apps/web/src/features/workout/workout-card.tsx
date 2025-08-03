@@ -81,7 +81,7 @@ export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
                     >
                       {element.sets}
                     </Badge>
-                    <span className="font-medium">{element.complex.name}</span>
+                    <span className="font-medium">{element.complex.complexCategory?.name || 'Complex'}</span>
                   </div>
                   <p className="text-xs text-muted-foreground ml-9">
                     {element.sets} séries à {element.startWeight_percent}%

@@ -23,10 +23,10 @@ export const ComplexPresenter = {
     };
   },
 
-  presentCreationSuccess(message: string) {
+  presentCreationSuccess(complexDto: ComplexDto) {
     return {
       status: 201 as const,
-      body: { message },
+      body: complexDto,
     };
   },
 
