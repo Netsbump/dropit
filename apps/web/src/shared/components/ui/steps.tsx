@@ -57,7 +57,7 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
               
               {/* Trait de liaison */}
               {index < steps.length - 1 && (
-                <div key={`line-${index}`} className="flex-1 mx-4">
+                <div key={`line-${step.id}-${steps[index + 1].id}`} className="flex-1 mx-4">
                   <div className={cn(
                     'h-0.5 w-full transition-colors duration-200',
                     {

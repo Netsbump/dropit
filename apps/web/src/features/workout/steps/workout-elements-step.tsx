@@ -115,7 +115,7 @@ export function WorkoutElementsStep({
     });
   };
 
-  const handleExerciseCreationSuccess = async (exerciseId: string) => {
+  const handleExerciseCreationSuccess = async () => {
     // Rafraîchir la liste des exercices
     await queryClient.invalidateQueries({ queryKey: ['exercises'] });
     setCreateExerciseModalOpen(false);
@@ -133,7 +133,7 @@ export function WorkoutElementsStep({
   ) || [];
 
   const filteredComplexes = complexes?.filter(complex =>
-    complex.name.toLowerCase().includes(complexSearch.toLowerCase())
+    complex.complexCategory?.name?.toLowerCase().includes(complexSearch.toLowerCase())
   ) || [];
 
   return (
@@ -157,21 +157,23 @@ export function WorkoutElementsStep({
                 {/* Tabs List */}
                 <div className="grid w-full grid-cols-2 flex-shrink-0 mb-4">
                   <button
+                    type="button"
                     onClick={() => setActiveTab('exercise')}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                       activeTab === 'exercise'
                         ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                   >
                     Exercices
                   </button>
                   <button
+                    type="button"
                     onClick={() => setActiveTab('complex')}
-                    className={`px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
                       activeTab === 'complex'
                         ? 'bg-primary text-primary-foreground'
-                        : 'text-muted-foreground hover:text-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                   >
                     Complexes
@@ -223,6 +225,7 @@ export function WorkoutElementsStep({
                                 </p>
                               </div>
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleAddElement('exercise', exercise.id)}
@@ -273,12 +276,13 @@ export function WorkoutElementsStep({
                           >
                             <div className="flex items-center justify-between">
                               <div>
-                                <h5 className="font-medium text-sm">{complex.name}</h5>
+                                <h5 className="font-medium text-sm">{complex.complexCategory?.name || 'Complex'}</h5>
                                 <p className="text-xs text-muted-foreground">
                                   {complex.exercises.length} exercices
                                 </p>
                               </div>
                               <Button
+                                type="button"
                                 size="sm"
                                 variant="ghost"
                                 onClick={() => handleAddElement('complex', complex.id)}

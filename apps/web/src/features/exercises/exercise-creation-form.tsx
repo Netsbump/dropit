@@ -47,7 +47,7 @@ export function ExerciseCreationForm({
     },
   });
 
-  const { mutate: createExerciseMutation } = useMutation({
+  const { mutateAsync: createExerciseMutation } = useMutation({
     mutationFn: async (data: CreateExercise) => {
       const response = await api.exercise.createExercise({ body: data });
       if (response.status !== 201) {
@@ -56,6 +56,7 @@ export function ExerciseCreationForm({
       return response.body;
     },
     onSuccess: (data) => {
+      console.log('Exercice créé avec succès:', data);
       toast({
         title: 'Exercice créé avec succès',
         description: "L'exercice a été créé avec succès",
@@ -81,12 +82,6 @@ export function ExerciseCreationForm({
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    form.handleSubmit(handleSubmit)(e);
-  };
-
   const formExerciseSchema = createExerciseSchema;
   const form = useForm<z.infer<typeof formExerciseSchema>>({
     resolver: zodResolver(formExerciseSchema),
@@ -103,7 +98,7 @@ export function ExerciseCreationForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={handleFormSubmit}
+        onSubmit={form.handleSubmit(handleSubmit)}
         className="grid gap-4 py-4"
       >
         <FormField

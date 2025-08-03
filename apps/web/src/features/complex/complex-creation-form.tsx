@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -75,7 +74,7 @@ export function ComplexCreationForm({
     },
   });
 
-  const { mutate: createComplexMutation } = useMutation({
+  const { mutateAsync: createComplexMutation } = useMutation({
     mutationFn: async (data: CreateComplex) => {
       const response = await api.complex.createComplex({ body: data });
       if (response.status !== 201) {
@@ -138,10 +137,10 @@ export function ComplexCreationForm({
     setCreateCategoryModalOpen(false);
   };
 
-  const form = useForm<z.infer<typeof createComplexSchema>>({
-    resolver: zodResolver(createComplexSchema),
+  const formComplexSchema = createComplexSchema;
+  const form = useForm<z.infer<typeof formComplexSchema>>({
+    resolver: zodResolver(formComplexSchema),
     defaultValues: {
-      name: '',
       description: '',
       complexCategory: '',
       exercises: [
@@ -196,7 +195,7 @@ export function ComplexCreationForm({
     });
   };
 
-  const handleSubmit = async (formValues: z.infer<typeof createComplexSchema>) => {
+  const handleSubmit = async (formValues: z.infer<typeof formComplexSchema>) => {
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',
@@ -213,20 +212,6 @@ export function ComplexCreationForm({
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    form.handleSubmit(
-      (data) => {
-        console.log('Form submitted successfully:', data);
-        handleSubmit(data);
-      },
-      (errors) => {
-        console.log('Form validation errors:', errors);
-      }
-    )(e);
-  };
-
   // Récupérer les exercices déjà sélectionnés (y compris les deux premiers)
   const selectedExerciseIds = fields
     .map((field) => field.exerciseId)
@@ -235,23 +220,17 @@ export function ComplexCreationForm({
   return (
     <Form {...form}>
       <form
-        onSubmit={handleFormSubmit}
+        onSubmit={form.handleSubmit(
+          (data) => {
+            console.log('Form submitted successfully:', data);
+            handleSubmit(data);
+          },
+          (errors) => {
+            console.log('Form validation errors:', errors);
+          }
+        )}
         className="grid gap-4 py-4"
       >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom</FormLabel>
-              <FormControl>
-                <Input placeholder="Nom du complex" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="description"
