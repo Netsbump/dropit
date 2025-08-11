@@ -1,6 +1,7 @@
 import { api } from '@/lib/api';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent } from '@/shared/components/ui/card';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import {
   FormControl,
@@ -46,7 +47,7 @@ export function WorkoutPlanningStep({
   onSubmit,
   onCancel,
 }: WorkoutPlanningStepProps) {
-  const [isScheduled, setIsScheduled] = useState(false);
+  const [isScheduled, setIsScheduled] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedAthletes, setSelectedAthletes] = useState<string[]>([]);
   const [selectAll, setSelectAll] = useState(false);
@@ -92,6 +93,13 @@ export function WorkoutPlanningStep({
     }
   };
 
+  // Initialize planning on mount
+  useEffect(() => {
+    if (isScheduled && !form.watch('trainingSession')) {
+      form.setValue('trainingSession', { athleteIds: [], scheduledDate: '' });
+    }
+  }, [isScheduled, form]);
+
   // Toggle select all athletes
   const toggleSelectAll = () => {
     if (selectAll) {
@@ -126,127 +134,148 @@ export function WorkoutPlanningStep({
   }, [selectedAthletes, form, isScheduled]);
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center space-x-2 mb-6">
-        <Switch
-          checked={isScheduled}
-          onCheckedChange={toggleScheduling}
-          id="schedule-workout"
-        />
-        <FormLabel htmlFor="schedule-workout" className="cursor-pointer">
-          Planifier cet entraînement
-        </FormLabel>
-      </div>
-
-      {isScheduled && (
-        <div className="border rounded-md p-4 space-y-4">
-          <FormField
-            control={form.control}
-            name="trainingSession.scheduledDate"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Date de programmation</FormLabel>
-                <FormControl>
-                  <Input
-                    type="date"
-                    placeholder="Sélectionner une date"
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e.target.value);
-                    }}
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-
-          <FormItem>
-            <div className="flex justify-between items-center mb-2">
-              <FormLabel>Athlètes</FormLabel>
-              <Badge variant="outline" className="ml-2">
-                {selectedAthletes.length} sélectionné
-                {selectedAthletes.length !== 1 ? 's' : ''}
-              </Badge>
-            </div>
-
-            <div className="flex items-center space-x-2 mb-2">
-              <div className="relative flex-1">
-                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Rechercher un athlète..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-8"
-                />
+    <div className="h-full flex flex-col">
+      {/* Layout principal : une seule colonne centrée */}
+      <div className="flex-1 flex justify-center min-h-0 mt-6">
+        <div className="w-full max-w-2xl flex flex-col min-h-0">
+          <div className="mb-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h4 className="text-md font-medium">Planifier l'entraînement</h4>
+                <p className="text-sm text-muted-foreground">
+                  Programmer une session avec vos athlètes
+                </p>
               </div>
+              <Switch
+                checked={isScheduled}
+                onCheckedChange={toggleScheduling}
+                id="schedule-workout"
+              />
             </div>
+          </div>
 
-            <div className="border rounded-md">
-              <div className="border-b px-3 py-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="select-all"
-                    checked={selectAll}
-                    onCheckedChange={() => toggleSelectAll()}
-                  />
-                  <label
-                    htmlFor="select-all"
-                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                  >
-                    Tous les athlètes
-                  </label>
+          <Card className={`flex-1 flex flex-col min-h-0 ${!isScheduled ? 'opacity-50 pointer-events-none' : ''}`}>
+            <CardContent className="p-6 flex-1 flex flex-col min-h-0">
+              {!isScheduled ? (
+                <div className="flex items-center justify-center h-32 text-center text-muted-foreground">
+                  <p className="text-sm">Activez le switch pour planifier l'entraînement</p>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-6 flex-1 flex flex-col">
+                  <FormField
+                    control={form.control}
+                    name="trainingSession.scheduledDate"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Date de programmation</FormLabel>
+                        <FormControl className="bg-sidebar">
+                          <Input
+                            type="date"
+                            placeholder="Sélectionner une date"
+                            {...field}
+                            onChange={(e) => {
+                              field.onChange(e.target.value);
+                            }}
+                            disabled={!isScheduled}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-              <ScrollArea className="h-60">
-                <div className="p-2 space-y-1">
-                  {isLoading ? (
-                    <div className="flex items-center justify-center h-full py-4">
-                      Chargement des athlètes...
+                  <FormItem className="flex-1 flex flex-col min-h-0">
+                    <div className="flex justify-between items-center mb-2">
+                      <FormLabel>Athlètes</FormLabel>
+                      <Badge variant="outline" className="ml-2">
+                        {selectedAthletes.length} sélectionné
+                        {selectedAthletes.length !== 1 ? 's' : ''}
+                      </Badge>
                     </div>
-                  ) : filteredAthletes.length === 0 ? (
-                    <div className="text-center py-4 text-muted-foreground">
-                      {searchQuery
-                        ? 'Aucun athlète trouvé'
-                        : 'Aucun athlète disponible'}
+
+                    <div className="relative mb-3 flex-shrink-0 bg-sidebar">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Rechercher un athlète..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10"
+                        disabled={!isScheduled}
+                      />
                     </div>
-                  ) : (
-                    filteredAthletes.map((athlete) => (
-                      <div
-                        key={athlete.id}
-                        className="flex items-center space-x-2 px-2 py-1.5 rounded-md hover:bg-muted/50"
-                      >
-                        <Checkbox
-                          id={`athlete-${athlete.id}`}
-                          checked={selectedAthletes.includes(athlete.id)}
-                          onCheckedChange={() =>
-                            handleAthleteToggle(athlete.id)
-                          }
-                        />
-                        <label
-                          htmlFor={`athlete-${athlete.id}`}
-                          className="flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                        >
-                          {athlete.firstName} {athlete.lastName}
-                        </label>
+
+                    <div className="border rounded-md">
+                      <div className="border-b px-3 py-2">
+                        <div className="flex items-center space-x-2">
+                          <Checkbox
+                            id="select-all"
+                            checked={selectAll}
+                            onCheckedChange={() => toggleSelectAll()}
+                            disabled={!isScheduled}
+                          />
+                          <label
+                            htmlFor="select-all"
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            Tous les athlètes
+                          </label>
+                        </div>
                       </div>
-                    ))
-                  )}
-                </div>
-              </ScrollArea>
 
-              {form.formState.errors.trainingSession?.athleteIds && (
-                <div className="px-3 py-2 text-sm text-destructive">
-                  {form.formState.errors.trainingSession.athleteIds.message}
+                      <ScrollArea className="h-80">
+                        <div className="p-2 space-y-1">
+                          {isLoading ? (
+                            <div className="flex items-center justify-center h-full py-4">
+                              Chargement des athlètes...
+                            </div>
+                          ) : filteredAthletes.length === 0 ? (
+                            <div className="text-center py-4 text-muted-foreground">
+                              {searchQuery
+                                ? 'Aucun athlète trouvé'
+                                : 'Aucun athlète disponible'}
+                            </div>
+                          ) : (
+                            filteredAthletes.map((athlete) => (
+                              <div
+                                key={athlete.id}
+                                className="flex items-center space-x-2 px-2 py-1.5 rounded-md hover:bg-muted/50"
+                              >
+                                <Checkbox
+                                  id={`athlete-${athlete.id}`}
+                                  checked={selectedAthletes.includes(athlete.id)}
+                                  onCheckedChange={() =>
+                                    handleAthleteToggle(athlete.id)
+                                  }
+                                  disabled={!isScheduled}
+                                />
+                                <label
+                                  htmlFor={`athlete-${athlete.id}`}
+                                  className="flex-1 text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                  {athlete.firstName} {athlete.lastName}
+                                </label>
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      </ScrollArea>
+
+                      {form.formState.errors.trainingSession?.athleteIds && (
+                        <div className="px-3 py-2 text-sm text-destructive">
+                          {form.formState.errors.trainingSession.athleteIds.message}
+                        </div>
+                      )}
+                    </div>
+                  </FormItem>
                 </div>
               )}
-            </div>
-          </FormItem>
+            </CardContent>
+          </Card>
         </div>
-      )}
+      </div>
 
-      <div className="flex justify-between">
+      {/* Boutons de navigation */}
+      <div className="flex justify-between mt-6 flex-shrink-0">
         <Button variant="outline" onClick={onCancel}>
           Annuler
         </Button>

@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/shared/components/ui/select';
 import { Textarea } from '@/shared/components/ui/textarea';
-import { createWorkoutSchema } from '@dropit/schemas';
+import { createWorkoutSchema, WorkoutDto } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { UseFormReturn } from 'react-hook-form';
 import { Copy, Search } from 'lucide-react';
@@ -69,10 +69,16 @@ export function WorkoutInfoStep({
     },
   });
 
-  const handleUseTemplate = (templateWorkout: any) => {
+  const handleUseTemplate = (templateWorkout: WorkoutDto) => {
     form.setValue('title', `${templateWorkout.title} (copie)`);
     form.setValue('description', templateWorkout.description || '');
-    form.setValue('workoutCategory', templateWorkout.workoutCategoryId);
+    
+    // Trouver la catégorie correspondante par son nom pour obtenir l'ID
+    const category = categories?.find(cat => cat.name === templateWorkout.workoutCategory);
+    if (category) {
+      form.setValue('workoutCategory', category.id);
+    }
+    
     if (templateWorkout.elements) {
       form.setValue('elements', templateWorkout.elements);
     }
@@ -104,7 +110,7 @@ export function WorkoutInfoStep({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
-                    <FormControl>
+                    <FormControl className="bg-sidebar">
                       <Input placeholder="Nom de l'entraînement" {...field} />
                     </FormControl>
                     <FormMessage />
@@ -118,7 +124,7 @@ export function WorkoutInfoStep({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-                    <FormControl>
+                    <FormControl className="bg-sidebar">
                       <Textarea
                         placeholder="Description, commentaires de l'entraînement"
                         className="min-h-[120px]"
@@ -137,7 +143,7 @@ export function WorkoutInfoStep({
                   <FormItem>
                     <FormLabel>Catégorie</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl>
+                      <FormControl className="bg-sidebar">
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner une catégorie" />
                         </SelectTrigger>
@@ -177,7 +183,7 @@ export function WorkoutInfoStep({
 
           <Card className={`flex-1 flex flex-col min-h-0 ${!useTemplate ? 'opacity-50 pointer-events-none' : ''}`}>
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
-              <div className="relative mb-3 flex-shrink-0">
+              <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   placeholder="Rechercher un entraînement..."
@@ -207,7 +213,7 @@ export function WorkoutInfoStep({
                         <div className="flex-1 min-w-0">
                           <h5 className="font-medium text-sm truncate">{workout.title}</h5>
                           <p className="text-xs text-muted-foreground truncate">
-                            {typeof workout.workoutCategory === 'string' ? workout.workoutCategory : workout.workoutCategory?.name}
+                            {typeof workout.workoutCategory === 'string' ? workout.workoutCategory : '-'}
                           </p>
                         </div>
                         <Button

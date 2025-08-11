@@ -184,7 +184,7 @@ export function WorkoutElementsStep({
                 <div className="flex-1 flex flex-col min-h-0">
                   {activeTab === 'exercise' && (
                     <div className="flex-1 flex flex-col min-h-0">
-                      <div className="relative mb-3 flex-shrink-0">
+                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Rechercher un exercice..."
@@ -204,7 +204,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateExerciseModalOpen(true);
                           }}
-                          className="w-full"
+                          className="w-full bg-orange-100"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouvel exercice
@@ -241,7 +241,7 @@ export function WorkoutElementsStep({
                   
                   {activeTab === 'complex' && (
                     <div className="flex-1 flex flex-col min-h-0">
-                      <div className="relative mb-3 flex-shrink-0">
+                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Rechercher un complexe..."
@@ -261,7 +261,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateComplexModalOpen(true);
                           }}
-                          className="w-full"
+                          className="w-full bg-orange-100"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouveau complexe

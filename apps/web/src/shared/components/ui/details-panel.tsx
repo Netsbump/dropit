@@ -24,6 +24,15 @@ export function DetailsPanel({
         <div
           className="fixed inset-0 bg-black/50 z-10 lg:hidden"
           onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClose?.();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Fermer le panneau"
         />
       )}
       
