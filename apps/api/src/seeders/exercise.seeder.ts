@@ -36,7 +36,7 @@ export async function seedExerciseCategories(
 export async function seedExercises(
   em: EntityManager
 ): Promise<Record<string, Exercise>> {
-  const types = ['Haltérophilie', 'Endurance', 'Cardio', 'Musculation'];
+  const types = ['Technique', 'Endurance', 'Cardio', 'Renforcement'];
   const categories: Record<string, ExerciseCategory> = {};
 
   for (const exerciseCategory of types) {
@@ -52,79 +52,79 @@ export async function seedExercises(
   const exercises = [
     {
       name: 'Squat Clavicule',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Front Squat',
       shortName: 'Squat Clav',
     },
     {
       name: 'Épaulé Debout',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Power Clean',
       shortName: 'PC',
     },
     {
       name: 'Arraché Debout',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Power Snatch',
       shortName: 'PS',
     },
     {
       name: 'Jeté Fente',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Split Jerk',
       shortName: 'SJ',
     },
     {
       name: 'Arraché',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'snatch',
       shortName: 'SN',
     },
     {
       name: 'Squat Nuque',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Back Squat',
       shortName: 'BS',
     },
     {
       name: 'Tirage Nuque',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'Snatch Pull',
       shortName: 'SP',
     },
     {
       name: 'Développé Militaire',
-      category: 'Musculation',
+      category: 'Renforcement',
       englishName: 'Military Press',
       shortName: 'MP',
     },
     {
       name: 'Soulevé de Terre',
-      category: 'Musculation',
+      category: 'Renforcement',
       englishName: 'Deadlift',
       shortName: 'DL',
     },
     {
       name: 'Tirage Menton',
-      category: 'Musculation',
+      category: 'Renforcement',
       englishName: 'Upright Row',
       shortName: 'UR',
     },
     {
       name: 'Développé Couché',
-      category: 'Musculation',
+      category: 'Renforcement',
       englishName: 'Bench Press',
       shortName: 'BP',
     },
     {
       name: 'Épaulé-Jeté',
-      category: 'Haltérophilie',
+      category: 'Technique',
       englishName: 'cleanAndJerk',
       shortName: 'C&J',
     },
     {
       name: 'Tirage Planche',
-      category: 'Musculation',
+      category: 'Renforcement',
       englishName: 'Bent Over Row',
       shortName: 'BOR',
     },

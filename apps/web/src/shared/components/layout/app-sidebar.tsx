@@ -6,6 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
 import { Separator } from '@/shared/components/ui/separator';
+import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -30,21 +31,23 @@ import {
   Home,
   LayoutDashboard,
   LifeBuoy,
-  User,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const matches = useMatches();
-  const [userEmail, setUserEmail] = useState<string | null>(null);
+  const { data: session } = authClient.useSession();
 
-  useEffect(() => {
-    // Récupérer l'email de l'utilisateur depuis le localStorage
-    const email = localStorage.getItem('user_email');
-    setUserEmail(email);
-  }, []);
+  // Function to get user initials from name
+  const getUserInitials = (name?: string) => {
+    if (!name) return 'U';
+    const names = name.trim().split(' ');
+    if (names.length === 1) {
+      return names[0].charAt(0).toUpperCase();
+    }
+    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  };
 
   const handleLogout = async () => {
     try {
@@ -148,11 +151,11 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
                       asChild
-                      className={isActive ? 'bg-blue-50 text-blue-600 hover:bg-blue-100' : ''}
+                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100'}
                     >
                       <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className={`h-4 w-4 ${isActive ? 'text-blue-600' : ''}`} />
-                        <span className={isActive ? 'text-blue-600 font-medium' : ''}>
+                        <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />
+                        <span className={isActive ? 'text-gray-900 font-medium' : ''}>
                           {item.title}
                         </span>
                       </Link>
@@ -170,9 +173,21 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <SidebarMenuButton>
-                  <User /> {userEmail || 'User'}
-                  <ChevronUp className="ml-auto" />
+                <SidebarMenuButton className="h-12 px-2">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-white text-sm font-medium flex items-center justify-center">
+                      {getUserInitials(session?.user?.name)}
+                    </AvatarFallback>
+                  </Avatar>
+                  <div className="flex flex-col items-start min-w-0 flex-1">
+                    <span className="text-sm font-medium truncate">
+                      {session?.user?.name || 'User'}
+                    </span>
+                    <span className="text-xs text-muted-foreground truncate">
+                      {session?.user?.email || 'user@example.com'}
+                    </span>
+                  </div>
+                  <ChevronUp className="h-4 w-4 shrink-0" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent

@@ -86,7 +86,7 @@ export function AthleteDetail({
     <div className="space-y-6 w-full">
       {/* Profile Header with Avatar */}
       <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-        <Avatar className="h-28 w-28 border-2 border-primary">
+        <Avatar className="h-16 w-16 border border-border">
           <AvatarImage
             src={athlete.image}
             alt={`${athlete.firstName} ${athlete.lastName}`}

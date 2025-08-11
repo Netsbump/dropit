@@ -39,6 +39,15 @@ function WorkoutPage() {
     },
   });
 
+  const { data: trainingSessions } = useQuery({
+    queryKey: ['trainingSessions'],
+    queryFn: async () => {
+      const response = await api.trainingSession.getTrainingSessions();
+      if (response.status !== 200) throw new Error('Failed to load training sessions');
+      return response.body;
+    },
+  });
+
   const filteredWorkouts = workouts?.filter((workout) => {
     const matchesSearch = workout.title
       .toLowerCase()
@@ -74,7 +83,7 @@ function WorkoutPage() {
         />
       </div>
 
-      <div className="flex-1 h-full">
+      <div className="flex-1 flex flex-col min-h-0">
         {isLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common.loading')}
@@ -85,11 +94,14 @@ function WorkoutPage() {
             <p className="text-sm">{t('common.start_create')}</p>
           </div>
         ) : (
-          <div className="flex-1 overflow-auto h-full">
-            <WorkoutGrid
-              workouts={filteredWorkouts || []}
-              onWorkoutClick={handleWorkoutClick}
-            />
+          <div className="flex-1 overflow-y-auto min-h-0">
+            <div className="pb-8">
+              <WorkoutGrid
+                workouts={filteredWorkouts || []}
+                trainingSessions={trainingSessions || []}
+                onWorkoutClick={handleWorkoutClick}
+              />
+            </div>
           </div>
         )}
       </div>

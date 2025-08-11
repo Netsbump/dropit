@@ -184,7 +184,7 @@ export function WorkoutElementsStep({
                 <div className="flex-1 flex flex-col min-h-0">
                   {activeTab === 'exercise' && (
                     <div className="flex-1 flex flex-col min-h-0">
-                      <div className="relative mb-3 flex-shrink-0">
+                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Rechercher un exercice..."
@@ -204,7 +204,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateExerciseModalOpen(true);
                           }}
-                          className="w-full"
+                          className="w-full bg-orange-100"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouvel exercice
@@ -241,7 +241,7 @@ export function WorkoutElementsStep({
                   
                   {activeTab === 'complex' && (
                     <div className="flex-1 flex flex-col min-h-0">
-                      <div className="relative mb-3 flex-shrink-0">
+                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Rechercher un complexe..."
@@ -261,7 +261,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateComplexModalOpen(true);
                           }}
-                          className="w-full"
+                          className="w-full bg-orange-100"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouveau complexe
@@ -311,9 +311,6 @@ export function WorkoutElementsStep({
           </div>
           
           <Card className="flex-1 flex flex-col min-h-0 relative">
-            {fields.length > 0 && (
-              <div className="absolute left-1/2 top-4 bottom-4 w-0.5 bg-gray-200 transform -translate-x-1/2 z-10" />
-            )}
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               {fields.length === 0 ? (
                 <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">
@@ -323,7 +320,7 @@ export function WorkoutElementsStep({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 overflow-y-auto min-h-0">
+                <div className="flex-1 overflow-x-auto min-h-0">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -334,18 +331,13 @@ export function WorkoutElementsStep({
                       strategy={verticalListSortingStrategy}
                     >
                       <div
-                        className="grid grid-cols-2 gap-4"
-                        style={{ gridAutoFlow: 'dense' }}
+                        className="flex flex-col flex-wrap gap-4 h-full"
                       >
                         {fields.map((field, index) => (
                           <div
-                            key={field.id}
-                            style={{
-                              gridRow: `span ${
-                                field.type === WORKOUT_ELEMENT_TYPES.COMPLEX ? 2 : 1
-                              }`,
-                            }}
-                          >
+                          key={field.id}
+                          className="w-[49%]"
+                        >
                             <SortableWorkoutElement
                               id={field.id}
                               index={index}

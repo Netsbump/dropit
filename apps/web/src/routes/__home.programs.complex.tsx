@@ -72,7 +72,7 @@ function ComplexPage() {
     <div className="relative flex-1">
       <div
         className={`transition-all duration-200 ${
-          selectedComplex ? 'mr-[400px]' : ''
+          selectedComplex ? 'lg:mr-[430px]' : ''
         }`}
       >
         <ComplexFilters

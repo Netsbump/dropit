@@ -12,20 +12,16 @@ export async function seedComplexes(
 
   const complexCategories = [
     {
-      name: 'EMOM',
-      description: 'Exercices à exécuter toutes les minutes',
-    },
-    {
-      name: 'Technique Arraché',
+      name: 'Arraché',
       description: "Exercices focalisés sur la technique de l'arraché",
     },
     {
-      name: 'Technique Épaulé-Jeté',
+      name: 'Épaulé',
       description: "Exercices focalisés sur la technique de l'épaulé-jeté",
     },
     {
-      name: 'TABATA',
-      description: 'Exercices en intervalles courts (20s effort / 10s repos)',
+      name: 'Renforcement',
+      description: 'Exercices de musculation spécifiques',
     },
   ];
 
@@ -39,9 +35,13 @@ export async function seedComplexes(
     console.log('Complex category created:', categoryToCreate);
   }
 
+  const ARRACHE_CATEGORY_INDEX = 0;
+  const EPAULE_CATEGORY_INDEX = 1;
+  const RENFORCEMENT_CATEGORY_INDEX = 2;
+
   const complexesToCreate = [
     {
-      category: 'EMOM',
+      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
       description: "Focus sur la technique de l'arraché",
       exercises: [
         {
@@ -59,8 +59,8 @@ export async function seedComplexes(
       ],
     },
     {
-      category: 'Technique Épaulé-Jeté',
-      description: "Focus sur la technique de l'épaulé-jeté",
+      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
+      description: "EMOM",
       exercises: [
         {
           name: 'Épaulé Debout',
@@ -81,8 +81,8 @@ export async function seedComplexes(
       ],
     },
     {
-      category: 'TABATA',
-      description: 'Focus sur la force',
+      category: complexCategories[RENFORCEMENT_CATEGORY_INDEX].name,
+      description: 'On le fait en TABATA',
       exercises: [
         {
           name: 'Squat Nuque',
@@ -99,8 +99,8 @@ export async function seedComplexes(
       ],
     },
     {
-      category: 'Technique Arraché',
-      description: "Focus sur la technique de l'arraché",
+      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
+      description: "Focus sur la technique de l'arraché, EMOM",
       exercises: [
         {
           name: 'Arraché Debout',
@@ -117,8 +117,8 @@ export async function seedComplexes(
       ],
     },
     {
-      category: 'EMOM',
-      description: "Focus sur l'épaulé",
+      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
+      description: "On se concentre sur la technique",
       exercises: [
         {
           name: 'Épaulé Debout',
