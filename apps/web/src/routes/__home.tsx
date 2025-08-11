@@ -54,7 +54,7 @@ function HomeLayout() {
               <Separator orientation="vertical" className="h-6" />
               <Breadcrumbs />
             </div>
-            <div className="px-4 pt-10 pb-4 flex-1 min-h-0 overflow-hidden">
+            <div className="px-4 pt-6 pb-4 flex-1 min-h-0 overflow-hidden">
               <Outlet />
             </div>
           </div>
