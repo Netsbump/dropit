@@ -29,6 +29,8 @@ import { fr } from 'date-fns/locale';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { Badge } from '@/shared/components/ui/badge';
+import { getExerciseCategoryBadgeVariant } from './utils';
 
 interface ExerciseDetailProps {
   exercise: {
@@ -308,9 +310,13 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
       <Card className="bg-background rounded-md shadow-none">
         <CardContent className="pt-6">
           <div className="space-y-4">
-            <div className="space-y-2">
+            <div className="space-y-2 space-x-2">
               <Label>Catégorie</Label>
-              <p className="text-sm">{exercise.exerciseCategory.name}</p>
+              <Badge 
+                className={`text-xs border-0 ${getExerciseCategoryBadgeVariant(exercise.exerciseCategory.name, exerciseCategories || [])}`}
+              >
+                {exercise.exerciseCategory.name}
+              </Badge>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">

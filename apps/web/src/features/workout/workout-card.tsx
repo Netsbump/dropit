@@ -25,7 +25,7 @@ export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
       key={workout.id}
-      className="cursor-pointer hover:shadow-lg transition-shadow"
+      className="cursor-pointer shadow-none hover:shadow-md transition-shadow rounded-md"
       onClick={() => onWorkoutClick(workout.id)}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

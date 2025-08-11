@@ -70,6 +70,7 @@ export function DataTable<TData extends { id: string }, TValue>({
 
   return (
     <div>
+      {/* Filters */}
       <div className="flex justify-between items-center">
         <div className="flex items-center py-4">
           <Input
@@ -114,11 +115,12 @@ export function DataTable<TData extends { id: string }, TValue>({
           </Button>
         </div>
       </div>
+      {/* Table */}
       <div className="rounded-md border bg-card">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="bg-sidebar">
                 {headerGroup.headers.map((header) => {
                   return (
                     <TableHead key={header.id}>
@@ -166,6 +168,7 @@ export function DataTable<TData extends { id: string }, TValue>({
           </TableBody>
         </Table>
       </div>
+      {/* Pagination */}
       <div className="flex justify-between items-center">
         <div className="flex-1 text-sm text-muted-foreground">
           {t('exercise.table.selected_rows', {

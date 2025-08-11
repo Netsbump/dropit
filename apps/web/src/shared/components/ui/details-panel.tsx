@@ -31,7 +31,7 @@ export function DetailsPanel({
       <div
         className={cn(
           // Desktop: side panel
-          'fixed inset-y-0 right-0 z-20 flex bg-card border-l transform transition-transform duration-200 ease-in-out',
+          'fixed inset-y-0 right-0 z-20 flex bg-sidebar border-l transform transition-transform duration-200 ease-in-out',
           'lg:w-[430px]',
           !open && 'translate-x-full',
           // Mobile: full width drawer from bottom
