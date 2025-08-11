@@ -153,13 +153,11 @@ function PlanningPage() {
     <div className="relative flex-1">
       <HeaderPage title={t('title')} description={t('description')} />
 
-      <div className="bg-white rounded-lg shadow p-4">
-        <PlanningCalendar
-          initialEvents={calendarEvents}
-          onDateClick={handleDateClick}
-          onEventClick={handleEventClick}
-        />
-      </div>
+      <PlanningCalendar
+        initialEvents={calendarEvents}
+        onDateClick={handleDateClick}
+        onEventClick={handleEventClick}
+      />
 
 
       <TrainingSessionDetailPopover
