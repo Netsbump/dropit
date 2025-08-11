@@ -95,7 +95,7 @@ function WorkoutPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto min-h-0">
-            <div className="p-4 pb-8">
+            <div className="pb-8">
               <WorkoutGrid
                 workouts={filteredWorkouts || []}
                 trainingSessions={trainingSessions || []}
