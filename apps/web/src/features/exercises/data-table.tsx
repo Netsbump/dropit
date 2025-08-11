@@ -73,7 +73,7 @@ export function DataTable<TData extends { id: string }, TValue>({
       {/* Filters */}
       <div className="flex justify-between items-center">
         <div className="flex items-center w-full justify-between pb-6">
-          <div className="relative max-w-sm">
+          <div className="relative w-full">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder={t('exercise.filters.search_placeholder')}
@@ -81,7 +81,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               onChange={(event) =>
                 table.getColumn('name')?.setFilterValue(event.target.value)
               }
-              className="pl-8 bg-sidebar"
+              className="pl-8 bg-sidebar max-w-lg"
             />
           </div>
           <div className="flex items-center gap-2">

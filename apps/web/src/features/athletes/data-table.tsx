@@ -107,13 +107,13 @@ export function DataTable<TValue>({
       {/* Filters */}
       <div className="flex justify-between items-center">
         <div className="flex items-center w-full justify-between pb-6">
-          <div className="relative max-w-sm">
+          <div className="relative w-full">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t('athletes:filters.search_placeholder')}
                 value={globalFilter ?? ''}
                 onChange={(event) => setGlobalFilter(event.target.value)}
-                className="pl-8 bg-sidebar"
+                className="pl-8 bg-sidebar max-w-lg"
               />
           </div>
           <div className="flex items-center gap-2">
