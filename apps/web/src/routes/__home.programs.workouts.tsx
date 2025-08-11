@@ -39,6 +39,15 @@ function WorkoutPage() {
     },
   });
 
+  const { data: trainingSessions } = useQuery({
+    queryKey: ['trainingSessions'],
+    queryFn: async () => {
+      const response = await api.trainingSession.getTrainingSessions();
+      if (response.status !== 200) throw new Error('Failed to load training sessions');
+      return response.body;
+    },
+  });
+
   const filteredWorkouts = workouts?.filter((workout) => {
     const matchesSearch = workout.title
       .toLowerCase()
@@ -89,6 +98,7 @@ function WorkoutPage() {
             <div className="p-4 pb-8">
               <WorkoutGrid
                 workouts={filteredWorkouts || []}
+                trainingSessions={trainingSessions || []}
                 onWorkoutClick={handleWorkoutClick}
               />
             </div>

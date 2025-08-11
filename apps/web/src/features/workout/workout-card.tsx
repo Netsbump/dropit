@@ -7,74 +7,91 @@ import {
   CardHeader,
   CardTitle,
 } from '@/shared/components/ui/card';
-import { WORKOUT_ELEMENT_TYPES, WorkoutDto } from '@dropit/schemas';
+import { WORKOUT_ELEMENT_TYPES, WorkoutDto, TrainingSessionDto } from '@dropit/schemas';
+import { getCategoryBadgeVariant } from '@/shared/utils';
+import { Separator } from '@/shared/components/ui/separator';
 
 interface WorkoutCardProps {
   workout: WorkoutDto;
+  trainingSessions: TrainingSessionDto[];
   onWorkoutClick: (id: string) => void;
 }
 
-export function WorkoutCard({ workout, onWorkoutClick }: WorkoutCardProps) {
+export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
-      key={workout.id}
       className="cursor-pointer shadow-none hover:shadow-md transition-shadow rounded-md"
       onClick={() => onWorkoutClick(workout.id)}
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="flex items-center gap-2">
-          <CardTitle className="text-md font-bold">{workout.title}</CardTitle>
-          <Badge variant="outline" className="h-6 font-normal">
-            {workout.workoutCategory}
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
+        <CardTitle className="text-sm font-bold">{workout.title}</CardTitle>
+        <Badge 
+            className={`text-xs border-0 ${getCategoryBadgeVariant(workout.workoutCategory || '')}`}
+          >
+            {workout.workoutCategory || 'Sans catégorie'}
           </Badge>
-        </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-3">
           {workout.elements.map((element) => (
             <div
               key={element.id}
-              className="flex items-start gap-2 text-sm bg-muted/30 rounded-lg p-3"
+              className="flex items-center justify-between text-sm"
             >
               {element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? (
-                <div className="flex flex-col gap-1 w-full">
-                  <div className="flex items-center justify-between">
-                    <span className="font-medium">{element.exercise.name}</span>
-                    <Badge
-                      variant="secondary"
-                      className="h-6 min-w-[24px] flex items-center justify-center"
-                    >
+                <div className="flex flex-col justify-between text-sm">
+                  <div className="flex items-center gap-2 pb-2">
+                    <span className="text-xs text-muted-foreground">
                       {element.type}
-                    </Badge> 
-
-                    <div className="text-xs text-muted-foreground">{element.exercise.exerciseCategory?.name}</div>
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {element.exercise.exerciseCategory?.name}
+                    </span>
                   </div>
+                  <Badge variant="secondary" className="text-xs font-normal">{element.exercise.name}</Badge>
                 </div>
               ) : (
-                <div className="flex flex-col gap-2 w-full">
-                  <div className="flex items-center justify-between">
-                    {element.complex.exercises?.map(ex => ex.name).join(' - ') || 'Aucun exercice'}
-                    <Badge
-                      variant="secondary"
-                      className="h-6 min-w-[24px] flex items-center justify-center"
-                    >
-                      {element.type}
-                    </Badge>
-                    <div className="text-xs text-muted-foreground">{element.complex.complexCategory?.name}</div>
+                <div className="flex flex-col justify-between text-sm">
+                  <div className="flex items-center gap-2 pb-2">
+                    <span className="text-xs text-muted-foreground">
+                    {element.type}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {element.complex.complexCategory?.name}
+                    </span>
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                  {element.complex.exercises?.map(ex => (
+                    <Badge variant="secondary" className="text-xs font-normal">
+                      {ex.name}
+                      </Badge>
+                    ))}
                   </div>
                 </div>
               )}
             </div>
           ))}
         </div>
+        <div className="mt-4 flex items-center justify-end">
+          <span className="text-xs text-muted-foreground">
+            {trainingSessions.length > 0 
+              ? `${trainingSessions.length} session${trainingSessions.length > 1 ? 's' : ''} planifiée${trainingSessions.length > 1 ? 's' : ''}`
+              : 'Non planifié'
+            }
+          </span>
+        </div>
       </CardContent>
-      <CardFooter>
-        <Button variant="outline" className="w-full">
-          Voir les détails
-        </Button>
-        <Button variant="outline" className="w-full">
-          Planifier
-        </Button>
+
+      <CardFooter className="gap-2 flex flex-col">
+        <Separator className="my-2" />
+        <div className='flex gap-2 w-full'>
+          <Button variant="outline" size="sm" className="flex-1">
+            Voir les détails
+          </Button>
+          <Button variant="outline" size="sm" className="flex-1">
+            Planifier
+          </Button>
+        </div>
       </CardFooter>
     </Card>
   );
