@@ -15,7 +15,7 @@ interface StepsProps {
 
 export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
   return (
-    <div className="bg-white rounded-lg border shadow-sm">
+    <div className="bg-sidebar rounded-lg border shadow-sm">
       <nav aria-label="Progress" className="w-full p-6">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => (
