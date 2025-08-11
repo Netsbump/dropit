@@ -101,6 +101,10 @@
       "selected_rows": "{{count}} of {{total}} column(s) selected."
     }
   },
+  "dashboard": {
+    "title": "Dashboard",
+    "description": "Overview of your coaching activity"
+  },
   "organization": {
     "setup": {
       "title": "Create Your Organization",

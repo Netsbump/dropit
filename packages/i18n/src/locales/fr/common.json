@@ -100,5 +100,9 @@
       "columns": "Colonnes",
       "selected_rows": "{{count}} sur {{total}} ligne(s) sélectionnée(s)"
     }
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "description": "Vue d'ensemble de votre activité coaching"
   }
 }
