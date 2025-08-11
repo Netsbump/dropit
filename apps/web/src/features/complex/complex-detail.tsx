@@ -52,7 +52,7 @@ import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
-import { getCategoryBadgeVariant } from './utils';
+import { getCategoryBadgeVariant } from '@/shared/utils';
 
 interface ComplexDetailProps {
   complex: ComplexDto;

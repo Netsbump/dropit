@@ -7,10 +7,12 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from '@/shared/components/ui/dropdown-menu';
+import { Badge } from '@/shared/components/ui/badge';
 import { ExerciseDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import { ArrowUpDown } from 'lucide-react';
+import { getCategoryBadgeVariant } from '@/shared/utils';
 
 type Exercise = ExerciseDto;
 
@@ -57,7 +59,7 @@ export const columns: ColumnDef<Exercise>[] = [
     },
   },
   {
-    accessorKey: 'exerciseCategory.name',
+    accessorKey: 'exerciseCategory.id',
     header: ({ column }) => {
       return (
         <Button
@@ -68,6 +70,17 @@ export const columns: ColumnDef<Exercise>[] = [
           Catégorie
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+    cell: ({ row }) => {
+      const categoryName = row.original.exerciseCategory?.name || '—';
+      
+      const badgeVariant = getCategoryBadgeVariant(categoryName);
+      
+      return (
+        <Badge className={badgeVariant}>
+          {categoryName}
+        </Badge>
       );
     },
   },

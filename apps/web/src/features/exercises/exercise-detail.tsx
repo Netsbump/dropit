@@ -30,7 +30,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Badge } from '@/shared/components/ui/badge';
-import { getExerciseCategoryBadgeVariant } from './utils';
+import { getCategoryBadgeVariant } from '@/shared/utils';
 
 interface ExerciseDetailProps {
   exercise: {
@@ -313,7 +313,7 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
             <div className="space-y-2 space-x-2">
               <Label>Catégorie</Label>
               <Badge 
-                className={`text-xs border-0 ${getExerciseCategoryBadgeVariant(exercise.exerciseCategory.name, exerciseCategories || [])}`}
+                className={`text-xs border-0 ${getCategoryBadgeVariant(exercise.exerciseCategory.name)}`}
               >
                 {exercise.exerciseCategory.name}
               </Badge>

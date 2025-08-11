@@ -15,7 +15,7 @@ import {
 } from '@/shared/components/ui/dropdown-menu';
 import { ComplexDto } from '@dropit/schemas';
 import { MoreHorizontal } from 'lucide-react';
-import { getCategoryBadgeVariant } from './utils';
+import { getCategoryBadgeVariant } from '@/shared/utils';
 
 interface ComplexCardProps {
   complex: ComplexDto;
