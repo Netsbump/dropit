@@ -151,11 +151,11 @@ export function AppSidebar() {
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton 
                       asChild
-                      className={isActive ? 'bg-orange-50 text-orange-600 hover:bg-orange-100' : ''}
+                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100'}
                     >
                       <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className={`h-4 w-4 ${isActive ? 'text-orange-600' : ''}`} />
-                        <span className={isActive ? 'text-orange-600 font-medium' : ''}>
+                        <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />
+                        <span className={isActive ? 'text-gray-900 font-medium' : ''}>
                           {item.title}
                         </span>
                       </Link>
@@ -175,7 +175,7 @@ export function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton className="h-12 px-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-orange-100 text-orange-600 text-sm font-medium flex items-center justify-center">
+                    <AvatarFallback className="bg-white text-sm font-medium flex items-center justify-center">
                       {getUserInitials(session?.user?.name)}
                     </AvatarFallback>
                   </Avatar>
