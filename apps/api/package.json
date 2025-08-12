@@ -11,6 +11,8 @@
     "dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist",
     "db:create": "mikro-orm database:create && pnpm db:migration:up",
     "db:sync": "mikro-orm schema:update --run",
     "db:fresh": "mikro-orm schema:fresh --seed --run --config=./src/config/mikro-orm.config.ts",
