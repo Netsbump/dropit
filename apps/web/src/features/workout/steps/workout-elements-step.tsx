@@ -2,6 +2,7 @@ import { api } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { Input } from '@/shared/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/components/ui/tooltip';
 import {
   DndContext,
   DragEndEvent,
@@ -132,12 +133,20 @@ export function WorkoutElementsStep({
     exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
   ) || [];
 
-  const filteredComplexes = complexes?.filter(complex =>
-    complex.complexCategory?.name?.toLowerCase().includes(complexSearch.toLowerCase())
-  ) || [];
+  const filteredComplexes = complexes?.filter(complex => {
+    const searchTerm = complexSearch.toLowerCase();
+    // Recherche dans le nom de la catégorie
+    const categoryMatch = complex.complexCategory?.name?.toLowerCase().includes(searchTerm);
+    // Recherche dans les noms des exercices du complexe
+    const exerciseMatch = complex.exercises.some(exercise => 
+      exercise.name.toLowerCase().includes(searchTerm)
+    );
+    return categoryMatch || exerciseMatch;
+  }) || [];
 
   return (
-    <div className="h-full flex flex-col">
+    <TooltipProvider>
+      <div className="h-full flex flex-col">
 
       {/* Layout principal : 2 colonnes */}
       <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 mt-6">
@@ -204,7 +213,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateExerciseModalOpen(true);
                           }}
-                          className="w-full bg-orange-100"
+                          className="w-full bg-primary/5 hover:bg-primary/10"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouvel exercice
@@ -215,23 +224,30 @@ export function WorkoutElementsStep({
                         {filteredExercises.map((exercise) => (
                           <div 
                             key={exercise.id} 
-                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-background"
+                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/30"
                           >
                             <div className="flex items-center justify-between">
-                              <div>
-                                <h5 className="font-medium text-sm">{exercise.name}</h5>
+                              <div className="flex-1 mr-2">
+                                <h5 className="font-medium text-sm mb-2">{exercise.name}</h5>
                                 <p className="text-xs text-muted-foreground">
                                   {exercise.exerciseCategory.name}
                                 </p>
                               </div>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleAddElement('exercise', exercise.id)}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleAddElement('exercise', exercise.id)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ajouter cet exercice à l'entraînement</p>
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </div>
                         ))}
@@ -241,7 +257,7 @@ export function WorkoutElementsStep({
                   
                   {activeTab === 'complex' && (
                     <div className="flex-1 flex flex-col min-h-0">
-                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
+                      <div className="relative mb-3 flex-shrink-0">
                         <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                         <Input
                           placeholder="Rechercher un complexe..."
@@ -261,7 +277,7 @@ export function WorkoutElementsStep({
                             e.stopPropagation();
                             setCreateComplexModalOpen(true);
                           }}
-                          className="w-full bg-orange-100"
+                          className="w-full bg-secondary hover:bg-secondary/80"
                         >
                           <Plus className="h-4 w-4 mr-2" />
                           Créer un nouveau complexe
@@ -272,23 +288,39 @@ export function WorkoutElementsStep({
                         {filteredComplexes.map((complex) => (
                           <div 
                             key={complex.id} 
-                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-background"
+                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/30"
                           >
                             <div className="flex items-center justify-between">
-                              <div>
-                                <h5 className="font-medium text-sm">{complex.complexCategory?.name || 'Complex'}</h5>
-                                <p className="text-xs text-muted-foreground">
-                                  {complex.exercises.length} exercices
-                                </p>
+                              <div className="flex-1 mr-2">
+                              <h5 className="font-medium text-sm mb-2">
+                                  {complex.exercises.map((exercise, index) => (
+                                    <span key={exercise.id}>
+                                      {exercise.name}
+                                      {index < complex.exercises.length - 1 ? ', ' : ''}
+                                    </span>
+                                  ))}
+                                </h5>
+                                {complex.complexCategory?.name && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {complex.complexCategory.name}
+                                  </p>
+                                )}
                               </div>
-                              <Button
-                                type="button"
-                                size="sm"
-                                variant="ghost"
-                                onClick={() => handleAddElement('complex', complex.id)}
-                              >
-                                <Plus className="h-4 w-4" />
-                              </Button>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleAddElement('complex', complex.id)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ajouter ce complexe à l'entraînement</p>
+                                </TooltipContent>
+                              </Tooltip>
                             </div>
                           </div>
                         ))}
@@ -396,6 +428,7 @@ export function WorkoutElementsStep({
           onCancel={() => setCreateComplexModalOpen(false)}
         />
       </DialogCreation>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 }
