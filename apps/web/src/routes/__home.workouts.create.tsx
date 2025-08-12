@@ -59,6 +59,11 @@ function CreateWorkoutPage() {
 
   const handleCreationSuccess = (data: CreateWorkout) => {
     createWorkoutMutation(data);
+    if (data.trainingSession?.scheduledDate) {
+      navigate({ to: '/planning', replace: true, search: { date: data.trainingSession.scheduledDate } });
+    } else {
+      navigate({ to: '/programs/workouts', replace: true });
+    }
   };
 
   const handleCancel = () => {
