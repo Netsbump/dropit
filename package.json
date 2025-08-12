@@ -2,7 +2,7 @@
   "name": "dropit",
   "private": true,
   "scripts": {
-    "build": "pnpm --filter api build && pnpm --filter web build",
+    "build": "pnpm --recursive --filter '{packages/*}' build && pnpm --filter api build && pnpm --filter web build",
     "dev": "pnpm --parallel --filter '{apps/*}' dev",
     "typecheck": "pnpm --recursive --filter '{apps/*}' typecheck",
     "lint": "biome lint .",
