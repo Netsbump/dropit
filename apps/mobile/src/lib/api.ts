@@ -6,6 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export const api = initClient(apiContract, {
   baseUrl: 'http://192.168.1.147:3000/api',
   // Configuration pour React Native
+  // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
   api: async (args: any) => {
     try {
       // Récupération du token depuis AsyncStorage

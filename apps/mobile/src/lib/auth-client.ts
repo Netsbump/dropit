@@ -27,6 +27,7 @@ export const authClient = createAuthClient({
         return null;
       }
     },
+    // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
     set: async (key: string, value: any) => {
       try {
         await AsyncStorage.setItem(key, JSON.stringify(value));
