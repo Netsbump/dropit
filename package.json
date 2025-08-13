@@ -4,6 +4,8 @@
   "scripts": {
     "build": "pnpm --recursive --filter '{packages/*}' build && pnpm --filter api build && pnpm --filter web build",
     "dev": "pnpm --parallel --filter '{apps/*}' dev",
+    "dev:web-api": "pnpm --parallel --filter api --filter web dev",
+    "dev:mobile": "pnpm --filter mobile dev",
     "typecheck": "pnpm --recursive --filter '{apps/*}' typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --fix .",
