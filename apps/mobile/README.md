@@ -1,6 +1,6 @@
 # DropIt Mobile App
 
-Application mobile React Native avec Expo pour la gestion d'entraînements de musculation.
+Application mobile React Native avec Expo pour la gestion d'entraînements d'haltérophilie.
 
 ## 🚀 Fonctionnalités
 
