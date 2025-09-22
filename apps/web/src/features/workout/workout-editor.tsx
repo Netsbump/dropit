@@ -250,7 +250,7 @@ export function WorkoutEditor({
                             handleAddElement('complex', complex.id)
                           }
                         >
-                          {complex.name}
+                          {complex.complexCategory?.name || 'Complex'}
                         </Button>
                       ))}
                     </TabsContent>
@@ -304,7 +304,7 @@ export function WorkoutEditor({
                               {element.sets} séries
                             </Badge>
                             <span className="font-medium">
-                              {element.complex.name}
+                              {element.complex.complexCategory?.name || 'Complex'}
                             </span>
                           </div>
                           <p className="text-sm text-muted-foreground">

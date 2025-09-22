@@ -6,26 +6,22 @@ import { seedExercises } from './exercise.seeder';
 
 export async function seedComplexes(
   em: EntityManager
-): Promise<Record<string, Complex>> {
+): Promise<Complex[]> {
 
   const exercisesMap = await seedExercises(em);
 
   const complexCategories = [
     {
-      name: 'EMOM',
-      description: 'Exercices à exécuter toutes les minutes',
-    },
-    {
-      name: 'Technique Arraché',
+      name: 'Arraché',
       description: "Exercices focalisés sur la technique de l'arraché",
     },
     {
-      name: 'Technique Épaulé-Jeté',
+      name: 'Épaulé',
       description: "Exercices focalisés sur la technique de l'épaulé-jeté",
     },
     {
-      name: 'TABATA',
-      description: 'Exercices en intervalles courts (20s effort / 10s repos)',
+      name: 'Renforcement',
+      description: 'Exercices de musculation spécifiques',
     },
   ];
 
@@ -39,10 +35,13 @@ export async function seedComplexes(
     console.log('Complex category created:', categoryToCreate);
   }
 
+  const ARRACHE_CATEGORY_INDEX = 0;
+  const EPAULE_CATEGORY_INDEX = 1;
+  const RENFORCEMENT_CATEGORY_INDEX = 2;
+
   const complexesToCreate = [
     {
-      name: 'EMOM Technique Arraché',
-      category: 'EMOM',
+      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
       description: "Focus sur la technique de l'arraché",
       exercises: [
         {
@@ -60,9 +59,8 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'Complex Épaulé-Jeté',
-      category: 'Technique Épaulé-Jeté',
-      description: "Focus sur la technique de l'épaulé-jeté",
+      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
+      description: "EMOM",
       exercises: [
         {
           name: 'Épaulé Debout',
@@ -83,9 +81,8 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'TABATA Force',
-      category: 'TABATA',
-      description: 'Focus sur la force',
+      category: complexCategories[RENFORCEMENT_CATEGORY_INDEX].name,
+      description: 'On le fait en TABATA',
       exercises: [
         {
           name: 'Squat Nuque',
@@ -102,9 +99,8 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'Technique Arraché Complet',
-      category: 'Technique Arraché',
-      description: "Focus sur la technique de l'arraché",
+      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
+      description: "Focus sur la technique de l'arraché, EMOM",
       exercises: [
         {
           name: 'Arraché Debout',
@@ -121,9 +117,8 @@ export async function seedComplexes(
       ],
     },
     {
-      name: 'EMOM Épaulé',
-      category: 'EMOM',
-      description: "Focus sur l'épaulé",
+      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
+      description: "On se concentre sur la technique",
       exercises: [
         {
           name: 'Épaulé Debout',
@@ -141,10 +136,9 @@ export async function seedComplexes(
     },
   ];
 
-  const complexesMap: Record<string, Complex> = {};
+  const complexesCreated: Complex[] = [];
   for (const complexData of complexesToCreate) {
     const complex = new Complex();
-    complex.name = complexData.name;
     complex.description = complexData.description;
     complex.complexCategory = complexCategoriesMap[complexData.category];
     complex.createdBy = null;
@@ -163,9 +157,9 @@ export async function seedComplexes(
       await em.persistAndFlush(exerciseComplex);
     }
 
-    console.log('Complex created:', complex.name);
-    complexesMap[complex.name] = complex;
+    console.log('Complex created:', complex);
+    complexesCreated.push(complex);
   }
 
-  return complexesMap;
+  return complexesCreated;
 }

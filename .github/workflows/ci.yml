@@ -56,7 +56,7 @@ jobs:
         run: pnpm install
 
       - name: Run build
-        run: pnpm run build
+        run: pnpm build
 
   test:
     name: Run Tests

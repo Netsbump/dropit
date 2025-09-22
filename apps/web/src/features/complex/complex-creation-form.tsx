@@ -8,7 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -75,7 +74,7 @@ export function ComplexCreationForm({
     },
   });
 
-  const { mutate: createComplexMutation } = useMutation({
+  const { mutateAsync: createComplexMutation } = useMutation({
     mutationFn: async (data: CreateComplex) => {
       const response = await api.complex.createComplex({ body: data });
       if (response.status !== 201) {
@@ -138,10 +137,10 @@ export function ComplexCreationForm({
     setCreateCategoryModalOpen(false);
   };
 
-  const form = useForm<z.infer<typeof createComplexSchema>>({
-    resolver: zodResolver(createComplexSchema),
+  const formComplexSchema = createComplexSchema;
+  const form = useForm<z.infer<typeof formComplexSchema>>({
+    resolver: zodResolver(formComplexSchema),
     defaultValues: {
-      name: '',
       description: '',
       complexCategory: '',
       exercises: [
@@ -196,7 +195,7 @@ export function ComplexCreationForm({
     });
   };
 
-  const handleSubmit = (formValues: z.infer<typeof createComplexSchema>) => {
+  const handleSubmit = async (formValues: z.infer<typeof formComplexSchema>) => {
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',
@@ -207,7 +206,7 @@ export function ComplexCreationForm({
     }
     setIsLoading(true);
     try {
-      createComplexMutation(formValues);
+      await createComplexMutation(formValues);
     } finally {
       setIsLoading(false);
     }
@@ -232,20 +231,6 @@ export function ComplexCreationForm({
         )}
         className="grid gap-4 py-4"
       >
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nom</FormLabel>
-              <FormControl>
-                <Input placeholder="Nom du complex" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="description"

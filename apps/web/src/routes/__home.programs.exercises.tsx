@@ -56,7 +56,7 @@ function ExercisesPage() {
     <div className="relative flex-1">
       <div
         className={`transition-all duration-200 ${
-          selectedExercise ? 'mr-[400px]' : ''
+          selectedExercise ? 'lg:mr-[430px]' : ''
         }`}
       >
         {exercisesLoading ? (

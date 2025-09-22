@@ -52,6 +52,7 @@ import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
+import { getCategoryBadgeVariant } from '@/shared/utils';
 
 interface ComplexDetailProps {
   complex: ComplexDto;
@@ -195,7 +196,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   const form = useForm<z.infer<typeof updateComplexSchema>>({
     resolver: zodResolver(updateComplexSchema),
     defaultValues: {
-      name: complex.name,
       description: complex.description ?? '',
       complexCategory: complex.complexCategory.id,
       exercises: complex.exercises.map((e, index) => ({
@@ -303,20 +303,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           {/* Informations principales */}
           <Card className="bg-background rounded-md shadow-none">
             <CardContent className="space-y-4 pt-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="description"
@@ -527,15 +513,10 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       <Card className="bg-background rounded-md shadow-none">
         <CardContent className="space-y-4 pt-6">
           <div className="space-y-2">
-            <Label>Nom</Label>
-            <p className="text-sm">{complex.name}</p>
-          </div>
-
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <p className="text-sm text-muted-foreground">
-              {complex.description || 'Pas de description'}
-            </p>
+              <Label>Description</Label>
+              <p className="text-sm text-muted-foreground">
+                {complex.description || 'Pas de description'}
+              </p>
           </div>
         </CardContent>
       </Card>
@@ -543,9 +524,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       {/* Catégorie dans une Card séparée */}
       <Card className="bg-background rounded-md shadow-none">
         <CardContent className="pt-6">
-          <div className="space-y-2">
+          <div className="space-y-2 space-x-2">
             <Label>Catégorie</Label>
-            <Badge variant="secondary">{complex.complexCategory.name}</Badge>
+            <Badge 
+              className={`border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}
+            >
+              {complex.complexCategory.name}
+            </Badge>
           </div>
         </CardContent>
       </Card>

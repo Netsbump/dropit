@@ -52,6 +52,7 @@ import { EXERCISE_CATEGORY_REPO } from './application/ports/exercise-category.re
 import { EXERCISE_REPO } from './application/ports/exercise.repository';
 import { WORKOUT_CATEGORY_REPO } from './application/ports/workout-category.repository';
 import { WORKOUT_REPO } from './application/ports/workout.repository';
+import { WORKOUT_ELEMENT_REPO } from './application/ports/workout-element.repository';
 
 @Module({
   imports: [
@@ -115,6 +116,7 @@ import { WORKOUT_REPO } from './application/ports/workout.repository';
     { provide: EXERCISE_REPO, useClass: MikroExerciseRepository },
     { provide: WORKOUT_CATEGORY_REPO, useClass: MikroWorkoutCategoryRepository },
     { provide: WORKOUT_REPO, useClass: MikroWorkoutRepository },
+    { provide: WORKOUT_ELEMENT_REPO, useClass: MikroWorkoutElementRepository },
   ],
   exports: [
     TRAINING_SESSION_REPO, 
@@ -126,6 +128,7 @@ import { WORKOUT_REPO } from './application/ports/workout.repository';
     EXERCISE_REPO,
     WORKOUT_CATEGORY_REPO,
     WORKOUT_REPO,
+    WORKOUT_ELEMENT_REPO,
   ],
 })
 export class TrainingModule {}

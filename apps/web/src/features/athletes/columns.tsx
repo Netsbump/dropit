@@ -12,6 +12,7 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
   {
     id: 'select',
     header: ({ table }) => (
+      <div className="flex items-center justify-start">
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
@@ -20,13 +21,16 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
         onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
         aria-label="Select all"
       />
+      </div>
     ),
     cell: ({ row }) => (
+      <div className="flex items-center justify-start">
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
         aria-label="Select row"
       />
+      </div>
     ),
     enableSorting: false,
     enableHiding: false,
@@ -35,7 +39,7 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
     id: 'name',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('athletes.columns.name');
+      return t('columns.name');
     },
     cell: ({ row }) => {
       const firstName = row.original.firstName;
@@ -45,7 +49,7 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
 
       return (
         <div className="flex items-center gap-3">
-          <Avatar>
+          <Avatar className="bg-sidebar text-sidebar-foreground border border-color-border">
             <AvatarImage src={image} />
             <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
           </Avatar>

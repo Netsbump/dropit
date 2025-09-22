@@ -1,11 +1,8 @@
 import { api } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/shared/components/ui/tabs';
+import { Card, CardContent } from '@/shared/components/ui/card';
+import { Input } from '@/shared/components/ui/input';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/shared/components/ui/tooltip';
 import {
   DndContext,
   DragEndEvent,
@@ -18,11 +15,15 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableContext } from '@dnd-kit/sortable';
 import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
 import { createWorkoutSchema } from '@dropit/schemas';
-import { useQuery } from '@tanstack/react-query';
-import { PlusCircle } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Plus, Search } from 'lucide-react';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
+import { useState } from 'react';
 import { z } from 'zod';
 import { SortableWorkoutElement } from '../sortable-workout-element';
+import { DialogCreation } from '../../exercises/dialog-creation';
+import { ExerciseCreationForm } from '../../exercises/exercise-creation-form';
+import { ComplexCreationForm } from '../../complex/complex-creation-form';
 
 // Importer le schéma étendu depuis le stepper parent
 const extendedWorkoutSchema = createWorkoutSchema.extend({
@@ -49,6 +50,13 @@ export function WorkoutElementsStep({
   onNext,
   onCancel,
 }: WorkoutElementsStepProps) {
+  const [exerciseSearch, setExerciseSearch] = useState('');
+  const [complexSearch, setComplexSearch] = useState('');
+  const [activeTab, setActiveTab] = useState<'exercise' | 'complex'>('exercise');
+  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
+  const queryClient = useQueryClient();
+
   // Queries pour récupérer les données nécessaires
   const { data: exercises } = useQuery({
     queryKey: ['exercises'],
@@ -93,13 +101,13 @@ export function WorkoutElementsStep({
     }
   };
 
-  const handleAddElement = (type: 'exercise' | 'complex') => {
+  const handleAddElement = (type: 'exercise' | 'complex', itemId?: string) => {
     append({
       type:
         type === 'exercise'
           ? WORKOUT_ELEMENT_TYPES.EXERCISE
           : WORKOUT_ELEMENT_TYPES.COMPLEX,
-      id: '',
+      id: itemId || '',
       order: fields.length,
       sets: 1,
       reps: 1,
@@ -108,69 +116,282 @@ export function WorkoutElementsStep({
     });
   };
 
+  const handleExerciseCreationSuccess = async () => {
+    // Rafraîchir la liste des exercices
+    await queryClient.invalidateQueries({ queryKey: ['exercises'] });
+    setCreateExerciseModalOpen(false);
+  };
+
+  const handleComplexCreationSuccess = async () => {
+    // Rafraîchir la liste des complexes
+    await queryClient.invalidateQueries({ queryKey: ['complexes'] });
+    setCreateComplexModalOpen(false);
+  };
+
+  // Filtrer les exercices et complexes selon la recherche
+  const filteredExercises = exercises?.filter(exercise =>
+    exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
+  ) || [];
+
+  const filteredComplexes = complexes?.filter(complex => {
+    const searchTerm = complexSearch.toLowerCase();
+    // Recherche dans le nom de la catégorie
+    const categoryMatch = complex.complexCategory?.name?.toLowerCase().includes(searchTerm);
+    // Recherche dans les noms des exercices du complexe
+    const exerciseMatch = complex.exercises.some(exercise => 
+      exercise.name.toLowerCase().includes(searchTerm)
+    );
+    return categoryMatch || exerciseMatch;
+  }) || [];
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between flex-col gap-2">
-        <h3 className="text-lg font-semibold">Éléments de l'entraînement</h3>
-        <Tabs defaultValue="exercise" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="exercise">Exercice</TabsTrigger>
-            <TabsTrigger value="complex">Complex</TabsTrigger>
-          </TabsList>
-          <TabsContent value="exercise">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => handleAddElement('exercise')}
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Ajouter un exercice
-            </Button>
-          </TabsContent>
-          <TabsContent value="complex">
-            <Button
-              type="button"
-              variant="outline"
-              className="w-full"
-              onClick={() => handleAddElement('complex')}
-            >
-              <PlusCircle className="h-4 w-4 mr-2" />
-              Ajouter un complex
-            </Button>
-          </TabsContent>
-        </Tabs>
-      </div>
+    <TooltipProvider>
+      <div className="h-full flex flex-col">
 
-      <div className="max-h-[60vh] overflow-y-auto pr-2">
-        <DndContext
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext
-            items={fields.map((field) => field.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="columns-1 md:columns-2 gap-4 relative">
-              {fields.map((field, index) => (
-                <div key={field.id} className="break-inside-avoid mb-4">
-                  <SortableWorkoutElement
-                    id={field.id}
-                    index={index}
-                    control={form.control}
-                    onRemove={remove}
-                    exercises={exercises}
-                    complexes={complexes}
-                  />
+      {/* Layout principal : 2 colonnes */}
+      <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 mt-6">
+
+        {/* Colonne gauche : Liste des éléments disponibles */}
+        <div className="col-span-1 flex flex-col min-h-0">
+          <div className="mb-4">
+            <h4 className="text-md font-medium">Éléments disponibles</h4>
+            <p className="text-sm text-muted-foreground">
+              Cliquez pour ajouter à votre entraînement
+            </p>
+          </div>
+
+          <Card className="flex-1 flex flex-col min-h-0">
+            <CardContent className="p-4 flex-1 flex flex-col min-h-0">
+              <div className="flex-1 flex flex-col min-h-0">
+                {/* Tabs List */}
+                <div className="grid w-full grid-cols-2 flex-shrink-0 mb-4">
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('exercise')}
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      activeTab === 'exercise'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    Exercices
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveTab('complex')}
+                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                      activeTab === 'complex'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                    }`}
+                  >
+                    Complexes
+                  </button>
                 </div>
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+                
+                {/* Tab Content */}
+                <div className="flex-1 flex flex-col min-h-0">
+                  {activeTab === 'exercise' && (
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <div className="relative mb-3 flex-shrink-0 bg-sidebar">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Rechercher un exercice..."
+                          value={exerciseSearch}
+                          onChange={(e) => setExerciseSearch(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      
+                      <div className="mb-3 flex-shrink-0">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCreateExerciseModalOpen(true);
+                          }}
+                          className="w-full bg-primary/5 hover:bg-primary/10"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Créer un nouvel exercice
+                        </Button>
+                      </div>
+                      
+                      <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+                        {filteredExercises.map((exercise) => (
+                          <div 
+                            key={exercise.id} 
+                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/30"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 mr-2">
+                                <h5 className="font-medium text-sm mb-2">{exercise.name}</h5>
+                                <p className="text-xs text-muted-foreground">
+                                  {exercise.exerciseCategory.name}
+                                </p>
+                              </div>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleAddElement('exercise', exercise.id)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ajouter cet exercice à l'entraînement</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {activeTab === 'complex' && (
+                    <div className="flex-1 flex flex-col min-h-0">
+                      <div className="relative mb-3 flex-shrink-0">
+                        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                          placeholder="Rechercher un complexe..."
+                          value={complexSearch}
+                          onChange={(e) => setComplexSearch(e.target.value)}
+                          className="pl-10"
+                        />
+                      </div>
+                      
+                      <div className="mb-3 flex-shrink-0">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setCreateComplexModalOpen(true);
+                          }}
+                          className="w-full bg-secondary hover:bg-secondary/80"
+                        >
+                          <Plus className="h-4 w-4 mr-2" />
+                          Créer un nouveau complexe
+                        </Button>
+                      </div>
+                      
+                      <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
+                        {filteredComplexes.map((complex) => (
+                          <div 
+                            key={complex.id} 
+                            className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-muted/30"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1 mr-2">
+                              <h5 className="font-medium text-sm mb-2">
+                                  {complex.exercises.map((exercise, index) => (
+                                    <span key={exercise.id}>
+                                      {exercise.name}
+                                      {index < complex.exercises.length - 1 ? ', ' : ''}
+                                    </span>
+                                  ))}
+                                </h5>
+                                {complex.complexCategory?.name && (
+                                  <p className="text-xs text-muted-foreground">
+                                    {complex.complexCategory.name}
+                                  </p>
+                                )}
+                              </div>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    type="button"
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => handleAddElement('complex', complex.id)}
+                                  >
+                                    <Plus className="h-4 w-4" />
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Ajouter ce complexe à l'entraînement</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Colonne droite : Éléments sélectionnés */}
+        <div className="col-span-3 flex flex-col min-h-0">
+          <div className="mb-4">
+            <h4 className="text-md font-medium">Éléments sélectionnés</h4>
+            <p className="text-sm text-muted-foreground">
+              Glissez-déposez pour réorganiser l'ordre
+            </p>
+          </div>
+          
+          <Card className="flex-1 flex flex-col min-h-0 relative">
+            <CardContent className="p-4 flex-1 flex flex-col min-h-0">
+              {fields.length === 0 ? (
+                <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">
+                  <div className="text-center text-muted-foreground">
+                    <p>Aucun élément sélectionné</p>
+                    <p className="text-sm">Ajoutez des exercices ou complexes depuis le panneau de gauche</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex-1 overflow-x-auto min-h-0">
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={fields.map((field) => field.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div
+                        className="flex flex-col flex-wrap gap-4 h-full"
+                      >
+                        {fields.map((field, index) => (
+                          <div
+                          key={field.id}
+                          className="w-[49%]"
+                        >
+                            <SortableWorkoutElement
+                              id={field.id}
+                              index={index}
+                              control={form.control}
+                              onRemove={remove}
+                              exercises={exercises}
+                              complexes={complexes}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
       </div>
 
-      <div className="flex justify-between">
+      {/* Boutons de navigation */}
+      <div className="flex justify-between mt-6 flex-shrink-0">
         <Button variant="outline" onClick={onCancel}>
           Annuler
         </Button>
@@ -181,6 +402,33 @@ export function WorkoutElementsStep({
           <Button onClick={onNext}>Suivant</Button>
         </div>
       </div>
-    </div>
+
+      {/* Modales de création */}
+      <DialogCreation
+        open={createExerciseModalOpen}
+        onOpenChange={setCreateExerciseModalOpen}
+        title="Créer un exercice"
+        description="Ajoutez un nouvel exercice à votre catalogue."
+      >
+        <ExerciseCreationForm
+          onSuccess={handleExerciseCreationSuccess}
+          onCancel={() => setCreateExerciseModalOpen(false)}
+        />
+      </DialogCreation>
+
+      <DialogCreation
+        open={createComplexModalOpen}
+        onOpenChange={setCreateComplexModalOpen}
+        title="Créer un complexe"
+        description="Ajoutez un nouveau complexe à votre catalogue."
+        maxWidth="lg"
+      >
+        <ComplexCreationForm
+          onSuccess={handleComplexCreationSuccess}
+          onCancel={() => setCreateComplexModalOpen(false)}
+        />
+      </DialogCreation>
+      </div>
+    </TooltipProvider>
   );
 }

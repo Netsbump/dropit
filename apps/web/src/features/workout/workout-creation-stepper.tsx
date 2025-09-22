@@ -25,17 +25,14 @@ const steps = [
   {
     id: 'info',
     name: 'Description',
-    description: 'Définir les informations générales',
   },
   {
     id: 'elements',
     name: 'Construction',
-    description: 'Assembler les éléments',
   },
   {
     id: 'planning',
     name: 'Planification',
-    description: 'Programmer et attribuer',
   },
 ];
 
@@ -78,38 +75,40 @@ export function WorkoutCreationStepper({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="h-full flex flex-col">
         <Steps
           steps={steps}
           currentStep={currentStep}
           onStepClick={setCurrentStep}
         />
 
-        {currentStep === 0 && (
-          <WorkoutInfoStep
-            form={form}
-            onNext={() => setCurrentStep(1)}
-            onCancel={onCancel}
-          />
-        )}
+        <div className="flex-1 min-h-0">
+          {currentStep === 0 && (
+            <WorkoutInfoStep
+              form={form}
+              onNext={() => setCurrentStep(1)}
+              onCancel={onCancel}
+            />
+          )}
 
-        {currentStep === 1 && (
-          <WorkoutElementsStep
-            form={form}
-            onBack={() => setCurrentStep(0)}
-            onNext={() => setCurrentStep(2)}
-            onCancel={onCancel}
-          />
-        )}
+          {currentStep === 1 && (
+            <WorkoutElementsStep
+              form={form}
+              onBack={() => setCurrentStep(0)}
+              onNext={() => setCurrentStep(2)}
+              onCancel={onCancel}
+            />
+          )}
 
-        {currentStep === 2 && (
-          <WorkoutPlanningStep
-            form={form}
-            onBack={() => setCurrentStep(1)}
-            onSubmit={handleSubmit}
-            onCancel={onCancel}
-          />
-        )}
+          {currentStep === 2 && (
+            <WorkoutPlanningStep
+              form={form}
+              onBack={() => setCurrentStep(1)}
+              onSubmit={handleSubmit}
+              onCancel={onCancel}
+            />
+          )}
+        </div>
       </form>
     </Form>
   );

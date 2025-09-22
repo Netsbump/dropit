@@ -94,9 +94,6 @@ export class ComplexUseCase {
       }
 
       // 2. Validate the data
-      if (!data.name) {
-        throw new BadRequestException('Complex name is required');
-      }
       if (!data.exercises) {
         throw new BadRequestException('Exercises are required');
       }
@@ -114,7 +111,6 @@ export class ComplexUseCase {
 
       // 5. Create the complex
       const complex = new Complex();
-      complex.name = data.name;
       complex.complexCategory = complexCategory;
       complex.description = data.description || '';
 
@@ -144,16 +140,16 @@ export class ComplexUseCase {
       await this.complexRepository.save(complex);
 
       // 9. Get the created complex
-      const created = await this.complexRepository.getOne(complex.id, coachFilterConditions);
-      if (!created) {
+      const complexCreated = await this.complexRepository.getOne(complex.id, coachFilterConditions);
+      if (!complexCreated) {
         throw new NotFoundException('Complex not found');
       }
 
       // 10. Map the complex
-      const dto = ComplexMapper.toDto(created);
+      const complexDto = ComplexMapper.toDto(complexCreated);
 
       // 11. Present the complex
-      return ComplexPresenter.presentOne(dto);
+      return ComplexPresenter.presentCreationSuccess(complexDto);
     } catch (error) {
       return ComplexPresenter.presentCreationError(error as Error);
     }
@@ -177,10 +173,6 @@ export class ComplexUseCase {
       }
 
       // 4. Update the complex properties
-      if (data.name) {
-        complexToUpdate.name = data.name;
-      }
-
       if (data.description !== undefined) {
         complexToUpdate.description = data.description;
       }

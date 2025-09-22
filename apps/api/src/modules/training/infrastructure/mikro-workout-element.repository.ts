@@ -13,7 +13,7 @@ export class MikroWorkoutElementRepository extends EntityRepository<WorkoutEleme
     return await this.em.persistAndFlush(workoutElement);
   }
 
-  async remove(id: string): Promise<void> {
+  async remove(id: string, organizationId: string): Promise<void> {
     const workoutElement = await this.em.findOne(WorkoutElement, { id });
     
     if (workoutElement) {

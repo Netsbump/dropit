@@ -57,18 +57,18 @@ DropIt est une application web conçue pour optimiser le suivi et la gestion de 
 ## Fonctionnalités
 
 - Gestion du profil : Les utilisateurs créent et mettent à jour leur profil, y compris les informations de base et les statistiques de performance telles que le poids et la taille.
-- Gestion des athlètes : Les coachs ont accès à une interface de gestion pour accéder aux profils des athlètes, créer et publier des entraînements, et gérer une bibliothèque d'exercices.
+- Gestion des athlètes : Les coachs ont accès à une interface de gestion pour accéder aux profils des athlètes
 - Gestion des entrainements : Les coachs ont accès à une interface de gestion pour créer et consulter une bibliothèque d'exercices, de blocs d'exercices et d'entrainements.
 - Calendrier d'entraînement personnalisé : Les athlètes peuvent visualiser la programmation quotidienne avec des détails sur les exercices, les pourcentages de travail et les répétitions.
 - Gestion des performances : Une page dédiée permet aux athlètes de saisir et de visualiser leurs maxima pour chaque exercice.
-- Notifications et Annonces : Un système de notifications informe les utilisateurs des mises à jour importantes, avec des annonces et des messages de la part des coachs.
-- Réglages et Support : Les utilisateurs peuvent accéder aux réglages de l'application, y compris la gestion du compte, le changement de mot de passe, la FAQ et l'aide.
 
 ## Fonctionnalités à Venir
 
 - Suivi de la Progression : Des graphiques et des visualisations pour un suivi détaillé des progrès.
 - Mode Hors Ligne : Permettant l'accès aux fonctionnalités essentielles même sans connexion internet.
 - Personnalisation de l'Interface : Introduction d'un mode clair/sombre et options de choix de langue.
+- Notifications et Annonces : Un système de notifications informe les utilisateurs des mises à jour importantes, avec des annonces et des messages de la part des coachs.
+- Réglages et Support : Les utilisateurs peuvent accéder aux réglages de l'application, y compris la gestion du compte, le changement de mot de passe, la FAQ et l'aide.
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
@@ -82,11 +82,11 @@ DropIt est une application web conçue pour optimiser le suivi et la gestion de 
 - Front-End : React, TypeScript, TanStack (Query + Router), Shadcn + Tailwind
 - Back-End : Nest.js + MikroORM 
 - Base de Données : PostgreSQL
-- Recherche: Typesense
-- Cache: Redis
+- Recherche: Typesense (à venir)
+- Cache: Redis (à venir)
 - CI/CD : Docker, Docker Compose, GitHub Actions
 - Qualité du Code : Biome
-- Monorepo: Turborepo
+- Monorepo: Pnpm workspaces
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
@@ -128,27 +128,60 @@ pnpm build
 
 ### Configuration des variables d'environnements
 
-Il y a seulement un seul fichier `.env` à la racine qui faut créer 
+Créer les fichiers de configuration :
 
 ```bash
+# Fichier .env à la racine (pour le monorepo)
 cp .env.example .env
+
+# Fichier .env pour l'API (requis car l'API s'exécute depuis apps/api/)
+cp apps/api/.env.example apps/api/.env
 ```
 
 ### Lancer le projet (développement)
 
-Démarrer les services via Docker Compose (ex: PostgreSQL, Redis, Typesence):
+Démarrer les services via Docker Compose (ex: PostgreSQL, PgAdmin):
 
 ```bash
 docker-compose up -d
 ```
 
-Lancer le monorepo (backend + frontend) en mode développement:
+Lancer le monorepo (backend + frontends) en mode développement:
 
 ```bash
 pnpm dev
 ```
 
-<p align="right">(<a href="#readme-top">retour en haut/a>)</p>
+### Données de test (Seeds)
+
+Lors du premier lancement de l'application, des données de test sont automatiquement créées dans la base de données, incluant :
+- Un super admin (Sten Levasseur - levasseur.sten@gmail.com)
+- Un coach pour tester l'interface web
+- Un club par défaut
+- Des utilisateurs/athlètes générés avec Faker (15-25 athlètes)
+
+### Connexion à l'interface Web
+
+Pour tester l'interface web, vous pouvez vous connecter avec le coach :
+- **Email** : `coach@example.com`
+- **Mot de passe** : `Password123!`
+
+### Application Mobile (React Native)
+
+Une application mobile est disponible dans `apps/mobile/`. Elle se lance automatiquement avec `pnpm dev` (qui lance toutes les apps en parallèle). Pour la tester :
+
+1. Installez Expo Go sur votre téléphone
+2. Scannez le QR code affiché dans le terminal (l'app mobile démarre avec `pnpm dev`)
+
+Pour vous connecter, utilisez l'un des utilisateurs générés par les seeds. Les noms et emails étant générés par Faker, consultez directement la base de données via PgAdmin pour récupérer les identifiants.
+
+**Accès PgAdmin** :
+- URL : http://localhost:5050
+- Email : `admin@admin.com`
+- Mot de passe : `admin`
+- Mot de passe universel pour tous les utilisateurs seeds : `Password123!`
+
+<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
 <!-- LICENCE -->
 <p id="licence"></p>
@@ -165,7 +198,6 @@ Distribué sous la Licence MIT. Voir le fichier LICENSE pour plus d'informations
 
 ## Contact
 
-Bluesky - [@mon_bluesky] - email@example.com
-Linkedin 
+**LinkedIn** : [Sten Levasseur](https://www.linkedin.com/in/sten-levasseur/)
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>

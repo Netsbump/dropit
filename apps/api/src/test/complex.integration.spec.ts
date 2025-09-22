@@ -85,7 +85,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       exerciseCategory: exerciseCategory.id,
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise1Result.status !== 200 || exercise2Result.status !== 200 || exercise3Result.status !== 200) {
+    if (exercise1Result.status !== 201 || exercise2Result.status !== 201 || exercise3Result.status !== 201) {
       throw new Error('Failed to create exercises');
     }
 
@@ -100,7 +100,6 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     // Test 2: Créer un complex via use case
     console.log('🧪 Testing complex creation via use case...');
     const complex1Result = await complexUseCase.create({
-      name: 'Arraché simple',
       complexCategory: complexCategory.id,
       exercises: [
         {
@@ -122,7 +121,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       description: 'Pour monter en gamme tranquillement',
     }, testData.organization.id, testData.adminUser.id);
 
-    if (complex1Result.status !== 200) {
+    if (complex1Result.status !== 201) {
       throw new Error(`Failed to create complex: ${complex1Result.body.message}`);
     }
 
@@ -130,7 +129,6 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
 
     expect(complex1).toBeDefined();
     expect(complex1.id).toBeDefined();
-    expect(complex1.name).toBe('Arraché simple');
     expect(complex1.exercises).toHaveLength(3);
 
     // Test 3: Créer un autre complex
@@ -147,7 +145,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       exerciseCategory: exerciseCategory.id,
     }, testData.organization.id, testData.adminUser.id);
 
-    if (exercise4Result.status !== 200 || exercise5Result.status !== 200) {
+    if (exercise4Result.status !== 201 || exercise5Result.status !== 201) {
       throw new Error('Failed to create exercises for second complex');
     }
 
@@ -155,7 +153,6 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     const exercise5 = exercise5Result.body;
 
     const complex2Result = await complexUseCase.create({
-      name: 'Complex Push-Pull',
       description: 'Complexe push-pull',
       complexCategory: complexCategory.id,
       exercises: [
@@ -164,14 +161,13 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       ],
     }, testData.organization.id, testData.adminUser.id);
 
-    if (complex2Result.status !== 200) {
+    if (complex2Result.status !== 201) {
       throw new Error(`Failed to create second complex: ${complex2Result.body.message}`);
     }
 
     const complex2 = complex2Result.body;
 
     expect(complex2).toBeDefined();
-    expect(complex2.name).toBe('Complex Push-Pull');
     expect(complex2.exercises).toHaveLength(2);
 
     // Test 4: Récupérer tous les complexes via use case
@@ -195,14 +191,12 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
 
     const singleComplex = singleComplexResult.body;
     expect(singleComplex.id).toBe(complex1.id);
-    expect(singleComplex.name).toBe('Arraché simple');
 
     // Test 6: Mettre à jour un complex via use case
     console.log('🧪 Testing complex update via use case...');
     const updatedComplexResult = await complexUseCase.update(
       complex1.id,
       {
-        name: 'Arraché simple Modifié',
         description: 'Description modifiée',
       },
       testData.organization.id,
@@ -214,7 +208,6 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     }
 
     const updatedComplex = updatedComplexResult.body;
-    expect(updatedComplex.name).toBe('Arraché simple Modifié');
     expect(updatedComplex.description).toBe('Description modifiée');
 
     // Test 7: Supprimer un complex via use case

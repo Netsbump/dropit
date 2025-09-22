@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { Textarea } from '@/shared/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -24,7 +25,7 @@ import {
   createWorkoutSchema,
 } from '@dropit/schemas';
 import { GripVertical, Trash2 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Control } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -63,7 +64,12 @@ export function SortableWorkoutElement({
   const [editingReps, setEditingReps] = useState(false);
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingRest, setEditingRest] = useState(false);
-  const [editingElement, setEditingElement] = useState(true);
+  const [editingElement, setEditingElement] = useState(false);
+  const [editingDescription, setEditingDescription] = useState(false);
+  const [editingExerciseDescription, setEditingExerciseDescription] = useState(false);
+  const [localDescription, setLocalDescription] = useState<string>('');
+  const [localExerciseDescription, setLocalExerciseDescription] = useState<string>('');
+  const selectRef = useRef<HTMLButtonElement>(null);
 
   const {
     attributes,
@@ -86,19 +92,38 @@ export function SortableWorkoutElement({
 
   // Trouver le complex sélectionné
   const selectedComplex = complexes.find((c) => c.id === selectedComplexId);
+  
+  // Trouver l'exercice sélectionné
+  const selectedExercise = exercises.find((e) => e.id === control._formValues.elements[index].id);
 
-  // Mettre à jour selectedComplexId quand l'ID change dans le form
+  // Mettre à jour selectedComplexId et exercice quand l'ID change dans le form
   useEffect(() => {
     const currentId = control._formValues.elements[index].id;
-    if (
-      currentId &&
-      control._formValues.elements[index].type === WORKOUT_ELEMENT_TYPES.COMPLEX
-    ) {
+    const currentType = control._formValues.elements[index].type;
+    
+    if (currentId && currentType === WORKOUT_ELEMENT_TYPES.COMPLEX) {
       setSelectedComplexId(currentId);
+      // Initialiser la description locale avec celle du complexe
+      const complex = complexes.find(c => c.id === currentId);
+      if (complex?.description && !localDescription) {
+        setLocalDescription(complex.description);
+      }
+    }
+    
+    if (currentId && currentType === WORKOUT_ELEMENT_TYPES.EXERCISE) {
+      // Initialiser la description locale avec celle de l'exercice
+      const exercise = exercises.find(e => e.id === currentId);
+      if (exercise?.description && !localExerciseDescription) {
+        setLocalExerciseDescription(exercise.description);
+      }
     }
   }, [
     control._formValues.elements[index].id,
     control._formValues.elements[index].type,
+    complexes,
+    exercises,
+    localDescription,
+    localExerciseDescription,
   ]);
 
   const renderEditableBadge = (
@@ -228,10 +253,15 @@ export function SortableWorkoutElement({
                   }
                   setEditingElement(false);
                 }}
+                onOpenChange={(open) => {
+                  if (!open) {
+                    setEditingElement(false);
+                  }
+                }}
                 value={field.value}
               >
                 <FormControl>
-                  <SelectTrigger>
+                  <SelectTrigger ref={selectRef}>
                     <SelectValue
                       placeholder={`Choisir un ${
                         type === WORKOUT_ELEMENT_TYPES.EXERCISE
@@ -250,7 +280,14 @@ export function SortableWorkoutElement({
                       ))
                     : complexes.map((complex) => (
                         <SelectItem key={complex.id} value={complex.id}>
-                          {complex.name}
+                          <div className="flex flex-col">
+                            <span className="font-medium">
+                              {complex.exercises.map(ex => ex.name).join(', ')}
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {complex.complexCategory?.name}
+                            </span>
+                          </div>
                         </SelectItem>
                       ))}
                 </SelectContent>
@@ -258,12 +295,18 @@ export function SortableWorkoutElement({
             ) : (
               <button
                 type="button"
-                onClick={() => setEditingElement(true)}
+                onClick={() => {
+                  setEditingElement(true);
+                  // Forcer l'ouverture du Select après un court délai
+                  setTimeout(() => {
+                    selectRef.current?.click();
+                  }, 0);
+                }}
                 className="font-medium hover:underline text-left w-full"
               >
                 {type === WORKOUT_ELEMENT_TYPES.EXERCISE
                   ? exercises.find((e) => e.id === field.value)?.name
-                  : complexes.find((c) => c.id === field.value)?.name}
+                  : complexes.find((c) => c.id === field.value)?.exercises.map(ex => ex.name).join(', ') || 'Complex'}
               </button>
             )}
             <FormMessage />
@@ -277,7 +320,11 @@ export function SortableWorkoutElement({
     <Card
       ref={setNodeRef}
       style={style}
-      className={`relative ${isDragging ? 'z-50' : ''}`}
+      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''} ${
+        control._formValues.elements[index].type === WORKOUT_ELEMENT_TYPES.COMPLEX
+          ? 'min-h-[200px]'
+          : 'min-h-[100px]'
+      }`}
     >
       <CardContent className="p-4 flex gap-4">
         <div
@@ -303,6 +350,42 @@ export function SortableWorkoutElement({
                     1
                   )}
                   {renderElementSelect(WORKOUT_ELEMENT_TYPES.EXERCISE)}
+                </div>
+                <div className="text-sm text-muted-foreground ml-2">
+                  {editingExerciseDescription ? (
+                    <Textarea
+                      value={localExerciseDescription || selectedExercise?.description || ''}
+                      onChange={(e) => setLocalExerciseDescription(e.target.value)}
+                      onBlur={() => setEditingExerciseDescription(false)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Escape') {
+                          setEditingExerciseDescription(false);
+                          setLocalExerciseDescription(selectedExercise?.description || '');
+                        }
+                        if (e.key === 'Enter' && e.ctrlKey) {
+                          setEditingExerciseDescription(false);
+                        }
+                      }}
+                      autoFocus
+                      className="text-sm resize-none min-h-[60px]"
+                      placeholder="Description personnalisée pour cet exercice..."
+                    />
+                  ) : (
+                    <div 
+                      className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
+                      onClick={() => setEditingExerciseDescription(true)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          setEditingExerciseDescription(true);
+                        }
+                      }}
+                      tabIndex={0}
+                      role="button"
+                      aria-label="Ajouter une description personnalisée pour cet exercice"
+                    >
+                      {localExerciseDescription || selectedExercise?.description || 'Cliquez pour ajouter une description personnalisée...'}
+                    </div>
+                  )}
                 </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(
@@ -342,14 +425,43 @@ export function SortableWorkoutElement({
             <div className="flex items-center gap-4 rounded-md p-3">
               <div className="flex-1 ml-2 flex flex-col gap-2">
                 <div className="flex flex-1 gap-2">
-                  {renderEditableBadge(
-                    control._formValues.elements[index].reps,
-                    editingReps,
-                    setEditingReps,
-                    'reps',
-                    1
-                  )}
                   {renderElementSelect(WORKOUT_ELEMENT_TYPES.COMPLEX)}
+                </div>
+                <div className="text-sm text-muted-foreground ml-2">
+                    {editingDescription ? (
+                      <Textarea
+                        value={localDescription || selectedComplex?.description || ''}
+                        onChange={(e) => setLocalDescription(e.target.value)}
+                        onBlur={() => setEditingDescription(false)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Escape') {
+                            setEditingDescription(false);
+                            setLocalDescription(selectedComplex?.description || '');
+                          }
+                          if (e.key === 'Enter' && e.ctrlKey) {
+                            setEditingDescription(false);
+                          }
+                        }}
+                        autoFocus
+                        className="text-sm resize-none min-h-[60px]"
+                        placeholder="Description personnalisée pour ce workout..."
+                      />
+                    ) : (
+                      <div 
+                        className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
+                        onClick={() => setEditingDescription(true)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            setEditingDescription(true);
+                          }
+                        }}
+                        tabIndex={0}
+                        role="button"
+                        aria-label="Ajouter une description personnalisée pour ce complex"
+                      >
+                        {localDescription || selectedComplex?.description || 'Cliquez pour ajouter une description personnalisée...'}
+                      </div>
+                    )}
                 </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(
@@ -396,7 +508,7 @@ export function SortableWorkoutElement({
                     <div className="flex-1 ml-2 flex flex-col gap-2">
                       <div className="flex flex-1 gap-2">
                         <Badge variant="outline">{exercise.reps}</Badge>
-                        <div className="font-sm">{exercise.name}</div>
+                        <div className="font-medium">{exercise.name}</div>
                       </div>
                     </div>
                   </div>

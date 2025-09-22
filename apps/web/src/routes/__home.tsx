@@ -43,21 +43,18 @@ export const Route = createFileRoute('/__home')({
 });
 
 function HomeLayout() {
-  // Maintenant que la vérification est faite dans beforeLoad, 
-  // on peut directement afficher le layout
-
   return (
     <SidebarProvider className="w-full">
       <div className="flex min-h-screen w-full">
         <AppSidebar />
-        <main className="flex-1 overflow-auto w-full">
-          <div className="h-full w-full">
-            <div className="flex items-center p-2 border-b gap-2">
+        <main className="flex-1 w-full h-screen">
+          <div className="h-full w-full flex flex-col">
+            <div className="flex items-center p-2 border-b gap-2 flex-shrink-0">
               <SidebarTrigger />
               <Separator orientation="vertical" className="h-6" />
               <Breadcrumbs />
             </div>
-            <div className="px-4 pt-10">
+            <div className="px-4 pt-6 pb-4 flex-1 min-h-0 overflow-hidden">
               <Outlet />
             </div>
           </div>

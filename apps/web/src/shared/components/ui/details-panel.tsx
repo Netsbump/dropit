@@ -18,13 +18,37 @@ export function DetailsPanel({
   className,
 }: DetailsPanelProps) {
   return (
-    <div
-      className={cn(
-        'fixed inset-y-0 right-0 z-20 flex bg-card border-l w-[430px] transform transition-transform duration-200 ease-in-out',
-        !open && 'translate-x-full',
-        className
+    <>
+      {/* Mobile overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/50 z-10 lg:hidden"
+          onClick={onClose}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onClose?.();
+            }
+          }}
+          role="button"
+          tabIndex={0}
+          aria-label="Fermer le panneau"
+        />
       )}
-    >
+      
+      {/* Panel */}
+      <div
+        className={cn(
+          // Desktop: side panel
+          'fixed inset-y-0 right-0 z-20 flex bg-sidebar border-l transform transition-transform duration-200 ease-in-out',
+          'lg:w-[430px]',
+          !open && 'translate-x-full',
+          // Mobile: full width drawer from bottom
+          'lg:translate-y-0 w-full lg:inset-y-0 lg:right-0',
+          'max-lg:inset-x-0 max-lg:bottom-0 max-lg:top-16 max-lg:rounded-t-xl max-lg:border-t max-lg:border-l-0',
+          className
+        )}
+      >
       <div className="flex flex-col w-full h-full px-8 py-2">
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">{title}</h2>
@@ -36,5 +60,6 @@ export function DetailsPanel({
         <div className="flex-1 overflow-auto pt-4">{children}</div>
       </div>
     </div>
+    </>
   );
 }

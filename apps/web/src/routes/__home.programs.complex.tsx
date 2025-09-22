@@ -55,7 +55,7 @@ function ComplexPage() {
   })
 
   const filteredComplexes = complexes?.filter((complex) => {
-    const matchesSearch = complex.name
+    const matchesSearch = complex.complexCategory?.name
       .toLowerCase()
       .includes(filter.toLowerCase())
     const matchesCategory =
@@ -72,7 +72,7 @@ function ComplexPage() {
     <div className="relative flex-1">
       <div
         className={`transition-all duration-200 ${
-          selectedComplex ? 'mr-[400px]' : ''
+          selectedComplex ? 'lg:mr-[430px]' : ''
         }`}
       >
         <ComplexFilters

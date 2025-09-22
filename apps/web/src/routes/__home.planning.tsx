@@ -1,4 +1,3 @@
-import { CreateWorkoutModal } from '@/features/planning/create-workout-modal';
 import { PlanningCalendar } from '@/features/planning/planning-calendar';
 import { TrainingSessionDetailPopover } from '@/features/planning/training-session-detail-popover';
 import { api } from '@/lib/api';
@@ -19,8 +18,6 @@ function PlanningPage() {
   const { t } = useTranslation('planning');
   const { toast } = useToast();
   const navigate = useNavigate();
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>();
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailPopoverOpen, setIsDetailPopoverOpen] = useState(false);
   const [selectedTrainingSessionId, setSelectedTrainingSessionId] = useState<
     string | undefined
@@ -44,8 +41,9 @@ function PlanningPage() {
   });
 
   const handleDateClick = (info: DateClickArg) => {
-    setSelectedDate(new Date(info.date));
-    setIsCreateModalOpen(true);
+    // Naviguer vers la page de création avec la date sélectionnée
+    const dateParam = info.date.toISOString().split('T')[0];
+    navigate({ to: '/workouts/create', search: { date: dateParam } });
   };
 
   const handleEventClick = (info: EventClickArg) => {
@@ -155,19 +153,12 @@ function PlanningPage() {
     <div className="relative flex-1">
       <HeaderPage title={t('title')} description={t('description')} />
 
-      <div className="bg-white rounded-lg shadow p-4">
-        <PlanningCalendar
-          initialEvents={calendarEvents}
-          onDateClick={handleDateClick}
-          onEventClick={handleEventClick}
-        />
-      </div>
-
-      <CreateWorkoutModal
-        isOpen={isCreateModalOpen}
-        onClose={() => setIsCreateModalOpen(false)}
-        selectedDate={selectedDate}
+      <PlanningCalendar
+        initialEvents={calendarEvents}
+        onDateClick={handleDateClick}
+        onEventClick={handleEventClick}
       />
+
 
       <TrainingSessionDetailPopover
         isOpen={isDetailPopoverOpen}

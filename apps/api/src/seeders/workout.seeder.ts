@@ -9,7 +9,8 @@ import { seedComplexes } from './complex.seeder';
 
 export async function seedWorkouts(em: EntityManager): Promise<void> {
 
-  const complexesMap = await seedComplexes(em);
+  // Creation of complexes and their categories
+  const complexes = await seedComplexes(em);
 
   // Exercises are already created by seedComplexes
   const exercisesMap: Record<string, Exercise> = {};
@@ -53,7 +54,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          id: 'EMOM Technique Arraché', // EMOM Technique Arraché
+          complexIndex: 0, // Premier complex créé (EMOM Technique Arraché)
           order: 0,
           sets: 4,
           reps: 1,
@@ -72,7 +73,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         },
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          id: 'Complex Épaulé-Jeté', // Complex Épaulé-Jeté
+          complexIndex: 1, // Deuxième complex créé (Complex Épaulé-Jeté)
           order: 2,
           sets: 3,
           reps: 1,
@@ -97,7 +98,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          id: 'Technique Arraché Complet', // Technique Arraché Complet
+          complexIndex: 3, // Quatrième complex créé (Technique Arraché Complet)
           order: 0,
           sets: 3,
           reps: 2,
@@ -115,7 +116,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         },
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          id: 'EMOM Épaulé', // EMOM Épaulé
+          complexIndex: 4, // Cinquième complex créé (EMOM Épaulé)
           order: 2,
           sets: 3,
           reps: 2,
@@ -140,7 +141,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          id: 'TABATA Force', // TABATA Force
+          complexIndex: 2, // Troisième complex créé (TABATA Force)
           order: 0,
           sets: 4,
           reps: 1,
@@ -194,18 +195,16 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           continue;
         }
       } else {
-        // Trouver le complex par son nom
-        const complex = await em.findOne(Complex, {
-          name: element.id,
-        });
+        // Utiliser l'index du complex
+        const complex = complexes[element.complexIndex];
         if (!complex) {
-          console.warn(`Complex ${element.id} not found, skipping element`);
+          console.warn(`Complex at index ${element.complexIndex} not found, skipping element`);
           continue;
         }
         workoutElement.complex = complex;
       }
 
-      em.persist(workoutElement);
+      await em.persistAndFlush(workoutElement);
     }
 
     console.log('Workout created:', workout.title);

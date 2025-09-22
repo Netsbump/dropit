@@ -5,7 +5,6 @@ export const ComplexMapper = {
   toDto(complex: Complex): ComplexDto {
     return {
       id: complex.id,
-      name: complex.name,
       complexCategory: {
         id: complex.complexCategory.id,
         name: complex.complexCategory.name,

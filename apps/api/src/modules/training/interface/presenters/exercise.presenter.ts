@@ -23,10 +23,10 @@ export const ExercisePresenter = {
     };
   },
 
-  presentCreationSuccess(message: string) {
+  presentCreationSuccess(exerciseDto: ExerciseDto) {
     return {
       status: 201 as const,
-      body: { message },
+      body: exerciseDto,
     };
   },
 
