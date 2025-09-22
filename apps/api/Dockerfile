@@ -1,88 +1,55 @@
 # =============================================================================
-# DOCKERFILE - API NESTJS DROPIT (Version optimisée)
+# DOCKERFILE - API NESTJS DROPIT
 # =============================================================================
-# Inspiré des meilleures pratiques pour monorepos
 
 # -----------------------------------------------------------------------------
-# STAGE 1: Base avec pnpm
+# STAGE 1: Base
 # -----------------------------------------------------------------------------
 FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-# Version fixe pour éviter les conflits de lockfile
+# Use pnpm version according to our package.json, if not the pnpm store will not be in synced later on, resulting in errors
 RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
 WORKDIR /app
 
 # -----------------------------------------------------------------------------
-# STAGE 2: Builder - Installation et build
+# STAGE 2: Builder - Installing deps, building and deploying
 # -----------------------------------------------------------------------------
 FROM base AS builder
 
-# Installation des outils système nécessaires
-RUN apk add --no-cache python3 make g++
+# pnpm fetch does require only lockfile
+COPY pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
+RUN pnpm fetch
 
-# pnpm fetch nécessite seulement le lockfile
-COPY pnpm-lock.yaml pnpm-workspace.yaml ./
-RUN pnpm fetch --ignore-scripts
-
-# Copier le code source après fetch
+# Copy source after fetch
 COPY . .
-RUN pnpm install -r --offline --prefer-offline --ignore-scripts
+RUN pnpm install -r --offline --prefer-offline
 
-# Build des packages dans le bon ordre (pnpm gère les dépendances)
-RUN pnpm --filter "@dropit/schemas" build
-RUN pnpm --filter "@dropit/contract" build  
-RUN pnpm --filter "@dropit/permissions" build
+RUN pnpm --filter {apps/api}... build
 
-# Build de l'API
-RUN pnpm --filter api build
-
-# Créer un dossier de déploiement avec seulement les deps nécessaires
-RUN pnpm deploy --prod --filter="./apps/api" /app/deploy
-
-# Copier manuellement le dossier dist car pnpm deploy ne l'inclut pas toujours
-RUN cp -r /app/apps/api/dist /app/deploy/dist
+# Create a deploy folder with only the required deps
+# This respects gitignore, so remember to include your dist folder in the "files" section of your package.json
+RUN pnpm deploy --prod --filter="./apps/api" /app/api
 
 # -----------------------------------------------------------------------------
-# STAGE 3: Production - Image finale ultra-légère
+# STAGE 3: Production - Final Image
 # -----------------------------------------------------------------------------
 FROM base AS runner
 
-# Installation de dumb-init pour gestion des signaux
-RUN apk add --no-cache dumb-init
-
-# Création utilisateur non-root
-RUN addgroup -g 1001 -S nodejs && adduser -S nestjs -u 1001
-
 WORKDIR /app
 
-# Copier les fichiers de production depuis le stage deploy
-COPY --from=builder /app/deploy/node_modules ./node_modules
-COPY --from=builder /app/deploy/dist ./dist
-COPY --from=builder /app/deploy/package.json ./package.json
-
-# Copier les packages buildés (nécessaires pour les imports workspace)
-COPY --from=builder /app/packages/schemas/dist ./node_modules/@dropit/schemas/dist
-COPY --from=builder /app/packages/contract/dist ./node_modules/@dropit/contract/dist  
-COPY --from=builder /app/packages/permissions/dist ./node_modules/@dropit/permissions/dist
-
-# Configuration des permissions
-RUN chown -R nestjs:nodejs /app
-USER nestjs
-
-# Variables d'environnement
+# Set environment
 ENV NODE_ENV=production
-ENV PORT=3000
 
-# Exposition du port
+COPY --from=builder /app/api/node_modules ./node_modules
+COPY --from=builder /app/api/dist ./dist
+COPY --from=builder /app/api/package.json ./package.json
+
+# Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/api/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+ENV MIKRO_ORM_CLI_USE_TS_NODE=false
+ENV MIKRO_ORM_CLI_CONFIG=dist/config/mikro-orm.config.js
 
-# Point d'entrée avec dumb-init
-ENTRYPOINT ["dumb-init", "--"]
-
-# Commande de démarrage
-CMD ["node", "dist/main.js"]
+# Start the application after syncing the database
+CMD ["sh", "-c", "pnpm db:sync && pnpm run start:prod"]
