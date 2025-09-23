@@ -14,6 +14,7 @@ COPY ./packages/contract/ ./packages/contract/
 COPY ./packages/schemas/ ./packages/schemas/
 COPY ./packages/permissions/ ./packages/permissions/
 COPY ./packages/i18n/ ./packages/i18n/
+COPY ./packages/tsconfig/ ./packages/tsconfig/
 
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
 RUN pnpm run -r build
