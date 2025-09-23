@@ -11,16 +11,17 @@ type CreateMikroOrmOptions = {
 export function createMikroOrmOptions(options?: CreateMikroOrmOptions) {
   const { isTest, ...restOptions } = options ?? {};
   const isTestEnvironment = isTest || config.env === 'test';
+  const isProduction = config.env === 'production';
 
   const _options: Options = defineConfig({
     entities: ['./dist/**/*.entity.js'],
-    entitiesTs: ['./src/**/*.entity.ts'],
+    entitiesTs: isProduction ? undefined : ['./src/**/*.entity.ts'],
     dbName: config.database.name,
     host: config.database.host,
     port: config.database.port,
     user: config.database.user,
     password: config.database.password,
-    metadataProvider: TsMorphMetadataProvider,
+    metadataProvider: isProduction ? undefined : TsMorphMetadataProvider,
     forceUtcTimezone: true,
     extensions: [SeedManager, Migrator],
     seeder: {
