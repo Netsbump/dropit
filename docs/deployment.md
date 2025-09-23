@@ -362,22 +362,44 @@ nginx/nginx.conf             # Configuration Nginx pour SPA
 
 La configuration Nginx est externalisée dans un fichier dédié plutôt qu'intégrée au Dockerfile. Cette séparation facilite les ajustements de configuration sans rebuild de l'image et respecte le principe de responsabilité unique. Le fichier `nginx.conf` configure le fallback SPA essentiel pour React Router, dirigeant toutes les routes non-fichier vers `index.html` afin que le routage côté client puisse prendre le relais.
 
-**Configuration Dokploy :**
+**Configuration Dokploy détaillée :**
 
 ```
-Type: Service (Build from GitHub)
-Build Type: Dockerfile
+Provider: GitHub
+Repository: dropit
+Branch: develop
 Build Path: apps/web
-Dockerfile Path: apps/web/Dockerfile
+Trigger Type: On Push
+
+Build Type: Dockerfile
+Docker File: apps/web/Dockerfile
+Docker Context Path: .
+Docker Build Stage: (laisser vide)
+
 Domain: dropit-app.fr
 SSL: Automatique via Let's Encrypt
+Container Port: 80
 ```
 
-Cette approche résout définitivement les problèmes de compatibilité workspace tout en offrant un contrôle total sur l'environnement de build et la configuration du serveur web.
+**Points critiques pour le recovery :**
+- **Docker Context Path = `.`** (racine) : essentiel car le Dockerfile référence `./nginx/nginx.conf` depuis la racine du repository
+- **Container Port = 80** : Nginx écoute sur le port 80 dans le conteneur
+- **Build Path = apps/web** : limite le build trigger aux modifications du frontend
+- **Docker Build Stage vide** : Dokploy utilise automatiquement le dernier stage (`runner`) du Dockerfile multi-stage
+
+Cette configuration garantit que le build s'exécute dans le bon contexte avec accès à tous les fichiers nécessaires du monorepo, tout en optimisant les déclenchements de build pour éviter les reconstructions inutiles.
 
 
 
---- 
+---
+
+## Ressources Complémentaires
+
+- **[Plan de Récupération d'Urgence](./emergency-recovery.md)** : Procédures complètes de restauration en cas de défaillance majeure
+- **Guide de Dépannage** : Solutions aux problèmes courants (à créer)
+- **Monitoring et Alertes** : Configuration de la surveillance des services (à créer)
+
+---
 
 ## TODO : Reprise du déploiement
 
