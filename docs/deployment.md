@@ -13,7 +13,7 @@ Ce guide documente mon expérience complète de déploiement de l'application Dr
 ## Architecture de Déploiement
 
 ```
-User (navigateur) 
+User (navigateur)
     ↓
 dropit-app.fr → DNS → [IP_DU_VPS]
     ↓
@@ -24,31 +24,66 @@ dropit-app.fr → DNS → [IP_DU_VPS]
 │  │              TRAEFIK (Reverse Proxy)                   │  │
 │  │                    :80, :443                           │  │
 │  │              + SSL automatique                         │  │
-│  └─────────────┬──────────────────┬───────────────────────┘  │
-│                │                  │                          │
-│  ┌─────────────▼──────────────────▼────────────────────────┐ │
-│  │              DOCKER NETWORK: dropit-network             │ │
-│  │                                                         │ │
-│  │  ┌─────────────┐  ┌──────────────┐  ┌────────────────┐  │ │
-│  │  │  Frontend   │  │     API      │  │  PostgreSQL    │  │ │
-│  │  │   (Nginx)   │  │  (Node.js)   │  │   (Database)   │  │ │
-│  │  │    :80      │  │    :3000     │  │    :5432       │  │ │
-│  │  └─────────────┘  └──────────────┘  └────────────────┘  │ │
-│  │                                                         │ │
-│  │  ┌─────────────┐  ┌──────────────┐                      │ │
-│  │  │    Redis    │  │  Typesense   │                      │ │
-│  │  │   (Cache)   │  │  (Search)    │                      │ │
-│  │  │    :6379    │  │    :8108     │                      │ │
-│  │  └─────────────┘  └──────────────┘                      │ │
-│  │                                                         │ │
-│  └─────────────────────────────────────────────────────────┘ │
+│  └─────────┬──────────────────▲─────────────────────┬─────┘  │
+│            │                  │                     │        │
+│  ┌─────────▼─────────┐  ┌───── ─────────────┐  ┌────▼──────┐ │
+│  │ DOKPLOY DASHBOARD │  │  DOCKER SWARM     │  │  PROJET   │ │
+│  │ (Interface admin) │◄►│ (Orchestrateur)   │◄►│  DROPIT   │ │
+│  │      :3000        │  │                   │  │ (Docker   │ │
+│  │                   │  │                   │  │ Network)  │ │
+│  │                   │  │                   │  │           │ │
+│  │                   │  │                   │  │┌─────────┐│ │
+│  │                   │  │                   │  ││Frontend ││ │
+│  │                   │  │                   │  ││(Nginx + ││ │
+│  │                   │  │                   │  ││ Static) ││ │
+│  │                   │  │                   │  ││dropit-  ││ │
+│  │                   │  │                   │  ││app.fr   ││ │
+│  │                   │  │                   │  │└─────────┘│ │
+│  │                   │  │                   │  │┌─────────┐│ │
+│  │                   │  │                   │  ││  API    ││ │
+│  │                   │  │                   │  ││ :3000   ││ │
+│  │                   │  │                   │  ││api.     ││ │
+│  │                   │  │                   │  ││dropit-  ││ │
+│  │                   │  │                   │  ││app.fr   ││ │
+│  │                   │  │                   │  │└─────────┘│ │
+│  │                   │  │                   │  │┌─────────┐│ │
+│  │                   │  │                   │  ││PostgreSQL│ │
+│  │                   │  │                   │  ││ :5432   ││ │
+│  │                   │  │                   │  ││(interne)││ │
+│  │                   │  │                   │  │└─────────┘│ │
+│  └───────────────────┘  └───────────────────┘  └───────────┘ │
 └──────────────────────────────────────────────────────────────┘
 
+Flux de données:
+• Dokploy Dashboard ←→ Docker Swarm (gestion via API)
+  - Dashboard → Swarm : création/suppression de services, déploiements, configurations
+  - Swarm → Dashboard : statut des services, logs, métriques, événements
+• Docker Swarm → Traefik (configuration dynamique des routes)
+• Docker Swarm ←→ Projet DropIt (orchestration bidirectionnelle)
+  - Swarm → DropIt : déploiement, mise à jour, redémarrage des conteneurs
+  - DropIt → Swarm : health checks, logs, métriques, état des services
+• Traefik → Projet DropIt (routage des requêtes HTTP en temps réel)
+
 Routes Traefik:
-• dropit-app.fr           → Frontend:80
-• api.dropit-app.fr       → API:3000  
-• traefik.dropit-app.fr   → Dashboard Traefik (avec auth)
+• dropit-app.fr               → Frontend (static)
+• api.dropit-app.fr           → API:3000
+• http://83.228.204.62:3000/  → Dashboard Dokploy:3000
+• traefik.dropit-app.fr       → Dashboard Traefik (avec auth)
 ```
+
+## Comprendre l'Infrastructure
+
+### Dokploy : La Solution d'Orchestration
+
+Dokploy est une plateforme open-source qui transforme un VPS en environnement de déploiement moderne, similaire à Vercel ou Netlify mais hébergé sur votre propre serveur. L'installation de Dokploy configure automatiquement Docker Swarm comme orchestrateur de conteneurs et déploie Traefik comme reverse proxy, créant un environnement complet et fonctionnel en une seule commande.
+
+Concrètement, Dokploy fonctionne comme une image Docker d'administration qui s'exécute sur le port 3000 du serveur. Cette interface web permet de gérer les déploiements, déclencher des builds, configurer les domaines et surveiller les services sans jamais toucher à la ligne de commande. Chaque action effectuée via l'interface génère automatiquement les configurations appropriées dans Traefik pour le routage des requêtes et dans Docker Swarm pour l'orchestration des conteneurs.
+
+### L'Architecture sous le Capot
+
+Docker Swarm, configuré automatiquement par Dokploy, orchestre tous les conteneurs sur le serveur. Il s'occupe du déploiement, de la surveillance et du redémarrage automatique des services en cas de défaillance, tout en permettant l'isolement des projets grâce aux réseaux Docker séparés.
+
+Traefik agit comme un pont intelligent entre l'extérieur et les conteneurs internes. Connecté aux ports 80 et 443 du VPS ainsi qu'aux réseaux internes de chaque projet, il reçoit les requêtes externes et les route vers les bons services. Quand une requête arrive sur `api.dropit-app.fr`, Traefik consulte automatiquement ses règles de routage (générées par Dokploy) et transmet la demande au conteneur API dans le réseau isolé du projet DropIt, tout en gérant la terminaison SSL de manière transparente.
 
 ## Prérequis
 
@@ -69,7 +104,7 @@ Routes Traefik:
 **Configuration DNS réalisée :**
 
 #### 1. Accès à la zone DNS
-- Panel Infomaniak → Manager Web → Domaines → dropit-app.fr → Zone DNS
+- Panel Infomaniak → Web & Domaines → Domaines → dropit-app.fr → Zone DNS
 
 #### 2. Enregistrements DNS ajoutés/modifiés
 
@@ -123,18 +158,6 @@ sudo apt update && sudo apt upgrade -y
 ```
 
 ### 2. Installation de Dokploy ✅
-
-**Qu'est-ce que Dokploy ?**
-
-Dokploy est une plateforme open-source de gestion de conteneurs Docker et d'applications sur serveur. C'est une alternative self-hosted à des solutions comme Vercel ou Netlify, permettant de déployer facilement des applications web avec un interface graphique.
-
-**Avantages pour ce projet :**
-- Interface web intuitive pour gérer les déploiements
-- Support natif de Docker et Docker Compose
-- Reverse proxy Traefik intégré avec SSL automatique
-- Monitoring des applications
-- Gestion des domaines et certificats SSL/TLS
-- Backups automatiques
 
 #### Prérequis système
 
@@ -214,17 +237,57 @@ Dokploy simplifie énormément le déploiement en fournissant une interface grap
 
 **Note de sécurité :** Le dashboard Dokploy est actuellement accessible en HTTP. La configuration HTTPS sera ajoutée ultérieurement pour sécuriser l'interface d'administration.
 
-### 3. Configuration du Déploiement DropIt
+### 3. Configuration du Firewall Infomaniak ✅
 
-*Cette section sera complétée lors du déploiement de l'application.*
+**Problème critique :** Par défaut, le firewall Infomaniak bloque la plupart des ports. Dokploy et les applications web ont besoin de ports spécifiques pour fonctionner correctement, notamment pour permettre à Let's Encrypt de valider les domaines et générer les certificats SSL.
 
-## Services à déployer
+#### Ports nécessaires à ouvrir
 
-Cette section détaille la dockerisation des services DropIt et les choix techniques effectués pour optimiser le déploiement sur Dokploy.
+**Accès à l'interface :**
+1. **Panel Infomaniak → VPS → Firewall**
+2. **Ajouter les règles suivantes :**
 
-### 🐳 Dockerisation de l'API NestJS
+```
+Type: TCP, Port: 22, Source: Toutes les IP
+Description: SSH (déjà présent par défaut)
 
-#### Choix d'architecture : Multi-stage Dockerfile
+Type: TCP, Port: 80, Source: Toutes les IP
+Description: HTTP (Traefik - sites web)
+
+Type: TCP, Port: 443, Source: Toutes les IP
+Description: HTTPS (Traefik - sites web SSL)
+
+Type: TCP, Port: 3000, Source: Toutes les IP
+Description: Dashboard Dokploy
+
+Type: ICMP, Port: (tous), Source: Toutes les IP
+Description: Ping (déjà présent par défaut)
+```
+
+#### Pourquoi ces ports sont critiques
+
+- **Port 80** : Traefik reçoit le trafic HTTP et gère les redirections HTTPS. Let's Encrypt utilise ce port pour valider les domaines lors de la génération des certificats SSL.
+- **Port 443** : Traefik gère le trafic HTTPS avec certificats SSL automatiques
+- **Port 3000** : Interface d'administration Dokploy accessible depuis l'extérieur
+- **Ports 22 et ICMP** : SSH et ping (généralement déjà configurés)
+
+**Sans les ports 80 et 443**, vous obtiendrez des erreurs ACME dans les logs Traefik et vos sites web ne seront pas accessibles publiquement.
+
+#### Vérification firewall
+
+Une fois les règles ajoutées, testez la connectivité :
+
+```bash
+# Test depuis votre machine locale
+curl -I http://[IP_VPS]        # Doit répondre (Traefik)
+curl -I http://[IP_VPS]:3000   # Doit répondre (Dokploy)
+```
+
+### 4. Configuration du Déploiement DropIt
+
+#### API NestJS
+
+1. 🐳 Dockerisation de l'API via Multi-stage Dockerfile
 
 **Décision technique :** Utilisation d'un Dockerfile multi-stage pour optimiser la taille finale et la sécurité.
 
@@ -241,50 +304,17 @@ Cette section détaille la dockerisation des services DropIt et les choix techni
 - **Sécurité** : Surface d'attaque réduite
 - **Performance** : Démarrage plus rapide
 
-#### Optimisations implémentées
+#### Architecture du Dockerfile
 
-**1. Cache pnpm optimisé**
-```dockerfile
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm install --frozen-lockfile
-```
-- **BuildKit cache mount** : réutilise le cache entre builds
-- **Gain de temps** : 2-3 minutes → 30 secondes sur rebuild
+Le Dockerfile suit une approche multi-stage qui sépare clairement les phases de construction et d'exécution. Cette stratégie permet d'optimiser à la fois les temps de build et la taille de l'image finale tout en maintenant une sécurité appropriée pour la production.
 
-**2. Utilisateur non-root**
-```dockerfile
-RUN addgroup -g 1001 -S nodejs && \
-    adduser -S nestjs -u 1001
-USER nestjs
-```
-- **Sécurité** : Principe du moindre privilège
-- **Conformité** : Standards de sécurité container
+La première étape établit une base commune avec Node.js 20 sur Alpine Linux et configure pnpm avec la version exacte spécifiée dans le projet. Cette fondation est réutilisée par les étapes suivantes pour garantir la cohérence de l'environnement.
 
-**3. dumb-init pour la gestion des signaux**
-```dockerfile
-ENTRYPOINT ["dumb-init", "--"]
-```
-- **Problème résolu** : Gestion propre des signaux SIGTERM/SIGINT
-- **Bénéfice** : Arrêt gracieux des containers
+L'étape de construction récupère d'abord uniquement les fichiers de verrouillage des dépendances, ce qui permet à Docker de mettre en cache cette couche tant que les versions des packages ne changent pas. Une fois les dépendances téléchargées, le code source complet est copié et l'application est compilée. Le système build tous les packages du monorepo nécessaires à l'API grâce au filtre pnpm, puis utilise la commande `pnpm deploy` pour créer une structure de production épurée contenant uniquement les fichiers et dépendances nécessaires à l'exécution.
 
-**4. Health check intégré**
-```dockerfile
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000/api/health'...)"
-```
-- **Monitoring** : Docker/Dokploy peut détecter les échecs
-- **Auto-healing** : Redémarrage automatique si l'API ne répond plus
+La dernière étape produit l'image finale en copiant uniquement les artefacts de production depuis l'étape de construction. L'image résultante ne contient ni les outils de développement ni le code source TypeScript, seulement le JavaScript compilé et les dépendances runtime. La configuration MikroORM est adaptée pour fonctionner avec les fichiers JavaScript compilés plutôt qu'avec TypeScript, et l'application démarre en synchronisant automatiquement le schéma de base de données avant de lancer le serveur.
 
-#### Structure des fichiers créés
-
-```
-apps/api/
-├── Dockerfile              # Configuration Docker multi-stage
-├── .dockerignore           # Exclusions pour optimiser le contexte
-└── [code existant]
-```
-
-### 🐘 Base de Données PostgreSQL
+#### 🐘 Base de Données PostgreSQL
 
 #### Configuration production
 
@@ -315,25 +345,39 @@ volumes:
       device: ./data/postgres  # Stockage local pour Dokploy
 ```
 
-### 🎯 Approche Services Séparés (Dokploy)
+#### 🌐 Frontend React (Vite)
 
-1. **PostgreSQL** : Service natif Dokploy 
-2. **API NestJS** : Service Docker 
-3. **Frontend** : Site statique
+**Problématique initiale :** Les solutions de build automatisé comme Nixpacks utilisent npm par défaut et ne supportent pas les références `workspace:*` des monorepos pnpm. Cette incompatibilité provoque des erreurs de build (`EUNSUPPORTEDPROTOCOL`) empêchant le déploiement du frontend.
 
-**Avantages :**
-- **Simplicité** : Chaque service géré indépendamment
-- **Stabilité** : Pas de rate limits, services Dokploy optimisés
-- **Debug facile** : Logs et monitoring par service
-- **Scaling** : Possibilité de scaler individuellement
+**Solution retenue :** Dockerfile multi-stage avec configuration Nginx externalisée
 
-### 🛠️ Déploiement sur Dokploy
+Le Dockerfile suit une architecture en trois étapes inspirée des bonnes pratiques utilisées par l'équipe de développement sur des projets similaires. La première étape configure l'environnement Node.js 20 avec pnpm activé via corepack. La deuxième étape reproduit fidèlement la structure du monorepo en copiant sélectivement les packages nécessaires (@dropit/contract, @dropit/schemas, @dropit/permissions, @dropit/i18n) puis exécute un build récursif avec mise en cache pnpm pour optimiser les temps de reconstruction. La troisième étape utilise une image Nginx alpine minimaliste qui copie uniquement les assets buildés et applique une configuration personnalisée pour gérer le routage côté client des applications Single Page.
 
-**Étapes de déploiement :**
-1. **PostgreSQL** : Création du service base de données
-2. **API** : Service Docker simple avec Dockerfile
-3. **Frontend** : Site statique 
-4. **Domaines** : Configuration SSL automatique
+**Architecture des fichiers :**
+
+```
+apps/web/Dockerfile          # Build multi-stage du frontend
+nginx/nginx.conf             # Configuration Nginx pour SPA
+```
+
+La configuration Nginx est externalisée dans un fichier dédié plutôt qu'intégrée au Dockerfile. Cette séparation facilite les ajustements de configuration sans rebuild de l'image et respecte le principe de responsabilité unique. Le fichier `nginx.conf` configure le fallback SPA essentiel pour React Router, dirigeant toutes les routes non-fichier vers `index.html` afin que le routage côté client puisse prendre le relais.
+
+**Configuration Dokploy :**
+
+```
+Type: Service (Build from GitHub)
+Build Type: Dockerfile
+Build Path: apps/web
+Dockerfile Path: apps/web/Dockerfile
+Domain: dropit-app.fr
+SSL: Automatique via Let's Encrypt
+```
+
+Cette approche résout définitivement les problèmes de compatibilité workspace tout en offrant un contrôle total sur l'environnement de build et la configuration du serveur web.
+
+
+
+--- 
 
 ## TODO : Reprise du déploiement
 
