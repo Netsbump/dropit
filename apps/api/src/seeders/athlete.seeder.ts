@@ -12,8 +12,8 @@ export async function seedAthletes(
   
   // Créer un super admin
   const superAdmin = new User();
-  superAdmin.name = 'Sten Levasseur';
-  superAdmin.email = 'levasseur.sten@gmail.com';
+  superAdmin.name = 'Super Admin';
+  superAdmin.email = 'super.admin@gmail.com';
   superAdmin.emailVerified = true;
   //Le champs isSuperAdmin est créé automatiquement par la config de better-auth
   await em.persistAndFlush(superAdmin);
