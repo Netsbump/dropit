@@ -52,4 +52,4 @@ ENV MIKRO_ORM_CLI_USE_TS_NODE=false
 ENV MIKRO_ORM_CLI_CONFIG=dist/config/mikro-orm.config.js
 
 # Start the application after syncing the database and optionally seeding
-CMD ["sh", "-c", "pnpm db:sync && if [ \"$SEED_DB\" = \"true\" ]; then pnpm db:seed; fi && pnpm run start:prod"]
+CMD ["sh", "-c", "pnpm db:sync && if [ \"$SEED_DB\" = \"true\" ]; then pnpm db:seed:prod; fi && pnpm run start:prod"]

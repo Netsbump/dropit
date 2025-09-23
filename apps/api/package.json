@@ -25,6 +25,7 @@
     "db:migration:create": "npx mikro-orm migration:create",
     "db:migration:list": "npx mikro-orm migration:list",
     "db:seed": "npx mikro-orm seeder:run --config=./src/config/mikro-orm.config.ts",
+    "db:seed:prod": "npx mikro-orm seeder:run --config=./dist/config/mikro-orm.config.js",
     "test": "jest",
     "test:unit": "jest --testPathIgnorePatterns=src/test/",
     "test:unit:watch": "jest --testPathIgnorePatterns=src/test/ --watch",
