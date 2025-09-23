@@ -1,7 +1,8 @@
 import { apiContract } from '@dropit/contract';
 import { initClient } from '@ts-rest/core';
+import config from '../config';
 
 export const api = initClient(apiContract, {
-  baseUrl: `${import.meta.env.VITE_API_URL || 'http://localhost:3000'}/api`,
+  baseUrl: `${config.apiUrl}/api`,
   credentials: 'include',
 });

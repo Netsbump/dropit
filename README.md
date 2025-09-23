@@ -134,8 +134,11 @@ Créer les fichiers de configuration :
 # Fichier .env à la racine (pour le monorepo)
 cp .env.example .env
 
-# Fichier .env pour l'API (requis car l'API s'exécute depuis apps/api/)
+# Fichier .env pour l'API
 cp apps/api/.env.example apps/api/.env
+
+# Fichier .env pour le frontend web (configuration de l'URL API)
+cp apps/web/.env.example apps/web/.env
 ```
 
 ### Lancer le projet (développement)
