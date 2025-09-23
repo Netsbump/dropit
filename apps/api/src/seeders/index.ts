@@ -13,8 +13,8 @@ export class MainSeeder extends Seeder {
     console.log('Running all seeders...');
 
     // Vérifier si la base est déjà peuplée
-    const existingUser = await em.findOne(User, {});
-    if (existingUser) {
+    const userCount = await em.count(User);
+    if (userCount > 0) {
       console.log('Database already contains users, skipping all seeding');
       return;
     }
