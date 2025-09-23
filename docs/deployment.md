@@ -314,6 +314,8 @@ L'étape de construction récupère d'abord uniquement les fichiers de verrouill
 
 La dernière étape produit l'image finale en copiant uniquement les artefacts de production depuis l'étape de construction. L'image résultante ne contient ni les outils de développement ni le code source TypeScript, seulement le JavaScript compilé et les dépendances runtime. La configuration MikroORM est adaptée pour fonctionner avec les fichiers JavaScript compilés plutôt qu'avec TypeScript, et l'application démarre en synchronisant automatiquement le schéma de base de données avant de lancer le serveur.
 
+**Gestion des données de démonstration :** Le Dockerfile intègre un système de seeding conditionnel via la variable d'environnement `SEED_DB`. Quand cette variable est définie à `true`, l'application exécute automatiquement les seeders MikroORM pour peupler la base de données avec des données de démonstration. Cette fonctionnalité est particulièrement utile pour les environnements de staging ou de démonstration client, tout en restant désactivée par défaut en production pour éviter la pollution des données réelles.
+
 #### 🐘 Base de Données PostgreSQL
 
 #### Configuration production
