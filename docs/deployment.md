@@ -73,24 +73,24 @@ Routes Traefik:
 
 ## Comprendre l'Infrastructure
 
-### Dokploy : La Solution d'Orchestration
+### Dokploy
 
 Dokploy est une plateforme open-source qui transforme un VPS en environnement de déploiement moderne, similaire à Vercel ou Netlify mais hébergé sur votre propre serveur. L'installation de Dokploy configure automatiquement Docker Swarm comme orchestrateur de conteneurs et déploie Traefik comme reverse proxy, créant un environnement complet et fonctionnel en une seule commande.
 
-Concrètement, Dokploy fonctionne comme une image Docker d'administration qui s'exécute sur le port 3000 du serveur. Cette interface web permet de gérer les déploiements, déclencher des builds, configurer les domaines et surveiller les services sans jamais toucher à la ligne de commande. Chaque action effectuée via l'interface génère automatiquement les configurations appropriées dans Traefik pour le routage des requêtes et dans Docker Swarm pour l'orchestration des conteneurs.
+Concrètement, Dokploy fonctionne comme une image Docker d'administration qui s'exécute sur le port 3000 du serveur. Cette interface web permet de gérer les déploiements, déclencher des builds, configurer les domaines et surveiller les services. Chaque action effectuée via l'interface génère automatiquement les configurations appropriées dans Traefik pour le routage des requêtes et dans Docker Swarm pour l'orchestration des conteneurs.
 
-### L'Architecture sous le Capot
+### L'Architecture
 
-Docker Swarm, configuré automatiquement par Dokploy, orchestre tous les conteneurs sur le serveur. Il s'occupe du déploiement, de la surveillance et du redémarrage automatique des services en cas de défaillance, tout en permettant l'isolement des projets grâce aux réseaux Docker séparés.
+Docker Swarm orchestre tous les conteneurs sur le serveur. Il s'occupe du déploiement, de la surveillance et du redémarrage automatique des services en cas de défaillance, tout en permettant l'isolement des projets grâce aux réseaux Docker séparés.
 
-Traefik agit comme un pont intelligent entre l'extérieur et les conteneurs internes. Connecté aux ports 80 et 443 du VPS ainsi qu'aux réseaux internes de chaque projet, il reçoit les requêtes externes et les route vers les bons services. Quand une requête arrive sur `api.dropit-app.fr`, Traefik consulte automatiquement ses règles de routage (générées par Dokploy) et transmet la demande au conteneur API dans le réseau isolé du projet DropIt, tout en gérant la terminaison SSL de manière transparente.
+Traefik agit comme un reverse proxy entre l'extérieur et les conteneurs internes. Connecté aux ports 80 et 443 du VPS ainsi qu'aux réseaux internes de chaque projet, il reçoit les requêtes externes et les route vers les bons services. Quand une requête arrive sur `api.dropit-app.fr`, Traefik consulte automatiquement ses règles de routage et transmet la demande au conteneur API dans le réseau isolé du projet DropIt, tout en gérant la terminaison SSL de manière transparente.
 
 ## Prérequis
 
 ### Sur le VPS
 - Debian bookworm 64bits
 - Profil utilisateur non root mais avec sudo
-- Dokploy installé (installe automatiquement docker, docker swarm, redis, postgres, etc)
+- Dokploy installé (installe automatiquement docker, docker swarm, postgre, redis et traeffik)
 
 ### Nom de domaine et DNS
 
@@ -353,7 +353,7 @@ volumes:
 
 **Solution retenue :** Dockerfile multi-stage avec configuration Nginx externalisée
 
-Le Dockerfile suit une architecture en trois étapes inspirée des bonnes pratiques utilisées par l'équipe de développement sur des projets similaires. La première étape configure l'environnement Node.js 20 avec pnpm activé via corepack. La deuxième étape reproduit fidèlement la structure du monorepo en copiant sélectivement les packages nécessaires (@dropit/contract, @dropit/schemas, @dropit/permissions, @dropit/i18n) puis exécute un build récursif avec mise en cache pnpm pour optimiser les temps de reconstruction. La troisième étape utilise une image Nginx alpine minimaliste qui copie uniquement les assets buildés et applique une configuration personnalisée pour gérer le routage côté client des applications Single Page.
+La première étape configure l'environnement Node.js 20 avec pnpm activé via corepack. La deuxième étape reproduit fidèlement la structure du monorepo en copiant sélectivement les packages nécessaires (@dropit/contract, @dropit/schemas, @dropit/permissions, @dropit/i18n) puis exécute un build récursif avec mise en cache pnpm pour optimiser les temps de reconstruction. La troisième étape utilise une image Nginx alpine minimaliste qui copie uniquement les assets buildés et applique une configuration personnalisée pour gérer le routage côté client des applications Single Page.
 
 **Architecture des fichiers :**
 
@@ -391,51 +391,7 @@ Container Port: 80
 
 Cette configuration garantit que le build s'exécute dans le bon contexte avec accès à tous les fichiers nécessaires du monorepo, tout en optimisant les déclenchements de build pour éviter les reconstructions inutiles.
 
-
-
 ---
-
-## Ressources Complémentaires
-
-- **[Plan de Récupération d'Urgence](./emergency-recovery.md)** : Procédures complètes de restauration en cas de défaillance majeure
-- **Guide de Dépannage** : Solutions aux problèmes courants (à créer)
-- **Monitoring et Alertes** : Configuration de la surveillance des services (à créer)
-
----
-
-## TODO : Reprise du déploiement
-
-**Prochaines étapes à réaliser :**
-
-### 1. Créer service PostgreSQL natif sur Dokploy ✅ PRIORITÉ HAUTE
-- Utiliser le service PostgreSQL intégré de Dokploy
-- Configurer : DB_NAME=dropit, DB_USER=dropit, DB_PASSWORD=[généré]
-- Noter les infos de connexion pour l'API
-
-### 2. Créer service API simple (sans compose) sur Dokploy ✅ PRIORITÉ HAUTE  
-- Type : Docker
-- Repository : github.com/Netsbump/dropit.git
-- Branch : main (ou develop selon workflow choisi)
-- Dockerfile : apps/api/Dockerfile
-- Variables d'environnement : DB_HOST, DB_PORT, DB_USER, DB_PASSWORD, etc.
-- Domain : api.dropit-app.fr
-
-### 3. Créer le projet Frontend statique sur Dokploy ✅ PRIORITÉ MOYENNE
-- Type : Static Site
-- Build du frontend en local : cd apps/web && pnpm build
-- Upload du dossier dist/
-- Domain : dropit-app.fr
-
-### 4. Configurer les domaines et SSL ✅ PRIORITÉ MOYENNE
-- Vérifier DNS : dropit-app.fr, api.dropit-app.fr
-- Activer SSL automatique Let's Encrypt
-- Tester les connexions HTTPS
-
-### 5. Tests et vérifications finales ✅ PRIORITÉ BASSE
-- API health check : https://api.dropit-app.fr/api/health
-- Frontend accessible : https://dropit-app.fr  
-- Base de données connectée
-- Migrations appliquées
 
 ### 📋 Variables d'environnement
 
@@ -454,105 +410,12 @@ Cette configuration garantit que le build s'exécute dans le bon contexte avec a
 
 ### 🔍 Services suivants (pas encore implémentés)
 
-#### Frontend (React + Vite) ✅
-- **Choix retenu** : Build statique avec Nginx automatique via Dokploy
-- **Approche** : Simplicité et performance optimales
-- **URL cible** : `https://dropit-app.fr`
-
-#### Processus de déploiement
-
-
-**1. Configuration Dokploy**
-
-Via l'interface web Dokploy :
-
-1. **Créer un projet** : "DropIt Frontend"
-2. **Type de service** : "Static Site"
-3. **Configuration** :
-   ```
-   Source: Upload du dossier dist/
-   Domain: dropit-app.fr
-   SSL: Activé (Let's Encrypt automatique)
-   ```
-
-**2. Nginx automatique**
-
-Dokploy configure automatiquement :
-- **Serveur Nginx** pour servir les fichiers statiques
-- **Compression Gzip** pour optimiser les performances
-- **Cache headers** pour les assets (CSS, JS, images)
-- **Redirection HTTPS** automatique
-- **Fallback SPA** : toutes les routes → index.html
-
-#### Variables d'environnement build-time
-
-**Gestion avec Vite :**
-
-```bash
-# .env.production (dans apps/web/)
-VITE_API_URL=https://api.dropit-app.fr
-VITE_APP_URL=https://dropit-app.fr
-VITE_AUTH_REDIRECT_URL=https://dropit-app.fr/auth/callback
-VITE_BETTER_AUTH_BASE_PATH=https://api.dropit-app.fr/api/auth
-```
-
-**Utilisation dans le code :**
-
-```typescript
-// Configuration API
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000'
-
-// Configuration better-auth
-export const authClient = createAuthClient({
-  baseURL: import.meta.env.VITE_BETTER_AUTH_BASE_PATH,
-  // ...
-})
-```
-
-#### Architecture de déploiement mise à jour
-
-```
-User (navigateur) 
-    ↓
-dropit-app.fr → DNS → [IP_DU_VPS]
-    ↓
-┌──────────────────────────────────────────────────────────────┐
-│                        VPS INFOMANIAK                        │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │              TRAEFIK (Reverse Proxy)                   │  │
-│  │                    :80, :443                           │  │
-│  │              + SSL automatique                         │  │
-│  └─────────────┬──────────────────┬───────────────────────┘  │
-│                │                  │                          │
-│  ┌─────────────▼────────────┐   ┌─▼────────────────────────┐ │
-│  │     FRONTEND STATIQUE    │   │    DOCKER NETWORK        │ │
-│  │       (Nginx Dokploy)    │   │    dropit-network        │ │
-│  │      React/Vite Build    │   │                          │ │
-│  │                          │   │  ┌──────────────────────┐ │ │
-│  └──────────────────────────┘   │  │     API (NestJS)     │ │ │
-│                                 │  │       :3000          │ │ │
-│                                 │  └──────────────────────┘ │ │
-│                                 │                          │ │
-│                                 │  ┌──────────────────────┐ │ │
-│                                 │  │   PostgreSQL DB     │ │ │
-│                                 │  │       :5432          │ │ │
-│                                 │  └──────────────────────┘ │ │
-│                                 └──────────────────────────┘ │
-└──────────────────────────────────────────────────────────────┘
-
-Routes Traefik finales:
-• dropit-app.fr           → Frontend statique (Nginx Dokploy)
-• api.dropit-app.fr       → API Container:3000
-• dokploy.dropit-app.fr   → Dashboard Dokploy
-```
-
-#### Cache Redis (futur)
+#### Cache Redis
 - **Usage** : Sessions utilisateur, cache queries
 - **Image** : `redis:7-alpine`
 - **URL interne** : `redis:6379`
 
-#### Recherche Typesense (futur)
+#### Recherche Typesense
 - **Usage** : Recherche avancée exercices/athlètes
 - **Image** : `typesense/typesense:0.25.2`
 - **URL interne** : `typesense:8108`
@@ -561,32 +424,21 @@ Routes Traefik finales:
 
 Panel Admin Dokploy
 
-### Surveillance
+### Surveillance Sentry
 
-Logs dockploy 
-
-## Sécurité
-
-### Bonnes Pratiques Appliquées
-
-1. **Réseau isolé** : Services dans un réseau Docker privé
-2. **Secrets sécurisés** : Variables d'environnement
-3. **SSL/TLS** : HTTPS obligatoire avec redirection
-4. **Firewall** : Seuls les ports 80/443 exposés
-5. **Images minimales** : Images Docker optimisées
-6. **Non-root** : Containers exécutés avec utilisateur non-privilégié
-
-### Bénéfices des fichiers Docker créés
-
-**Même avec une approche statique pour le frontend, les fichiers Docker restent utiles :**
-
-1. **`.dockerignore`** : Optimise tous les builds (API, outils, CI/CD)
-2. **`init-db.sql`** : Configure PostgreSQL automatiquement
+Alertes mails/SMS sur les pannes
 
 ## Next Steps
 
-Après le déploiement initial :
-1. ✅ Configurer la surveillance des performances
-2. ✅ Mettre en place les backups automatiques
-3. ✅ Tester le processus de récupération
-4. ✅ Documenter les procédures de maintenance
+- [ ] Mettre en place les backups automatiques
+- [ ] Sentry
+- [ ] Minio
+- [ ] Redis
+
+---
+
+## Ressources Complémentaires
+
+- **[Plan de Récupération d'Urgence](./emergency-recovery.md)** : Procédures complètes de restauration en cas de défaillance majeure
+- **Guide de Dépannage** : Solutions aux problèmes courants (à créer)
+- **Monitoring et Alertes** : Configuration de la surveillance des services (à créer)
