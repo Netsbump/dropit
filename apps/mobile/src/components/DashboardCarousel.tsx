@@ -8,6 +8,8 @@ import {
   Image,
   TouchableOpacity,
   ImageBackground,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 
 const { width, height } = Dimensions.get('window');
@@ -51,7 +53,7 @@ export default function DashboardCarousel({ onTrainingPress }: DashboardCarousel
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
     const contentOffset = event.nativeEvent.contentOffset;
     const index = Math.round(contentOffset.x / (CARD_WIDTH + CARD_SPACING));
     setCurrentIndex(index);
@@ -158,12 +160,12 @@ export default function DashboardCarousel({ onTrainingPress }: DashboardCarousel
 
   const renderDots = () => (
     <View style={styles.dotsContainer}>
-      {cards.map((_, index) => (
+      {cards.map((card) => (
         <View
-          key={index}
+          key={card.id}
           style={[
             styles.dot,
-            { opacity: currentIndex === index ? 1 : 0.3 }
+            { opacity: currentIndex === cards.findIndex(c => c.id === card.id) ? 1 : 0.3 }
           ]}
         />
       ))}
