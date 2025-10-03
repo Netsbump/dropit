@@ -27,6 +27,14 @@ Main modules:
 - `training/` - Exercises, complexes, workouts, training sessions
 - `core/` - Database, email, and media services
 
+## Prerequisites
+
+- **Node.js**: Version 22 or higher (required for better-auth and ESM support)
+- **pnpm**: Version 9.7.1 or higher (enforced via `packageManager` field)
+- **Docker** and **Docker Compose**: For services (PostgreSQL, Redis, Typesense)
+
+Note: The project enforces Node.js version via `engines` field in package.json and `strict-engines=true` in .npmrc.
+
 ## Common Development Commands
 
 ### Setup and Installation

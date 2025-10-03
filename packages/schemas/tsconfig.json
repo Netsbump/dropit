@@ -1,18 +1,23 @@
 {
-  "extends": "../../packages/tsconfig/base.json",
   "compilerOptions": {
-    "target": "ESNext",
+    "target": "esnext",
+    "moduleResolution": "bundler",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "baseUrl": "./",
-    "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "removeComments": true,
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    // Essential for cross-imports
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
-    "allowSyntheticDefaultImports": true,
+
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"]
 }
