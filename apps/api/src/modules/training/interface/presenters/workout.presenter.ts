@@ -1,5 +1,5 @@
 import { WorkoutDto } from '@dropit/schemas';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { WorkoutException } from '../../application/exceptions/workout.exceptions';
 
 export const WorkoutPresenter = {
   presentList(workouts: WorkoutDto[]) {
@@ -30,32 +30,17 @@ export const WorkoutPresenter = {
     };
   },
 
-  presentCreationError(error: Error) {
-    if (error instanceof BadRequestException) {
-      return { status: 400 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof ForbiddenException) {
-      return { status: 403 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
-    }
-    
-    console.error('Workout error:', error);
-    return {
-      status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
-    };
-  },
-
   presentError(error: Error) {
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
+    // Handle custom workout exceptions
+    if (error instanceof WorkoutException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
-    
-    console.error('Workout error:', error);
+
+    // Fallback for unexpected errors
+    console.error('Workout unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }

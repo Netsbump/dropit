@@ -107,7 +107,7 @@ export class ComplexController {
         const complexDto = ComplexMapper.toDto(complex);
         return ComplexPresenter.presentCreationSuccess(complexDto);
       } catch (error) {
-        return ComplexPresenter.presentCreationError(error as Error);
+        return ComplexPresenter.presentError(error as Error);
       }
     });
   }

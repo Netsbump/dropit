@@ -1,5 +1,5 @@
 import { AthleteDto, AthleteDetailsDto } from '@dropit/schemas';
-import { ForbiddenException, BadRequestException, NotFoundException } from '@nestjs/common';
+import { AthleteException } from '../../application/exceptions/athlete.exceptions';
 
 export const AthletePresenter = {
 
@@ -39,20 +39,16 @@ export const AthletePresenter = {
   },
 
   presentCreationError(error: Error) {
-
-    if (error instanceof BadRequestException) {
-      return { status: 400 as const, body: { message: error.message } };
+    // Handle custom athlete exceptions
+    if (error instanceof AthleteException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
 
-    if (error instanceof ForbiddenException) {
-      return { status: 403 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
-    }
-    
-    console.error('Athlete error:', error);
+    // Fallback for unexpected errors
+    console.error('Athlete unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }
@@ -60,16 +56,20 @@ export const AthletePresenter = {
   },
 
   presentError(error: Error) {
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
+    // Handle custom athlete exceptions
+    if (error instanceof AthleteException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
-    
-    console.error('Athlete error:', error);
+
+    // Fallback for unexpected errors
+    console.error('Athlete unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }
     };
   }
-  
+
 }

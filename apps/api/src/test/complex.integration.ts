@@ -1,4 +1,3 @@
-import { ExerciseCategoryDto, ComplexCategoryDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { ComplexCategoryUseCase } from '../modules/training/application/use-cases/complex-category.use-cases';
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
@@ -19,11 +18,11 @@ import { TestUseCaseFactory } from './utils/test-use-cases';
 export async function runComplexTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running complex integration tests...');
   
+  let organizationUseCases: OrganizationUseCases;
   let exerciseCategoryUseCase: ExerciseCategoryUseCase;
   let exerciseUseCase: ExerciseUseCase;
   let complexCategoryUseCase: ComplexCategoryUseCase;
   let complexUseCase: ComplexUseCase;
-  let organizationUseCases: OrganizationUseCases;
   let testData: TestData;
   let exerciseCategory: ExerciseCategory;
   let complexCategory: ComplexCategory;

@@ -1,4 +1,3 @@
-import { ComplexCategoryDto, ExerciseCategoryDto, WorkoutCategoryDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { ComplexCategoryUseCase } from '../modules/training/application/use-cases/complex-category.use-cases';
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';

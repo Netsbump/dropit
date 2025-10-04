@@ -4,6 +4,11 @@ import { IUserUseCases } from '../../../identity/application/ports/user-use-case
 import { CreateComplexCategory, UpdateComplexCategory } from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 import { IComplexCategoryUseCases } from '../ports/complex-category-use-cases.port';
+import {
+  ComplexCategoryNotFoundException,
+  ComplexCategoryAccessDeniedException,
+  ComplexCategoryValidationException,
+} from '../exceptions/complex-category.exceptions';
 
 /**
  * Complex Category Use Cases Implementation
@@ -28,7 +33,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ComplexCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -38,7 +43,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     const complexCategory = await this.complexCategoryRepository.getOne(complexCategoryId, coachFilterConditions);
 
     if (!complexCategory) {
-      throw new Error('Complex category not found or access denied');
+      throw new ComplexCategoryNotFoundException('Complex category not found or access denied');
     }
 
     return complexCategory;
@@ -49,7 +54,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ComplexCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -65,12 +70,12 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ComplexCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Validate data
     if (!data.name) {
-      throw new Error('Complex category name is required');
+      throw new ComplexCategoryValidationException('Complex category name is required');
     }
 
     // 3. Create complex category
@@ -90,7 +95,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     const created = await this.complexCategoryRepository.getOne(complexCategory.id, coachFilterConditions);
 
     if (!created) {
-      throw new Error('Complex category not found');
+      throw new ComplexCategoryNotFoundException('Complex category not found');
     }
 
     return created;
@@ -100,7 +105,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ComplexCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -109,7 +114,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 3. Get complex category to update from repository
     const toUpdate = await this.complexCategoryRepository.getOne(complexCategoryId, coachFilterConditions);
     if (!toUpdate) {
-      throw new Error('Complex category not found or access denied');
+      throw new ComplexCategoryNotFoundException('Complex category not found or access denied');
     }
 
     // 4. Update complex category
@@ -123,7 +128,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 6. Get updated complex category from repository
     const updated = await this.complexCategoryRepository.getOne(complexCategoryId, coachFilterConditions);
     if (!updated) {
-      throw new Error('Updated complex category not found');
+      throw new ComplexCategoryNotFoundException('Updated complex category not found');
     }
 
     return updated;
@@ -133,7 +138,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ComplexCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -142,7 +147,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     // 3. Get complex category to delete from repository
     const toDelete = await this.complexCategoryRepository.getOne(complexCategoryId, coachFilterConditions);
     if (!toDelete) {
-      throw new Error('Complex category not found or access denied');
+      throw new ComplexCategoryNotFoundException('Complex category not found or access denied');
     }
 
     // 4. Delete complex category
