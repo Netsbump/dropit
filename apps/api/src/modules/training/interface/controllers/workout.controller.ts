@@ -10,6 +10,8 @@ import { RequirePermissions } from '../../../identity/infrastructure/decorators/
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
 import { AuthenticatedUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { WorkoutMapper } from '../mappers/workout.mapper';
+import { WorkoutPresenter } from '../presenters/workout.presenter';
 
 const c = workoutContract;
 
@@ -49,7 +51,13 @@ export class WorkoutController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkouts>> {
     return tsRestHandler(c.getWorkouts, async () => {
-      return await this.workoutUseCases.getWorkouts(organizationId, user.id);
+      try {
+        const workouts = await this.workoutUseCases.getWorkouts(organizationId, user.id);
+        const workoutsDto = WorkoutMapper.toDtoList(workouts);
+        return WorkoutPresenter.presentList(workoutsDto);
+      } catch (error) {
+        return WorkoutPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -68,7 +76,13 @@ export class WorkoutController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
     return tsRestHandler(c.getWorkout, async ({ params }) => {
-      return await this.workoutUseCases.getWorkoutWithDetails(params.id, organizationId, user.id);
+      try {
+        const workout = await this.workoutUseCases.getWorkoutWithDetails(params.id, organizationId, user.id);
+        const workoutDto = WorkoutMapper.toDto(workout);
+        return WorkoutPresenter.presentOne(workoutDto);
+      } catch (error) {
+        return WorkoutPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -87,7 +101,13 @@ export class WorkoutController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
-      return await this.workoutUseCases.createWorkout(body, organizationId, user.id);
+      try {
+        const workout = await this.workoutUseCases.createWorkout(body, organizationId, user.id);
+        const workoutDto = WorkoutMapper.toDto(workout);
+        return WorkoutPresenter.presentOne(workoutDto);
+      } catch (error) {
+        return WorkoutPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -107,7 +127,13 @@ export class WorkoutController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateWorkout>> {
     return tsRestHandler(c.updateWorkout, async ({ params, body }) => {
-      return await this.workoutUseCases.updateWorkout(params.id, body, organizationId, user.id);
+      try {
+        const workout = await this.workoutUseCases.updateWorkout(params.id, body, organizationId, user.id);
+        const workoutDto = WorkoutMapper.toDto(workout);
+        return WorkoutPresenter.presentOne(workoutDto);
+      } catch (error) {
+        return WorkoutPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -117,7 +143,7 @@ export class WorkoutController {
    * @param params - Contains the workout ID
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
    * @param user - The current user (injected via the `@CurrentUser` decorator)
-   * @returns A success message indicating the workout was deleted. 
+   * @returns A success message indicating the workout was deleted.
    */
   @TsRestHandler(c.deleteWorkout)
   @RequirePermissions('delete')
@@ -126,7 +152,12 @@ export class WorkoutController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteWorkout>> {
     return tsRestHandler(c.deleteWorkout, async ({ params }) => {
-      return await this.workoutUseCases.deleteWorkout(params.id, organizationId, user.id);
+      try {
+        await this.workoutUseCases.deleteWorkout(params.id, organizationId, user.id);
+        return WorkoutPresenter.presentSuccess('Workout deleted successfully');
+      } catch (error) {
+        return WorkoutPresenter.presentError(error as Error);
+      }
     });
   }
 }

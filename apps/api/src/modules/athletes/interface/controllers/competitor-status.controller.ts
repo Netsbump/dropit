@@ -9,6 +9,8 @@ import { PermissionsGuard } from '../../../identity/infrastructure/guards/permis
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { CompetitorStatusMapper } from '../mappers/competitor-status.mapper';
+import { CompetitorStatusPresenter } from '../presenter/competitor-status.presenter';
 
 const c = competitorStatusContract;
 
@@ -45,7 +47,13 @@ export class CompetitorStatusController {
   @RequirePermissions('read')
   getCompetitorStatuses(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
-      return await this.competitorStatusUseCases.getAll(organizationId);
+      try {
+        const competitorStatuses = await this.competitorStatusUseCases.getAll(organizationId);
+        const competitorStatusesDto = CompetitorStatusMapper.toDtoList(competitorStatuses);
+        return CompetitorStatusPresenter.present(competitorStatusesDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -65,7 +73,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
-      return await this.competitorStatusUseCases.getOne(params.id, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.getOne(params.id, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -86,7 +100,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
-      return await this.competitorStatusUseCases.create(body, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.create(body, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -106,7 +126,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
-     return await this.competitorStatusUseCases.update(params.id, body, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.update(params.id, body, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 }

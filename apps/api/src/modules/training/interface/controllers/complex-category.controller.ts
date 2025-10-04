@@ -9,6 +9,8 @@ import { PermissionsGuard } from '../../../identity/infrastructure/guards/permis
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { ComplexCategoryMapper } from '../mappers/complex-category.mapper';
+import { ComplexCategoryPresenter } from '../presenters/complex-category.presenter';
 
 const c = complexCategoryContract;
 
@@ -48,7 +50,13 @@ export class ComplexCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
     return tsRestHandler(c.getComplexCategories, async () => {
-      return await this.complexCategoryUseCase.getAll(organizationId, user.id);
+      try {
+        const complexCategories = await this.complexCategoryUseCase.getAll(organizationId, user.id);
+        const complexCategoriesDto = ComplexCategoryMapper.toDtoList(complexCategories);
+        return ComplexCategoryPresenter.present(complexCategoriesDto);
+      } catch (error) {
+        return ComplexCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -67,7 +75,13 @@ export class ComplexCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
     return tsRestHandler(c.getComplexCategory, async ({ params }) => {
-      return await this.complexCategoryUseCase.getOne(params.id, organizationId, user.id);
+      try {
+        const complexCategory = await this.complexCategoryUseCase.getOne(params.id, organizationId, user.id);
+        const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
+        return ComplexCategoryPresenter.presentOne(complexCategoryDto);
+      } catch (error) {
+        return ComplexCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -86,7 +100,13 @@ export class ComplexCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createComplexCategory>> {
     return tsRestHandler(c.createComplexCategory, async ({ body }) => {
-      return await this.complexCategoryUseCase.create(body, organizationId, user.id);
+      try {
+        const complexCategory = await this.complexCategoryUseCase.create(body, organizationId, user.id);
+        const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
+        return ComplexCategoryPresenter.presentOne(complexCategoryDto);
+      } catch (error) {
+        return ComplexCategoryPresenter.presentCreationError(error as Error);
+      }
     });
   }
 
@@ -106,7 +126,13 @@ export class ComplexCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateComplexCategory>> {
     return tsRestHandler(c.updateComplexCategory, async ({ params, body }) => {
-      return await this.complexCategoryUseCase.update(params.id, body, organizationId, user.id);
+      try {
+        const complexCategory = await this.complexCategoryUseCase.update(params.id, body, organizationId, user.id);
+        const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
+        return ComplexCategoryPresenter.presentOne(complexCategoryDto);
+      } catch (error) {
+        return ComplexCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -125,7 +151,12 @@ export class ComplexCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteComplexCategory>> {
     return tsRestHandler(c.deleteComplexCategory, async ({ params }) => {
-      return await this.complexCategoryUseCase.delete(params.id, organizationId, user.id);
+      try {
+        await this.complexCategoryUseCase.delete(params.id, organizationId, user.id);
+        return ComplexCategoryPresenter.presentSuccess('Complex category deleted successfully');
+      } catch (error) {
+        return ComplexCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 }

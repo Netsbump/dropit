@@ -9,6 +9,8 @@ import { PermissionsGuard } from '../../../identity/infrastructure/guards/permis
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { ExerciseMapper } from '../mappers/exercise.mapper';
+import { ExercisePresenter } from '../presenters/exercise.presenter';
 
 const c = exerciseContract;
 
@@ -48,7 +50,13 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
-      return await this.exerciseUseCase.getAll(organizationId, user.id);
+      try {
+        const exercises = await this.exerciseUseCase.getAll(organizationId, user.id);
+        const exercisesDto = ExerciseMapper.toDtoList(exercises);
+        return ExercisePresenter.presentList(exercisesDto);
+      } catch (error) {
+        return ExercisePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -66,7 +74,13 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
-      return await this.exerciseUseCase.getOne(params.id, organizationId, user.id);
+      try {
+        const exercise = await this.exerciseUseCase.getOne(params.id, organizationId, user.id);
+        const exerciseDto = ExerciseMapper.toDto(exercise);
+        return ExercisePresenter.presentOne(exerciseDto);
+      } catch (error) {
+        return ExercisePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -85,7 +99,13 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
     return tsRestHandler(c.createExercise, async ({ body }) => {
-      return await this.exerciseUseCase.create(body, organizationId, user.id);
+      try {
+        const exercise = await this.exerciseUseCase.create(body, organizationId, user.id);
+        const exerciseDto = ExerciseMapper.toDto(exercise);
+        return ExercisePresenter.presentCreationSuccess(exerciseDto);
+      } catch (error) {
+        return ExercisePresenter.presentCreationError(error as Error);
+      }
     });
   }
 
@@ -105,7 +125,13 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
     return tsRestHandler(c.updateExercise, async ({ params, body }) => {
-      return await this.exerciseUseCase.update(params.id, body, organizationId, user.id);
+      try {
+        const exercise = await this.exerciseUseCase.update(params.id, body, organizationId, user.id);
+        const exerciseDto = ExerciseMapper.toDto(exercise);
+        return ExercisePresenter.presentOne(exerciseDto);
+      } catch (error) {
+        return ExercisePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -124,7 +150,12 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteExercise>> {
     return tsRestHandler(c.deleteExercise, async ({ params }) => {
-      return await this.exerciseUseCase.delete(params.id, organizationId, user.id);
+      try {
+        await this.exerciseUseCase.delete(params.id, organizationId, user.id);
+        return ExercisePresenter.presentSuccess('Exercise deleted successfully');
+      } catch (error) {
+        return ExercisePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -143,8 +174,14 @@ export class ExerciseController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.searchExercises>> {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
-      // Contrat : query = { like: z.string() }
-      return await this.exerciseUseCase.search(query.like, organizationId, user.id);
+      try {
+        // Contrat : query = { like: z.string() }
+        const exercises = await this.exerciseUseCase.search(query.like, organizationId, user.id);
+        const exercisesDto = ExerciseMapper.toDtoList(exercises);
+        return ExercisePresenter.presentList(exercisesDto);
+      } catch (error) {
+        return ExercisePresenter.presentError(error as Error);
+      }
     });
   }
 }

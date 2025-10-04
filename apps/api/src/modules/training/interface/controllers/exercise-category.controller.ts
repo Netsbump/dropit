@@ -9,6 +9,8 @@ import { PermissionsGuard } from '../../../identity/infrastructure/guards/permis
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { ExerciseCategoryMapper } from '../mappers/exercise-category.mapper';
+import { ExerciseCategoryPresenter } from '../presenters/exercise-category.presenter';
 
 const c = exerciseCategoryContract;
 
@@ -48,7 +50,13 @@ export class ExerciseCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
     return tsRestHandler(c.getExerciseCategories, async () => {
-      return await this.exerciseCategoryUseCase.getAll(organizationId, user.id);
+      try {
+        const exerciseCategories = await this.exerciseCategoryUseCase.getAll(organizationId, user.id);
+        const exerciseCategoriesDto = ExerciseCategoryMapper.toDtoList(exerciseCategories);
+        return ExerciseCategoryPresenter.present(exerciseCategoriesDto);
+      } catch (error) {
+        return ExerciseCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -67,7 +75,13 @@ export class ExerciseCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
     return tsRestHandler(c.getExerciseCategory, async ({ params }) => {
-      return await this.exerciseCategoryUseCase.getOne(params.id, organizationId, user.id);
+      try {
+        const exerciseCategory = await this.exerciseCategoryUseCase.getOne(params.id, organizationId, user.id);
+        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
+      } catch (error) {
+        return ExerciseCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -86,7 +100,13 @@ export class ExerciseCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createExerciseCategory>> {
     return tsRestHandler(c.createExerciseCategory, async ({ body }) => {
-      return await this.exerciseCategoryUseCase.create(body, organizationId, user.id);
+      try {
+        const exerciseCategory = await this.exerciseCategoryUseCase.create(body, organizationId, user.id);
+        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
+      } catch (error) {
+        return ExerciseCategoryPresenter.presentCreationError(error as Error);
+      }
     });
   }
 
@@ -106,7 +126,13 @@ export class ExerciseCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateExerciseCategory>> {
     return tsRestHandler(c.updateExerciseCategory, async ({ params, body }) => {
-      return await this.exerciseCategoryUseCase.update(params.id, body, organizationId, user.id);
+      try {
+        const exerciseCategory = await this.exerciseCategoryUseCase.update(params.id, body, organizationId, user.id);
+        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
+      } catch (error) {
+        return ExerciseCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -125,7 +151,12 @@ export class ExerciseCategoryController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteExerciseCategory>> {
     return tsRestHandler(c.deleteExerciseCategory, async ({ params }) => {
-      return await this.exerciseCategoryUseCase.delete(params.id, organizationId, user.id);
+      try {
+        await this.exerciseCategoryUseCase.delete(params.id, organizationId, user.id);
+        return ExerciseCategoryPresenter.presentSuccess('Exercise category deleted successfully');
+      } catch (error) {
+        return ExerciseCategoryPresenter.presentError(error as Error);
+      }
     });
   }
 }

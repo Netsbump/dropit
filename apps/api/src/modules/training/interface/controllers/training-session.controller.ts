@@ -9,6 +9,10 @@ import { PermissionsGuard } from '../../../identity/infrastructure/guards/permis
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { TrainingSessionMapper } from '../mappers/training-session.mapper';
+import { TrainingSessionPresenter } from '../presenters/training-session.presenter';
+import { AthleteTrainingSessionMapper } from '../mappers/athlete-training-session.mapper';
+import { AthleteTrainingSessionPresenter } from '../presenters/athlete-training-session.presenter';
 
 const contractTrainingSession = apiContract.trainingSession;
 const contractAthleteTrainingSession = apiContract.athleteTrainingSession;
@@ -46,7 +50,13 @@ export class TrainingSessionController {
   @RequirePermissions('read')
   getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessions>> {
     return tsRestHandler(contractTrainingSession.getTrainingSessions, async () => {
-      return await this.trainingSessionUseCase.getAll(organizationId);
+      try {
+        const trainingSessions = await this.trainingSessionUseCase.getAll(organizationId);
+        const trainingSessionsDto = TrainingSessionMapper.toDtoList(trainingSessions);
+        return TrainingSessionPresenter.present(trainingSessionsDto);
+      } catch (error) {
+        return TrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -60,7 +70,13 @@ export class TrainingSessionController {
   @RequirePermissions('read')
   getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSession>> {
     return tsRestHandler(contractTrainingSession.getTrainingSession, async ({ params }) => {
-      return await this.trainingSessionUseCase.getOne(params.id, organizationId);
+      try {
+        const trainingSession = await this.trainingSessionUseCase.getOne(params.id, organizationId);
+        const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
+        return TrainingSessionPresenter.presentOne(trainingSessionDto);
+      } catch (error) {
+        return TrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -78,7 +94,13 @@ export class TrainingSessionController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
     return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions, async ({ params }) => {
-      return await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, user.id);
+      try {
+        const athleteTrainingSessions = await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, user.id);
+        const athleteTrainingSessionsDto = AthleteTrainingSessionMapper.toDtoList(athleteTrainingSessions);
+        return AthleteTrainingSessionPresenter.present(athleteTrainingSessionsDto);
+      } catch (error) {
+        return AthleteTrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -96,7 +118,13 @@ export class TrainingSessionController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
     return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession, async ({ params }) => {
-      return await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, user.id);
+      try {
+        const athleteTrainingSession = await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, user.id);
+        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
+        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
+      } catch (error) {
+        return AthleteTrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -114,7 +142,13 @@ export class TrainingSessionController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.createTrainingSession>> {
     return tsRestHandler(contractTrainingSession.createTrainingSession, async ({ body }) => {
-      return await this.trainingSessionUseCase.create(body, organizationId, user.id);
+      try {
+        const trainingSession = await this.trainingSessionUseCase.create(body, organizationId, user.id);
+        const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
+        return TrainingSessionPresenter.presentOne(trainingSessionDto);
+      } catch (error) {
+        return TrainingSessionPresenter.presentCreationError(error as Error);
+      }
     });
   }
 
@@ -132,7 +166,13 @@ export class TrainingSessionController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.updateTrainingSession>> {
     return tsRestHandler(contractTrainingSession.updateTrainingSession, async ({ params, body }) => {
-      return await this.trainingSessionUseCase.update(params.id, body, organizationId, user.id);
+      try {
+        const trainingSession = await this.trainingSessionUseCase.update(params.id, body, organizationId, user.id);
+        const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
+        return TrainingSessionPresenter.presentOne(trainingSessionDto);
+      } catch (error) {
+        return TrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -148,7 +188,13 @@ export class TrainingSessionController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
     return tsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession, async ({ params, body }) => {
-      return this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, user.id);
+      try {
+        const athleteTrainingSession = await this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, user.id);
+        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
+        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
+      } catch (error) {
+        return AthleteTrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -159,14 +205,19 @@ export class TrainingSessionController {
    * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
    * @returns Confirmation of the deletion operation.
    */
-  @TsRestHandler(contractTrainingSession.deleteTrainingSession) 
+  @TsRestHandler(contractTrainingSession.deleteTrainingSession)
   @RequirePermissions('delete')
   deleteTrainingSession(
     @CurrentOrganization() organizationId: string,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.deleteTrainingSession>> {
     return tsRestHandler(contractTrainingSession.deleteTrainingSession, async ({ params }) => {
-      return await this.trainingSessionUseCase.delete(params.id, organizationId, user.id);
+      try {
+        await this.trainingSessionUseCase.delete(params.id, organizationId, user.id);
+        return TrainingSessionPresenter.presentSuccess('Training session deleted successfully');
+      } catch (error) {
+        return TrainingSessionPresenter.presentError(error as Error);
+      }
     });
   }
 }
