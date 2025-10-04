@@ -14,11 +14,8 @@ import { z } from 'zod';
  */
 const nodeEnv = process.env.NODE_ENV || 'development';
 
-if (nodeEnv === 'test') {
-  dotenv.config({ path: join(process.cwd(), '.env.test') });
-} else {
-  dotenv.config();
-}
+// Always use .env file (same file for all environments)
+dotenv.config();
 
 export const configValidationSchema = z.object({
   // Environment

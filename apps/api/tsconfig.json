@@ -1,15 +1,31 @@
 {
-  "extends": "../../packages/tsconfig/base.json",
   "compilerOptions": {
-    "module": "commonjs",
+    "incremental": true,
+    "target": "esnext",
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "ES2021",
+    "baseUrl": "./",
+    "resolveJsonModule": true,
+    "strict": true,
+    "strictBindCallApply": false,
+    "strictNullChecks": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "declaration": true,
     "outDir": "./dist",
-    "incremental": true,
-    "declaration": false,
-    "declarationMap": false,
-    "composite": false,
+    "removeComments": true,
+    "sourceMap": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    "preserveWatchOutput": true
   },
-  "exclude": ["dist"]
+  "ts-node": {
+    "require": ["tsconfig-paths/register"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist", "**/*spec.ts"]
 }

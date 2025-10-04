@@ -101,8 +101,8 @@ DropIt est une application web conçue pour optimiser le suivi et la gestion de 
 
 Assurez-vous d'avoir installé les éléments suivants avant de commencer :
 
-- **Node.js** : Version 20 ou supérieure.
-- **pnpm** : Gestionnaire de paquets (installer avec `npm install -g pnpm`).
+- **Node.js** : Version 22 ou supérieure (requis pour better-auth et support ESM).
+- **pnpm** : Gestionnaire de paquets version 9.7.1+ (installer avec `npm install -g pnpm@latest`).
 - **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, Typesense).
 
 ### Cloner le projet

@@ -8,7 +8,7 @@ import { WorkoutCategoryUseCase } from '../modules/training/application/use-case
 import { WorkoutUseCases } from '../modules/training/application/use-cases/workout.use-cases';
 import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
 import { WORKOUT_ELEMENT_TYPES } from '../modules/training/domain/workout-element.entity';
-import { setupOrganization } from './organization.integration.spec';
+import { setupOrganization } from './organization.integration';
 import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
