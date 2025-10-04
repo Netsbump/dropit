@@ -5,6 +5,13 @@ import { Exercise } from '../../domain/exercise.entity';
 import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { IExerciseUseCases } from '../ports/exercise-use-cases.port';
+import {
+  ExerciseNotFoundException,
+  ExerciseAccessDeniedException,
+  ExerciseCategoryNotFoundException,
+  ExerciseValidationException,
+  NoExercisesFoundException,
+} from '../exceptions/exercise.exceptions';
 
 /**
  * Exercise Use Cases Implementation
@@ -30,7 +37,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -41,7 +48,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
 
     // 4. Validate exercise
     if (!exercise) {
-      throw new Error('Exercise not found');
+      throw new ExerciseNotFoundException('Exercise not found');
     }
 
     return exercise;
@@ -52,7 +59,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -63,7 +70,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
 
     // 4. Validate exercises
     if (!exercises || exercises.length === 0) {
-      throw new Error('No exercises found');
+      throw new NoExercisesFoundException('No exercises found');
     }
 
     return exercises;
@@ -74,7 +81,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -85,7 +92,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
 
     // 4. Validate exercises
     if (!exercises) {
-      throw new Error('Exercises not found');
+      throw new ExerciseNotFoundException('Exercises not found');
     }
 
     return exercises;
@@ -96,12 +103,12 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     //2. Validate data
     if (!data.name) {
-      throw new Error('Exercise name is required');
+      throw new ExerciseValidationException('Exercise name is required');
     }
 
     //3. Get filter conditions via use case
@@ -111,7 +118,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const exerciseCategory = await this.exerciseCategoryRepository.getOne(data.exerciseCategory, coachFilterConditions);
 
     if (!exerciseCategory) {
-      throw new Error(
+      throw new ExerciseCategoryNotFoundException(
         `Exercise category with ID ${data.exerciseCategory} not found`
       );
     }
@@ -142,7 +149,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const createdExercise = await this.exerciseRepository.getOne(exercise.id, coachFilterConditions);
 
     if (!createdExercise) {
-      throw new Error('Exercise not found');
+      throw new ExerciseNotFoundException('Exercise not found');
     }
 
     return createdExercise;
@@ -153,7 +160,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -163,7 +170,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const exerciseToUpdate = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!exerciseToUpdate) {
-      throw new Error('Exercise not found');
+      throw new ExerciseNotFoundException('Exercise not found');
     }
 
     //4. Update exercise
@@ -187,7 +194,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const updatedExercise = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!updatedExercise) {
-      throw new Error('Updated exercise not found');
+      throw new ExerciseNotFoundException('Updated exercise not found');
     }
 
     return updatedExercise;
@@ -198,7 +205,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseAccessDeniedException('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -208,7 +215,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     const exerciseToDelete = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!exerciseToDelete) {
-      throw new Error('Exercise not found');
+      throw new ExerciseNotFoundException('Exercise not found');
     }
 
     //4. Delete exercise

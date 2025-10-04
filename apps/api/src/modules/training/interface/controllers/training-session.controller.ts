@@ -149,7 +149,7 @@ export class TrainingSessionController {
         const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
         return TrainingSessionPresenter.presentOne(trainingSessionDto);
       } catch (error) {
-        return TrainingSessionPresenter.presentCreationError(error as Error);
+        return TrainingSessionPresenter.presentError(error as Error);
       }
     });
   }

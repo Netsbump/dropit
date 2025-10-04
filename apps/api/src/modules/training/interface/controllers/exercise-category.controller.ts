@@ -107,7 +107,7 @@ export class ExerciseCategoryController {
         const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
         return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
       } catch (error) {
-        return ExerciseCategoryPresenter.presentCreationError(error as Error);
+        return ExerciseCategoryPresenter.presentError(error as Error);
       }
     });
   }

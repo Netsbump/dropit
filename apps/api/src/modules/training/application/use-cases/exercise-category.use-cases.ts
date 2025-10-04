@@ -4,6 +4,11 @@ import { IUserUseCases } from '../../../identity/application/ports/user-use-case
 import { CreateExerciseCategory, UpdateExerciseCategory } from '@dropit/schemas';
 import { ExerciseCategory } from '../../domain/exercise-category.entity';
 import { IExerciseCategoryUseCases } from '../ports/exercise-category-use-cases.port';
+import {
+  ExerciseCategoryNotFoundException,
+  ExerciseCategoryAccessDeniedException,
+  ExerciseCategoryValidationException,
+} from '../exceptions/exercise-category.exceptions';
 
 /**
  * Exercise Category Use Cases Implementation
@@ -28,7 +33,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -39,7 +44,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
 
     // 4. Validate exercise category
     if (!exerciseCategory) {
-      throw new Error('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
     }
 
     return exerciseCategory;
@@ -50,7 +55,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -67,12 +72,12 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Validate data
     if (!data.name) {
-      throw new Error('Exercise category name is required');
+      throw new ExerciseCategoryValidationException('Exercise category name is required');
     }
 
     // 3. Create exercise category
@@ -92,7 +97,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const createdExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategory.id, coachFilterConditions);
 
     if (!createdExerciseCategory) {
-      throw new Error('Exercise category not found');
+      throw new ExerciseCategoryNotFoundException('Exercise category not found');
     }
 
     return createdExerciseCategory;
@@ -103,7 +108,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -113,7 +118,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const exerciseCategoryToUpdate = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!exerciseCategoryToUpdate) {
-      throw new Error('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
     }
 
     // 4. Update exercise category
@@ -128,7 +133,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const updatedExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!updatedExerciseCategory) {
-      throw new Error('Updated exercise category not found');
+      throw new ExerciseCategoryNotFoundException('Updated exercise category not found');
     }
 
     return updatedExerciseCategory;
@@ -139,7 +144,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -149,7 +154,7 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     const exerciseCategoryToDelete = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!exerciseCategoryToDelete) {
-      throw new Error('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
     }
 
     // 4. Delete exercise category

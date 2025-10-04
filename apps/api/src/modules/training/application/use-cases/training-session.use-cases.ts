@@ -8,6 +8,14 @@ import { IAthleteRepository } from '../../../athletes/application/ports/athlete.
 import { IWorkoutRepository } from '../ports/workout.repository.port';
 import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
 import { ITrainingSessionUseCases } from '../ports/training-session-use-cases.port';
+import {
+  TrainingSessionNotFoundException,
+  TrainingSessionAccessDeniedException,
+  AthleteNotFoundException,
+  WorkoutNotFoundException,
+  AthletesNotInOrganizationException,
+  TrainingSessionValidationException,
+} from '../exceptions/training-session.exceptions';
 
 /**
  * Training Session Use Cases Implementation
@@ -36,7 +44,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //2. Validate session
     if (!trainingSession) {
-      throw new Error('Training session not found');
+      throw new TrainingSessionNotFoundException('Training session not found');
     }
 
     return trainingSession;
@@ -48,7 +56,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //2. Validate sessions
     if (!trainingSessions) {
-      throw new Error('Training sessions not found');
+      throw new TrainingSessionNotFoundException('Training sessions not found');
     }
 
     return trainingSessions;
@@ -62,12 +70,12 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new Error('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
     if (athlete.user.id !== userId && !isAdmin) {
-      throw new Error('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
     }
 
     //4. Get athlete training sessions from repository
@@ -75,7 +83,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //5. Validate athlete training sessions
     if (!athleteTrainingSessions) {
-      throw new Error('Athlete training sessions not found');
+      throw new TrainingSessionNotFoundException('Athlete training sessions not found');
     }
 
     return athleteTrainingSessions;
@@ -89,12 +97,12 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new Error('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
     if (athlete.user.id !== userId && !isAdmin) {
-      throw new Error('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
     }
 
     //4. Get athlete training session from repository
@@ -102,7 +110,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //5. Validate session
     if (!athleteTrainingSession) {
-      throw new Error('Athlete training session not found');
+      throw new TrainingSessionNotFoundException('Athlete training session not found');
     }
 
     return athleteTrainingSession;
@@ -116,7 +124,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isAdmin) {
-      throw new Error('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
     }
 
     //3. Get filter conditions via use case
@@ -126,7 +134,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
 
     if (!workout) {
-      throw new Error(
+      throw new WorkoutNotFoundException(
         `Workout with ID ${data.workoutId} not found`
       );
     }
@@ -138,7 +146,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const invalidAthleteIds = data.athleteIds.filter(athleteId => !athleteIds.includes(athleteId));
 
     if (invalidAthleteIds.length > 0) {
-      throw new Error(`Athletes with IDs ${invalidAthleteIds.join(', ')} do not belong to this organization`);
+      throw new AthletesNotInOrganizationException(`Athletes with IDs ${invalidAthleteIds.join(', ')} do not belong to this organization`);
     }
 
     //6. Create training session
@@ -153,7 +161,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const createdTrainingSession = await this.trainingSessionRepository.getOne(trainingSession.id, organizationId);
 
     if (!createdTrainingSession) {
-      throw new Error('Training session not found');
+      throw new TrainingSessionNotFoundException('Training session not found');
     }
 
     //8. Create athlete training sessions
@@ -166,7 +174,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
         athleteTrainingSession.trainingSession = createdTrainingSession;
         await this.athleteTrainingSessionRepository.save(athleteTrainingSession);
       } catch (error) {
-        throw new Error(`Error creating athlete training session for athlete ${a.id}: ${error}`);
+        throw new TrainingSessionValidationException(`Error creating athlete training session for athlete ${a.id}: ${error}`);
       }
     }
 
@@ -178,14 +186,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isAdmin) {
-      throw new Error('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
     }
 
     //2. Get training session to update from repository
     const trainingSessionToUpdate = await this.trainingSessionRepository.getOne(sessionId, organizationId);
 
     if (!trainingSessionToUpdate) {
-      throw new Error('TrainingSession not found');
+      throw new TrainingSessionNotFoundException('TrainingSession not found');
     }
 
     //3. Update workout if needed
@@ -197,7 +205,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
 
       if (!workout) {
-        throw new Error(
+        throw new WorkoutNotFoundException(
           `Workout with ID ${data.workoutId} not found`
         );
       }
@@ -218,7 +226,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       const missingAthleteIds = data.athleteIds.filter(id => !foundAthleteIds.includes(id));
 
       if (missingAthleteIds.length > 0) {
-        throw new Error(`Athletes with IDs ${missingAthleteIds.join(', ')} not found`);
+        throw new AthleteNotFoundException(`Athletes with IDs ${missingAthleteIds.join(', ')} not found`);
       }
 
       // Create new athlete sessions
@@ -247,7 +255,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const updatedTrainingSession = await this.trainingSessionRepository.getOneWithDetails(sessionId, organizationId);
 
     if (!updatedTrainingSession) {
-      throw new Error('Updated training session not found');
+      throw new TrainingSessionNotFoundException('Updated training session not found');
     }
 
     return updatedTrainingSession;
@@ -258,19 +266,19 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new Error('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
     }
 
     //2. Check if current user is same as userId in athleteId
     if (athlete.user.id !== userId) {
-      throw new Error('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
     }
 
     //3. Get athlete training session to update from repository
     const athleteTrainingSessionToUpdate = await this.athleteTrainingSessionRepository.getOneWithDetails(athleteId, athleteTrainingSessionId);
 
     if (!athleteTrainingSessionToUpdate) {
-      throw new Error('Athlete training session not found');
+      throw new TrainingSessionNotFoundException('Athlete training session not found');
     }
 
     //4. Update notes_athlete if needed
@@ -285,7 +293,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const updatedAthleteTrainingSession = await this.athleteTrainingSessionRepository.getOneWithDetails(athleteId, athleteTrainingSessionId);
 
     if (!updatedAthleteTrainingSession) {
-      throw new Error('Updated athlete training session not found');
+      throw new TrainingSessionNotFoundException('Updated athlete training session not found');
     }
 
     return updatedAthleteTrainingSession;
@@ -296,14 +304,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isAdmin) {
-      throw new Error('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
     }
 
     //2. Get training session to delete from repository
     const trainingSessionToDelete = await this.trainingSessionRepository.getOne(trainingSessionId, organizationId);
 
     if (!trainingSessionToDelete) {
-      throw new Error('Training session not found');
+      throw new TrainingSessionNotFoundException('Training session not found');
     }
 
     //3. Delete training session

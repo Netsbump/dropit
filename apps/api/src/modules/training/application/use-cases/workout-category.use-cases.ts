@@ -4,6 +4,11 @@ import { IUserUseCases } from '../../../identity/application/ports/user-use-case
 import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 import { IWorkoutCategoryUseCases } from '../ports/workout-category-use-cases.port';
+import {
+  WorkoutCategoryNotFoundException,
+  WorkoutCategoryAccessDeniedException,
+  WorkoutCategoryValidationException,
+} from '../exceptions/workout-category.exceptions';
 
 /**
  * Workout Category Use Cases Implementation
@@ -27,7 +32,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not a coach of this organization');
+      throw new WorkoutCategoryAccessDeniedException('User is not a coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -36,7 +41,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 3. Get the workout category
     const workoutCategory = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
     if (!workoutCategory) {
-      throw new Error('Workout category not found or access denied');
+      throw new WorkoutCategoryNotFoundException('Workout category not found or access denied');
     }
 
     return workoutCategory;
@@ -47,7 +52,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new Error('User is not a coach of this organization');
+      throw new WorkoutCategoryAccessDeniedException('User is not a coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -63,12 +68,12 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new WorkoutCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Validate the data
     if (!data.name) {
-      throw new Error('Workout category name is required');
+      throw new WorkoutCategoryValidationException('Workout category name is required');
     }
 
     // 3. Create the workout category
@@ -88,7 +93,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 7. Get the created workout category
     const created = await this.workoutCategoryRepository.getOne(workoutCategory.id, coachFilterConditions);
     if (!created) {
-      throw new Error('Workout category not found');
+      throw new WorkoutCategoryNotFoundException('Workout category not found');
     }
 
     return created;
@@ -98,7 +103,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new WorkoutCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -107,7 +112,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 3. Get the workout category to update
     const toUpdate = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
     if (!toUpdate) {
-      throw new Error('Workout category not found or access denied');
+      throw new WorkoutCategoryNotFoundException('Workout category not found or access denied');
     }
 
     // 4. Update the workout category properties
@@ -121,7 +126,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 6. Get the updated workout category
     const updated = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
     if (!updated) {
-      throw new Error('Updated workout category not found');
+      throw new WorkoutCategoryNotFoundException('Updated workout category not found');
     }
 
     return updated;
@@ -131,7 +136,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new Error('User is not coach of this organization');
+      throw new WorkoutCategoryAccessDeniedException('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -140,7 +145,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     // 3. Get the workout category to delete
     const toDelete = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
     if (!toDelete) {
-      throw new Error('Workout category not found or access denied');
+      throw new WorkoutCategoryNotFoundException('Workout category not found or access denied');
     }
 
     // 4. Delete the workout category

@@ -107,7 +107,7 @@ export class ComplexCategoryController {
         const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
         return ComplexCategoryPresenter.presentOne(complexCategoryDto);
       } catch (error) {
-        return ComplexCategoryPresenter.presentCreationError(error as Error);
+        return ComplexCategoryPresenter.presentError(error as Error);
       }
     });
   }

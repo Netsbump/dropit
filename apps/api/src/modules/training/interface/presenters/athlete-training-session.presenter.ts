@@ -1,5 +1,4 @@
 import { AthleteTrainingSessionDto } from '@dropit/schemas';
-import { NotFoundException } from '@nestjs/common';
 
 export const AthleteTrainingSessionPresenter = {
   present(sessions: AthleteTrainingSessionDto[]) {
@@ -17,11 +16,6 @@ export const AthleteTrainingSessionPresenter = {
   },
 
   presentError(error: Error) {
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
-    }
-    
     console.error('AthleteTrainingSession error:', error);
     return {
       status: 500 as const,

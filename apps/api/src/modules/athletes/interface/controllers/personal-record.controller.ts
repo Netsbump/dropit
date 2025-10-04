@@ -164,7 +164,7 @@ export class PersonalRecordController {
         const personalRecordDto = PersonalRecordMapper.toDto(personalRecord);
         return PersonalRecordPresenter.presentCreated(personalRecordDto);
       } catch (error) {
-        return PersonalRecordPresenter.presentCreationError(error as Error);
+        return PersonalRecordPresenter.presentError(error as Error);
       }
     });
   }

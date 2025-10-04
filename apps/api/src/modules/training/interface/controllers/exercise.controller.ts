@@ -106,7 +106,7 @@ export class ExerciseController {
         const exerciseDto = ExerciseMapper.toDto(exercise);
         return ExercisePresenter.presentCreationSuccess(exerciseDto);
       } catch (error) {
-        return ExercisePresenter.presentCreationError(error as Error);
+        return ExercisePresenter.presentError(error as Error);
       }
     });
   }
