@@ -1,7 +1,7 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { PersonalRecord } from '../domain/personal-record.entity';
-import { IPersonalRecordRepository } from '../application/ports/personal-record.repository';
+import { IPersonalRecordRepository } from '../application/ports/personal-record.repository.port';
 
 @Injectable()
 export class MikroPersonalRecordRepository extends EntityRepository<PersonalRecord> implements IPersonalRecordRepository {

@@ -4,8 +4,8 @@ import {
   UpdatePersonalRecord,
 } from '@dropit/schemas';
 import { PersonalRecord } from '../../domain/personal-record.entity';
-import { IPersonalRecordRepository } from '../../application/ports/personal-record.repository';
-import { IAthleteRepository } from '../ports/athlete.repository';
+import { IPersonalRecordRepository } from '../ports/personal-record.repository.port';
+import { IAthleteRepository } from '../ports/athlete.repository.port';
 import { Exercise } from '../../../training/domain/exercise.entity';
 import { IExerciseRepository } from '../../../training/application/ports/exercise.repository';
 import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';

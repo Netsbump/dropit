@@ -22,7 +22,7 @@ import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/work
 import { EXERCISE_REPO, IExerciseRepository } from '../ports/exercise.repository';
 import { COMPLEX_REPO, IComplexRepository } from '../ports/complex.repository';
 import { IWorkoutElementRepository, WORKOUT_ELEMENT_REPO } from '../ports/workout-element.repository';
-import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository';
+import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
 import { ITrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
 import { ATHLETE_TRAINING_SESSION_REPO, IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository';
 

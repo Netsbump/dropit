@@ -3,7 +3,7 @@ import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../domain/athlete.entity';
 import { PersonalRecord } from '../domain/personal-record.entity';
-import { AthleteDetails, IAthleteRepository } from '../application/ports/athlete.repository';
+import { AthleteDetails, IAthleteRepository } from '../application/ports/athlete.repository.port';
 
 @Injectable()
 export class MikroAthleteRepository extends EntityRepository<Athlete> implements IAthleteRepository {

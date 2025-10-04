@@ -1,7 +1,7 @@
 import { Athlete } from "../../domain/athlete.entity";
 import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
 import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
-import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository";
+import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository.port";
 import { IUserUseCases } from "../../../identity/application/ports/user-use-cases.port";
 import { IMemberUseCases } from "../../../identity/application/ports/member-use-cases.port";
 

@@ -7,12 +7,12 @@ import { PersonalRecord } from './domain/personal-record.entity';
 import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
-import { ATHLETE_REPO, IAthleteRepository } from './application/ports/athlete.repository';
-import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from './application/ports/competitor-status.repository';
-import { PERSONAL_RECORD_REPO, IPersonalRecordRepository } from './application/ports/personal-record.repository';
+import { ATHLETE_REPO, IAthleteRepository } from './application/ports/athlete.repository.port';
+import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from './application/ports/competitor-status.repository.port';
+import { PERSONAL_RECORD_REPO, IPersonalRecordRepository } from './application/ports/personal-record.repository.port';
 import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
 import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
-import { COMPETITOR_STATUS_USE_CASES, ICompetitorStatusUseCases } from './application/ports/competitor-status-use-cases.port';
+import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
 
 // implémentations MikroORM
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';

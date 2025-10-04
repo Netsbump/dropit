@@ -5,7 +5,7 @@ import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSess
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
-import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository';
+import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
 import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
 import { MemberUseCases } from '../../../identity/application/member.use-cases';
 

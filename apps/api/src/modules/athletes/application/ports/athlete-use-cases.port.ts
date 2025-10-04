@@ -1,6 +1,6 @@
 import { CreateAthlete, UpdateAthlete } from '@dropit/schemas';
 import { Athlete } from '../../domain/athlete.entity';
-import { AthleteDetails } from './athlete.repository';
+import { AthleteDetails } from './athlete.repository.port';
 
 /**
  * Athlete Use Cases Port
