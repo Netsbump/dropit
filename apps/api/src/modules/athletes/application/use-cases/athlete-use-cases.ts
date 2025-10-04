@@ -1,17 +1,26 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Athlete } from "../../domain/athlete.entity";
 import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
-import { UserUseCases } from "../../../identity/application/user.use-cases";
-import { MemberUseCases } from "../../../identity/application/member.use-cases";
-import { ATHLETE_REPO, AthleteDetails, IAthleteRepository } from "../ports/athlete.repository";
+import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
+import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository";
+import { IUserUseCases } from "../../../identity/application/ports/user-use-cases.port";
+import { IMemberUseCases } from "../../../identity/application/ports/member-use-cases.port";
 
-@Injectable()
-export class AthleteUseCases {
+/**
+ * Athlete Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of athlete business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class AthleteUseCases implements IAthleteUseCases {
   constructor(
-    @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    private readonly userUseCases: IUserUseCases,
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<Athlete> {
@@ -19,13 +28,13 @@ export class AthleteUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
 
     // 2. Validate user access
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach && currentUserId !== athlete.user.id) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
       );
     }
@@ -40,13 +49,13 @@ export class AthleteUseCases {
     // 1. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(athleteId);
     if (!athlete) {
-      throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
 
     // 2. Validate user access
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach && currentUserId !== athlete.user.id) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
       );
     }
@@ -58,7 +67,7 @@ export class AthleteUseCases {
     const athleteWithDetails = await this.athleteRepository.findOneWithDetails(athlete.user.id);
 
     if (!athleteWithDetails) {
-      throw new NotFoundException('Athlete not found');
+      throw new Error('Athlete not found');
     }
 
     return athleteWithDetails;
@@ -71,13 +80,13 @@ export class AthleteUseCases {
     const isUserAthlete = athleteUserIds.includes(currentUserId);
 
     if (!isUserCoach && !isUserAthlete) {
-      throw new NotFoundException('User does not belong to this organization');
+      throw new Error('User does not belong to this organization');
     }
 
     // 2. Get athletes from repository
     const athletes = await this.athleteRepository.findAllWithDetails(athleteUserIds);
     if (!athletes) {
-      throw new NotFoundException('Athletes not found');
+      throw new Error('Athletes not found');
     }
 
     return athletes;
@@ -90,13 +99,13 @@ export class AthleteUseCases {
     const isUserAthlete = athleteUserIds.includes(currentUserId);
 
     if (!isUserCoach && !isUserAthlete) {
-      throw new NotFoundException('User does not belong to this organization');
+      throw new Error('User does not belong to this organization');
     }
 
     // 2. Get athletes from repository
     const athletes = await this.athleteRepository.getAll(athleteUserIds);
     if (!athletes) {
-      throw new NotFoundException('Athletes not found');
+      throw new Error('Athletes not found');
     }
 
     return athletes;
@@ -107,13 +116,13 @@ export class AthleteUseCases {
     const user = await this.userUseCases.getOne(userId);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new Error('User not found');
     }
 
     // 2. Check if User already has an athlete profile
     const existingAthlete = await this.athleteRepository.getOne(userId);
     if (existingAthlete) {
-      throw new BadRequestException('User already has an athlete profile');
+      throw new Error('User already has an athlete profile');
     }
 
     //3. Create Athlete
@@ -137,17 +146,17 @@ export class AthleteUseCases {
     const athlete = await this.athleteRepository.getOne(idAthlete);
 
     if (!athlete) {
-      throw new NotFoundException('Athlete not found');
+      throw new Error('Athlete not found');
     }
 
     //2. Check if Athlete has a user
     if (!athlete.user) {
-      throw new NotFoundException('Athlete has no user');
+      throw new Error('Athlete has no user');
     }
 
     //3. Check if Athlete belongs to User
     if (athlete.user.id !== userId) {
-      throw new ForbiddenException('Athlete does not belong to User');
+      throw new Error('Athlete does not belong to User');
     }
 
     //4. Update Athlete
@@ -178,17 +187,17 @@ export class AthleteUseCases {
     const athlete = await this.athleteRepository.getOne(idAthlete);
 
     if (!athlete) {
-      throw new NotFoundException('Athlete not found');
+      throw new Error('Athlete not found');
     }
 
     //2. Check if Athlete has a user
     if (!athlete.user) {
-      throw new NotFoundException('Athlete has no user');
+      throw new Error('Athlete has no user');
     }
 
     //3. Check if Athlete belongs to User
     if (athlete.user.id !== userId) {
-      throw new ForbiddenException('Athlete does not belong to User');
+      throw new Error('Athlete does not belong to User');
     }
 
     //4. Delete Athlete

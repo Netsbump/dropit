@@ -9,6 +9,8 @@ import { OrganizationUseCases } from './application/organization.use-cases';
 import { MemberUseCases } from './application/member.use-cases';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
 import { USER_REPO } from './application/ports/user.repository';
+import { USER_USE_CASES } from './application/ports/user-use-cases.port';
+import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 
 
 // Entities
@@ -52,6 +54,10 @@ import { MEMBER_REPO } from './application/ports/member.repository';
     { provide: ORGANIZATION_REPO, useClass: MikroOrganizationRepository },
     { provide: MEMBER_REPO, useClass: MikroMemberRepository },
     
+    // Ports pour les use-cases (liaisons port -> implémentation)
+    { provide: USER_USE_CASES, useClass: UserUseCases },
+    { provide: MEMBER_USE_CASES, useClass: MemberUseCases },
+    
     // Guard global
     {
       provide: APP_GUARD,
@@ -69,6 +75,10 @@ import { MEMBER_REPO } from './application/ports/member.repository';
     ORGANIZATION_REPO,
     MEMBER_REPO,
     USER_REPO,
+    
+    // Ports pour les use-cases
+    USER_USE_CASES,
+    MEMBER_USE_CASES,
     
     // Entities pour les autres modules
     MikroOrmModule.forFeature([Organization, Member, User]),

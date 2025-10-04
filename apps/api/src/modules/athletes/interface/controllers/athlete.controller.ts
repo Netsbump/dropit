@@ -2,13 +2,14 @@ import { athleteContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { NoOrganization, RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
-import { AthleteUseCases } from '../../application/use-cases/athlete-use-cases';
+import { IAthleteUseCases, ATHLETE_USE_CASES } from '../../application/ports/athlete-use-cases.port';
 import { AthleteMapper } from '../mappers/athlete.mapper';
 import { AthletePresenter } from '../presenter/athlete.presenter';
 
@@ -28,14 +29,15 @@ const c = athleteContract;
  * and are scoped to the current organization, except for create and update
  * operations which use @NoOrganization() decorator.
  * 
- * @see {@link AthleteUseCases} for business logic implementation
+ * @see {@link IAthleteUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class AthleteController {
   constructor(
-    private readonly athleteUseCases: AthleteUseCases
+    @Inject(ATHLETE_USE_CASES)
+    private readonly athleteUseCases: IAthleteUseCases
   ) {}
 
   /**
