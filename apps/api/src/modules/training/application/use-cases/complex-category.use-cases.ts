@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IComplexCategoryRepository, COMPLEX_CATEGORY_REPO } from '../ports/complex-category.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateComplexCategory, UpdateComplexCategory } from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 
@@ -10,8 +10,10 @@ export class ComplexCategoryUseCase {
   constructor(
     @Inject(COMPLEX_CATEGORY_REPO)
     private readonly complexCategoryRepository: IComplexCategoryRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    @Inject(USER_USE_CASES)
+    private readonly userUseCases: IUserUseCases,
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async getOne(complexCategoryId: string, organizationId: string, userId: string): Promise<ComplexCategory> {

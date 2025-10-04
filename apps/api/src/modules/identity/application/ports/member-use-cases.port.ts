@@ -1,4 +1,4 @@
-import { CoachFilterConditions } from './member.repository';
+import { CoachFilterConditions } from './member.repository.port';
 
 /**
  * Member Use Cases Port

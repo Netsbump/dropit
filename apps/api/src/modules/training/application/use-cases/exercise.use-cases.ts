@@ -3,8 +3,8 @@ import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository
 import { IExerciseCategoryRepository, EXERCISE_CATEGORY_REPO } from '../ports/exercise-category.repository';
 import { CreateExercise, UpdateExercise } from '@dropit/schemas';
 import { Exercise } from '../../domain/exercise.entity';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 
 @Injectable()
 export class ExerciseUseCase {
@@ -13,8 +13,10 @@ export class ExerciseUseCase {
     private readonly exerciseRepository: IExerciseRepository,
     @Inject(EXERCISE_CATEGORY_REPO)
     private readonly exerciseCategoryRepository: IExerciseCategoryRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    @Inject(USER_USE_CASES)
+    private readonly userUseCases: IUserUseCases,
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async getOne(exerciseId: string, organizationId: string, userId: string): Promise<Exercise> {

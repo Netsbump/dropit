@@ -1,13 +1,13 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { ITrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
-import { OrganizationUseCases } from '../../../identity/application/organization.use-cases';
+import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
 import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository, ATHLETE_TRAINING_SESSION_REPO } from '../ports/athlete-training-session.repository';
 import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
 import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
 
 @Injectable()
 export class TrainingSessionUseCase {
@@ -16,12 +16,14 @@ export class TrainingSessionUseCase {
     private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    private readonly organizationUseCases: OrganizationUseCases,
+    @Inject(ORGANIZATION_USE_CASES)
+    private readonly organizationUseCases: IOrganizationUseCases,
     @Inject(WORKOUT_REPO)
     private readonly workoutRepository: IWorkoutRepository,
     @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    private readonly memberUseCases: MemberUseCases
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async getOne(trainingSessionId: string, organizationId: string): Promise<TrainingSession> {

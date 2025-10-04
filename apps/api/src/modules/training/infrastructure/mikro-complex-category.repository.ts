@@ -2,7 +2,7 @@ import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { ComplexCategory } from "../domain/complex-category.entity";
 import { IComplexCategoryRepository } from "../application/ports/complex-category.repository";
 import { Injectable } from "@nestjs/common";
-import { CoachFilterConditions } from "../../identity/application/ports/member.repository";
+import { CoachFilterConditions } from "../../identity/application/ports/member.repository.port";
 
 @Injectable()
 export class MikroComplexCategoryRepository extends EntityRepository<ComplexCategory> implements IComplexCategoryRepository {

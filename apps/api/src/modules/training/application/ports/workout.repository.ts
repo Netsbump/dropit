@@ -1,5 +1,5 @@
 import { Workout } from '../../domain/workout.entity';
-import { CoachFilterConditions } from '../../../identity/application/ports/member.repository';
+import { CoachFilterConditions } from '../../../identity/application/ports/member.repository.port';
 
 export const WORKOUT_REPO = 'WORKOUT_REPO';
 

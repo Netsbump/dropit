@@ -3,8 +3,8 @@ import { IComplexRepository, COMPLEX_REPO } from '../ports/complex.repository';
 import { IComplexCategoryRepository, COMPLEX_CATEGORY_REPO } from '../ports/complex-category.repository';
 import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository';
 import { IExerciseComplexRepository, EXERCISE_COMPLEX_REPO } from '../ports/exercise-complex.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateComplex, UpdateComplex } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
 import { ExerciseComplex } from '../../domain/exercise-complex.entity';
@@ -20,8 +20,10 @@ export class ComplexUseCase {
     private readonly exerciseRepository: IExerciseRepository,
     @Inject(EXERCISE_COMPLEX_REPO)
     private readonly exerciseComplexRepository: IExerciseComplexRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases,
+    @Inject(USER_USE_CASES)
+    private readonly userUseCases: IUserUseCases,
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases,
   ) {}
 
   async getOne(complexId: string, organizationId: string, userId: string): Promise<Complex> {

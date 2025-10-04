@@ -2,7 +2,7 @@ import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { WorkoutCategory } from "../domain/workout-category.entity";
 import { IWorkoutCategoryRepository } from "../application/ports/workout-category.repository";
 import { Injectable } from "@nestjs/common";
-import { CoachFilterConditions } from "../../identity/application/ports/member.repository";
+import { CoachFilterConditions } from "../../identity/application/ports/member.repository.port";
 
 @Injectable()
 export class MikroWorkoutCategoryRepository extends EntityRepository<WorkoutCategory> implements IWorkoutCategoryRepository {

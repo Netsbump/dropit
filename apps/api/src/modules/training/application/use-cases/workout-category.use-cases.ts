@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/workout-category.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 
@@ -10,8 +10,10 @@ export class WorkoutCategoryUseCase {
   constructor(
     @Inject(WORKOUT_CATEGORY_REPO)
     private readonly workoutCategoryRepository: IWorkoutCategoryRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    @Inject(USER_USE_CASES)
+    private readonly userUseCases: IUserUseCases,
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async getOne(workoutCategoryId: string, userId: string, organizationId: string): Promise<WorkoutCategory> {

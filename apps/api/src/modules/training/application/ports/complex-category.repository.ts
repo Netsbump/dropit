@@ -1,5 +1,5 @@
 import { ComplexCategory } from '../../domain/complex-category.entity';
-import { CoachFilterConditions } from '../../../identity/application/ports/member.repository';
+import { CoachFilterConditions } from '../../../identity/application/ports/member.repository.port';
 
 export const COMPLEX_CATEGORY_REPO = Symbol('COMPLEX_CATEGORY_REPO');
 

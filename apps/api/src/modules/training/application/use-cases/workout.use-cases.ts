@@ -15,9 +15,9 @@ import {
 } from '../../domain/workout-element.entity';
 import { Workout } from '../../domain/workout.entity';
 import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
-import { OrganizationUseCases } from '../../../identity/application/organization.use-cases';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
 import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/workout-category.repository';
 import { EXERCISE_REPO, IExerciseRepository } from '../ports/exercise.repository';
 import { COMPLEX_REPO, IComplexRepository } from '../ports/complex.repository';
@@ -46,9 +46,12 @@ export class WorkoutUseCases {
     private readonly trainingSessionRepository: ITrainingSessionRepository,
     @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases,
-    private readonly organizationUseCases: OrganizationUseCases
+    @Inject(USER_USE_CASES)
+    private readonly userUseCases: IUserUseCases,
+    @Inject(MEMBER_USE_CASES)
+    private readonly memberUseCases: IMemberUseCases,
+    @Inject(ORGANIZATION_USE_CASES)
+    private readonly organizationUseCases: IOrganizationUseCases
   ) {}
 
   async getWorkouts(organizationId: string, userId: string): Promise<Workout[]> {
