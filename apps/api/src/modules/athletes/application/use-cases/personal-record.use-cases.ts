@@ -3,24 +3,31 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecord,
 } from '@dropit/schemas';
-import { Injectable, NotFoundException, Inject } from '@nestjs/common';
 import { PersonalRecord } from '../../domain/personal-record.entity';
-import { IPersonalRecordRepository, PERSONAL_RECORD_REPO } from '../../application/ports/personal-record.repository';
-import { IAthleteRepository, ATHLETE_REPO } from '../ports/athlete.repository';
+import { IPersonalRecordRepository } from '../../application/ports/personal-record.repository';
+import { IAthleteRepository } from '../ports/athlete.repository';
 import { Exercise } from '../../../training/domain/exercise.entity';
-import { IExerciseRepository, EXERCISE_REPO } from '../../../training/application/ports/exercise.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
+import { IExerciseRepository } from '../../../training/application/ports/exercise.repository';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IPersonalRecordUseCases } from '../ports/personal-record-use-cases.port';
 
-@Injectable()
-export class PersonalRecordUseCases {
+/**
+ * Personal Record Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of personal record business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class PersonalRecordUseCases implements IPersonalRecordUseCases {
   constructor(
-    @Inject(PERSONAL_RECORD_REPO)
     private readonly personalRecordRepository: IPersonalRecordRepository,
-    @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    @Inject(EXERCISE_REPO)
     private readonly exerciseRepository: IExerciseRepository,
-    private readonly memberUseCases: MemberUseCases
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
   async getAll(currentUserId: string, organizationId: string): Promise<PersonalRecord[]> {
@@ -34,19 +41,19 @@ export class PersonalRecordUseCases {
       const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
 
       if (athleteUserIds.length === 0) {
-        throw new NotFoundException('No athletes found in the organization');
+        throw new Error('No athletes found in the organization');
       }
 
       personalRecords = await this.personalRecordRepository.getAll(athleteUserIds);
 
       if (!personalRecords || personalRecords.length === 0) {
-        throw new NotFoundException('No personal records found');
+        throw new Error('No personal records found');
       }
     } else {
       // 2b. If user is athlete, get only their own personal records
       const athlete = await this.athleteRepository.getOne(currentUserId);
       if (!athlete) {
-        throw new NotFoundException('Athlete not found');
+        throw new Error('Athlete not found');
       }
 
       personalRecords = await this.personalRecordRepository.getAllByAthleteId(currentUserId);
@@ -64,20 +71,20 @@ export class PersonalRecordUseCases {
     const personalRecord = await this.personalRecordRepository.getOne(id);
 
     if (!personalRecord) {
-      throw new NotFoundException(`Personal record with ID ${id} not found`);
+      throw new Error(`Personal record with ID ${id} not found`);
     }
 
     // 2. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(personalRecord.athlete.id);
 
     if (!athlete || !athlete.user) {
-      throw new NotFoundException('Athlete not found');
+      throw new Error('Athlete not found');
     }
 
     // 3. Validate user access
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach && currentUserId !== athlete.user.id) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. You can only access your own personal records or the personal records of an athlete you are coaching"
       );
     }
@@ -90,13 +97,13 @@ export class PersonalRecordUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
 
     // 2. Validate user access
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach && currentUserId !== athlete.user.id) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. You can only access your own personal records or the personal records of an athlete you are coaching"
       );
     }
@@ -116,13 +123,13 @@ export class PersonalRecordUseCases {
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
 
     // 2. Validate user access
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach && currentUserId !== athlete.user.id) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. You can only access your own personal records or the personal records of an athlete you are coaching"
       );
     }
@@ -172,7 +179,7 @@ export class PersonalRecordUseCases {
     // 1. Validate user access - only coaches can create personal records
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. Only coaches can create personal records"
       );
     }
@@ -183,7 +190,7 @@ export class PersonalRecordUseCases {
     // 3. Get athlete to verify it exists
     const athlete = await this.athleteRepository.getOne(data.athleteId);
     if (!athlete) {
-      throw new NotFoundException(
+      throw new Error(
         `Athlete with ID ${data.athleteId} not found`
       );
     }
@@ -200,7 +207,7 @@ export class PersonalRecordUseCases {
     // 5. Get exercise and set it
     const exercise = await this.exerciseRepository.getOne(data.exerciseId, coachFilterConditions);
     if (!exercise) {
-      throw new NotFoundException(
+      throw new Error(
         `Exercise with ID ${data.exerciseId} not found`
       );
     }
@@ -212,7 +219,7 @@ export class PersonalRecordUseCases {
     // 7. Get created personal record with populated relations
     const createdPersonalRecord = await this.personalRecordRepository.getOne(personalRecord.id);
     if (!createdPersonalRecord) {
-      throw new NotFoundException('Personal record not found after creation');
+      throw new Error('Personal record not found after creation');
     }
 
     return createdPersonalRecord;
@@ -227,7 +234,7 @@ export class PersonalRecordUseCases {
     // 1. Validate user access - only coaches can update personal records
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. Only coaches can update personal records"
       );
     }
@@ -235,7 +242,7 @@ export class PersonalRecordUseCases {
     // 2. Get personal record to update
     const personalRecord = await this.personalRecordRepository.getOne(id);
     if (!personalRecord) {
-      throw new NotFoundException(`Personal record with ID ${id} not found`);
+      throw new Error(`Personal record with ID ${id} not found`);
     }
 
     // 3. Verify athlete still belongs to organization
@@ -255,7 +262,7 @@ export class PersonalRecordUseCases {
     // 6. Get updated personal record with populated relations
     const updatedPersonalRecord = await this.personalRecordRepository.getOne(id);
     if (!updatedPersonalRecord) {
-      throw new NotFoundException('Personal record not found after update');
+      throw new Error('Personal record not found after update');
     }
 
     return updatedPersonalRecord;
@@ -265,7 +272,7 @@ export class PersonalRecordUseCases {
     // 1. Validate user access - only coaches can delete personal records
     const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
     if (!isUserCoach) {
-      throw new NotFoundException(
+      throw new Error(
         "Access denied. Only coaches can delete personal records"
       );
     }
@@ -273,7 +280,7 @@ export class PersonalRecordUseCases {
     // 2. Get personal record to delete
     const personalRecord = await this.personalRecordRepository.getOne(id);
     if (!personalRecord) {
-      throw new NotFoundException(`Personal record with ID ${id} not found`);
+      throw new Error(`Personal record with ID ${id} not found`);
     }
 
     // 3. Verify athlete belongs to organization

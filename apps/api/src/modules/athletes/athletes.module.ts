@@ -8,9 +8,11 @@ import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
 import { ATHLETE_REPO, IAthleteRepository } from './application/ports/athlete.repository';
-import { COMPETITOR_STATUS_REPO } from './application/ports/competitor-status.repository';
-import { PERSONAL_RECORD_REPO } from './application/ports/personal-record.repository';
+import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from './application/ports/competitor-status.repository';
+import { PERSONAL_RECORD_REPO, IPersonalRecordRepository } from './application/ports/personal-record.repository';
 import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
+import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
+import { COMPETITOR_STATUS_USE_CASES, ICompetitorStatusUseCases } from './application/ports/competitor-status-use-cases.port';
 
 // implémentations MikroORM
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
@@ -28,6 +30,7 @@ import { IdentityModule } from '../identity/identity.module';
 import { TrainingModule } from '../training/training.module';
 import { USER_USE_CASES, IUserUseCases } from '../identity/application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports/member-use-cases.port';
+import { EXERCISE_REPO, IExerciseRepository } from '../training/application/ports/exercise.repository';
 
 @Module({
   imports: [
@@ -64,6 +67,20 @@ import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports
         return new AthleteUseCases(athleteRepo, userUseCases, memberUseCases);
       },
       inject: [ATHLETE_REPO, USER_USE_CASES, MEMBER_USE_CASES],
+    },
+    {
+      provide: PERSONAL_RECORD_USE_CASES,
+      useFactory: (personalRecordRepo: IPersonalRecordRepository, athleteRepo: IAthleteRepository, exerciseRepo: IExerciseRepository, memberUseCases: IMemberUseCases) => {
+        return new PersonalRecordUseCases(personalRecordRepo, athleteRepo, exerciseRepo, memberUseCases);
+      },
+      inject: [PERSONAL_RECORD_REPO, ATHLETE_REPO, EXERCISE_REPO, MEMBER_USE_CASES],
+    },
+    {
+      provide: COMPETITOR_STATUS_USE_CASES,
+      useFactory: (competitorStatusRepo: ICompetitorStatusRepository, athleteRepo: IAthleteRepository, memberUseCases: IMemberUseCases) => {
+        return new CompetitorStatusUseCases(competitorStatusRepo, athleteRepo, memberUseCases);
+      },
+      inject: [COMPETITOR_STATUS_REPO, ATHLETE_REPO, MEMBER_USE_CASES],
     },
   ],
 

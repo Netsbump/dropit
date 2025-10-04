@@ -201,6 +201,30 @@ Le module NestJS fait le lien entre les **ports** (interfaces) et les **adapters
 export class AthletesModule {}
 ```
 
+### Pourquoi pas de `@Injectable()` dans les Use Cases ?
+
+Les use cases sont dans la couche **application** et doivent rester **framework-agnostic**.
+
+```typescript
+// ❌ MAUVAIS - Couplage à NestJS
+@Injectable() // <- Dépendance à NestJS !
+export class AthleteUseCases {
+  constructor(
+    @Inject(ATHLETE_REPO) // <- Dépendance à NestJS !
+    private readonly athleteRepository: IAthleteRepository
+  ) {}
+}
+
+// ✅ BON - Framework-agnostic
+export class AthleteUseCases { // <- Pur TypeScript !
+  constructor(
+    private readonly athleteRepository: IAthleteRepository // <- Pas de décorateur !
+  ) {}
+}
+```
+
+**Résultat** : Le même use-case peut être utilisé dans NestJS, Express, CLI, Lambda, etc.
+
 ### Pourquoi utiliser `useFactory` ?
 
 #### Option 1 : `useClass` (simple)
