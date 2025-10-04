@@ -2,9 +2,10 @@ import { complexCategoryContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ComplexCategoryUseCase } from '../../application/use-cases/complex-category.use-cases';
+import { IComplexCategoryUseCases, COMPLEX_CATEGORY_USE_CASES } from '../../application/ports/complex-category-use-cases.port';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
@@ -33,7 +34,8 @@ const c = complexCategoryContract;
 @Controller()
 export class ComplexCategoryController {
   constructor(
-    private readonly complexCategoryUseCase: ComplexCategoryUseCase
+    @Inject(COMPLEX_CATEGORY_USE_CASES)
+    private readonly complexCategoryUseCase: IComplexCategoryUseCases
   ) {}
 
   /**

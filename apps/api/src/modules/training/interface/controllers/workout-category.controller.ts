@@ -2,9 +2,10 @@ import { workoutCategoryContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { WorkoutCategoryUseCase } from '../../application/use-cases/workout-category.use-cases';
+import { IWorkoutCategoryUseCases, WORKOUT_CATEGORY_USE_CASES } from '../../application/ports/workout-category-use-cases.port';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
@@ -33,7 +34,8 @@ const c = workoutCategoryContract;
 @Controller()
 export class WorkoutCategoryController {
   constructor(
-    private readonly workoutCategoryUseCase: WorkoutCategoryUseCase
+    @Inject(WORKOUT_CATEGORY_USE_CASES)
+    private readonly workoutCategoryUseCase: IWorkoutCategoryUseCases
   ) {}
 
   /**

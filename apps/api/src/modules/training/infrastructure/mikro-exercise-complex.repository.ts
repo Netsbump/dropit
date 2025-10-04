@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from '@mikro-orm/core';
-import { IExerciseComplexRepository } from '../application/ports/exercise-complex.repository';
+import { IExerciseComplexRepository } from '../application/ports/exercise-complex.repository.port';
 import { ExerciseComplex } from '../domain/exercise-complex.entity';
 
 @Injectable()

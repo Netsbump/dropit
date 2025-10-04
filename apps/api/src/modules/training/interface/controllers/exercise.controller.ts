@@ -2,9 +2,10 @@ import { exerciseContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ExerciseUseCase } from '../../application/use-cases/exercise.use-cases';
+import { IExerciseUseCases, EXERCISE_USE_CASES } from '../../application/ports/exercise-use-cases.port';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
@@ -26,14 +27,15 @@ const c = exerciseContract;
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
  * 
- * @see {@link ExerciseUseCase} for business logic implementation
+ * @see {@link IExerciseUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class ExerciseController {
   constructor(
-    private readonly exerciseUseCase: ExerciseUseCase
+    @Inject(EXERCISE_USE_CASES)
+    private readonly exerciseUseCase: IExerciseUseCases
   ) {}
 
   /**

@@ -7,7 +7,7 @@ import { PersonalRecord } from '../../domain/personal-record.entity';
 import { IPersonalRecordRepository } from '../ports/personal-record.repository.port';
 import { IAthleteRepository } from '../ports/athlete.repository.port';
 import { Exercise } from '../../../training/domain/exercise.entity';
-import { IExerciseRepository } from '../../../training/application/ports/exercise.repository';
+import { IExerciseRepository } from '../../../training/application/ports/exercise.repository.port';
 import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
 import { IPersonalRecordUseCases } from '../ports/personal-record-use-cases.port';
 

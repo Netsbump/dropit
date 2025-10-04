@@ -2,9 +2,10 @@ import { complexContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ComplexUseCase } from '../../application/use-cases/complex.use-cases';
+import { IComplexUseCases, COMPLEX_USE_CASES } from '../../application/ports/complex-use-cases.port';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
@@ -26,14 +27,15 @@ const c = complexContract;
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
  * 
- * @see {@link ComplexUseCase} for business logic implementation
+ * @see {@link IComplexUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class ComplexController {
   constructor(
-    private readonly complexUseCase: ComplexUseCase
+    @Inject(COMPLEX_USE_CASES)
+    private readonly complexUseCase: IComplexUseCases
   ) {}
 
   /**

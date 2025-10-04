@@ -1,21 +1,27 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository';
-import { IExerciseCategoryRepository, EXERCISE_CATEGORY_REPO } from '../ports/exercise-category.repository';
+import { IExerciseRepository } from '../ports/exercise.repository.port';
+import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
 import { CreateExercise, UpdateExercise } from '@dropit/schemas';
 import { Exercise } from '../../domain/exercise.entity';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IExerciseUseCases } from '../ports/exercise-use-cases.port';
 
-@Injectable()
-export class ExerciseUseCase {
+/**
+ * Exercise Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of exercise business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class ExerciseUseCase implements IExerciseUseCases {
   constructor(
-    @Inject(EXERCISE_REPO)
     private readonly exerciseRepository: IExerciseRepository,
-    @Inject(EXERCISE_CATEGORY_REPO)
     private readonly exerciseCategoryRepository: IExerciseCategoryRepository,
-    @Inject(USER_USE_CASES)
     private readonly userUseCases: IUserUseCases,
-    @Inject(MEMBER_USE_CASES)
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
@@ -24,7 +30,7 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -35,7 +41,7 @@ export class ExerciseUseCase {
 
     // 4. Validate exercise
     if (!exercise) {
-      throw new NotFoundException('Exercise not found');
+      throw new Error('Exercise not found');
     }
 
     return exercise;
@@ -46,7 +52,7 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -57,7 +63,7 @@ export class ExerciseUseCase {
 
     // 4. Validate exercises
     if (!exercises || exercises.length === 0) {
-      throw new NotFoundException('No exercises found');
+      throw new Error('No exercises found');
     }
 
     return exercises;
@@ -68,7 +74,7 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -79,7 +85,7 @@ export class ExerciseUseCase {
 
     // 4. Validate exercises
     if (!exercises) {
-      throw new NotFoundException('Exercises not found');
+      throw new Error('Exercises not found');
     }
 
     return exercises;
@@ -90,12 +96,12 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Validate data
     if (!data.name) {
-      throw new BadRequestException('Exercise name is required');
+      throw new Error('Exercise name is required');
     }
 
     //3. Get filter conditions via use case
@@ -105,7 +111,7 @@ export class ExerciseUseCase {
     const exerciseCategory = await this.exerciseCategoryRepository.getOne(data.exerciseCategory, coachFilterConditions);
 
     if (!exerciseCategory) {
-      throw new NotFoundException(
+      throw new Error(
         `Exercise category with ID ${data.exerciseCategory} not found`
       );
     }
@@ -136,7 +142,7 @@ export class ExerciseUseCase {
     const createdExercise = await this.exerciseRepository.getOne(exercise.id, coachFilterConditions);
 
     if (!createdExercise) {
-      throw new NotFoundException('Exercise not found');
+      throw new Error('Exercise not found');
     }
 
     return createdExercise;
@@ -147,7 +153,7 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -157,7 +163,7 @@ export class ExerciseUseCase {
     const exerciseToUpdate = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!exerciseToUpdate) {
-      throw new NotFoundException('Exercise not found');
+      throw new Error('Exercise not found');
     }
 
     //4. Update exercise
@@ -181,7 +187,7 @@ export class ExerciseUseCase {
     const updatedExercise = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!updatedExercise) {
-      throw new NotFoundException('Updated exercise not found');
+      throw new Error('Updated exercise not found');
     }
 
     return updatedExercise;
@@ -192,7 +198,7 @@ export class ExerciseUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -202,7 +208,7 @@ export class ExerciseUseCase {
     const exerciseToDelete = await this.exerciseRepository.getOne(exerciseId, coachFilterConditions);
 
     if (!exerciseToDelete) {
-      throw new NotFoundException('Exercise not found');
+      throw new Error('Exercise not found');
     }
 
     //4. Delete exercise

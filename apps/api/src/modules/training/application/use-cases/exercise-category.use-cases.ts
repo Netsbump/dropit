@@ -1,18 +1,25 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IExerciseCategoryRepository, EXERCISE_CATEGORY_REPO } from '../ports/exercise-category.repository';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateExerciseCategory, UpdateExerciseCategory } from '@dropit/schemas';
 import { ExerciseCategory } from '../../domain/exercise-category.entity';
+import { IExerciseCategoryUseCases } from '../ports/exercise-category-use-cases.port';
 
-@Injectable()
-export class ExerciseCategoryUseCase {
+/**
+ * Exercise Category Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of exercise category business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
   constructor(
-    @Inject(EXERCISE_CATEGORY_REPO)
     private readonly exerciseCategoryRepository: IExerciseCategoryRepository,
-    @Inject(USER_USE_CASES)
     private readonly userUseCases: IUserUseCases,
-    @Inject(MEMBER_USE_CASES)
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
@@ -21,7 +28,7 @@ export class ExerciseCategoryUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -32,7 +39,7 @@ export class ExerciseCategoryUseCase {
 
     // 4. Validate exercise category
     if (!exerciseCategory) {
-      throw new NotFoundException('Exercise category not found or access denied');
+      throw new Error('Exercise category not found or access denied');
     }
 
     return exerciseCategory;
@@ -43,7 +50,7 @@ export class ExerciseCategoryUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -60,12 +67,12 @@ export class ExerciseCategoryUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Validate data
     if (!data.name) {
-      throw new BadRequestException('Exercise category name is required');
+      throw new Error('Exercise category name is required');
     }
 
     // 3. Create exercise category
@@ -85,7 +92,7 @@ export class ExerciseCategoryUseCase {
     const createdExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategory.id, coachFilterConditions);
 
     if (!createdExerciseCategory) {
-      throw new NotFoundException('Exercise category not found');
+      throw new Error('Exercise category not found');
     }
 
     return createdExerciseCategory;
@@ -96,7 +103,7 @@ export class ExerciseCategoryUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -106,7 +113,7 @@ export class ExerciseCategoryUseCase {
     const exerciseCategoryToUpdate = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!exerciseCategoryToUpdate) {
-      throw new NotFoundException('Exercise category not found or access denied');
+      throw new Error('Exercise category not found or access denied');
     }
 
     // 4. Update exercise category
@@ -121,7 +128,7 @@ export class ExerciseCategoryUseCase {
     const updatedExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!updatedExerciseCategory) {
-      throw new NotFoundException('Updated exercise category not found');
+      throw new Error('Updated exercise category not found');
     }
 
     return updatedExerciseCategory;
@@ -132,7 +139,7 @@ export class ExerciseCategoryUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -142,7 +149,7 @@ export class ExerciseCategoryUseCase {
     const exerciseCategoryToDelete = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
 
     if (!exerciseCategoryToDelete) {
-      throw new NotFoundException('Exercise category not found or access denied');
+      throw new Error('Exercise category not found or access denied');
     }
 
     // 4. Delete exercise category

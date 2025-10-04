@@ -2,9 +2,10 @@ import { apiContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { TrainingSessionUseCase } from '../../application/use-cases/training-session.use-cases';
+import { ITrainingSessionUseCases, TRAINING_SESSION_USE_CASES } from '../../application/ports/training-session-use-cases.port';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
@@ -30,14 +31,15 @@ const contractAthleteTrainingSession = apiContract.athleteTrainingSession;
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
  * 
- * @see {@link TrainingSessionUseCase} for business logic implementation
+ * @see {@link ITrainingSessionUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class TrainingSessionController {
   constructor(
-    private readonly trainingSessionUseCase: TrainingSessionUseCase
+    @Inject(TRAINING_SESSION_USE_CASES)
+    private readonly trainingSessionUseCase: ITrainingSessionUseCases
   ) {}
 
   /**

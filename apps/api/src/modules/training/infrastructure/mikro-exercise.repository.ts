@@ -1,6 +1,6 @@
 import { EntityManager, EntityRepository, FilterQuery } from "@mikro-orm/core";
 import { Exercise } from "../domain/exercise.entity";
-import { IExerciseRepository } from "../application/ports/exercise.repository";
+import { IExerciseRepository } from "../application/ports/exercise.repository.port";
 import { Injectable } from "@nestjs/common";
 import { CoachFilterConditions } from "../../identity/application/ports/member.repository.port";
 

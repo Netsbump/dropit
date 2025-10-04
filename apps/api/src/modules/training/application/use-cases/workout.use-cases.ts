@@ -1,11 +1,4 @@
 import { CreateWorkout, UpdateWorkout } from '@dropit/schemas';
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-  Inject,
-} from '@nestjs/common';
 import { Athlete } from '../../../athletes/domain/athlete.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
@@ -14,43 +7,42 @@ import {
   WorkoutElement,
 } from '../../domain/workout-element.entity';
 import { Workout } from '../../domain/workout.entity';
-import { IWorkoutRepository, WORKOUT_REPO } from '../ports/workout.repository';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
-import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
-import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/workout-category.repository';
-import { EXERCISE_REPO, IExerciseRepository } from '../ports/exercise.repository';
-import { COMPLEX_REPO, IComplexRepository } from '../ports/complex.repository';
-import { IWorkoutElementRepository, WORKOUT_ELEMENT_REPO } from '../ports/workout-element.repository';
-import { ATHLETE_REPO, IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
-import { ITrainingSessionRepository, TRAINING_SESSION_REPO } from '../ports/training-session.repository';
-import { ATHLETE_TRAINING_SESSION_REPO, IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository';
+import { IWorkoutRepository } from '../ports/workout.repository.port';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
+import { IWorkoutCategoryRepository } from '../ports/workout-category.repository.port';
+import { IExerciseRepository } from '../ports/exercise.repository.port';
+import { IComplexRepository } from '../ports/complex.repository.port';
+import { IWorkoutElementRepository } from '../ports/workout-element.repository.port';
+import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
+import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
+import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
+import { IWorkoutUseCases } from '../ports/workout-use-cases.port';
 
-@Injectable()
-export class WorkoutUseCases {
+/**
+ * Workout Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of workout business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class WorkoutUseCases implements IWorkoutUseCases {
   constructor(
-    @Inject(WORKOUT_REPO)
     private readonly workoutRepository: IWorkoutRepository,
-    @Inject(WORKOUT_CATEGORY_REPO)
     private readonly workoutCategoryRepository: IWorkoutCategoryRepository,
-    @Inject(COMPLEX_REPO)
     private readonly complexRepository: IComplexRepository,
-    @Inject(EXERCISE_REPO)
     private readonly exerciseRepository: IExerciseRepository,
-    @Inject(WORKOUT_ELEMENT_REPO)
     private readonly workoutElementRepository: IWorkoutElementRepository,
-
-    @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    @Inject(TRAINING_SESSION_REPO)
     private readonly trainingSessionRepository: ITrainingSessionRepository,
-    @Inject(ATHLETE_TRAINING_SESSION_REPO)
     private readonly athleteTrainingSessionRepository: IAthleteTrainingSessionRepository,
-    @Inject(USER_USE_CASES)
     private readonly userUseCases: IUserUseCases,
-    @Inject(MEMBER_USE_CASES)
     private readonly memberUseCases: IMemberUseCases,
-    @Inject(ORGANIZATION_USE_CASES)
     private readonly organizationUseCases: IOrganizationUseCases
   ) {}
 
@@ -59,7 +51,7 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -69,7 +61,7 @@ export class WorkoutUseCases {
     const workouts = await this.workoutRepository.getAll(coachFilterConditions);
 
     if (!workouts) {
-      throw new NotFoundException('Workouts not found');
+      throw new Error('Workouts not found');
     }
 
     return workouts;
@@ -80,7 +72,7 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -90,7 +82,7 @@ export class WorkoutUseCases {
     const workout = await this.workoutRepository.getOne(workoutId, coachFilterConditions);
 
     if (!workout) {
-      throw new NotFoundException('Workout not found or access denied');
+      throw new Error('Workout not found or access denied');
     }
 
     return workout;
@@ -101,7 +93,7 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -111,7 +103,7 @@ export class WorkoutUseCases {
     const workout = await this.workoutRepository.getOneWithDetails(id, coachFilterConditions);
 
     if (!workout) {
-      throw new NotFoundException('Workout not found or access denied');
+      throw new Error('Workout not found or access denied');
     }
 
     return workout;
@@ -122,12 +114,12 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Check if workout has at least one element
     if (!workout.elements || workout.elements.length === 0) {
-      throw new BadRequestException('Workout must have at least one element');
+      throw new Error('Workout must have at least one element');
     }
 
     //3. Get filter conditions via use case
@@ -137,7 +129,7 @@ export class WorkoutUseCases {
     const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, coachFilterConditions);
 
     if (!category) {
-      throw new NotFoundException(
+      throw new Error(
         `Workout category with ID ${workout.workoutCategory} not found or access denied`
       );
     }
@@ -167,7 +159,7 @@ export class WorkoutUseCases {
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
         const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
         if (!exercise) {
-          throw new NotFoundException(
+          throw new Error(
             `Exercise with ID ${element.id} not found or access denied`
           );
         }
@@ -175,7 +167,7 @@ export class WorkoutUseCases {
       } else {
         const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
         if (!complex) {
-          throw new NotFoundException(
+          throw new Error(
             `Complex with ID ${element.id} not found or access denied`
           );
         }
@@ -198,7 +190,7 @@ export class WorkoutUseCases {
       for (const athleteId of workout.trainingSession.athleteIds) {
         const athlete = await this.athleteRepository.getOne(athleteId);
         if (!athlete) {
-          throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
+          throw new Error(`Athlete with ID ${athleteId} not found`);
         }
         athletes.push(athlete);
       }
@@ -227,7 +219,7 @@ export class WorkoutUseCases {
     const workoutCreated = await this.workoutRepository.getOneWithDetails(createdWorkout.id, coachFilterConditions);
 
     if (!workoutCreated) {
-      throw new NotFoundException('Workout not found');
+      throw new Error('Workout not found');
     }
 
     return workoutCreated;
@@ -238,7 +230,7 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -248,7 +240,7 @@ export class WorkoutUseCases {
     const workoutToUpdate = await this.workoutRepository.getOne(id, coachFilterConditions);
 
     if (!workoutToUpdate) {
-      throw new NotFoundException('Workout not found or access denied');
+      throw new Error('Workout not found or access denied');
     }
 
     //4. Update workout
@@ -263,7 +255,7 @@ export class WorkoutUseCases {
     if (workout.workoutCategory) {
       const category = await this.workoutCategoryRepository.getOne(workout.workoutCategory, coachFilterConditions);
       if (!category) {
-        throw new NotFoundException(
+        throw new Error(
           `Workout category with ID ${workout.workoutCategory} not found or access denied`
         );
       }
@@ -298,7 +290,7 @@ export class WorkoutUseCases {
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
           const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
           if (!exercise) {
-            throw new NotFoundException(
+            throw new Error(
               `Exercise with ID ${element.id} not found or access denied`
             );
           }
@@ -306,7 +298,7 @@ export class WorkoutUseCases {
         } else {
           const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
           if (!complex) {
-            throw new NotFoundException(
+            throw new Error(
               `Complex with ID ${element.id} not found or access denied`
             );
           }
@@ -324,7 +316,7 @@ export class WorkoutUseCases {
     const workoutUpdated = await this.workoutRepository.getOneWithDetails(id, coachFilterConditions);
 
     if (!workoutUpdated) {
-      throw new NotFoundException('Workout not found');
+      throw new Error('Workout not found');
     }
 
     return workoutUpdated;
@@ -335,7 +327,7 @@ export class WorkoutUseCases {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     //2. Get filter conditions via use case
@@ -345,7 +337,7 @@ export class WorkoutUseCases {
     const workoutToDelete = await this.workoutRepository.getOne(workoutId, coachFilterConditions);
 
     if (!workoutToDelete) {
-      throw new NotFoundException('Workout not found or access denied');
+      throw new Error('Workout not found or access denied');
     }
 
     //4. Delete workout

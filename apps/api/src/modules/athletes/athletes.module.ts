@@ -30,7 +30,7 @@ import { IdentityModule } from '../identity/identity.module';
 import { TrainingModule } from '../training/training.module';
 import { USER_USE_CASES, IUserUseCases } from '../identity/application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports/member-use-cases.port';
-import { EXERCISE_REPO, IExerciseRepository } from '../training/application/ports/exercise.repository';
+import { EXERCISE_REPO, IExerciseRepository } from '../training/application/ports/exercise.repository.port';
 
 @Module({
   imports: [

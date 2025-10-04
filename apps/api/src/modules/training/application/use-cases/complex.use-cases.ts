@@ -1,28 +1,32 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { IComplexRepository, COMPLEX_REPO } from '../ports/complex.repository';
-import { IComplexCategoryRepository, COMPLEX_CATEGORY_REPO } from '../ports/complex-category.repository';
-import { IExerciseRepository, EXERCISE_REPO } from '../ports/exercise.repository';
-import { IExerciseComplexRepository, EXERCISE_COMPLEX_REPO } from '../ports/exercise-complex.repository';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { USER_USE_CASES, IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IComplexRepository } from '../ports/complex.repository.port';
+import { IComplexCategoryRepository } from '../ports/complex-category.repository.port';
+import { IExerciseRepository } from '../ports/exercise.repository.port';
+import { IExerciseComplexRepository } from '../ports/exercise-complex.repository.port';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateComplex, UpdateComplex } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
 import { ExerciseComplex } from '../../domain/exercise-complex.entity';
+import { IComplexUseCases } from '../ports/complex-use-cases.port';
 
-@Injectable()
-export class ComplexUseCase {
+/**
+ * Complex Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of complex business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class ComplexUseCase implements IComplexUseCases {
   constructor(
-    @Inject(COMPLEX_REPO)
     private readonly complexRepository: IComplexRepository,
-    @Inject(COMPLEX_CATEGORY_REPO)
     private readonly complexCategoryRepository: IComplexCategoryRepository,
-    @Inject(EXERCISE_REPO)
     private readonly exerciseRepository: IExerciseRepository,
-    @Inject(EXERCISE_COMPLEX_REPO)
     private readonly exerciseComplexRepository: IExerciseComplexRepository,
-    @Inject(USER_USE_CASES)
     private readonly userUseCases: IUserUseCases,
-    @Inject(MEMBER_USE_CASES)
     private readonly memberUseCases: IMemberUseCases,
   ) {}
 
@@ -31,7 +35,7 @@ export class ComplexUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -41,7 +45,7 @@ export class ComplexUseCase {
     const complex = await this.complexRepository.getOne(complexId, coachFilterConditions);
 
     if (!complex) {
-      throw new NotFoundException('Complex not found or access denied');
+      throw new Error('Complex not found or access denied');
     }
 
     return complex;
@@ -52,7 +56,7 @@ export class ComplexUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -62,7 +66,7 @@ export class ComplexUseCase {
     const complexes = await this.complexRepository.getAll(coachFilterConditions);
 
     if (!complexes || complexes.length === 0) {
-      throw new NotFoundException('No complexes found');
+      throw new Error('No complexes found');
     }
 
     return complexes;
@@ -73,12 +77,12 @@ export class ComplexUseCase {
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Validate the data
     if (!data.exercises) {
-      throw new BadRequestException('Exercises are required');
+      throw new Error('Exercises are required');
     }
 
     // 3. Get filter conditions via use case
@@ -87,7 +91,7 @@ export class ComplexUseCase {
     // 4. Get the complex category
     const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, coachFilterConditions);
     if (!complexCategory) {
-      throw new NotFoundException(
+      throw new Error(
         `Complex category with ID ${data.complexCategory} not found`
       );
     }
@@ -105,7 +109,7 @@ export class ComplexUseCase {
     for (const exerciseData of data.exercises) {
       const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, coachFilterConditions);
       if (!exercise) {
-        throw new NotFoundException(
+        throw new Error(
           `Exercise with ID ${exerciseData.exerciseId} not found or access denied`
         );
       }
@@ -125,7 +129,7 @@ export class ComplexUseCase {
     // 9. Get the created complex
     const complexCreated = await this.complexRepository.getOne(complex.id, coachFilterConditions);
     if (!complexCreated) {
-      throw new NotFoundException('Complex not found');
+      throw new Error('Complex not found');
     }
 
     return complexCreated;
@@ -135,7 +139,7 @@ export class ComplexUseCase {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -144,7 +148,7 @@ export class ComplexUseCase {
     // 3. Get the complex to update
     const complexToUpdate = await this.complexRepository.getOne(complexId, coachFilterConditions);
     if (!complexToUpdate) {
-      throw new NotFoundException('Complex not found or access denied');
+      throw new Error('Complex not found or access denied');
     }
 
     // 4. Update the complex properties
@@ -155,7 +159,7 @@ export class ComplexUseCase {
     if (data.complexCategory) {
       const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, coachFilterConditions);
       if (!complexCategory) {
-        throw new NotFoundException(
+        throw new Error(
           `Complex category with ID ${data.complexCategory} not found`
         );
       }
@@ -173,7 +177,7 @@ export class ComplexUseCase {
       for (const exerciseData of data.exercises) {
         const exercise = await this.exerciseRepository.getOne(exerciseData.exerciseId, coachFilterConditions);
         if (!exercise) {
-          throw new NotFoundException(
+          throw new Error(
             `Exercise with ID ${exerciseData.exerciseId} not found or access denied`
           );
         }
@@ -194,7 +198,7 @@ export class ComplexUseCase {
     // 7. Get the updated complex
     const updated = await this.complexRepository.getOne(complexId, coachFilterConditions);
     if (!updated) {
-      throw new NotFoundException('Updated complex not found');
+      throw new Error('Updated complex not found');
     }
 
     return updated;
@@ -204,7 +208,7 @@ export class ComplexUseCase {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
-      throw new ForbiddenException('User is not coach of this organization');
+      throw new Error('User is not coach of this organization');
     }
 
     // 2. Get filter conditions via use case
@@ -213,7 +217,7 @@ export class ComplexUseCase {
     // 3. Get the complex to delete
     const complexToDelete = await this.complexRepository.getOne(complexId, coachFilterConditions);
     if (!complexToDelete) {
-      throw new NotFoundException('Complex not found or access denied');
+      throw new Error('Complex not found or access denied');
     }
 
     // 4. Delete the exercises of the complex

@@ -1,6 +1,6 @@
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { TrainingSession } from "../domain/training-session.entity";
-import { ITrainingSessionRepository } from "../application/ports/training-session.repository";
+import { ITrainingSessionRepository } from "../application/ports/training-session.repository.port";
 import { Injectable } from "@nestjs/common";
 
 @Injectable()
