@@ -26,17 +26,19 @@
     "db:migration:list": "npx mikro-orm migration:list",
     "db:seed": "npx mikro-orm seeder:run --config=./src/config/mikro-orm.config.ts",
     "db:seed:prod": "npx mikro-orm seeder:run --config=./dist/config/mikro-orm.config.js",
-    "test": "jest",
-    "test:unit": "jest --testPathIgnorePatterns=src/test/",
-    "test:unit:watch": "jest --testPathIgnorePatterns=src/test/ --watch",
-    "test:unit:cov": "jest --testPathIgnorePatterns=src/test/ --coverage",
-    "test:integration": "jest --config ./src/test/jest-integration.json --runInBand --detectOpenHandles --verbose",
-    "test:integration:docker": "docker-compose -f ../../docker-compose.test.yml up -d && jest --config ./src/test/jest-integration.json --runInBand --detectOpenHandles && docker-compose -f ../../docker-compose.test.yml down"
+    "test": "NODE_ENV=test jest",
+    "test:watch": "NODE_ENV=test jest --watch",
+    "test:unit": "NODE_ENV=test jest --testPathIgnorePatterns=src/test/",
+    "test:unit:watch": "NODE_ENV=test jest --testPathIgnorePatterns=src/test/ --watch",
+    "test:unit:cov": "NODE_ENV=test jest --testPathIgnorePatterns=src/test/ --coverage",
+    "test:integration": "NODE_ENV=test jest --testPathPattern=src/test/ --runInBand",
+    "test:integration:docker": "docker-compose -f ../../docker-compose.test.yml up -d && sleep 3 && NODE_ENV=test jest --testPathPattern=src/test/ --runInBand && docker-compose -f ../../docker-compose.test.yml down"
   },
   "dependencies": {
     "@dropit/contract": "workspace:*",
     "@dropit/permissions": "workspace:*",
     "@dropit/schemas": "workspace:*",
+    "@faker-js/faker": "^9.3.0",
     "@getbrevo/brevo": "^2.5.0",
     "@mikro-orm/cli": "6.4.7",
     "@mikro-orm/core": "6.4.7",
@@ -45,14 +47,13 @@
     "@mikro-orm/postgresql": "6.4.7",
     "@mikro-orm/reflection": "6.4.7",
     "@mikro-orm/seeder": "6.4.7",
+    "@nestjs/cli": "^11.0.10",
     "@nestjs/common": "^11.1.6",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.1.6",
-    "@nestjs/cli": "^11.0.10",
     "@nestjs/platform-express": "^11.1.6",
     "@nestjs/swagger": "^11.2.0",
     "@ts-rest/nest": "^3.51.0",
-    "@faker-js/faker": "^9.3.0",
     "@ts-rest/open-api": "^3.51.0",
     "better-auth": "^1.2.7",
     "better-auth-mikro-orm": "^0.3.0",
@@ -69,38 +70,18 @@
     "@nestjs/schematics": "^11.0.7",
     "@nestjs/testing": "^11.1.6",
     "@types/express": "^5.0.0",
-    "@types/jest": "^29.5.2",
+    "@types/jest": "^29.5.14",
     "@types/node": "^20.3.1",
     "@types/pg": "^8.11.14",
     "@types/supertest": "^6.0.0",
-    "jest": "^29.5.0",
+    "jest": "^29.7.0",
     "source-map-support": "^0.5.21",
     "supertest": "^7.0.0",
-    "ts-jest": "^29.1.0",
+    "ts-jest": "^29.4.4",
     "ts-loader": "^9.4.3",
     "ts-node": "^10.9.1",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.1.3"
-  },
-  "jest": {
-    "moduleFileExtensions": [
-      "js",
-      "json",
-      "ts"
-    ],
-    "rootDir": "src",
-    "testRegex": ".*\\.spec\\.ts$",
-    "transform": {
-      "^.+\\.(t|j)s$": "ts-jest"
-    },
-    "collectCoverageFrom": [
-      "**/*.(t|j)s"
-    ],
-    "coverageDirectory": "../coverage",
-    "testEnvironment": "node",
-    "setupFilesAfterEnv": [
-      "../jest.setup.js"
-    ]
   },
   "mikro-orm": {
     "useTsNode": true,

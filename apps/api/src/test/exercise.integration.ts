@@ -3,7 +3,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
 import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
-import { setupOrganization } from './organization.integration.spec';
+import { setupOrganization } from './organization.integration';
 import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
