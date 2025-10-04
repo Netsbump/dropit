@@ -6,6 +6,7 @@ import { seedOrganizations } from './organization.seeder';
 import { seedPersonalRecords } from './personal-record.seeder';
 import { seedPhysicalMetrics } from './physical-metric.seeder';
 import { seedWorkouts } from './workout.seeder';
+import { seedTrainingSessions } from './training-session.seeder';
 import { User } from '../modules/identity/domain/auth/user.entity';
 
 export class MainSeeder extends Seeder {
@@ -30,6 +31,9 @@ export class MainSeeder extends Seeder {
     await seedCompetitorStatuses(em);
     await seedPersonalRecords(em);
     await seedPhysicalMetrics(em);
+
+    //4. Seed des training sessions
+    await seedTrainingSessions(em);
 
     console.log('All seeds completed successfully');
   }
