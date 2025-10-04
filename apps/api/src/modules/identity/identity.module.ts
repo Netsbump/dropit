@@ -8,7 +8,10 @@ import { UserUseCases } from './application/user.use-cases';
 import { OrganizationUseCases } from './application/organization.use-cases';
 import { MemberUseCases } from './application/member.use-cases';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
-import { USER_REPO } from './application/ports/user.repository';
+import { USER_REPO, IUserRepository } from './application/ports/user.repository.port';
+import { USER_USE_CASES } from './application/ports/user-use-cases.port';
+import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
+import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
 
 
 // Entities
@@ -18,8 +21,8 @@ import { Invitation } from './domain/organization/invitation.entity';
 import { User } from './domain/auth/user.entity';
 import { MikroOrganizationRepository } from './infrastructure/orm/mikro-organization.repository';
 import { MikroMemberRepository } from './infrastructure/orm/mikro-member.repository';
-import { ORGANIZATION_REPO } from './application/ports/organization.repository'
-import { MEMBER_REPO } from './application/ports/member.repository';
+import { ORGANIZATION_REPO, IOrganizationRepository } from './application/ports/organization.repository.port';
+import { MEMBER_REPO, IMemberRepository } from './application/ports/member.repository.port';
 
 
 /**
@@ -38,19 +41,43 @@ import { MEMBER_REPO } from './application/ports/member.repository';
     MikroOrmModule.forFeature([Organization, Member, Invitation, User])
   ],
   providers: [
-    // Use-cases
-    OrganizationUseCases,
-    MemberUseCases,
-    UserUseCases,
-
-    // MikroORM Repositories
+    // implémentations MikroORM
     MikroUserRepository,
     MikroOrganizationRepository,
     MikroMemberRepository,
 
+    // liaisons port -> implémentation (repositories)
     { provide: USER_REPO, useClass: MikroUserRepository },
     { provide: ORGANIZATION_REPO, useClass: MikroOrganizationRepository },
     { provide: MEMBER_REPO, useClass: MikroMemberRepository },
+
+    // use-cases (concrete implementations)
+    OrganizationUseCases,
+    MemberUseCases,
+    UserUseCases,
+
+    // liaisons port -> implémentation (use-cases)
+    {
+      provide: USER_USE_CASES,
+      useFactory: (userRepo: IUserRepository) => {
+        return new UserUseCases(userRepo);
+      },
+      inject: [USER_REPO],
+    },
+    {
+      provide: MEMBER_USE_CASES,
+      useFactory: (memberRepo: IMemberRepository) => {
+        return new MemberUseCases(memberRepo);
+      },
+      inject: [MEMBER_REPO],
+    },
+    {
+      provide: ORGANIZATION_USE_CASES,
+      useFactory: (organizationRepo: IOrganizationRepository) => {
+        return new OrganizationUseCases(organizationRepo);
+      },
+      inject: [ORGANIZATION_REPO],
+    },
     
     // Guard global
     {
@@ -60,15 +87,15 @@ import { MEMBER_REPO } from './application/ports/member.repository';
   ],
 
   exports: [
-    // Use-cases
-    OrganizationUseCases,
-    MemberUseCases,
-    UserUseCases,
-
     // ce que d'autres modules pourront injecter
     ORGANIZATION_REPO,
     MEMBER_REPO,
     USER_REPO,
+    
+    // Ports pour les use-cases
+    USER_USE_CASES,
+    MEMBER_USE_CASES,
+    ORGANIZATION_USE_CASES,
     
     // Entities pour les autres modules
     MikroOrmModule.forFeature([Organization, Member, User]),

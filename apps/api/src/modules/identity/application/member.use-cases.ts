@@ -1,10 +1,19 @@
-import { Inject, Injectable, NotFoundException } from "@nestjs/common";
-import { CoachFilterConditions, IMemberRepository, MEMBER_REPO } from "./ports/member.repository";
+import { CoachFilterConditions, IMemberRepository } from "./ports/member.repository.port";
+import { IMemberUseCases } from "./ports/member-use-cases.port";
 
-@Injectable()
-export class MemberUseCases {
+/**
+ * Member Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of member/organization business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class MemberUseCases implements IMemberUseCases {
   constructor(
-    @Inject(MEMBER_REPO)
     private readonly memberRepository: IMemberRepository,
   ) {}
 
@@ -18,7 +27,7 @@ export class MemberUseCases {
     const coachMembers = await this.memberRepository.getCoachUserIds(organizationId);
 
     if (coachMembers.length === 0) {
-      throw new NotFoundException(`Coach members with organization id ${organizationId} not found`);
+      throw new Error(`Coach members with organization id ${organizationId} not found`);
     }
 
     return coachMembers.map((member) => member.user.id);
@@ -28,13 +37,13 @@ export class MemberUseCases {
    * Get the IDs of the athletes of an organization
    * @param organizationId - ID of the organization
    * @returns Array of IDs of the athletes
-   * @throws NotFoundException if no athlete is found
+   * @throws Error if no athlete is found
    */
   async getAthleteUserIds(organizationId: string): Promise<string[]> {
     const athleteMembers = await this.memberRepository.getAthleteUserIds(organizationId);
 
     if (athleteMembers.length === 0) {
-      throw new NotFoundException(`Athlete members with organization id ${organizationId} not found`);
+      throw new Error(`Athlete members with organization id ${organizationId} not found`);
     }
 
     return athleteMembers.map((member) => member.user.id);

@@ -1,5 +1,5 @@
 import { WorkoutCategory } from "../../domain/workout-category.entity";
-import { CoachFilterConditions } from "../../../identity/application/ports/member.repository";
+import { CoachFilterConditions } from "../../../identity/application/ports/member.repository.port";
 
 export const WORKOUT_CATEGORY_REPO = Symbol('WORKOUT_CATEGORY_REPO');
 

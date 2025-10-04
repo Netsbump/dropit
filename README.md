@@ -174,7 +174,7 @@ Pour tester l'interface web, vous pouvez vous connecter avec le coach :
 Une application mobile est disponible dans `apps/mobile/`. Elle se lance automatiquement avec `pnpm dev` (qui lance toutes les apps en parallèle). Pour la tester :
 
 1. Installez Expo Go sur votre téléphone
-2. Scannez le QR code affiché dans le terminal (l'app mobile démarre avec `pnpm dev`)
+2. Scannez le QR code affiché dans le terminal (l'app mobile démarre avec `pnpm dev`, si le QR code ne s'affiche pas en `pnpm dev` global, lancer la commande au niveau dossier `apps/mobile/`)
 
 Pour vous connecter, utilisez l'un des utilisateurs générés par les seeds. Les noms et emails étant générés par Faker, consultez directement la base de données via PgAdmin pour récupérer les identifiants.
 

@@ -2,13 +2,16 @@ import { competitorStatusContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { CompetitorStatusUseCases } from '../../application/use-cases/competitor-status.use-cases';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { ICompetitorStatusUseCases, COMPETITOR_STATUS_USE_CASES } from '../../application/ports/competitor-status-use-cases.port';
+import { CompetitorStatusMapper } from '../mappers/competitor-status.mapper';
+import { CompetitorStatusPresenter } from '../presenter/competitor-status.presenter';
 
 const c = competitorStatusContract;
 
@@ -25,14 +28,15 @@ const c = competitorStatusContract;
  * All endpoints require appropriate permissions (read, create, update)
  * and are scoped to the current organization.
  * 
- * @see {@link CompetitorStatusUseCases} for business logic implementation
+ * @see {@link ICompetitorStatusUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class CompetitorStatusController {
   constructor(
-    private readonly competitorStatusUseCases: CompetitorStatusUseCases
+    @Inject(COMPETITOR_STATUS_USE_CASES)
+    private readonly competitorStatusUseCases: ICompetitorStatusUseCases
   ) {}
 
   /**
@@ -45,7 +49,13 @@ export class CompetitorStatusController {
   @RequirePermissions('read')
   getCompetitorStatuses(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
-      return await this.competitorStatusUseCases.getAll(organizationId);
+      try {
+        const competitorStatuses = await this.competitorStatusUseCases.findAll(organizationId);
+        const competitorStatusesDto = CompetitorStatusMapper.toDtoList(competitorStatuses);
+        return CompetitorStatusPresenter.present(competitorStatusesDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -65,7 +75,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
-      return await this.competitorStatusUseCases.getOne(params.id, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.findOne(params.id, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -86,7 +102,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
-      return await this.competitorStatusUseCases.create(body, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.create(body, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -106,7 +128,13 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
-     return await this.competitorStatusUseCases.update(params.id, body, currentUser.id, organizationId);
+      try {
+        const competitorStatus = await this.competitorStatusUseCases.update(params.id, body, currentUser.id, organizationId);
+        const competitorStatusDto = CompetitorStatusMapper.toDto(competitorStatus);
+        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
+      } catch (error) {
+        return CompetitorStatusPresenter.presentError(error as Error);
+      }
     });
   }
 }

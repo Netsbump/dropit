@@ -1,181 +1,149 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { WorkoutCategoryPresenter } from '../../interface/presenters/workout-category.presenter';
-import { IWorkoutCategoryRepository, WORKOUT_CATEGORY_REPO } from '../ports/workout-category.repository';
-import { MemberUseCases } from '../../../identity/application/member.use-cases';
-import { UserUseCases } from '../../../identity/application/user.use-cases';
-import { WorkoutCategoryMapper } from '../../interface/mappers/workout-category.mapper';
+import { IWorkoutCategoryRepository } from '../ports/workout-category.repository.port';
+import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
 import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
+import { IWorkoutCategoryUseCases } from '../ports/workout-category-use-cases.port';
 
-@Injectable()
-export class WorkoutCategoryUseCase {
+/**
+ * Workout Category Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of workout category business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
   constructor(
-    @Inject(WORKOUT_CATEGORY_REPO)
     private readonly workoutCategoryRepository: IWorkoutCategoryRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    private readonly userUseCases: IUserUseCases,
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async getOne(workoutCategoryId: string, userId: string, organizationId: string) {
-    try {
-      // 1. Verify user is a coach of the organization
-      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
-      if (!isCoach) {
-        throw new ForbiddenException('User is not a coach of this organization');
-      }
-
-      // 2. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-      // 3. Get the workout category
-      const workoutCategory = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
-      if (!workoutCategory) {
-        throw new NotFoundException('Workout category not found or access denied');
-      }
-
-      // 4. Map the workout category
-      const dto = WorkoutCategoryMapper.toDto(workoutCategory);
-
-      // 5. Present the workout category
-      return WorkoutCategoryPresenter.presentOne(dto);
-    } catch (error) {
-      return WorkoutCategoryPresenter.presentError(error as Error);
+  async getOne(workoutCategoryId: string, userId: string, organizationId: string): Promise<WorkoutCategory> {
+    // 1. Verify user is a coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    if (!isCoach) {
+      throw new Error('User is not a coach of this organization');
     }
+
+    // 2. Get filter conditions via use case
+    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+    // 3. Get the workout category
+    const workoutCategory = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
+    if (!workoutCategory) {
+      throw new Error('Workout category not found or access denied');
+    }
+
+    return workoutCategory;
   }
 
-  async getAll(userId: string, organizationId: string) {
-    try {
-      // 1. Verify user is a coach of the organization
-      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+  async getAll(userId: string, organizationId: string): Promise<WorkoutCategory[]> {
+    // 1. Verify user is a coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
-      if (!isCoach) {
-        throw new ForbiddenException('User is not a coach of this organization');
-      }
-
-      // 2. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-      // 3. Get the workout categories
-      const workoutCategories = await this.workoutCategoryRepository.getAll(coachFilterConditions);
-
-      // 4. Map the workout categories
-      const dtos = WorkoutCategoryMapper.toDtoList(workoutCategories);
-
-      // 5. Present the workout categories
-      return WorkoutCategoryPresenter.present(dtos);
-    } catch (error) {
-      return WorkoutCategoryPresenter.presentError(error as Error);
+    if (!isCoach) {
+      throw new Error('User is not a coach of this organization');
     }
+
+    // 2. Get filter conditions via use case
+    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+    // 3. Get the workout categories
+    const workoutCategories = await this.workoutCategoryRepository.getAll(coachFilterConditions);
+
+    return workoutCategories;
   }
 
-  async create(data: CreateWorkoutCategory, organizationId: string, userId: string) {
-    try {
-      // 1. Verify user is a coach of the organization
-      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
-      if (!isCoach) {
-        throw new ForbiddenException('User is not coach of this organization');
-      }
-
-      // 2. Validate the data
-      if (!data.name) {
-        throw new BadRequestException('Workout category name is required');
-      }
-
-      // 3. Create the workout category
-      const workoutCategory = new WorkoutCategory();
-      workoutCategory.name = data.name;
-
-      // 4. Assign the creator user
-      const user = await this.userUseCases.getOne(userId);
-      workoutCategory.createdBy = user;
-
-      // 5. Save the workout category
-      await this.workoutCategoryRepository.save(workoutCategory);
-
-      // 6. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-      // 7. Get the created workout category
-      const created = await this.workoutCategoryRepository.getOne(workoutCategory.id, coachFilterConditions);
-      if (!created) {
-        throw new NotFoundException('Workout category not found');
-      }
-
-      // 8. Map the workout category
-      const dto = WorkoutCategoryMapper.toDto(created);
-
-      // 9. Present the workout category
-      return WorkoutCategoryPresenter.presentOne(dto);
-    } catch (error) {
-      return WorkoutCategoryPresenter.presentCreationError(error as Error);
+  async create(data: CreateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory> {
+    // 1. Verify user is a coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    if (!isCoach) {
+      throw new Error('User is not coach of this organization');
     }
+
+    // 2. Validate the data
+    if (!data.name) {
+      throw new Error('Workout category name is required');
+    }
+
+    // 3. Create the workout category
+    const workoutCategory = new WorkoutCategory();
+    workoutCategory.name = data.name;
+
+    // 4. Assign the creator user
+    const user = await this.userUseCases.getOne(userId);
+    workoutCategory.createdBy = user;
+
+    // 5. Save the workout category
+    await this.workoutCategoryRepository.save(workoutCategory);
+
+    // 6. Get filter conditions via use case
+    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+    // 7. Get the created workout category
+    const created = await this.workoutCategoryRepository.getOne(workoutCategory.id, coachFilterConditions);
+    if (!created) {
+      throw new Error('Workout category not found');
+    }
+
+    return created;
   }
 
-  async update(workoutCategoryId: string, data: UpdateWorkoutCategory, organizationId: string, userId: string) {
-    try {
-      // 1. Verify user is a coach of the organization
-      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
-      if (!isCoach) {
-        throw new ForbiddenException('User is not coach of this organization');
-      }
-
-      // 2. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-      // 3. Get the workout category to update
-      const toUpdate = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
-      if (!toUpdate) {
-        throw new NotFoundException('Workout category not found or access denied');
-      }
-
-      // 4. Update the workout category properties
-      if (data.name) {
-        toUpdate.name = data.name;
-      }
-
-      // 5. Save the workout category
-      await this.workoutCategoryRepository.save(toUpdate);
-
-      // 6. Get the updated workout category
-      const updated = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
-      if (!updated) {
-        throw new NotFoundException('Updated workout category not found');
-      }
-
-      // 7. Map the workout category
-      const dto = WorkoutCategoryMapper.toDto(updated);
-
-      // 8. Present the workout category
-      return WorkoutCategoryPresenter.presentOne(dto);
-    } catch (error) {
-      return WorkoutCategoryPresenter.presentError(error as Error);
+  async update(workoutCategoryId: string, data: UpdateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory> {
+    // 1. Verify user is a coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    if (!isCoach) {
+      throw new Error('User is not coach of this organization');
     }
+
+    // 2. Get filter conditions via use case
+    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+    // 3. Get the workout category to update
+    const toUpdate = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
+    if (!toUpdate) {
+      throw new Error('Workout category not found or access denied');
+    }
+
+    // 4. Update the workout category properties
+    if (data.name) {
+      toUpdate.name = data.name;
+    }
+
+    // 5. Save the workout category
+    await this.workoutCategoryRepository.save(toUpdate);
+
+    // 6. Get the updated workout category
+    const updated = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
+    if (!updated) {
+      throw new Error('Updated workout category not found');
+    }
+
+    return updated;
   }
 
-  async delete(workoutCategoryId: string, organizationId: string, userId: string) {
-    try {
-      // 1. Verify user is a coach of the organization
-      const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
-      if (!isCoach) {
-        throw new ForbiddenException('User is not coach of this organization');
-      }
-
-      // 2. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-      // 3. Get the workout category to delete
-      const toDelete = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
-      if (!toDelete) {
-        throw new NotFoundException('Workout category not found or access denied');
-      }
-
-      // 4. Delete the workout category
-      await this.workoutCategoryRepository.remove(toDelete);
-
-      // 5. Present the success message
-      return WorkoutCategoryPresenter.presentSuccess('Workout category deleted successfully');
-    } catch (error) {
-      return WorkoutCategoryPresenter.presentError(error as Error);
+  async delete(workoutCategoryId: string, organizationId: string, userId: string): Promise<void> {
+    // 1. Verify user is a coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    if (!isCoach) {
+      throw new Error('User is not coach of this organization');
     }
+
+    // 2. Get filter conditions via use case
+    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+
+    // 3. Get the workout category to delete
+    const toDelete = await this.workoutCategoryRepository.getOne(workoutCategoryId, coachFilterConditions);
+    if (!toDelete) {
+      throw new Error('Workout category not found or access denied');
+    }
+
+    // 4. Delete the workout category
+    await this.workoutCategoryRepository.remove(toDelete);
   }
 }

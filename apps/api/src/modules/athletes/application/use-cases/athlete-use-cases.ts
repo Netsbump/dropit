@@ -1,250 +1,206 @@
-import { BadRequestException, ForbiddenException, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { Athlete } from "../../domain/athlete.entity";
 import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
-import { AthletePresenter } from "../../interface/presenter/athlete.presenter";
-import { UserUseCases } from "../../../identity/application/user.use-cases";
-import { MemberUseCases } from "../../../identity/application/member.use-cases";
-import { ATHLETE_REPO, IAthleteRepository } from "../ports/athlete.repository";
-import { AthleteMapper } from "../../interface/mappers/athlete.mapper";
+import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
+import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository.port";
+import { IUserUseCases } from "../../../identity/application/ports/user-use-cases.port";
+import { IMemberUseCases } from "../../../identity/application/ports/member-use-cases.port";
 
-@Injectable()
-export class AthleteUseCases {
+/**
+ * Athlete Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of athlete business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class AthleteUseCases implements IAthleteUseCases {
   constructor(
-    @Inject(ATHLETE_REPO)
     private readonly athleteRepository: IAthleteRepository,
-    private readonly userUseCases: UserUseCases,
-    private readonly memberUseCases: MemberUseCases
+    private readonly userUseCases: IUserUseCases,
+    private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async findOne(athleteId: string, currentUserId: string, organizationId: string) {
-    try {
-      // 1. Get athlete to verify it exists and get its userId
-      const athlete = await this.athleteRepository.getOne(athleteId);
+  async findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<Athlete> {
+    // 1. Get athlete to verify it exists and get its userId
+    const athlete = await this.athleteRepository.getOne(athleteId);
 
-      if (!athlete || !athlete.user) {
-        throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
-      }
-
-      // 2. Validate user access
-      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-      if (!isUserCoach && currentUserId !== athlete.user.id) {
-        throw new NotFoundException(
-          "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
-        );
-      }
-
-      // 3. Check if athleteId is in organization
-      await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
-
-      const athleteDto = AthleteMapper.toDto(athlete);
-
-      return AthletePresenter.presentOne(athleteDto);
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+    if (!athlete || !athlete.user) {
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
+
+    // 2. Validate user access
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    if (!isUserCoach && currentUserId !== athlete.user.id) {
+      throw new Error(
+        "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
+      );
+    }
+
+    // 3. Check if athleteId is in organization
+    await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
+
+    return athlete;
   }
 
-  async findOneWithDetails(athleteId: string, currentUserId: string, organizationId: string) {
-    try {
-      // 1. Get athlete to verify it exists and get its userId
-      const athlete = await this.athleteRepository.getOne(athleteId);
-      if (!athlete) {
-        throw new NotFoundException(`Athlete with ID ${athleteId} not found`);
-      }
-
-      // 2. Validate user access
-      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-      if (!isUserCoach && currentUserId !== athlete.user.id) {
-        throw new NotFoundException(
-          "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
-        );
-      }
-
-      // 3. Check if athleteId is in organization
-      await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
-
-      // 4. Get athlete with details from repository
-      const athleteWithDetails = await this.athleteRepository.findOneWithDetails(athlete.user.id);
-
-      if (!athleteWithDetails) {
-        throw new NotFoundException('Athlete not found');
-      }
-
-      const athleteDetailsDto = AthleteMapper.toDtoDetails(athleteWithDetails);
-
-      return AthletePresenter.presentOneDetails(athleteDetailsDto);
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+  async findOneWithDetails(athleteId: string, currentUserId: string, organizationId: string): Promise<AthleteDetails> {
+    // 1. Get athlete to verify it exists and get its userId
+    const athlete = await this.athleteRepository.getOne(athleteId);
+    if (!athlete) {
+      throw new Error(`Athlete with ID ${athleteId} not found`);
     }
+
+    // 2. Validate user access
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    if (!isUserCoach && currentUserId !== athlete.user.id) {
+      throw new Error(
+        "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
+      );
+    }
+
+    // 3. Check if athleteId is in organization
+    await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
+
+    // 4. Get athlete with details from repository
+    const athleteWithDetails = await this.athleteRepository.findOneWithDetails(athlete.user.id);
+
+    if (!athleteWithDetails) {
+      throw new Error('Athlete not found');
+    }
+
+    return athleteWithDetails;
   }
 
-  async findAllWithDetails(currentUserId: string, organizationId: string) {
-    try {
-      // 1. Verify user belongs to the organization (either as coach or athlete)
-      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-      const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
-      const isUserAthlete = athleteUserIds.includes(currentUserId);
-      
-      if (!isUserCoach && !isUserAthlete) {
-        throw new NotFoundException('User does not belong to this organization');
-      }
+  async findAllWithDetails(currentUserId: string, organizationId: string): Promise<AthleteDetails[]> {
+    // 1. Verify user belongs to the organization (either as coach or athlete)
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const isUserAthlete = athleteUserIds.includes(currentUserId);
 
-      // 2. Get athletes from repository
-      const athletes = await this.athleteRepository.findAllWithDetails(athleteUserIds);
-      if (!athletes) {
-        throw new NotFoundException('Athletes not found');
-      }
-      
-      // 3. Map to DTO
-      const athletesDto = AthleteMapper.toDtoListDetails(athletes);
-
-      // 4. Present athletes
-      return AthletePresenter.presentListDetails(athletesDto);
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+    if (!isUserCoach && !isUserAthlete) {
+      throw new Error('User does not belong to this organization');
     }
+
+    // 2. Get athletes from repository
+    const athletes = await this.athleteRepository.findAllWithDetails(athleteUserIds);
+    if (!athletes) {
+      throw new Error('Athletes not found');
+    }
+
+    return athletes;
   }
 
-  async findAll(currentUserId: string, organizationId: string) {
-    try {
-      // 1. Verify user belongs to the organization (either as coach or athlete)
-      const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-      const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
-      const isUserAthlete = athleteUserIds.includes(currentUserId);
-      
-      if (!isUserCoach && !isUserAthlete) {
-        throw new NotFoundException('User does not belong to this organization');
-      }
+  async findAll(currentUserId: string, organizationId: string): Promise<Athlete[]> {
+    // 1. Verify user belongs to the organization (either as coach or athlete)
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const isUserAthlete = athleteUserIds.includes(currentUserId);
 
-      // 2. Get athletes from repository
-      const athletes = await this.athleteRepository.getAll(athleteUserIds);
-      if (!athletes) {
-        throw new NotFoundException('Athletes not found');
-      }
-      
-      // 3. Map to DTO
-      const athletesDto = AthleteMapper.toDtoList(athletes);
-
-      // 4. Present athletes
-      return AthletePresenter.presentList(athletesDto);
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+    if (!isUserCoach && !isUserAthlete) {
+      throw new Error('User does not belong to this organization');
     }
+
+    // 2. Get athletes from repository
+    const athletes = await this.athleteRepository.getAll(athleteUserIds);
+    if (!athletes) {
+      throw new Error('Athletes not found');
+    }
+
+    return athletes;
   }
 
-  async create(data: CreateAthlete, userId: string) {
-    try {
-      //1. Get User from repository
-      const user = await this.userUseCases.getOne(userId);
+  async create(data: CreateAthlete, userId: string): Promise<Athlete> {
+    //1. Get User from repository
+    const user = await this.userUseCases.getOne(userId);
 
-      if (!user) {
-        throw new NotFoundException('User not found');
-      }
+    if (!user) {
+      throw new Error('User not found');
+    }
 
-      // 2. Check if User already has an athlete profile
-      const existingAthlete = await this.athleteRepository.getOne(userId);
-      if (existingAthlete) {
-        throw new BadRequestException('User already has an athlete profile');
-      }
+    // 2. Check if User already has an athlete profile
+    const existingAthlete = await this.athleteRepository.getOne(userId);
+    if (existingAthlete) {
+      throw new Error('User already has an athlete profile');
+    }
 
-      //3. Create Athlete
-      const athlete = new Athlete();
+    //3. Create Athlete
+    const athlete = new Athlete();
+    athlete.firstName = data.firstName;
+    athlete.lastName = data.lastName;
+    athlete.birthday = new Date(data.birthday);
+    if (data.country) {
+      athlete.country = data.country;
+    }
+    athlete.user = user;
+
+    //4. Save Athlete
+    await this.athleteRepository.save(athlete);
+
+    return athlete;
+  }
+
+  async update(idAthlete: string, data: UpdateAthlete, userId: string): Promise<Athlete> {
+    //1. Get Athlete
+    const athlete = await this.athleteRepository.getOne(idAthlete);
+
+    if (!athlete) {
+      throw new Error('Athlete not found');
+    }
+
+    //2. Check if Athlete has a user
+    if (!athlete.user) {
+      throw new Error('Athlete has no user');
+    }
+
+    //3. Check if Athlete belongs to User
+    if (athlete.user.id !== userId) {
+      throw new Error('Athlete does not belong to User');
+    }
+
+    //4. Update Athlete
+    if (data.firstName !== undefined) {
       athlete.firstName = data.firstName;
+    }
+
+    if (data.lastName !== undefined) {
       athlete.lastName = data.lastName;
+    }
+
+    if (data.birthday !== undefined) {
       athlete.birthday = new Date(data.birthday);
-      if (data.country) {
-        athlete.country = data.country;
-      }
-      athlete.user = user;
-
-      //4. Save Athlete
-      await this.athleteRepository.save(athlete);
-
-      //5. Map to DTO
-      const athleteDto = AthleteMapper.toDto(athlete);
-
-      //6. Present Athlete
-      return AthletePresenter.presentOne(athleteDto);
-    } catch (error) {
-      return AthletePresenter.presentCreationError(error as Error);
     }
+
+    if (data.country !== undefined) {
+      athlete.country = data.country;
+    }
+
+    //5. Save Athlete
+    await this.athleteRepository.save(athlete);
+
+    return athlete;
   }
 
-  async update(idAthlete: string, data: UpdateAthlete, userId: string) {
-    try {
-      //1. Get Athlete
-      const athlete = await this.athleteRepository.getOne(idAthlete);
+  async delete(idAthlete: string, userId: string): Promise<void> {
+    //1. Get Athlete
+    const athlete = await this.athleteRepository.getOne(idAthlete);
 
-      if (!athlete) {
-        throw new NotFoundException('Athlete not found');
-      }
-
-      //2. Check if Athlete has a user  
-      if (!athlete.user) {
-        throw new NotFoundException('Athlete has no user');
-      }
-
-      //3. Check if Athlete belongs to User
-      if (athlete.user.id !== userId) {
-        throw new ForbiddenException('Athlete does not belong to User');
-      }
-
-      //4. Update Athlete
-      if (data.firstName !== undefined) {
-        athlete.firstName = data.firstName;
-      }
-
-      if (data.lastName !== undefined) {
-        athlete.lastName = data.lastName;
-      }
-
-      if (data.birthday !== undefined) {
-        athlete.birthday = new Date(data.birthday);
-      }
-
-      if (data.country !== undefined) {
-        athlete.country = data.country;
-      }
-
-      //5. Save Athlete
-      await this.athleteRepository.save(athlete);
-
-      //6. Map to DTO
-      const athleteDto = AthleteMapper.toDto(athlete);
-
-      //7. Present Athlete
-      return AthletePresenter.presentOne(athleteDto);
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+    if (!athlete) {
+      throw new Error('Athlete not found');
     }
-  }
 
-  async delete(idAthlete: string, userId: string) {
-    try {
-      //1. Get Athlete
-      const athlete = await this.athleteRepository.getOne(idAthlete);
-
-      if (!athlete) {
-        throw new NotFoundException('Athlete not found');
-      }
-
-      //2. Check if Athlete has a user  
-      if (!athlete.user) {
-        throw new NotFoundException('Athlete has no user');
-      }
-
-      //3. Check if Athlete belongs to User
-      if (athlete.user.id !== userId) {
-        throw new ForbiddenException('Athlete does not belong to User');
-      }
-
-      //4. Delete Athlete
-      await this.athleteRepository.remove(athlete);
-
-      //5. Present Athlete
-      return AthletePresenter.presentSuccess('Athlete deleted successfully');
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error);
+    //2. Check if Athlete has a user
+    if (!athlete.user) {
+      throw new Error('Athlete has no user');
     }
+
+    //3. Check if Athlete belongs to User
+    if (athlete.user.id !== userId) {
+      throw new Error('Athlete does not belong to User');
+    }
+
+    //4. Delete Athlete
+    await this.athleteRepository.remove(athlete);
   }
 }

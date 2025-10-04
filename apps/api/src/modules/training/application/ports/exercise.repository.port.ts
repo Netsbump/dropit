@@ -1,5 +1,5 @@
 import { Exercise } from "../../domain/exercise.entity";
-import { CoachFilterConditions } from "../../../identity/application/ports/member.repository";
+import { CoachFilterConditions } from "../../../identity/application/ports/member.repository.port";
 
 export const EXERCISE_REPO = Symbol('EXERCISE_REPO');
 
