@@ -39,6 +39,47 @@ export class MikroTrainingSessionRepository extends EntityRepository<TrainingSes
     );
   }
 
+  async getByAthleteWithDetails(athleteId: string, organizationId: string, date?: string): Promise<TrainingSession[]> {
+    interface WhereClause {
+      organization: { id: string };
+      athletes: { athlete: { id: string } };
+      scheduledDate?: { $gte: Date; $lte: Date };
+    }
+
+    const where: WhereClause = {
+      organization: { id: organizationId },
+      athletes: { athlete: { id: athleteId } }
+    };
+
+    // Filter by date if provided
+    if (date) {
+      const targetDate = new Date(date);
+      const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+      where.scheduledDate = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    return await this.em.find(
+        TrainingSession,
+        where,
+        {
+          populate: [
+            'athletes',
+            'athletes.athlete',
+            'workout',
+            'workout.elements',
+            'workout.elements.exercise',
+            'workout.elements.exercise.exerciseCategory',
+            'workout.elements.complex',
+            'workout.elements.complex.complexCategory',
+            'workout.elements.complex.exercises',
+            'workout.elements.complex.exercises.exercise',
+            'workout.elements.complex.exercises.exercise.exerciseCategory',
+          ],
+        }
+    );
+  }
+
   async getOneWithDetails(id: string, organizationId: string): Promise<TrainingSession | null> {
     return await this.em.findOne(
         TrainingSession,

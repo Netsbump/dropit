@@ -38,11 +38,18 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async getOne(trainingSessionId: string, organizationId: string): Promise<TrainingSession> {
-    //1. Get session from repository
+  async getOne(trainingSessionId: string, organizationId: string, userId: string): Promise<TrainingSession> {
+    //1. Check if current user is coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+
+    if (!isCoach) {
+      throw new TrainingSessionAccessDeniedException('Only coaches can access this resource');
+    }
+
+    //2. Get session from repository
     const trainingSession = await this.trainingSessionRepository.getOneWithDetails(trainingSessionId, organizationId);
 
-    //2. Validate session
+    //3. Validate session
     if (!trainingSession) {
       throw new TrainingSessionNotFoundException('Training session not found');
     }
@@ -50,11 +57,45 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return trainingSession;
   }
 
-  async getAll(organizationId: string): Promise<TrainingSession[]> {
-    //1. Get sessions from repository
+  async getAll(organizationId: string, userId: string): Promise<TrainingSession[]> {
+    //1. Check if current user is coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+
+    if (!isCoach) {
+      throw new TrainingSessionAccessDeniedException('Only coaches can access this resource');
+    }
+
+    //2. Get sessions from repository
     const trainingSessions = await this.trainingSessionRepository.getAllWithDetails(organizationId);
 
-    //2. Validate sessions
+    //3. Validate sessions
+    if (!trainingSessions) {
+      throw new TrainingSessionNotFoundException('Training sessions not found');
+    }
+
+    return trainingSessions;
+  }
+
+  async getByAthlete(athleteId: string, organizationId: string, userId: string, date?: string): Promise<TrainingSession[]> {
+    //1. Check if current user is coach of the organization
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+
+    //2. Get athlete from repository
+    const athlete = await this.athleteRepository.getOne(athleteId);
+
+    if (!athlete || !athlete.user) {
+      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
+    }
+
+    //3. Check if current user is same as userId in athleteId or is coach of the organization
+    if (athlete.user.id !== userId && !isCoach) {
+      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
+    }
+
+    //4. Get training sessions from repository
+    const trainingSessions = await this.trainingSessionRepository.getByAthleteWithDetails(athleteId, organizationId, date);
+
+    //5. Validate sessions
     if (!trainingSessions) {
       throw new TrainingSessionNotFoundException('Training sessions not found');
     }

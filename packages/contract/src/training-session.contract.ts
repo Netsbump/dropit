@@ -2,6 +2,7 @@ import {
   createTrainingSessionSchema,
   trainingSessionSchema,
   updateTrainingSessionSchema,
+  dateFilterSchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
 
@@ -12,6 +13,28 @@ export const trainingSessionContract = {
     summary: 'Get all training sessions',
     responses: {
       200: z.array(trainingSessionSchema),
+      404: z.object({
+        message: z.string(),
+      }),
+      500: z.object({
+        message: z.string(),
+      }),
+    },
+  },
+
+  getTrainingSessionsByAthlete: {
+    method: 'GET',
+    path: '/training-session/athlete/:athleteId',
+    summary: 'Get training sessions for a specific athlete',
+    pathParams: z.object({
+      athleteId: z.string(),
+    }),
+    query: dateFilterSchema,
+    responses: {
+      200: z.array(trainingSessionSchema),
+      403: z.object({
+        message: z.string(),
+      }),
       404: z.object({
         message: z.string(),
       }),
