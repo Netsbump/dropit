@@ -151,7 +151,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
     );
   }
 
-  const renderExerciseBlock = (element: WorkoutDto['elements'][number], displayInfo: { id: string; name: string; sets: string; weight: string; recovery: string }) => (
+  const renderExerciseBlock = (element: WorkoutDto['elements'][number], displayInfo: { id: string; name: string; sets: string; weight: string; rest: string }) => (
     <TouchableOpacity
       key={displayInfo.id}
       style={styles.exerciseBlock}
@@ -171,7 +171,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
         <Text style={styles.exerciseName}>{displayInfo.name}</Text>
         <View style={styles.exerciseDetails}>
           <Text style={styles.detailText}>
-            {displayInfo.sets} • {displayInfo.weight} • {displayInfo.recovery}
+            {displayInfo.sets} • {displayInfo.weight} • {displayInfo.rest}
           </Text>
         </View>
       </View>
@@ -193,7 +193,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
           <ChevronLeft color="#f2f6f6" size={24} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Entraînement</Text>
+          <Text style={styles.title}>Entraînements</Text>
         </View>
         <View style={styles.placeholder} />
       </View>
@@ -238,11 +238,6 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
         </ScrollView>
       </View>
 
-      {/* Full Date Title */}
-      <View style={styles.fullDateContainer}>
-        <Text style={styles.fullDateText}>{formatDateFull(selectedDate)}</Text>
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <View style={styles.emptyState}>
@@ -270,7 +265,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
                   name,
                   sets: `${element.sets} x ${element.reps}`,
                   weight: element.startWeight_percent ? `${element.startWeight_percent}%` : '-',
-                  recovery: element.rest ? `${element.rest}sec` : '-',
+                  rest: element.rest ? `${element.rest}sec` : '-',
                 });
               })}
             </View>
@@ -326,7 +321,7 @@ const styles = StyleSheet.create({
 
   // Date Carousel
   dateCarouselContainer: {
-    paddingVertical: 16,
+    paddingVertical: 8,
     backgroundColor: '#1A1A1A',
   },
   dateCarousel: {
@@ -346,7 +341,7 @@ const styles = StyleSheet.create({
     borderColor: '#6387d9'
   },
   dateNumber: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#91989a',
     marginBottom: 4,
@@ -355,7 +350,7 @@ const styles = StyleSheet.create({
     color: '#f2f6f6',
   },
   dateMonth: {
-    fontSize: 12,
+    fontSize: 8,
     color: '#91989a',
     fontWeight: '600',
   },
@@ -371,18 +366,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#3B82F6',
   },
 
-  // Full Date Title
-  fullDateContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  fullDateText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#f2f6f6',
-    textAlign: 'center',
-  },
-
   content: {
     flex: 1,
     paddingHorizontal: 24,
@@ -390,7 +373,7 @@ const styles = StyleSheet.create({
 
   // Training Info
   trainingInfo: {
-    marginBottom: 24,
+    paddingVertical: 24,
   },
   trainingTitle: {
     fontSize: 20,
