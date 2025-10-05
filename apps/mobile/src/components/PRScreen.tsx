@@ -9,7 +9,9 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Search } from 'lucide-react-native';
 import BottomNavigation from './BottomNavigation';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface PRScreenProps {
   onTabPress: (tab: 'pr' | 'dashboard' | 'account') => void;
@@ -92,7 +94,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
         {/* Search Bar */}
         <View style={styles.searchContainer}>
           <View style={styles.searchBar}>
-            <View style={styles.searchIcon} />
+            <Search color="rgba(255, 255, 255, 0.5)" size={20} />
             <TextInput
               style={styles.searchInput}
               placeholder="Rechercher..."
@@ -109,17 +111,17 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
         </View>
 
         {/* Add New Record Button */}
-        <TouchableOpacity
-          style={styles.addRecordButton}
-          onPress={handleAddRecord}
-          activeOpacity={0.8}
-        >
-          <View style={styles.addIcon}>
-            <View style={styles.addIconHorizontal} />
-            <View style={styles.addIconVertical} />
-          </View>
-          <Text style={styles.addRecordText}>Ajoutez un nouveau record</Text>
+        <TouchableOpacity onPress={handleAddRecord} activeOpacity={0.8}>
+          <LinearGradient
+            colors={['#63b8ef', '#4fa3e3']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.addRecordButton}
+          >
+            <Text style={styles.addRecordText}>Ajoutez un nouveau record</Text>
+          </LinearGradient>
         </TouchableOpacity>
+
 
         {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />
@@ -137,7 +139,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     alignItems: 'center',
@@ -162,17 +164,11 @@ const styles = StyleSheet.create({
   searchBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 25,
+    backgroundColor: '#282c38',
+    borderRadius: 20,
     paddingHorizontal: 20,
     paddingVertical: 14,
-  },
-  searchIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    marginRight: 12,
+    gap: 12,
   },
   searchInput: {
     flex: 1,
@@ -189,8 +185,10 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   prCard: {
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 16,
+    backgroundColor: '#282c38',
+    borderWidth: 1,
+    borderColor: '#414551',
+    borderRadius: 20,
     padding: 20,
     marginBottom: 16,
     alignItems: 'center',
@@ -212,7 +210,7 @@ const styles = StyleSheet.create({
     lineHeight: 22,
   },
   recordValue: {
-    fontSize: 32,
+    fontSize: 28,
     fontWeight: 'bold',
     color: '#FFFFFF',
   },
@@ -224,35 +222,12 @@ const styles = StyleSheet.create({
 
   // Add Record Button
   addRecordButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 16,
+    borderRadius: 20,
     paddingVertical: 20,
     paddingHorizontal: 24,
     marginBottom: 24,
-  },
-  addIcon: {
-    width: 24,
-    height: 24,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  addIconHorizontal: {
-    position: 'absolute',
-    width: 16,
-    height: 2,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 1,
-  },
-  addIconVertical: {
-    position: 'absolute',
-    width: 2,
-    height: 16,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 1,
   },
   addRecordText: {
     fontSize: 16,

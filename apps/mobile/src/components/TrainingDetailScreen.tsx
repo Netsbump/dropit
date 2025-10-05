@@ -8,6 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { ChevronLeft, Play, Pause, RotateCcw } from 'lucide-react-native';
 import type { WorkoutDto } from '@dropit/schemas';
 
 interface TrainingDetailScreenProps {
@@ -78,6 +79,11 @@ export default function TrainingDetailScreen({
     }
   };
 
+  const handleResetTimer = () => {
+    setTimeLeft(0);
+    setIsTimerActive(false);
+  };
+
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -85,12 +91,10 @@ export default function TrainingDetailScreen({
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <View style={styles.backIcon} />
+          <ChevronLeft color="#f2f6f6" size={24} />
         </TouchableOpacity>
         <Text style={styles.appTitle}>DROPIT</Text>
-        <TouchableOpacity style={styles.settingsButton}>
-          <View style={styles.settingsIcon} />
-        </TouchableOpacity>
+        <View style={styles.placeholder} />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
@@ -98,7 +102,7 @@ export default function TrainingDetailScreen({
         <View style={styles.videoContainer}>
           <View style={styles.videoPlaceholder}>
             <View style={styles.playButtonOverlay}>
-              <View style={styles.playIcon} />
+              <Play color="#FFFFFF" size={32} fill="#FFFFFF" />
             </View>
           </View>
         </View>
@@ -166,11 +170,15 @@ export default function TrainingDetailScreen({
             style={[styles.playButton, isTimerActive && styles.activePlayButton]}
             onPress={handlePlayTimer}
           >
-            <View style={isTimerActive ? styles.pauseIcon : styles.playIconLarge} />
+            {isTimerActive ? (
+              <Pause color="#FFFFFF" size={32} />
+            ) : (
+              <Play color="#FFFFFF" size={32} fill="#FFFFFF" />
+            )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.fullscreenButton}>
-            <View style={styles.fullscreenIcon} />
+          <TouchableOpacity style={styles.fullscreenButton} onPress={handleResetTimer}>
+            <RotateCcw color="#FFFFFF" size={24} />
           </TouchableOpacity>
         </View>
 
@@ -184,7 +192,7 @@ export default function TrainingDetailScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     flexDirection: 'row',
@@ -200,33 +208,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 8,
-    borderBottomWidth: 8,
-    borderRightWidth: 12,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: '#FFFFFF',
-  },
   appTitle: {
     fontSize: 20,
     fontWeight: 'bold',
     color: '#FFFFFF',
     letterSpacing: 1,
   },
-  settingsButton: {
+  placeholder: {
     width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   content: {
     flex: 1,
@@ -254,17 +243,6 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255, 255, 255, 0.9)',
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  playIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 12,
-    borderBottomWidth: 12,
-    borderLeftWidth: 20,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#1A1A1A',
-    marginLeft: 4,
   },
 
   // Exercise Header
@@ -378,31 +356,9 @@ const styles = StyleSheet.create({
   activePlayButton: {
     backgroundColor: 'rgba(74, 158, 255, 0.2)',
   },
-  playIconLarge: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 16,
-    borderBottomWidth: 16,
-    borderLeftWidth: 24,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#4A9EFF',
-    marginLeft: 4,
-  },
-  pauseIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: '#4A9EFF',
-  },
   fullscreenButton: {
     alignItems: 'center',
     paddingVertical: 8,
-  },
-  fullscreenIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    borderRadius: 4,
   },
 
   bottomSpacing: {

@@ -202,7 +202,7 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     alignItems: 'center',
@@ -233,8 +233,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    borderRadius: 16,
+    backgroundColor: '#282c38',
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#414551',
     paddingHorizontal: 20,
     paddingVertical: 18,
     marginBottom: 12,
@@ -283,10 +285,10 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   logoutItem: {
-    backgroundColor: 'rgba(231, 76, 60, 0.15)',
+    backgroundColor: '#282c38',
   },
   logoutText: {
-    color: '#E74C3C',
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   bottomSpacing: {
