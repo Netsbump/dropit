@@ -63,6 +63,9 @@ export class WorkoutElement {
   duration?: number;
 
   @Property({ nullable: true })
+  description?: string;
+
+  @Property({ nullable: true })
   startWeight_percent?: number;
 
   @Property({ nullable: true })
