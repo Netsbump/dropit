@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,10 +10,53 @@ import BottomNavigation from './BottomNavigation';
 import AccountScreen from './AccountScreen';
 import PRScreen from './PRScreen';
 import TrainingScreen from './TrainingScreen';
+import { authClient } from '../lib/auth-client';
+import { api } from '../lib/api';
+import type { AthleteDetailsDto } from '@dropit/schemas';
 
 export default function DashboardScreen() {
   const [activeTab, setActiveTab] = useState<'pr' | 'dashboard' | 'account'>('dashboard');
   const [showTraining, setShowTraining] = useState(false);
+  const [athleteData, setAthleteData] = useState<AthleteDetailsDto | null>(null);
+  const [athleteId, setAthleteId] = useState<string | null>(null);
+
+  // Fetch athleteId from session on mount
+  useEffect(() => {
+    const fetchSession = async () => {
+      try {
+        const sessionData = await authClient.getSession();
+        if (sessionData.data?.session?.athleteId) {
+          setAthleteId(sessionData.data.session.athleteId);
+        }
+      } catch (error) {
+        console.error('Error fetching session:', error);
+      }
+    };
+    fetchSession();
+  }, []);
+
+  // Fetch athlete data when athleteId is available
+  useEffect(() => {
+    const fetchAthleteData = async () => {
+      if (!athleteId) return;
+
+      try {
+        const response = await api.athlete.getAthlete({
+          params: { id: athleteId },
+        });
+
+        const data = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+
+        if (response.status === 200) {
+          setAthleteData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching athlete data:', error);
+      }
+    };
+
+    fetchAthleteData();
+  }, [athleteId]);
 
 
   const handleTabPress = (tab: 'pr' | 'dashboard' | 'account') => {
@@ -55,7 +98,7 @@ export default function DashboardScreen() {
 
       {/* Greeting */}
       <View style={styles.greetingContainer}>
-        <Text style={styles.greeting}>Bonjour, Clovis</Text>
+        <Text style={styles.greeting}>Bonjour, {athleteData?.firstName || 'Athlète'}</Text>
       </View>
 
       {/* Carousel Content */}
@@ -75,7 +118,7 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     paddingHorizontal: 24,

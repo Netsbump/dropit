@@ -8,6 +8,8 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { ChevronLeft, Play, RotateCcw } from 'lucide-react-native';
+import Svg, { Circle } from 'react-native-svg';
 import type { WorkoutDto } from '@dropit/schemas';
 
 interface TrainingDetailScreenProps {
@@ -21,26 +23,21 @@ export default function TrainingDetailScreen({
 }: TrainingDetailScreenProps) {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+  const [showTimer, setShowTimer] = useState(false);
 
   // Extract display info from element
   const name = element.type === 'exercise'
     ? element.exercise.name
     : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
-  const sets = `${element.sets} x ${element.reps}`;
+  const sets = `${element.sets} sets`;
+  const reps = `${element.reps} reps`
   const weight = element.startWeight_percent ? `${element.startWeight_percent}%` : '-';
-  const recovery = element.rest ? `${element.rest}sec` : '2min';
+  const recovery = element.rest ? `${element.rest}sec` : '90sec';
   const instructions = element.description || `Instructions pour ${name}.`;
   const videoUrl = element.type === 'exercise' ? element.exercise.video : undefined;
 
-  // Parse recovery time to seconds
-  const parseRecoveryTime = (recovery: string) => {
-    if (recovery.includes('min')) {
-      const minutes = parseInt(recovery);
-      const seconds = recovery.includes('sec') ? parseInt(recovery.split('min')[1]) || 0 : 0;
-      return minutes * 60 + seconds;
-    }
-    return parseInt(recovery) || 120; // default 2 minutes
-  };
+  // Get default rest time in seconds (from element.rest or 90s default)
+  const defaultRestTime = element.rest || 90;
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isTimerActive && timeLeft > 0) {
@@ -49,33 +46,29 @@ export default function TrainingDetailScreen({
       }, 1000);
     } else if (timeLeft === 0 && isTimerActive) {
       setIsTimerActive(false);
+      setShowTimer(false);
       Alert.alert('Temps écoulé !', 'Temps de repos terminé');
     }
     return () => clearInterval(interval);
   }, [isTimerActive, timeLeft]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const handlePlayTimer = () => {
-    if (!isTimerActive) {
-      const recoverySeconds = parseRecoveryTime(recovery);
-      setTimeLeft(recoverySeconds);
-      setIsTimerActive(true);
-    } else {
-      setIsTimerActive(false);
+    if (timeLeft === 0) {
+      setTimeLeft(defaultRestTime);
     }
+    setIsTimerActive(true);
+    setShowTimer(true);
   };
 
-  const handleTimerSelect = (minutes: number) => {
-    const seconds = minutes * 60;
-    setTimeLeft(seconds);
-    if (isTimerActive) {
-      setIsTimerActive(false);
-    }
+  const handleTimerPress = () => {
+    setIsTimerActive(false);
+    setShowTimer(false);
+  };
+
+  const handleResetTimer = () => {
+    setTimeLeft(0);
+    setIsTimerActive(false);
+    setShowTimer(false);
   };
 
   return (
@@ -85,92 +78,122 @@ export default function TrainingDetailScreen({
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <View style={styles.backIcon} />
+          <ChevronLeft color="#f2f6f6" size={24} />
         </TouchableOpacity>
         <Text style={styles.appTitle}>DROPIT</Text>
-        <TouchableOpacity style={styles.settingsButton}>
-          <View style={styles.settingsIcon} />
-        </TouchableOpacity>
+        <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Video Section */}
-        <View style={styles.videoContainer}>
-          <View style={styles.videoPlaceholder}>
-            <View style={styles.playButtonOverlay}>
-              <View style={styles.playIcon} />
+      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.topContent}>
+          {/* Video Section */}
+          <View style={styles.videoContainer}>
+            <View style={styles.videoPlaceholder}>
+              <View style={styles.playButtonOverlay}>
+                <Play color="#FFFFFF" size={32} />
+              </View>
             </View>
           </View>
-        </View>
 
-        {/* Exercise Title */}
-        <View style={styles.exerciseHeader}>
-          <Text style={styles.exerciseTitle}>{name}</Text>
-        </View>
+          {/* Exercise Title */}
+          <View style={styles.exerciseHeader}>
+            <Text style={styles.exerciseTitle}>{name}</Text>
+          </View>
 
-        {/* Timer Display */}
-        <View style={styles.timerDisplay}>
-          <Text style={styles.timerText}>
-            {isTimerActive || timeLeft > 0 ? formatTime(timeLeft) : '0 To 90'}
-          </Text>
-        </View>
+          {/* Info Display */}
+          <View style={styles.numbersContainer}>
+            <View style={styles.numbersElement}>
+              <Text style={styles.numbersText}>
+                {sets}
+              </Text>
+            </View>
+            <View style={styles.numbersElement}>
+              <Text style={styles.numbersText}>
+                {reps}
+              </Text>
+            </View>
+            <View style={styles.numbersElement}>
+              <Text style={styles.numbersText}>
+                {weight}
+              </Text>
+            </View>
+          </View>
 
-        {/* Time Selection Buttons */}
-        <View style={styles.timeButtonsContainer}>
-          <TouchableOpacity
-            style={[styles.timeButton, timeLeft === 60 && styles.activeTimeButton]}
-            onPress={() => handleTimerSelect(1)}
-          >
-            <Text style={[styles.timeButtonText, timeLeft === 60 && styles.activeTimeButtonText]}>
-              1 min
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.timeButton, timeLeft === 120 && styles.activeTimeButton]}
-            onPress={() => handleTimerSelect(2)}
-          >
-            <Text style={[styles.timeButtonText, timeLeft === 120 && styles.activeTimeButtonText]}>
-              2 min
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.timeButton, timeLeft === 180 && styles.activeTimeButton]}
-            onPress={() => handleTimerSelect(3)}
-          >
-            <Text style={[styles.timeButtonText, timeLeft === 180 && styles.activeTimeButtonText]}>
-              3 min
-            </Text>
-          </TouchableOpacity>
-        </View>
+          {/* Exercise Details */}
+          <View style={styles.detailsContainer}>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              <Text style={styles.sectionTitle}>Instructions</Text>
+              <Text style={styles.sectionText}>
+                {instructions}
+              </Text>
 
-        {/* Exercise Details */}
-        <View style={styles.detailsContainer}>
-          <Text style={styles.sectionTitle}>Stimulus</Text>
-          <Text style={styles.exerciseSubtitle}>
-            {sets} répétitions - {weight} - {recovery} de repos
-          </Text>
-
-          <Text style={styles.instructionsTitle}>Instructions</Text>
-          <Text style={styles.instructionsText}>
-            {instructions}
-          </Text>
+              <Text style={styles.sectionTitle}>Montée en charge</Text>
+              <View style={styles.listContainer}>
+                <View style={styles.listItem}>
+                  <View style={styles.dot} />
+                  <Text style={styles.listText}>2 reps à vide</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <View style={styles.dot} />
+                  <Text style={styles.listText}>2 reps à 20%</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <View style={styles.dot} />
+                  <Text style={styles.listText}>2 reps à 40%</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <View style={styles.dot} />
+                  <Text style={styles.listText}>2 reps à 60%</Text>
+                </View>
+                <View style={styles.listItem}>
+                  <View style={styles.dot} />
+                  <Text style={styles.listText}>2 reps à 80%</Text>
+                </View>
+              </View>
+            </ScrollView>
+          </View>
         </View>
 
         {/* Bottom Controls */}
         <View style={styles.bottomControls}>
           <TouchableOpacity style={styles.easyModeButton}>
-            <Text style={styles.easyModeText}>Easy{'\n'}Mode</Text>
+            <Text style={styles.chronoRestText}>Chrono{'\n'}Repos</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.playButton, isTimerActive && styles.activePlayButton]}
-            onPress={handlePlayTimer}
-          >
-            <View style={isTimerActive ? styles.pauseIcon : styles.playIconLarge} />
-          </TouchableOpacity>
+          {showTimer ? (
+            <TouchableOpacity
+              style={styles.timerDisplay}
+              onPress={handleTimerPress}
+            >
+              <Svg width={65} height={65} style={styles.progressCircle}>
+                <Circle
+                  cx={32.5}
+                  cy={32.5}
+                  r={29.5}
+                  stroke="#4A9EFF"
+                  strokeWidth={3}
+                  fill="transparent"
+                  strokeDasharray={`${2 * Math.PI * 29.5}`}
+                  strokeDashoffset={`${2 * Math.PI * 29.5 * (1 - timeLeft / defaultRestTime)}`}
+                  strokeLinecap="round"
+                  transform="rotate(-90 32.5 32.5)"
+                />
+              </Svg>
+              <Text style={styles.timerText}>
+                {timeLeft}
+              </Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.playButton}
+              onPress={handlePlayTimer}
+            >
+              <Play color="#e9edf5" size={24} />
+            </TouchableOpacity>
+          )}
 
-          <TouchableOpacity style={styles.fullscreenButton}>
-            <View style={styles.fullscreenIcon} />
+          <TouchableOpacity style={styles.fullscreenButton} onPress={handleResetTimer}>
+            <RotateCcw color="#e9edf5" size={24} />
           </TouchableOpacity>
         </View>
 
@@ -184,62 +207,45 @@ export default function TrainingDetailScreen({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 24,
-    paddingTop: 60,
-    paddingBottom: 16,
+    paddingTop: 40,
+    paddingBottom: 8,
   },
   backButton: {
     width: 40,
-    height: 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 8,
-    borderBottomWidth: 8,
-    borderRightWidth: 12,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: '#FFFFFF',
-  },
   appTitle: {
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: 'bold',
     color: '#FFFFFF',
     letterSpacing: 1,
   },
-  settingsButton: {
+  placeholder: {
     width: 40,
-    height: 40,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  settingsIcon: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
   },
   content: {
     flex: 1,
   },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'space-between',
+  },
+  topContent: {
+    flexShrink: 1,
+  },
 
   // Video Section
   videoContainer: {
-    height: 300,
+    height: 250,
     backgroundColor: '#2A2A2A',
-    marginHorizontal: 24,
-    borderRadius: 12,
-    marginBottom: 32,
-    overflow: 'hidden',
   },
   videoPlaceholder: {
     flex: 1,
@@ -255,96 +261,95 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  playIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 12,
-    borderBottomWidth: 12,
-    borderLeftWidth: 20,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#1A1A1A',
-    marginLeft: 4,
-  },
 
   // Exercise Header
   exerciseHeader: {
-    paddingHorizontal: 24,
-    marginBottom: 24,
+    paddingVertical: 16,
   },
   exerciseTitle: {
-    fontSize: 32,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#e9edf5',
     textAlign: 'center',
   },
 
-  // Timer Display
+  // Timer Display (center button)
   timerDisplay: {
+    width: 65,
+    height: 65,
     alignItems: 'center',
-    marginBottom: 24,
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  progressCircle: {
+    position: 'absolute',
   },
   timerText: {
-    fontSize: 48,
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#e9edf5',
   },
 
   // Time Buttons
-  timeButtonsContainer: {
+  numbersContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
     paddingHorizontal: 24,
-    marginBottom: 32,
+    marginBottom: 20,
     gap: 16,
   },
-  timeButton: {
+  numbersElement: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderRadius: 25,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderWidth: 2,
-    borderColor: 'transparent',
+    borderWidth:1,
+    borderRadius: 20,
+    borderColor: '#6387d9'
   },
-  activeTimeButton: {
-    borderColor: '#4A9EFF',
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
-  },
-  timeButtonText: {
-    fontSize: 16,
+  numbersText: {
+    fontSize: 12,
     fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.7)',
-  },
-  activeTimeButtonText: {
-    color: '#4A9EFF',
+    color: '#e9edf5',
   },
 
   // Details Section
   detailsContainer: {
-    paddingHorizontal: 24,
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
     marginBottom: 32,
+    marginHorizontal: 12,
+    backgroundColor: '#282c38',
+    borderRadius: 20,
   },
   sectionTitle: {
-    fontSize: 20,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#a2a6b2',
     marginBottom: 8,
+    marginTop: 4,
   },
-  exerciseSubtitle: {
+  sectionText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 24,
+    color: '#e9edf5',
+    marginBottom: 4,
   },
-  instructionsTitle: {
-    fontSize: 18,
-    fontWeight: '500',
-    color: 'rgba(255, 255, 255, 0.9)',
-    marginBottom: 12,
+  listContainer: {
+    gap: 4,
   },
-  instructionsText: {
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#5d88ee',
+  },
+  listText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.8)',
-    lineHeight: 24,
+    color: '#e9edf5',
   },
 
   // Bottom Controls
@@ -359,15 +364,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 8,
   },
-  easyModeText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+  chronoRestText: {
+    fontSize: 12,
+    color: '#e9edf5',
     textAlign: 'center',
     lineHeight: 18,
   },
   playButton: {
-    width: 80,
-    height: 80,
+    width: 65,
+    height: 65,
     borderRadius: 40,
     backgroundColor: 'transparent',
     borderWidth: 3,
@@ -375,34 +380,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  activePlayButton: {
-    backgroundColor: 'rgba(74, 158, 255, 0.2)',
-  },
-  playIconLarge: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 16,
-    borderBottomWidth: 16,
-    borderLeftWidth: 24,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: '#4A9EFF',
-    marginLeft: 4,
-  },
-  pauseIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: '#4A9EFF',
-  },
   fullscreenButton: {
     alignItems: 'center',
     paddingVertical: 8,
-  },
-  fullscreenIcon: {
-    width: 24,
-    height: 24,
-    backgroundColor: 'rgba(255, 255, 255, 0.6)',
-    borderRadius: 4,
   },
 
   bottomSpacing: {

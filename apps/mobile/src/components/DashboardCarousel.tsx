@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
     height: height * 0.6, // 60% of screen height for card content
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
+    borderColor: '#414551',
     shadowColor: '#000',
     shadowOffset: {
       width: 0,

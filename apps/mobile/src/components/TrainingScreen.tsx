@@ -7,6 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { ChevronLeft, ChevronRight } from 'lucide-react-native';
 import TrainingDetailScreen from './TrainingDetailScreen';
 import { authClient } from '../lib/auth-client';
 import { api } from '../lib/api';
@@ -150,7 +151,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
     );
   }
 
-  const renderExerciseBlock = (element: WorkoutDto['elements'][number], displayInfo: { id: string; name: string; sets: string; weight: string; recovery: string }) => (
+  const renderExerciseBlock = (element: WorkoutDto['elements'][number], displayInfo: { id: string; name: string; sets: string; weight: string; rest: string }) => (
     <TouchableOpacity
       key={displayInfo.id}
       style={styles.exerciseBlock}
@@ -170,14 +171,14 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
         <Text style={styles.exerciseName}>{displayInfo.name}</Text>
         <View style={styles.exerciseDetails}>
           <Text style={styles.detailText}>
-            {displayInfo.sets} • {displayInfo.weight} • {displayInfo.recovery}
+            {displayInfo.sets} • {displayInfo.weight} • {displayInfo.rest}
           </Text>
         </View>
       </View>
 
       {/* Arrow Icon */}
       <View style={styles.arrowContainer}>
-        <View style={styles.arrowIcon} />
+        <ChevronRight color="#a7acae" size={20} />
       </View>
     </TouchableOpacity>
   );
@@ -189,10 +190,10 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={onBack} style={styles.backButton}>
-          <View style={styles.backIcon} />
+          <ChevronLeft color="#f2f6f6" size={24} />
         </TouchableOpacity>
         <View style={styles.headerContent}>
-          <Text style={styles.title}>Entraînement</Text>
+          <Text style={styles.title}>Entraînements</Text>
         </View>
         <View style={styles.placeholder} />
       </View>
@@ -237,11 +238,6 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
         </ScrollView>
       </View>
 
-      {/* Full Date Title */}
-      <View style={styles.fullDateContainer}>
-        <Text style={styles.fullDateText}>{formatDateFull(selectedDate)}</Text>
-      </View>
-
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {isLoading ? (
           <View style={styles.emptyState}>
@@ -251,7 +247,6 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
           <>
             {/* Training Info */}
             <View style={styles.trainingInfo}>
-              <Text style={styles.trainingTitle}>{trainingData.workout?.title || 'Entraînement'}</Text>
               {trainingData.workout?.description && (
                 <Text style={styles.trainingDescription}>{trainingData.workout.description}</Text>
               )}
@@ -270,7 +265,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
                   name,
                   sets: `${element.sets} x ${element.reps}`,
                   weight: element.startWeight_percent ? `${element.startWeight_percent}%` : '-',
-                  recovery: element.rest ? `${element.rest}sec` : '-',
+                  rest: element.rest ? `${element.rest}sec` : '-',
                 });
               })}
             </View>
@@ -294,7 +289,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: '#191d26',
   },
   header: {
     flexDirection: 'row',
@@ -310,16 +305,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  backIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 8,
-    borderBottomWidth: 8,
-    borderRightWidth: 12,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderRightColor: '#FFFFFF',
-  },
   headerContent: {
     flex: 1,
     alignItems: 'center',
@@ -327,7 +312,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#f2f6f6',
     textAlign: 'center',
   },
   placeholder: {
@@ -336,7 +321,7 @@ const styles = StyleSheet.create({
 
   // Date Carousel
   dateCarouselContainer: {
-    paddingVertical: 16,
+    paddingVertical: 8,
     backgroundColor: '#1A1A1A',
   },
   dateCarousel: {
@@ -347,28 +332,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    borderRadius: 12,
+    borderRadius: 20,
     minWidth: 70,
   },
   dateItemSelected: {
-    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    backgroundColor: '#282c38',
+    borderWidth: 1,
+    borderColor: '#6387d9'
   },
   dateNumber: {
-    fontSize: 24,
+    fontSize: 16,
     fontWeight: 'bold',
-    color: 'rgba(255, 255, 255, 0.6)',
+    color: '#91989a',
     marginBottom: 4,
   },
   dateNumberSelected: {
-    color: '#FFFFFF',
+    color: '#f2f6f6',
   },
   dateMonth: {
-    fontSize: 12,
-    color: 'rgba(255, 255, 255, 0.6)',
+    fontSize: 8,
+    color: '#91989a',
     fontWeight: '600',
   },
   dateMonthSelected: {
-    color: '#FFFFFF',
+    color: '#f2f6f6',
   },
   trainingIndicator: {
     position: 'absolute',
@@ -379,18 +366,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#3B82F6',
   },
 
-  // Full Date Title
-  fullDateContainer: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  fullDateText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-
   content: {
     flex: 1,
     paddingHorizontal: 24,
@@ -398,24 +373,24 @@ const styles = StyleSheet.create({
 
   // Training Info
   trainingInfo: {
-    marginBottom: 24,
+    paddingVertical: 24,
   },
   trainingTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#eff4f8',
     textAlign: 'center',
     marginBottom: 8,
   },
   trainingDescription: {
     fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#a7acae',
     textAlign: 'center',
     marginBottom: 12,
   },
   trainingSubtitle: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#a7acae',
     textAlign: 'center',
   },
 
@@ -430,13 +405,13 @@ const styles = StyleSheet.create({
   emptyStateTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#FFFFFF',
+    color: '#f2f6f6',
     marginBottom: 12,
     textAlign: 'center',
   },
   emptyStateText: {
     fontSize: 16,
-    color: 'rgba(255, 255, 255, 0.7)',
+    color: '#a9acae',
     textAlign: 'center',
     lineHeight: 24,
   },
@@ -448,10 +423,12 @@ const styles = StyleSheet.create({
   exerciseBlock: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    backgroundColor: '#282c38',
     borderRadius: 16,
-    padding: 16,
+    padding: 4,
     marginBottom: 12,
+    borderWidth: 1,
+    borderColor: '#414551'
   },
 
   // Exercise Image
@@ -461,7 +438,7 @@ const styles = StyleSheet.create({
   imagePlaceholder: {
     width: 60,
     height: 60,
-    borderRadius: 12,
+    borderRadius: 14,
   },
   exerciseImagePlaceholder: {
     backgroundColor: '#3498DB',
@@ -476,9 +453,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   exerciseName: {
-    fontSize: 18,
+    fontSize: 12,
     fontWeight: '600',
-    color: '#FFFFFF',
+    color: '#eff4f8',
     marginBottom: 6,
   },
   exerciseDetails: {
@@ -486,8 +463,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   detailText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.7)',
+    fontSize: 12,
+    color: '#a7acae',
     fontWeight: '400',
   },
 
@@ -496,16 +473,6 @@ const styles = StyleSheet.create({
     marginLeft: 16,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  arrowIcon: {
-    width: 0,
-    height: 0,
-    borderTopWidth: 6,
-    borderBottomWidth: 6,
-    borderLeftWidth: 10,
-    borderTopColor: 'transparent',
-    borderBottomColor: 'transparent',
-    borderLeftColor: 'rgba(255, 255, 255, 0.5)',
   },
 
   bottomSpacing: {
