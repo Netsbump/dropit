@@ -40,7 +40,13 @@ export class MikroTrainingSessionRepository extends EntityRepository<TrainingSes
   }
 
   async getByAthleteWithDetails(athleteId: string, organizationId: string, date?: string): Promise<TrainingSession[]> {
-    const where: any = {
+    interface WhereClause {
+      organization: { id: string };
+      athletes: { athlete: { id: string } };
+      scheduledDate?: { $gte: Date; $lte: Date };
+    }
+
+    const where: WhereClause = {
       organization: { id: organizationId },
       athletes: { athlete: { id: athleteId } }
     };
