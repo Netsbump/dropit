@@ -37,6 +37,9 @@ export class Session {
   @Property({ fieldName: 'activeOrganizationId', nullable: true })
   activeOrganizationId?: string
 
+  @Property({ fieldName: 'athleteId', nullable: true })
+  athleteId?: string
+
   @ManyToOne(() => User, { fieldName: 'userId' })
   user!: User
 }
