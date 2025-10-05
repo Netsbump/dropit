@@ -2,7 +2,7 @@ import {
   createTrainingSessionSchema,
   trainingSessionSchema,
   updateTrainingSessionSchema,
-  dateFilterSchema,
+  dateRangeFilterSchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
 
@@ -29,7 +29,7 @@ export const trainingSessionContract = {
     pathParams: z.object({
       athleteId: z.string(),
     }),
-    query: dateFilterSchema,
+    query: dateRangeFilterSchema,
     responses: {
       200: z.array(trainingSessionSchema),
       403: z.object({

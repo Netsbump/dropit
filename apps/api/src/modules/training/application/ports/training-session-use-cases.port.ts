@@ -26,9 +26,9 @@ export interface ITrainingSessionUseCases {
   getAll(organizationId: string, userId: string): Promise<TrainingSession[]>;
 
   /**
-   * Get training sessions for a specific athlete with optional date filter
+   * Get training sessions for a specific athlete with optional date range filter
    */
-  getByAthlete(athleteId: string, organizationId: string, userId: string, date?: string): Promise<TrainingSession[]>;
+  getByAthlete(athleteId: string, organizationId: string, userId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]>;
 
   /**
    * Create a new training session
