@@ -8,31 +8,29 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import type { WorkoutDto } from '@dropit/schemas';
 
 interface TrainingDetailScreenProps {
   onBack: () => void;
-  exerciseData?: {
-    name: string;
-    sets: string;
-    weight: string;
-    recovery: string;
-    instructions: string;
-    videoUrl?: string;
-  };
+  element: WorkoutDto['elements'][number];
 }
 
 export default function TrainingDetailScreen({
   onBack,
-  exerciseData = {
-    name: "Arraché",
-    sets: "5 x 3",
-    weight: "75%",
-    recovery: "2min",
-    instructions: "Départ en dessous du genou et on termine au dessus de la tête. On se concentre sur montée lente et contrôlée. Deux secondes de pause à mi-cuisse.",
-  }
+  element
 }: TrainingDetailScreenProps) {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
+
+  // Extract display info from element
+  const name = element.type === 'exercise'
+    ? element.exercise.name
+    : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
+  const sets = `${element.sets} x ${element.reps}`;
+  const weight = element.startWeight_percent ? `${element.startWeight_percent}%` : '-';
+  const recovery = element.rest ? `${element.rest}sec` : '2min';
+  const instructions = element.description || `Instructions pour ${name}.`;
+  const videoUrl = element.type === 'exercise' ? element.exercise.video : undefined;
 
   // Parse recovery time to seconds
   const parseRecoveryTime = (recovery: string) => {
@@ -43,9 +41,8 @@ export default function TrainingDetailScreen({
     }
     return parseInt(recovery) || 120; // default 2 minutes
   };
-
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isTimerActive && timeLeft > 0) {
       interval = setInterval(() => {
         setTimeLeft(timeLeft - 1);
@@ -65,7 +62,7 @@ export default function TrainingDetailScreen({
 
   const handlePlayTimer = () => {
     if (!isTimerActive) {
-      const recoverySeconds = parseRecoveryTime(exerciseData.recovery);
+      const recoverySeconds = parseRecoveryTime(recovery);
       setTimeLeft(recoverySeconds);
       setIsTimerActive(true);
     } else {
@@ -108,7 +105,7 @@ export default function TrainingDetailScreen({
 
         {/* Exercise Title */}
         <View style={styles.exerciseHeader}>
-          <Text style={styles.exerciseTitle}>{exerciseData.name}</Text>
+          <Text style={styles.exerciseTitle}>{name}</Text>
         </View>
 
         {/* Timer Display */}
@@ -150,12 +147,12 @@ export default function TrainingDetailScreen({
         <View style={styles.detailsContainer}>
           <Text style={styles.sectionTitle}>Stimulus</Text>
           <Text style={styles.exerciseSubtitle}>
-            {exerciseData.sets} répétitions - {exerciseData.weight} - {exerciseData.recovery} de repos
+            {sets} répétitions - {weight} - {recovery} de repos
           </Text>
 
           <Text style={styles.instructionsTitle}>Instructions</Text>
           <Text style={styles.instructionsText}>
-            {exerciseData.instructions}
+            {instructions}
           </Text>
         </View>
 

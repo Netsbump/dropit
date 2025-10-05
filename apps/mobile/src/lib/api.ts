@@ -29,9 +29,11 @@ export const api = initClient(apiContract, {
         body: args.body ? JSON.stringify(args.body) : undefined,
       });
 
+      const text = await response.text();
+
       return {
         status: response.status,
-        body: await response.text(),
+        body: text,
         headers: response.headers,
       };
     } catch (error) {
