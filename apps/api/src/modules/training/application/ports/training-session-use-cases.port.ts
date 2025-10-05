@@ -18,12 +18,17 @@ export interface ITrainingSessionUseCases {
   /**
    * Get one training session by ID
    */
-  getOne(trainingSessionId: string, organizationId: string): Promise<TrainingSession>;
+  getOne(trainingSessionId: string, organizationId: string, userId: string): Promise<TrainingSession>;
 
   /**
    * Get all training sessions for an organization
    */
-  getAll(organizationId: string): Promise<TrainingSession[]>;
+  getAll(organizationId: string, userId: string): Promise<TrainingSession[]>;
+
+  /**
+   * Get training sessions for a specific athlete with optional date filter
+   */
+  getByAthlete(athleteId: string, organizationId: string, userId: string, date?: string): Promise<TrainingSession[]>;
 
   /**
    * Create a new training session

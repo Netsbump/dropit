@@ -17,6 +17,7 @@ import { Exercise } from './domain/exercise.entity';
 import { Complex } from './domain/complex.entity';
 
 import { TrainingSessionController } from './interface/controllers/training-session.controller';
+import { AthleteTrainingSessionController } from './interface/controllers/athlete-training-session.controller';
 import { ComplexController } from './interface/controllers/complex.controller';
 import { ComplexCategoryController } from './interface/controllers/complex-category.controller';
 import { ExerciseCategoryController } from './interface/controllers/exercise-category.controller';
@@ -91,6 +92,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
   ],
   controllers: [
     TrainingSessionController,
+    AthleteTrainingSessionController,
     ComplexController,
     ComplexCategoryController,
     ExerciseController,

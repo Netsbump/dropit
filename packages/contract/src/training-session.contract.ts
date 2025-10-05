@@ -21,6 +21,30 @@ export const trainingSessionContract = {
     },
   },
 
+  getTrainingSessionsByAthlete: {
+    method: 'GET',
+    path: '/training-session/athlete/:athleteId',
+    summary: 'Get training sessions for a specific athlete',
+    pathParams: z.object({
+      athleteId: z.string(),
+    }),
+    query: z.object({
+      date: z.string().optional(),
+    }),
+    responses: {
+      200: z.array(trainingSessionSchema),
+      403: z.object({
+        message: z.string(),
+      }),
+      404: z.object({
+        message: z.string(),
+      }),
+      500: z.object({
+        message: z.string(),
+      }),
+    },
+  },
+
   getTrainingSession: {
     method: 'GET',
     path: '/training-session/:id',

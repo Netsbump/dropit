@@ -12,11 +12,8 @@ import { CurrentOrganization } from '../../../identity/infrastructure/decorators
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
 import { TrainingSessionMapper } from '../mappers/training-session.mapper';
 import { TrainingSessionPresenter } from '../presenters/training-session.presenter';
-import { AthleteTrainingSessionMapper } from '../mappers/athlete-training-session.mapper';
-import { AthleteTrainingSessionPresenter } from '../presenters/athlete-training-session.presenter';
 
 const contractTrainingSession = apiContract.trainingSession;
-const contractAthleteTrainingSession = apiContract.athleteTrainingSession;
 
 /**
  * Training Session Controller
@@ -46,14 +43,42 @@ export class TrainingSessionController {
    * Retrieves all training sessions for the current organization.
    *
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param user - The current authenticated user (injected via the `@CurrentUser` decorator)
    * @returns A list of all training sessions for the organization.
    */
   @TsRestHandler(contractTrainingSession.getTrainingSessions)
   @RequirePermissions('read')
-  getTrainingSessions(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessions>> {
+  getTrainingSessions(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessions>> {
     return tsRestHandler(contractTrainingSession.getTrainingSessions, async () => {
       try {
-        const trainingSessions = await this.trainingSessionUseCase.getAll(organizationId);
+        const trainingSessions = await this.trainingSessionUseCase.getAll(organizationId, user.id);
+        const trainingSessionsDto = TrainingSessionMapper.toDtoList(trainingSessions);
+        return TrainingSessionPresenter.present(trainingSessionsDto);
+      } catch (error) {
+        return TrainingSessionPresenter.presentError(error as Error);
+      }
+    });
+  }
+
+  /**
+   * Retrieves training sessions for a specific athlete within the current organization.
+   *
+   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param user - The current authenticated user (injected via the `@CurrentUser` decorator)
+   * @returns A list of training sessions for the specified athlete.
+   */
+  @TsRestHandler(contractTrainingSession.getTrainingSessionsByAthlete)
+  @RequirePermissions('read')
+  getTrainingSessionsByAthlete(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessionsByAthlete>> {
+    return tsRestHandler(contractTrainingSession.getTrainingSessionsByAthlete, async ({ params, query }) => {
+      try {
+        const trainingSessions = await this.trainingSessionUseCase.getByAthlete(params.athleteId, organizationId, user.id, query.date);
         const trainingSessionsDto = TrainingSessionMapper.toDtoList(trainingSessions);
         return TrainingSessionPresenter.present(trainingSessionsDto);
       } catch (error) {
@@ -66,66 +91,22 @@ export class TrainingSessionController {
    * Retrieves a specific training session by ID for the current organization.
    *
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
+   * @param user - The current authenticated user (injected via the `@CurrentUser` decorator)
    * @returns The training session with the specified ID.
    */
   @TsRestHandler(contractTrainingSession.getTrainingSession)
   @RequirePermissions('read')
-  getTrainingSession(@CurrentOrganization() organizationId: string): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSession>> {
+  getTrainingSession(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSession>> {
     return tsRestHandler(contractTrainingSession.getTrainingSession, async ({ params }) => {
       try {
-        const trainingSession = await this.trainingSessionUseCase.getOne(params.id, organizationId);
+        const trainingSession = await this.trainingSessionUseCase.getOne(params.id, organizationId, user.id);
         const trainingSessionDto = TrainingSessionMapper.toDto(trainingSession);
         return TrainingSessionPresenter.presentOne(trainingSessionDto);
       } catch (error) {
         return TrainingSessionPresenter.presentError(error as Error);
-      }
-    });
-  }
-
-  /**
-   * Retrieves all training sessions for a specific athlete within the current organization.
-   *
-   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
-   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
-   * @returns A list of training sessions for the specified athlete.
-   */
-  @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions)
-  @RequirePermissions('read')
-  getAthleteTrainingSessions(
-    @CurrentOrganization() organizationId: string,
-    @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
-    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions, async ({ params }) => {
-      try {
-        const athleteTrainingSessions = await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, user.id);
-        const athleteTrainingSessionsDto = AthleteTrainingSessionMapper.toDtoList(athleteTrainingSessions);
-        return AthleteTrainingSessionPresenter.present(athleteTrainingSessionsDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
-      }
-    });
-  }
-
-  /**
-   * Retrieves a specific training session for a specific athlete within the current organization.
-   *
-   * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
-   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
-   * @returns The specific training session for the specified athlete.
-   */
-  @TsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession)
-  @RequirePermissions('read')
-  getAthleteTrainingSession(
-    @CurrentOrganization() organizationId: string,
-    @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
-    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession, async ({ params }) => {
-      try {
-        const athleteTrainingSession = await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, user.id);
-        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
-        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
       }
     });
   }
@@ -174,28 +155,6 @@ export class TrainingSessionController {
         return TrainingSessionPresenter.presentOne(trainingSessionDto);
       } catch (error) {
         return TrainingSessionPresenter.presentError(error as Error);
-      }
-    });
-  }
-
-  /**
-   * Updates a specific training session for a specific athlete.
-   *
-   * @param userId - The ID of the current user (injected via the `@CurrentUser` decorator)
-   * @returns The updated athlete training session.
-   */
-  @TsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession)
-  @RequirePermissions('update')
-  updateAthleteTrainingSession(
-    @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
-    return tsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession, async ({ params, body }) => {
-      try {
-        const athleteTrainingSession = await this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, user.id);
-        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
-        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
       }
     });
   }
