@@ -7,7 +7,7 @@ export interface ITrainingSessionRepository {
 
   getAllWithDetails(organizationId: string): Promise<TrainingSession[]>;
   getOneWithDetails(id: string, organizationId: string): Promise<TrainingSession | null>;
-  getByAthleteWithDetails(athleteId: string, organizationId: string, date?: string): Promise<TrainingSession[]>;
+  getByAthleteWithDetails(athleteId: string, organizationId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]>;
 
   save(trainingSession: TrainingSession): Promise<void>;
   remove(trainingSession: TrainingSession): Promise<void>;

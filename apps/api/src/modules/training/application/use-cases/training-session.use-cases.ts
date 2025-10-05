@@ -76,7 +76,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return trainingSessions;
   }
 
-  async getByAthlete(athleteId: string, organizationId: string, userId: string, date?: string): Promise<TrainingSession[]> {
+  async getByAthlete(athleteId: string, organizationId: string, userId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]> {
     //1. Check if current user is coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
@@ -93,7 +93,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     }
 
     //4. Get training sessions from repository
-    const trainingSessions = await this.trainingSessionRepository.getByAthleteWithDetails(athleteId, organizationId, date);
+    const trainingSessions = await this.trainingSessionRepository.getByAthleteWithDetails(athleteId, organizationId, startDate, endDate);
 
     //5. Validate sessions
     if (!trainingSessions) {

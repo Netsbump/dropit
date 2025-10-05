@@ -39,7 +39,7 @@ export class MikroTrainingSessionRepository extends EntityRepository<TrainingSes
     );
   }
 
-  async getByAthleteWithDetails(athleteId: string, organizationId: string, date?: string): Promise<TrainingSession[]> {
+  async getByAthleteWithDetails(athleteId: string, organizationId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]> {
     interface WhereClause {
       organization: { id: string };
       athletes: { athlete: { id: string } };
@@ -51,11 +51,12 @@ export class MikroTrainingSessionRepository extends EntityRepository<TrainingSes
       athletes: { athlete: { id: athleteId } }
     };
 
-    // Filter by date if provided
-    if (date) {
-      const targetDate = new Date(date);
-      const startOfDay = new Date(targetDate.setHours(0, 0, 0, 0));
-      const endOfDay = new Date(targetDate.setHours(23, 59, 59, 999));
+    // Filter by date range if provided
+    if (startDate && endDate) {
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      const startOfDay = new Date(start.setHours(0, 0, 0, 0));
+      const endOfDay = new Date(end.setHours(23, 59, 59, 999));
       where.scheduledDate = { $gte: startOfDay, $lte: endOfDay };
     }
 

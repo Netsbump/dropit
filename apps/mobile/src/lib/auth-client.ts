@@ -1,5 +1,5 @@
 import { createAuthClient } from 'better-auth/react';
-import { organizationClient } from 'better-auth/client/plugins';
+import { organizationClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { ac, owner, admin, member } from '@dropit/permissions';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -14,6 +14,14 @@ export const authClient = createAuthClient({
         owner,
         admin,
         member,
+      },
+    }),
+    inferAdditionalFields({
+      session: {
+        athleteId: {
+          type: 'string',
+          required: false,
+        },
       },
     }),
   ],

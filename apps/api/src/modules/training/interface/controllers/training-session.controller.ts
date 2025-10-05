@@ -78,7 +78,7 @@ export class TrainingSessionController {
   ): ReturnType<typeof tsRestHandler<typeof contractTrainingSession.getTrainingSessionsByAthlete>> {
     return tsRestHandler(contractTrainingSession.getTrainingSessionsByAthlete, async ({ params, query }) => {
       try {
-        const trainingSessions = await this.trainingSessionUseCase.getByAthlete(params.athleteId, organizationId, user.id, query.date);
+        const trainingSessions = await this.trainingSessionUseCase.getByAthlete(params.athleteId, organizationId, user.id, query.startDate, query.endDate);
         const trainingSessionsDto = TrainingSessionMapper.toDtoList(trainingSessions);
         return TrainingSessionPresenter.present(trainingSessionsDto);
       } catch (error) {

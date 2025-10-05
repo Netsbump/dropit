@@ -20,6 +20,7 @@ interface Session {
     id: string;
     userId: string;
     activeOrganizationId?: string | null;
+    athleteId?: string | null;
   };
 }
 
