@@ -18,6 +18,7 @@ const createWorkoutExerciseElement = z.object({
   reps: z.number().min(1),
   rest: z.number().optional(),
   duration: z.number().optional(),
+  description: z.string().optional(),
   startWeight_percent: z.number().optional(),
   endWeight_percent: z.number().optional(),
 });
@@ -30,6 +31,7 @@ const createWorkoutComplexElement = z.object({
   reps: z.number().min(1),
   rest: z.number().optional(),
   duration: z.number().optional(),
+  description: z.string().optional(),
   startWeight_percent: z.number().optional(),
   endWeight_percent: z.number().optional(),
 });
