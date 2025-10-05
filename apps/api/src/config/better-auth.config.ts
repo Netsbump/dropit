@@ -58,6 +58,15 @@ export function createAuthConfig(
         },
       },
     },
+    session: {
+      additionalFields: {
+        athleteId: {
+          type: "string",
+          required: false, // null for super admins users
+          input: false, // don't allow user to set athleteId
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       sendResetPassword: async (data, request) => {
@@ -176,24 +185,27 @@ export function createAuthConfig(
         create: {
           before: async (session) => {
             if (!em) return { data: session };
-            
+
             try {
               const emFork = em.fork();
               const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
-              
-              console.log('🔧 [BetterAuth Hook] Setting activeOrganizationId:', {
+              const athlete = await emFork.findOne(Athlete, { user: { id: session.userId } });
+
+              console.log('🔧 [BetterAuth Hook] Setting session data:', {
                 userId: session.userId,
-                organizationId: memberRecord?.organization.id || null
+                organizationId: memberRecord?.organization.id || null,
+                athleteId: athlete?.id || null
               });
-              
+
               return {
                 data: {
                   ...session,
                   activeOrganizationId: memberRecord?.organization.id ?? null,
+                  athleteId: athlete?.id ?? null,
                 },
               };
             } catch (error) {
-              console.error('❌ [BetterAuth Hook] Error setting activeOrganizationId:', error);
+              console.error('❌ [BetterAuth Hook] Error setting session data:', error);
               return { data: session };
             }
           },
