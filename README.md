@@ -16,7 +16,7 @@
     <a href="https://docs-dropit.pages.dev/"><strong>Explorer la documentation »</strong></a>
     <br />
     <br />
-    <a href="https://dropit.sten-lvs.com">Voir la Démonstration</a>
+    <a href="https://dropit-app.fr">Voir l'Application en Production</a>
     ·
     <a href="https://github.com/Netsbump/Dropit/issues">Signaler un Bug</a>
     ·
@@ -158,8 +158,8 @@ pnpm dev
 ### Données de test (Seeds)
 
 Lors du premier lancement de l'application, des données de test sont automatiquement créées dans la base de données, incluant :
-- Un super admin (Sten Levasseur - levasseur.sten@gmail.com)
-- Un coach pour tester l'interface web
+- Un super admin (Super Admin - super.admin@gmail.com)
+- Un coach pour tester l'interface web (Jean Dupont - coach@example.com)
 - Un club par défaut
 - Des utilisateurs/athlètes générés avec Faker (15-25 athlètes)
 
