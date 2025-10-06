@@ -191,7 +191,15 @@ Pour vous connecter, utilisez l'un des utilisateurs générés par les seeds. Le
 
 ## Licence
 
-Distribué sous la Licence MIT. Voir le fichier LICENSE pour plus d'informations.
+Distribué sous la GNU Affero General Public License v3.0 (AGPL-3.0).
+
+**Ce logiciel est libre et open source**, mais avec une protection forte contre l'appropriation commerciale :
+- ✅ Vous pouvez librement utiliser, modifier et redistribuer ce logiciel
+- ✅ Tout fork doit rester open source sous AGPL-3.0
+- ✅ Les modifications sur un serveur web doivent être partagées publiquement
+
+Voir le fichier [LICENSE.md](LICENSE.md) pour le texte complet de la licence.
+
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
 ***
