@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-DropIt is a weightlifting club management application built as a monorepo using Turborepo. It provides features for managing athletes, workouts, exercises, training sessions, and performance tracking.
+DropIt is a weightlifting club management application built as a monorepo using pnpm workspaces. It provides features for managing athletes, workouts, exercises, training sessions, and performance tracking.
 
 ## Architecture
 
@@ -153,6 +153,5 @@ Single `.env` file at project root controls all services. Copy `.env.example` to
 - **TanStack Query**: https://tanstack.com/query/latest/docs/framework/react/overview - Server state management
 - **Zod**: https://zod.dev/ - Schema validation patterns
 - **Shadcn/ui**: https://ui.shadcn.com/docs/installation - Component library usage
-- **Turborepo**: https://turborepo.com/docs - Monorepo configuration
 
 Consult these docs before implementing new features or modifying existing integrations.

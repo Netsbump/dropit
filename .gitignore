@@ -29,9 +29,6 @@ yarn-error.log*
 
 !.env.database.example
 
-# turbo
-.turbo
-
 # typescript
 *.tsbuildinfo
 node_modules
