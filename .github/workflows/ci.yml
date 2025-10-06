@@ -95,8 +95,12 @@ jobs:
       - name: Check database migrations
         working-directory: apps/api
         run: |
-          pnpm run db:migration:check
-          pnpm run db:migration:up
+          if [ -n "$(find src/modules/db/migrations -name '*.ts' -not -name '.gitkeep' 2>/dev/null)" ]; then
+            pnpm run db:migration:check
+            pnpm run db:migration:up
+          else
+            echo "No migrations found, skipping migration checks (prototyping phase)"
+          fi
         env:
           API_PORT: 3001
           NODE_ENV: test

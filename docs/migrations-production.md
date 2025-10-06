@@ -1,5 +1,17 @@
 # Guide des Migrations en Production
 
+## ⚠️ État actuel : Phase de prototypage
+
+**Important :** Le projet est actuellement en phase de prototypage. Aucune migration n'a encore été créée car le schéma de base de données évolue fréquemment. L'application utilise `db:fresh` pour recréer le schéma à la volée avec les seeders.
+
+**Workflow CI actuel :** La vérification des migrations dans la CI est configurée pour être skippée tant qu'aucun fichier de migration n'existe. Cela permet de continuer à itérer rapidement sur le modèle de données sans la contrainte des migrations.
+
+**Action requise avant production :** Lorsque le schéma de données sera stabilisé et prêt pour les premiers utilisateurs réels, il faudra :
+1. Créer la migration initiale : `pnpm --filter api db:migration:create --initial`
+2. Modifier le Dockerfile pour utiliser `db:migration:up` au lieu de `db:sync` (voir section ci-dessous)
+3. Configurer les backups automatiques
+4. À partir de là, chaque modification du schéma devra passer par une migration
+
 ## Vue d'ensemble
 
 Ce guide documente les stratégies et bonnes pratiques pour gérer les migrations de base de données en production avec de vraies données utilisateur. Actuellement, l'application utilise un système de migrations MikroORM avec exécution automatique au démarrage de l'API.
