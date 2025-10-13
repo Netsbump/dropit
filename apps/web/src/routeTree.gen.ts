@@ -18,11 +18,13 @@ import { Route as CreateOrganizationRouteImport } from './routes/create-organiza
 import { Route as _homeRouteImport } from './routes/__home'
 import { Route as _authRouteImport } from './routes/__auth'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as _homeSettingsRouteImport } from './routes/__home.settings'
 import { Route as _homeProgramsRouteImport } from './routes/__home.programs'
+import { Route as _homeProfileRouteImport } from './routes/__home.profile'
 import { Route as _homePlanningRouteImport } from './routes/__home.planning'
+import { Route as _homeHelpRouteImport } from './routes/__home.help'
 import { Route as _homeDashboardRouteImport } from './routes/__home.dashboard'
 import { Route as _homeAthletesRouteImport } from './routes/__home.athletes'
-import { Route as _homeAboutRouteImport } from './routes/__home.about'
 import { Route as _homeWorkoutsCreateRouteImport } from './routes/__home.workouts.create'
 import { Route as _homeWorkoutsWorkoutIdRouteImport } from './routes/__home.workouts.$workoutId'
 import { Route as _homeProgramsWorkoutsRouteImport } from './routes/__home.programs.workouts'
@@ -97,14 +99,29 @@ const _authLoginLazyRoute = _authLoginLazyRouteImport
     getParentRoute: () => _authRoute,
   } as any)
   .lazy(() => import('./routes/__auth.login.lazy').then((d) => d.Route))
+const _homeSettingsRoute = _homeSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => _homeRoute,
+} as any)
 const _homeProgramsRoute = _homeProgramsRouteImport.update({
   id: '/programs',
   path: '/programs',
   getParentRoute: () => _homeRoute,
 } as any)
+const _homeProfileRoute = _homeProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => _homeRoute,
+} as any)
 const _homePlanningRoute = _homePlanningRouteImport.update({
   id: '/planning',
   path: '/planning',
+  getParentRoute: () => _homeRoute,
+} as any)
+const _homeHelpRoute = _homeHelpRouteImport.update({
+  id: '/help',
+  path: '/help',
   getParentRoute: () => _homeRoute,
 } as any)
 const _homeDashboardRoute = _homeDashboardRouteImport.update({
@@ -115,11 +132,6 @@ const _homeDashboardRoute = _homeDashboardRouteImport.update({
 const _homeAthletesRoute = _homeAthletesRouteImport.update({
   id: '/athletes',
   path: '/athletes',
-  getParentRoute: () => _homeRoute,
-} as any)
-const _homeAboutRoute = _homeAboutRouteImport.update({
-  id: '/about',
-  path: '/about',
   getParentRoute: () => _homeRoute,
 } as any)
 const _homeWorkoutsCreateRoute = _homeWorkoutsCreateRouteImport.update({
@@ -165,11 +177,13 @@ export interface FileRoutesByFullPath {
   '/download-app': typeof DownloadAppRoute
   '/join-organization': typeof JoinOrganizationRoute
   '/onboarding': typeof OnboardingRoute
-  '/about': typeof _homeAboutRoute
   '/athletes': typeof _homeAthletesRouteWithChildren
   '/dashboard': typeof _homeDashboardRoute
+  '/help': typeof _homeHelpRoute
   '/planning': typeof _homePlanningRoute
+  '/profile': typeof _homeProfileRoute
   '/programs': typeof _homeProgramsRouteWithChildren
+  '/settings': typeof _homeSettingsRoute
   '/login': typeof _authLoginLazyRoute
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
@@ -188,11 +202,13 @@ export interface FileRoutesByTo {
   '/download-app': typeof DownloadAppRoute
   '/join-organization': typeof JoinOrganizationRoute
   '/onboarding': typeof OnboardingRoute
-  '/about': typeof _homeAboutRoute
   '/athletes': typeof _homeAthletesRouteWithChildren
   '/dashboard': typeof _homeDashboardRoute
+  '/help': typeof _homeHelpRoute
   '/planning': typeof _homePlanningRoute
+  '/profile': typeof _homeProfileRoute
   '/programs': typeof _homeProgramsRouteWithChildren
+  '/settings': typeof _homeSettingsRoute
   '/login': typeof _authLoginLazyRoute
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
@@ -214,11 +230,13 @@ export interface FileRoutesById {
   '/download-app': typeof DownloadAppRoute
   '/join-organization': typeof JoinOrganizationRoute
   '/onboarding': typeof OnboardingRoute
-  '/__home/about': typeof _homeAboutRoute
   '/__home/athletes': typeof _homeAthletesRouteWithChildren
   '/__home/dashboard': typeof _homeDashboardRoute
+  '/__home/help': typeof _homeHelpRoute
   '/__home/planning': typeof _homePlanningRoute
+  '/__home/profile': typeof _homeProfileRoute
   '/__home/programs': typeof _homeProgramsRouteWithChildren
+  '/__home/settings': typeof _homeSettingsRoute
   '/__auth/login': typeof _authLoginLazyRoute
   '/__auth/privacy': typeof _authPrivacyLazyRoute
   '/__auth/signup': typeof _authSignupLazyRoute
@@ -239,11 +257,13 @@ export interface FileRouteTypes {
     | '/download-app'
     | '/join-organization'
     | '/onboarding'
-    | '/about'
     | '/athletes'
     | '/dashboard'
+    | '/help'
     | '/planning'
+    | '/profile'
     | '/programs'
+    | '/settings'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -262,11 +282,13 @@ export interface FileRouteTypes {
     | '/download-app'
     | '/join-organization'
     | '/onboarding'
-    | '/about'
     | '/athletes'
     | '/dashboard'
+    | '/help'
     | '/planning'
+    | '/profile'
     | '/programs'
+    | '/settings'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -287,11 +309,13 @@ export interface FileRouteTypes {
     | '/download-app'
     | '/join-organization'
     | '/onboarding'
-    | '/__home/about'
     | '/__home/athletes'
     | '/__home/dashboard'
+    | '/__home/help'
     | '/__home/planning'
+    | '/__home/profile'
     | '/__home/programs'
+    | '/__home/settings'
     | '/__auth/login'
     | '/__auth/privacy'
     | '/__auth/signup'
@@ -394,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _authLoginLazyRouteImport
       parentRoute: typeof _authRoute
     }
+    '/__home/settings': {
+      id: '/__home/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof _homeSettingsRouteImport
+      parentRoute: typeof _homeRoute
+    }
     '/__home/programs': {
       id: '/__home/programs'
       path: '/programs'
@@ -401,11 +432,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _homeProgramsRouteImport
       parentRoute: typeof _homeRoute
     }
+    '/__home/profile': {
+      id: '/__home/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof _homeProfileRouteImport
+      parentRoute: typeof _homeRoute
+    }
     '/__home/planning': {
       id: '/__home/planning'
       path: '/planning'
       fullPath: '/planning'
       preLoaderRoute: typeof _homePlanningRouteImport
+      parentRoute: typeof _homeRoute
+    }
+    '/__home/help': {
+      id: '/__home/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof _homeHelpRouteImport
       parentRoute: typeof _homeRoute
     }
     '/__home/dashboard': {
@@ -420,13 +465,6 @@ declare module '@tanstack/react-router' {
       path: '/athletes'
       fullPath: '/athletes'
       preLoaderRoute: typeof _homeAthletesRouteImport
-      parentRoute: typeof _homeRoute
-    }
-    '/__home/about': {
-      id: '/__home/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof _homeAboutRouteImport
       parentRoute: typeof _homeRoute
     }
     '/__home/workouts/create': {
@@ -529,21 +567,25 @@ const _homeProgramsRouteWithChildren = _homeProgramsRoute._addFileChildren(
 )
 
 interface _homeRouteChildren {
-  _homeAboutRoute: typeof _homeAboutRoute
   _homeAthletesRoute: typeof _homeAthletesRouteWithChildren
   _homeDashboardRoute: typeof _homeDashboardRoute
+  _homeHelpRoute: typeof _homeHelpRoute
   _homePlanningRoute: typeof _homePlanningRoute
+  _homeProfileRoute: typeof _homeProfileRoute
   _homeProgramsRoute: typeof _homeProgramsRouteWithChildren
+  _homeSettingsRoute: typeof _homeSettingsRoute
   _homeWorkoutsWorkoutIdRoute: typeof _homeWorkoutsWorkoutIdRoute
   _homeWorkoutsCreateRoute: typeof _homeWorkoutsCreateRoute
 }
 
 const _homeRouteChildren: _homeRouteChildren = {
-  _homeAboutRoute: _homeAboutRoute,
   _homeAthletesRoute: _homeAthletesRouteWithChildren,
   _homeDashboardRoute: _homeDashboardRoute,
+  _homeHelpRoute: _homeHelpRoute,
   _homePlanningRoute: _homePlanningRoute,
+  _homeProfileRoute: _homeProfileRoute,
   _homeProgramsRoute: _homeProgramsRouteWithChildren,
+  _homeSettingsRoute: _homeSettingsRoute,
   _homeWorkoutsWorkoutIdRoute: _homeWorkoutsWorkoutIdRoute,
   _homeWorkoutsCreateRoute: _homeWorkoutsCreateRoute,
 }
