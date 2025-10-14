@@ -33,6 +33,6 @@ export class Complex {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
   createdBy!: User | null;
 }
