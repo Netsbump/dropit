@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
 
-export const Route = createFileRoute('/__home/programs/workouts')({
+export const Route = createFileRoute('/__home/library/workouts')({
   component: WorkoutPage,
 });
 

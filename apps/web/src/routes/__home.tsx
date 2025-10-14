@@ -42,7 +42,9 @@ function HomeLayout() {
   return (
     <SidebarProvider className="w-full">
       <div className="flex min-h-screen w-full">
-        <AppSidebar />
+
+          <AppSidebar />
+
         <main className="flex-1 w-full h-screen">
           <div className="h-full w-full flex flex-col">
             <div className="px-4 pt-6 pb-4 flex-1 min-h-0 overflow-hidden">

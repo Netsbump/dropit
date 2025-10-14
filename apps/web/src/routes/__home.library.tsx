@@ -7,11 +7,11 @@ import {
 } from '@tanstack/react-router';
 import { HeaderPage } from '../shared/components/layout/header-page';
 
-export const Route = createFileRoute('/__home/programs')({
-  component: ProgramsLayout,
+export const Route = createFileRoute('/__home/library')({
+  component: LibraryLayout,
 });
 
-function ProgramsLayout() {
+function LibraryLayout() {
   const { t } = useTranslation();
   const matches = useMatches();
 
@@ -22,40 +22,40 @@ function ProgramsLayout() {
   return (
     <>
       <HeaderPage
-        title={t('programs.title')}
-        description={t('programs.description')}
+        title={t('library.title')}
+        description={t('library.description')}
       />
       <div className="border-b">
         <nav className="flex gap-8">
           <Link
-            to="/programs/workouts"
+            to="/library/workouts"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'workouts'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {t('programs.tabs.workouts')}
+            {t('library.tabs.workouts')}
           </Link>
           <Link
-            to="/programs/complex"
+            to="/library/complex"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'complex'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {t('programs.tabs.complex')}
+            {t('library.tabs.complex')}
           </Link>
           <Link
-            to="/programs/exercises"
+            to="/library/exercises"
             className={`pb-2 px-1 transition-all relative ${
               activeTab === 'exercises'
                 ? 'text-primary border-b-2 border-primary'
                 : 'text-muted-foreground hover:text-foreground'
             }`}
           >
-            {t('programs.tabs.exercises')}
+            {t('library.tabs.exercises')}
           </Link>
         </nav>
       </div>

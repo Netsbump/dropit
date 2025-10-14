@@ -6,7 +6,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -58,8 +57,8 @@ export function AppSidebar() {
       icon: Home,
     },
     {
-      title: t('sidebar.menu.programming'),
-      url: '/programs/workouts',
+      title: t('sidebar.menu.library'),
+      url: '/library/workouts',
       icon: LayoutDashboard,
     },
     {
@@ -90,20 +89,20 @@ export function AppSidebar() {
   // Fonction pour vérifier si un item est actif
   const isActiveItem = (itemUrl: string) => {
     const currentPath = matches[matches.length - 1]?.pathname || '';
-    
+
     // Gestion spéciale pour les routes imbriquées
-    if (itemUrl === '/programs/workouts') {
-      return currentPath.startsWith('/programs/') || currentPath.startsWith('/workouts/');
+    if (itemUrl === '/library/workouts') {
+      return currentPath.startsWith('/library/') || currentPath.startsWith('/workouts/');
     }
-    
+
     if (itemUrl === '/athletes') {
       return currentPath.startsWith('/athletes');
     }
-    
+
     if (itemUrl === '/dashboard') {
       return currentPath === '/dashboard' || currentPath === '/';
     }
-    
+
     return currentPath === itemUrl;
   };
 
@@ -125,9 +124,6 @@ export function AppSidebar() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            <SidebarGroupLabel>
-              {t('sidebar.sections.application')}
-            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {mainItems.map((item) => {
@@ -135,7 +131,7 @@ export function AppSidebar() {
                   const menuButton = (
                     <SidebarMenuButton
                       asChild
-                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100'}
+                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100' }
                     >
                       <Link to={item.url} className="flex items-center gap-2">
                         <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />

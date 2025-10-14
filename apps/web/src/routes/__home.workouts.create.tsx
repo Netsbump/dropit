@@ -62,12 +62,12 @@ function CreateWorkoutPage() {
     if (data.trainingSession?.scheduledDate) {
       navigate({ to: '/planning', replace: true, search: { date: data.trainingSession.scheduledDate } });
     } else {
-      navigate({ to: '/programs/workouts', replace: true });
+      navigate({ to: '/library/workouts', replace: true });
     }
   };
 
   const handleCancel = () => {
-    navigate({ to: '/programs/workouts' });
+    navigate({ to: '/library/workouts' });
   };
 
   return (
