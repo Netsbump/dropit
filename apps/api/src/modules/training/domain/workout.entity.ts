@@ -25,8 +25,9 @@ export class Workout {
   @ManyToOne(() => WorkoutCategory)
   category!: WorkoutCategory;
 
-  @ManyToOne(() => User, { nullable: true })
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
   createdBy!: User | null;
+
 
   @OneToMany(
     () => WorkoutElement,

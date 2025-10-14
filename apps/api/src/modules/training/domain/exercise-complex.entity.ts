@@ -4,10 +4,10 @@ import { Exercise } from './exercise.entity';
 
 @Entity()
 export class ExerciseComplex {
-  @ManyToOne(() => Complex, { primary: true })
+  @ManyToOne(() => Complex, { primary: true, deleteRule: 'cascade' })
   complex!: Complex;
 
-  @ManyToOne(() => Exercise, { primary: true })
+  @ManyToOne(() => Exercise, { primary: true, deleteRule: 'cascade' })
   exercise!: Exercise;
 
   @Property()
