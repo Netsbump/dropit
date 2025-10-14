@@ -6,7 +6,6 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -125,9 +124,6 @@ export function AppSidebar() {
         </SidebarHeader>
         <SidebarContent>
           <SidebarGroup>
-            {/* <SidebarGroupLabel>
-              {t('sidebar.sections.application')}
-            </SidebarGroupLabel> */}
             <SidebarGroupContent>
               <SidebarMenu>
                 {mainItems.map((item) => {
