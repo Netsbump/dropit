@@ -1,19 +1,4 @@
 import { authClient } from '@/lib/auth-client';
-import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-  SidebarTrigger,
-  useSidebar,
-} from '@/shared/components/ui/sidebar';
 import {
   Tooltip,
   TooltipContent,
@@ -25,32 +10,20 @@ import { Link, useMatches, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
   Calendar,
-  ChevronRight,
   GraduationCap,
   Home,
   LayoutDashboard,
   CircleQuestionMark,
   Settings,
+  LogOut,
 } from 'lucide-react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const matches = useMatches();
-  const { data: session } = authClient.useSession();
-  const { state } = useSidebar();
 
-  // Function to get user initials from name
-  const getUserInitials = (name?: string) => {
-    if (!name) return 'U';
-    const names = name.trim().split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
-
-  const mainItems = [
+  const items = [
     {
       title: t('sidebar.menu.dashboard'),
       url: '/dashboard',
@@ -71,9 +44,6 @@ export function AppSidebar() {
       url: '/athletes',
       icon: GraduationCap,
     },
-  ];
-
-  const footerItems = [
     {
       title: t('sidebar.menu.help'),
       url: '/help',
@@ -108,148 +78,70 @@ export function AppSidebar() {
 
   return (
     <TooltipProvider delayDuration={0}>
-      <Sidebar collapsible="icon">
-        <SidebarHeader>
-          <SidebarMenu>
-            <SidebarMenuItem className="flex items-center justify-between">
-              <SidebarMenuButton asChild size="lg" className="group-data-[collapsible=icon]:hidden">
-                <Link to="/" className="flex items-center gap-2">
-                  <BicepsFlexed className="h-6 w-6" />
-                  <span className="text-lg font-bold">Dropit</span>
-                </Link>
-              </SidebarMenuButton>
-              <SidebarTrigger />
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarHeader>
-        <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {mainItems.map((item) => {
-                  const isActive = isActiveItem(item.url);
-                  const menuButton = (
-                    <SidebarMenuButton
-                      asChild
-                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100' }
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />
-                        <span className={isActive ? 'text-gray-900 font-medium' : ''}>
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  );
+      <aside className="w-[90px] h-screen bg-slate-700 flex flex-col items-center py-6 gap-8">
+        {/* Logo */}
+        <Link to="/" className="flex flex-col items-center gap-1 text-white">
+          <BicepsFlexed className="h-8 w-8" />
+          <span className="text-xs font-semibold">Dropit</span>
+        </Link>
 
-                  return (
-                    <SidebarMenuItem key={item.title}>
-                      {state === 'collapsed' ? (
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            {menuButton}
-                          </TooltipTrigger>
-                          <TooltipContent side="right">
-                            <p>{item.title}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      ) : (
-                        menuButton
-                      )}
-                    </SidebarMenuItem>
-                  );
-                })}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        </SidebarContent>
-        <SidebarFooter>
-          <SidebarGroup>
-            <SidebarMenu>
-              {footerItems.map((item) => {
-                const isActive = isActiveItem(item.url);
-                const menuButton = (
-                  <SidebarMenuButton
-                    asChild
-                    className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100'}
+        {/* Main Menu */}
+        <nav className="flex-1 flex flex-col justify-center">
+          {items.map((item) => {
+            const isActive = isActiveItem(item.url);
+            return (
+              <Tooltip key={item.title}>
+                <TooltipTrigger asChild>
+                  <Link
+                    to={item.url}
+                    className="flex flex-col items-center gap-1.5 px-4 py-3 transition-colors hover:text-white"
                   >
-                    <Link to={item.url} className="flex items-center gap-2">
-                      <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />
-                      <span className={isActive ? 'text-gray-900 font-medium' : ''}>
-                        {item.title}
-                      </span>
-                    </Link>
-                  </SidebarMenuButton>
-                );
+                    <div className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors ${
+                      isActive
+                        ? 'bg-white text-slate-700'
+                        : 'text-slate-300'
+                    }`}>
+                      <item.icon className="h-6 w-6" />
+                    </div>
+                    <span className={`text-[10px] font-medium text-center leading-tight uppercase ${
+                      isActive ? 'text-white' : 'text-slate-300'
+                    }`}>
+                      {item.title}
+                    </span>
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">
+                  <p>{item.title}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
+        </nav>
 
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    {state === 'collapsed' ? (
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          {menuButton}
-                        </TooltipTrigger>
-                        <TooltipContent side="right">
-                          <p>{item.title}</p>
-                        </TooltipContent>
-                      </Tooltip>
-                    ) : (
-                      menuButton
-                    )}
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroup>
-          <SidebarSeparator />
-          <SidebarMenu>
-            <SidebarMenuItem>
-              {state === 'collapsed' ? (
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton className="h-12 px-2" onClick={() => navigate({ to: '/profile' })}>
-                      <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-white text-sm font-medium flex items-center justify-center">
-                          {getUserInitials(session?.user?.name)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex flex-col items-start min-w-0 flex-1">
-                        <span className="text-sm font-medium truncate">
-                          {session?.user?.name || 'User'}
-                        </span>
-                        <span className="text-xs text-muted-foreground truncate">
-                          {session?.user?.email || 'user@example.com'}
-                        </span>
-                      </div>
-                      <ChevronRight className="h-4 w-4 shrink-0" />
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  <TooltipContent side="right">
-                    <p>{session?.user?.name || 'User'}</p>
-                  </TooltipContent>
-                </Tooltip>
-              ) : (
-                <SidebarMenuButton className="h-12 px-2" onClick={() => navigate({ to: '/profile' })}>
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-white text-sm font-medium flex items-center justify-center">
-                      {getUserInitials(session?.user?.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start min-w-0 flex-1">
-                    <span className="text-sm font-medium truncate">
-                      {session?.user?.name || 'User'}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {session?.user?.email || 'user@example.com'}
-                    </span>
-                  </div>
-                  <ChevronRight className="h-4 w-4 shrink-0" />
-                </SidebarMenuButton>
-              )}
-            </SidebarMenuItem>
-          </SidebarMenu>
-        </SidebarFooter>
-      </Sidebar>
+        {/* Logout */}
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <button
+              onClick={async () => {
+                await authClient.signOut();
+                navigate({ to: '/login' });
+              }}
+              className="flex flex-col items-center gap-1.5 px-4 py-3 text-slate-300 hover:text-white transition-colors"
+              type="button"
+            >
+              <div className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-white/5 transition-colors">
+                <LogOut className="h-6 w-6" />
+              </div>
+              <span className="text-[10px] font-medium text-center leading-tight uppercase">
+                {t('sidebar.user.logout')}
+              </span>
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="right">
+            <p>{t('sidebar.user.logout')}</p>
+          </TooltipContent>
+        </Tooltip>
+      </aside>
     </TooltipProvider>
   );
 }
