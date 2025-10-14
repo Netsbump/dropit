@@ -52,7 +52,7 @@ function WorkoutDetailPage() {
   return (
     <WorkoutDetail
       workout={workout}
-      onNavigate={() => navigate({ to: '/programs/workouts' })}
+      onNavigate={() => navigate({ to: '/library/workouts' })}
       onEdit={() => setIsEditing(true)}
     />
   );

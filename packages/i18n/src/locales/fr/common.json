@@ -18,10 +18,10 @@
   },
   "routes": {
     "/": "Tableau de bord",
-    "/programs/workouts": "Entrainements",
-    "/programs/exercises": "Exercices",
-    "/programs/complex": "Combinés",
-    "/programs/workouts/$workoutId": "Nom Entrainement",
+    "/library/workouts": "Entrainements",
+    "/library/exercises": "Exercices",
+    "/library/complex": "Combinés",
+    "/library/workouts/$workoutId": "Nom Entrainement",
     "/planning": "Calendrier",
     "/athletes": "Athlètes",
     "/athletes/$athleteId": "Athlète",
@@ -31,7 +31,7 @@
   "sidebar": {
     "menu": {
       "dashboard": "Tableau de bord",
-      "programming": "Programmation",
+      "library": "Bibliothèque",
       "calendar": "Calendrier",
       "athletes": "Athlètes",
       "help": "Aide",
@@ -47,8 +47,8 @@
       "application": "Application"
     }
   },
-  "programs": {
-    "title": "Programmation",
+  "library": {
+    "title": "Bibliothèque",
     "description": "Retrouvez et gérez tous vos entrainements, combinés et exercices ici",
     "tabs": {
       "workouts": "Entrainements",

@@ -18,10 +18,10 @@
   },
   "routes": {
     "/": "Dashboard",
-    "/programs/workouts": "Workouts",
-    "/programs/exercises": "Exercises",
-    "/programs/complex": "Complex",
-    "/programs/workouts/$workoutId": "Workout Name",
+    "/library/workouts": "Workouts",
+    "/library/exercises": "Exercises",
+    "/library/complex": "Complex",
+    "/library/workouts/$workoutId": "Workout Name",
     "/planning": "Calendar",
     "/athletes": "Athletes",
     "/athletes/$athleteId": "Athlete",
@@ -31,7 +31,7 @@
   "sidebar": {
     "menu": {
       "dashboard": "Dashboard",
-      "programming": "Programming",
+      "library": "Library",
       "calendar": "Calendar",
       "athletes": "Athletes",
       "help": "Help",
@@ -47,8 +47,8 @@
       "application": "Application"
     }
   },
-  "programs": {
-    "title": "Programming",
+  "library": {
+    "title": "Library",
     "description": "Find and manage all your workouts, complexes and exercises here",
     "tabs": {
       "workouts": "Workouts",
