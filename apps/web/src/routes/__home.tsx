@@ -1,11 +1,7 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '../shared/components/layout/app-sidebar';
 //import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
-import { Separator } from '../shared/components/ui/separator';
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from '../shared/components/ui/sidebar';
+import { SidebarProvider } from '../shared/components/ui/sidebar';
 import { authClient } from '../lib/auth-client';
 
 export const Route = createFileRoute('/__home')({
