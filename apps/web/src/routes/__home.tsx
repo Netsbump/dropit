@@ -1,11 +1,7 @@
 import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 import { AppSidebar } from '../shared/components/layout/app-sidebar';
-import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
-import { Separator } from '../shared/components/ui/separator';
-import {
-  SidebarProvider,
-  SidebarTrigger,
-} from '../shared/components/ui/sidebar';
+//import { Breadcrumbs } from '../shared/components/layout/breadcrumbs';
+import { SidebarProvider } from '../shared/components/ui/sidebar';
 import { authClient } from '../lib/auth-client';
 
 export const Route = createFileRoute('/__home')({
@@ -49,11 +45,6 @@ function HomeLayout() {
         <AppSidebar />
         <main className="flex-1 w-full h-screen">
           <div className="h-full w-full flex flex-col">
-            <div className="flex items-center p-2 border-b gap-2 flex-shrink-0">
-              <SidebarTrigger />
-              <Separator orientation="vertical" className="h-6" />
-              <Breadcrumbs />
-            </div>
             <div className="px-4 pt-6 pb-4 flex-1 min-h-0 overflow-hidden">
               <Outlet />
             </div>

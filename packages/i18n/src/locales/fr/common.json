@@ -25,7 +25,8 @@
     "/planning": "Calendrier",
     "/athletes": "Athlètes",
     "/athletes/$athleteId": "Athlète",
-    "/about": "Aide & Support"
+    "/help": "Aide",
+    "/settings": "Réglages"
   },
   "sidebar": {
     "menu": {
@@ -33,7 +34,8 @@
       "programming": "Programmation",
       "calendar": "Calendrier",
       "athletes": "Athlètes",
-      "help": "Aide & Support"
+      "help": "Aide",
+      "settings": "Réglages"
     },
     "user": {
       "profile": "Profil",
