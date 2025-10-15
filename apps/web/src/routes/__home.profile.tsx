@@ -39,9 +39,10 @@ function RouteComponent() {
     }
   };
 
-  return <>
-    <div>Hello</div>
-    <Button onClick={handleLogout}>Logout</Button>
-  </>
-
+  return (
+    <div className="p-8">
+      <div>Hello</div>
+      <Button onClick={handleLogout}>Logout</Button>
+    </div>
+  )
 }

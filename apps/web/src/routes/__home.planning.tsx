@@ -150,7 +150,7 @@ function PlanningPage() {
   if (calendarEventsLoading) return <div>{t('common:loading')}</div>;
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex-1 p-8">
       <HeaderPage title={t('title')} description={t('description')} />
 
       <PlanningCalendar
