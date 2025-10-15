@@ -17,11 +17,11 @@ interface WorkoutCardProps {
 // Fonction pour obtenir la couleur pastel selon la catégorie (jaune ou rouge pâle)
 const getCategoryColor = (category: string) => {
   const colors: Record<string, string> = {
-    'Force': 'bg-red-50 text-red-700 border-red-200',
-    'Technique': 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    'Endurance': 'bg-red-50 text-red-700 border-red-200',
-    'Mobilité': 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    'Conditioning': 'bg-red-50 text-red-700 border-red-200',
+    Force: 'bg-red-50 text-red-700 border-red-200',
+    Technique: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    Endurance: 'bg-red-50 text-red-700 border-red-200',
+    Mobilité: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    Conditioning: 'bg-red-50 text-red-700 border-red-200',
   };
   return colors[category] || 'bg-yellow-50 text-yellow-700 border-yellow-200';
 };
