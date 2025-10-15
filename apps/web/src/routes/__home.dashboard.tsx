@@ -14,7 +14,7 @@ function Dashboard() {
   const { t } = useTranslation();
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex-1 p-8">
       <HeaderPage
         title={t('dashboard.title')}
         description={t('dashboard.description')}

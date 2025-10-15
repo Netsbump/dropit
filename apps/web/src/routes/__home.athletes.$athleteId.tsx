@@ -255,7 +255,7 @@ function AthleteDetailPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6">
+      <div className="flex-1 overflow-auto p-8">
         <div className="w-full">
           <AthleteDetail
             athlete={athlete}

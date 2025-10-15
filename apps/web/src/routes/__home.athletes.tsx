@@ -46,7 +46,7 @@ function AthletesPage() {
   if (!athletes) return <div>{t('common:no_results')}</div>;
 
   return (
-    <div className="relative flex-1">
+    <div className="relative flex-1 p-8">
       <HeaderPage
         title={t('athletes:title')}
         description={t('athletes:description')}

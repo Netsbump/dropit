@@ -5,11 +5,8 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from '@/shared/components/ui/card';
 import { WORKOUT_ELEMENT_TYPES, WorkoutDto, TrainingSessionDto } from '@dropit/schemas';
-import { getCategoryBadgeVariant } from '@/shared/utils';
-import { Separator } from '@/shared/components/ui/separator';
 
 interface WorkoutCardProps {
   workout: WorkoutDto;
@@ -17,76 +14,119 @@ interface WorkoutCardProps {
   onWorkoutClick: (id: string) => void;
 }
 
+// Fonction pour obtenir la couleur pastel selon la catégorie (jaune ou rouge pâle)
+const getCategoryColor = (category: string) => {
+  const colors: Record<string, string> = {
+    Force: 'bg-red-50 text-red-700 border-red-200',
+    Technique: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    Endurance: 'bg-red-50 text-red-700 border-red-200',
+    Mobilité: 'bg-yellow-50 text-yellow-700 border-yellow-200',
+    Conditioning: 'bg-red-50 text-red-700 border-red-200',
+  };
+  return colors[category] || 'bg-yellow-50 text-yellow-700 border-yellow-200';
+};
+
 export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
-      className="cursor-pointer shadow-none hover:shadow-md transition-shadow rounded-md flex flex-col" 
-      onClick={() => onWorkoutClick(workout.id)}
+      className="border border-gray-100 rounded-2xl"
     >
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-6">
-        <CardTitle className="text-sm font-bold">{workout.title}</CardTitle>
-        <Badge 
-            variant="outline"
-            className={`text-xs font-medium ${getCategoryBadgeVariant(workout.workoutCategory || '')}`}
-          >
-            {workout.workoutCategory || 'Sans catégorie'}
-          </Badge>
+      <CardHeader className="pb-3">
+        <div className="flex items-start justify-between gap-3">
+          <h3 className="text-base font-semibold text-gray-900 line-clamp-2 flex-1">
+            {workout.title}
+          </h3>
+          {workout.workoutCategory && (
+            <Badge
+              variant="outline"
+              className={`text-xs font-medium shrink-0 ${getCategoryColor(workout.workoutCategory)}`}
+            >
+              {workout.workoutCategory}
+            </Badge>
+          )}
+        </div>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {workout.elements.map((element) => {
-          const isExercise = element.type === WORKOUT_ELEMENT_TYPES.EXERCISE;
-          const categoryName = isExercise
-            ? element.exercise.exerciseCategory?.name
-            : element.complex.complexCategory?.name;
 
-          return (
-            <div key={element.id} className="space-y-1">
-              <div className="flex items-baseline gap-2">
-                <span className="text-xs text-foreground">
-                  {element.type.toUpperCase()}
-                </span>
-                {categoryName && (
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground">•</span>
-                    <span className="text-xs text-foreground">
-                      {categoryName}
-                    </span>
+      <CardContent className="pb-4">
+        <div className="grid grid-cols-2 gap-3">
+          {workout.elements.map((element) => {
+            const isExercise = element.type === WORKOUT_ELEMENT_TYPES.EXERCISE;
+
+            return (
+              <div
+                key={element.id}
+                className={`p-3 rounded-lg border ${
+                  isExercise
+                    ? 'bg-yellow-50/50 border-yellow-100'
+                    : 'bg-red-50/50 border-red-100'
+                }`}
+              >
+                {/* Header avec type et sets/reps */}
+                <div className="flex items-center justify-between mb-2">
+                  <Badge
+                    variant="secondary"
+                    className={`text-[10px] font-semibold uppercase ${
+                      isExercise
+                        ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100'
+                        : 'bg-red-100 text-red-700 hover:bg-red-100'
+                    }`}
+                  >
+                    {isExercise ? 'exercise' : 'complex'}
+                  </Badge>
+                  <span className="text-xs font-semibold text-gray-700">
+                    {element.sets}x{element.reps}  {('intensity' in element && element.intensity) ? `${element.intensity}%` : ''}
+                  </span>
+                </div>
+
+                {/* Contenu */}
+                {isExercise ? (
+                  <div className="text-xs text-gray-600">
+                    {element.exercise.name}
+                  </div>
+                ) : (
+                  <div className="space-y-1.5">
+                    {element.complex.exercises && element.complex.exercises.length > 0 && (
+                      <div className="border-l-2 border-gray-300 pl-2 space-y-0.5">
+                        {element.complex.exercises.map((ex, idx) => (
+                          <div key={`${ex.name}-${idx}`} className="text-xs text-gray-600">
+                            {ex.name}
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
-              {/* Contenu */}
-              {isExercise ? (
-                <Badge variant="secondary" className="text-xs font-normal">
-                  {element.exercise.name}
-                </Badge>
-              ) : (
-                <div className="flex flex-wrap gap-1">
-                  {element.complex.exercises?.map((ex) => (
-                    <Badge key={ex.name} variant="secondary" className="text-xs font-normal">
-                      {ex.name}
-                    </Badge>
-                  ))}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </CardContent>
-      <CardFooter className="gap-2 flex flex-col justify-end h-full">
-        <div className="flex items-center justify-end w-full">
-          <span className="text-xs text-muted-foreground">
-            {trainingSessions.length > 0 
+
+      <CardFooter className="pt-3 border-t border-gray-100 flex-col gap-3">
+        <div className="flex items-center justify-between w-full text-xs">
+          <span className={`font-medium ${
+            trainingSessions.length > 0 ? 'text-emerald-600' : 'text-gray-400'
+          }`}>
+            {trainingSessions.length > 0
               ? `${trainingSessions.length} session${trainingSessions.length > 1 ? 's' : ''} planifiée${trainingSessions.length > 1 ? 's' : ''}`
               : 'Non planifié'
             }
           </span>
         </div>
-        <Separator className="my-2" />
+
         <div className='flex gap-2 w-full'>
-          <Button variant="outline" size="sm" className="flex-1">
+          <Button
+            variant="outline"
+            size="sm"
+            className="flex-1 text-xs"
+            onClick={(e) => {
+              e.stopPropagation();
+              onWorkoutClick(workout.id);
+            }}
+          >
             Voir les détails
           </Button>
-          <Button variant="default" size="sm" className="flex-1">
+          <Button variant="default" size="sm" className="flex-1 text-xs">
             Planifier
           </Button>
         </div>
