@@ -10,6 +10,7 @@ import { DialogCreation } from '../features/exercises/dialog-creation'
 import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form'
 import { Button } from '../shared/components/ui/button'
 import { DetailsPanel } from '../shared/components/ui/details-panel'
+import { Spinner } from '../shared/components/ui/spinner'
 import { HeaderPage } from '../shared/components/layout/header-page'
 
 export const Route = createFileRoute('/__home/library/exercises')({
@@ -31,7 +32,7 @@ function ExercisesPage() {
     },
   })
 
-  const { data: exerciseDetails } = useQuery({
+  const { data: exerciseDetails, isLoading: exerciseDetailsLoading } = useQuery({
     queryKey: ['exercise', selectedExercise],
     queryFn: async () => {
       if (!selectedExercise) return null
@@ -90,7 +91,13 @@ function ExercisesPage() {
         onClose={() => setSelectedExercise(null)}
         title={t('exercise.details.title')}
       >
-        {exerciseDetails && <ExerciseDetail exercise={exerciseDetails} />}
+        {exerciseDetailsLoading ? (
+          <div className="flex items-center justify-center h-32">
+            <Spinner className="size-8" />
+          </div>
+        ) : exerciseDetails ? (
+          <ExerciseDetail exercise={exerciseDetails} />
+        ) : null}
       </DetailsPanel>
 
       <DialogCreation

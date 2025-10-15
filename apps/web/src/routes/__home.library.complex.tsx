@@ -1,5 +1,6 @@
 import { api } from '@/lib/api'
 import { DetailsPanel } from '@/shared/components/ui/details-panel'
+import { Spinner } from '@/shared/components/ui/spinner'
 import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
@@ -41,7 +42,7 @@ function ComplexPage() {
     },
   })
 
-  const { data: complexDetails } = useQuery({
+  const { data: complexDetails, isLoading: complexDetailsLoading } = useQuery({
     queryKey: ['complex', selectedComplex],
     queryFn: async () => {
       if (!selectedComplex) return null
@@ -109,7 +110,13 @@ function ComplexPage() {
         onClose={() => setSelectedComplex(null)}
         title={t('complex.details.title')}
       >
-        {complexDetails && <ComplexDetail complex={complexDetails} />}
+        {complexDetailsLoading ? (
+          <div className="flex items-center justify-center h-32">
+            <Spinner className="size-8" />
+          </div>
+        ) : complexDetails ? (
+          <ComplexDetail complex={complexDetails} />
+        ) : null}
       </DetailsPanel>
 
       <DialogCreation
