@@ -1,17 +1,8 @@
-import { Link, useMatches, useNavigate, useRouter } from '@tanstack/react-router';
+import { Link, useMatches, useRouter } from '@tanstack/react-router';
 import { ChevronLeft, Bell } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import { useTranslation } from '@dropit/i18n';
 
 interface Tab {
   label: string;
@@ -26,10 +17,8 @@ interface AppHeaderProps {
 
 export function AppHeader({ tabs, showBackButton = false, onBackClick }: AppHeaderProps) {
   const matches = useMatches();
-  const navigate = useNavigate();
   const router = useRouter();
   const { data: session } = authClient.useSession();
-  const { t } = useTranslation();
 
   // Function to get user initials from name
   const getUserInitials = (name?: string) => {
@@ -96,47 +85,16 @@ export function AppHeader({ tabs, showBackButton = false, onBackClick }: AppHead
           <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full" />
         </Button>
 
-        {/* User Menu */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-9 w-9 rounded-full p-0 hover:bg-white/10">
-              <Avatar className="h-9 w-9">
-                <AvatarFallback className="bg-white text-slate-700 text-sm font-medium">
-                  {getUserInitials(session?.user?.name)}
-                </AvatarFallback>
-              </Avatar>
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>
-              <div className="flex flex-col space-y-1">
-                <p className="text-sm font-medium leading-none">
-                  {session?.user?.name || 'User'}
-                </p>
-                <p className="text-xs leading-none text-muted-foreground">
-                  {session?.user?.email || 'user@example.com'}
-                </p>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => navigate({ to: '/profile' })}>
-              {t('sidebar.user.profile')}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => navigate({ to: '/settings' })}>
-              {t('sidebar.user.settings')}
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              className="text-red-600"
-              onClick={async () => {
-                await authClient.signOut();
-                navigate({ to: '/login' });
-              }}
-            >
-              {t('sidebar.user.logout')}
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        {/* User Profile */}
+        <Link to="/profile">
+          <Button variant="ghost" className="h-9 w-9 rounded-full p-0 hover:bg-white/10">
+            <Avatar className="h-9 w-9">
+              <AvatarFallback className="bg-white text-slate-700 text-sm font-medium">
+                {getUserInitials(session?.user?.name)}
+              </AvatarFallback>
+            </Avatar>
+          </Button>
+        </Link>
       </div>
     </header>
   );
