@@ -5,6 +5,7 @@ import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState } from 'react';
+import { HeaderPage } from '../shared/components/layout/header-page';
 
 export const Route = createFileRoute('/__home/library/workouts')({
   component: WorkoutPage,
@@ -72,8 +73,13 @@ function WorkoutPage() {
 
   // Sinon on affiche la grille des workouts
   return (
-    <>
-      <div className="mb-6">
+    <div className="p-8">
+      <HeaderPage
+        title={t('library.title')}
+        description={t('library.description')}
+      />
+
+      <div className="mt-6 mb-6">
         <WorkoutFilters
           onFilterChange={setFilter}
           onCategoryChange={setCategoryFilter}
@@ -99,6 +105,6 @@ function WorkoutPage() {
           onWorkoutClick={handleWorkoutClick}
         />
       )}
-    </>
+    </div>
   );
 }

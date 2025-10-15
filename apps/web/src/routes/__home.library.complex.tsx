@@ -9,6 +9,7 @@ import { ComplexDetail } from '../features/complex/complex-detail'
 import { ComplexFilters } from '../features/complex/complex-filters'
 import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
+import { HeaderPage } from '../shared/components/layout/header-page'
 
 export const Route = createFileRoute('/__home/library/complex')({
   component: ComplexPage,
@@ -69,35 +70,38 @@ function ComplexPage() {
   }
 
   return (
-    <div className="relative flex-1">
-      <div
-        className={`transition-all duration-200 ${
-          selectedComplex ? 'lg:mr-[430px]' : ''
-        }`}
-      >
-        <ComplexFilters
-          onFilterChange={setFilter}
-          onCategoryChange={setCategoryFilter}
-          onCreateClick={() => setCreateComplexModalOpen(true)}
-          categories={categories}
-          disabled={isLoading || !complexes?.length}
+    <div className="h-full flex gap-0">
+      <div className="flex-1 min-w-0 flex flex-col p-8">
+        <HeaderPage
+          title={t('library.title')}
+          description={t('library.description')}
         />
 
-        {isLoading ? (
-          <div className="flex items-center justify-center h-32">
-            {t('common.loading')}
-          </div>
-        ) : !complexes?.length ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>{t('complex.filters.no_results')}</p>
-            <p className="text-sm">{t('common.start_create')}</p>
-          </div>
-        ) : (
-          <ComplexGrid
-            complexes={filteredComplexes || []}
-            onComplexClick={(complexId) => setSelectedComplex(complexId)}
+        <div className="mt-6 flex-1 min-h-0">
+          <ComplexFilters
+            onFilterChange={setFilter}
+            onCategoryChange={setCategoryFilter}
+            onCreateClick={() => setCreateComplexModalOpen(true)}
+            categories={categories}
+            disabled={isLoading || !complexes?.length}
           />
-        )}
+
+          {isLoading ? (
+            <div className="flex items-center justify-center h-32">
+              {t('common.loading')}
+            </div>
+          ) : !complexes?.length ? (
+            <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+              <p>{t('complex.filters.no_results')}</p>
+              <p className="text-sm">{t('common.start_create')}</p>
+            </div>
+          ) : (
+            <ComplexGrid
+              complexes={filteredComplexes || []}
+              onComplexClick={(complexId) => setSelectedComplex(complexId)}
+            />
+          )}
+        </div>
       </div>
 
       <DetailsPanel

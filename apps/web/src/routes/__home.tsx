@@ -64,7 +64,7 @@ function HomeLayout() {
         <AppHeader tabs={getTabs()} />
 
         <div className="flex-1 min-h-0 p-3">
-          <div className="bg-white rounded-2xl h-full shadow-xl p-8 overflow-auto">
+          <div className="bg-white rounded-3xl h-full shadow-xl overflow-auto">
             <Outlet />
           </div>
         </div>

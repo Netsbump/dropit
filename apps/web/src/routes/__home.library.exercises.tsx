@@ -10,6 +10,7 @@ import { DialogCreation } from '../features/exercises/dialog-creation'
 import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form'
 import { Button } from '../shared/components/ui/button'
 import { DetailsPanel } from '../shared/components/ui/details-panel'
+import { HeaderPage } from '../shared/components/layout/header-page'
 
 export const Route = createFileRoute('/__home/library/exercises')({
   component: ExercisesPage,
@@ -53,32 +54,35 @@ function ExercisesPage() {
   if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
 
   return (
-    <div className="relative flex-1">
-      <div
-        className={`transition-all duration-200 ${
-          selectedExercise ? 'lg:mr-[430px]' : ''
-        }`}
-      >
-        {exercisesLoading ? (
-          <div className="flex items-center justify-center h-32">
-            {t('common.loading')}
-          </div>
-        ) : !exercises?.length ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>{t('exercise.filters.no_results')}</p>
-            <p className="text-sm">{t('common.start_create')}</p>
-            <Button onClick={() => setCreateExerciseModalOpen(true)}>
-              {t('exercise.filters.create_exercise')}
-            </Button>
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={exercises}
-            onDialogCreation={setCreateExerciseModalOpen}
-            onRowClick={(exerciseId) => setSelectedExercise(exerciseId)}
-          />
-        )}
+    <div className="h-full flex gap-0">
+      <div className="flex-1 min-w-0 flex flex-col p-8">
+        <HeaderPage
+          title={t('library.title')}
+          description={t('library.description')}
+        />
+
+        <div className="mt-6 flex-1 min-h-0">
+          {exercisesLoading ? (
+            <div className="flex items-center justify-center h-32">
+              {t('common.loading')}
+            </div>
+          ) : !exercises?.length ? (
+            <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+              <p>{t('exercise.filters.no_results')}</p>
+              <p className="text-sm">{t('common.start_create')}</p>
+              <Button onClick={() => setCreateExerciseModalOpen(true)}>
+                {t('exercise.filters.create_exercise')}
+              </Button>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={exercises}
+              onDialogCreation={setCreateExerciseModalOpen}
+              onRowClick={(exerciseId) => setSelectedExercise(exerciseId)}
+            />
+          )}
+        </div>
       </div>
 
       <DetailsPanel

@@ -126,7 +126,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
           >
             Voir les détails
           </Button>
-          <Button variant="default" size="sm" className="flex-1 text-xs bg-slate-700 hover:bg-slate-800">
+          <Button variant="default" size="sm" className="flex-1 text-xs">
             Planifier
           </Button>
         </div>
