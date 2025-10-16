@@ -2,12 +2,12 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AthleteInvitationForm } from '../features/athletes/athlete-invitation-form';
 import { columns } from '../features/athletes/columns';
 import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
-import { HeaderPage } from '../shared/components/layout/header-page';
+import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Button } from '../shared/components/ui/button';
 
 export const Route = createFileRoute('/__home/athletes')({
@@ -16,6 +16,7 @@ export const Route = createFileRoute('/__home/athletes')({
 
 function AthletesPage() {
   const { t } = useTranslation(['common', 'athletes']);
+  const { setPageMeta } = usePageMeta();
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const navigate = Route.useNavigate();
@@ -23,6 +24,10 @@ function AthletesPage() {
   const isAthleteDetail = matches.some(
     (match) => match.routeId === '/__home/athletes/$athleteId'
   );
+
+  useEffect(() => {
+    setPageMeta({ title: t('athletes:title') });
+  }, [setPageMeta, t]);
 
   const { data: athletes, isLoading: athletesLoading } = useQuery({
     queryKey: ['athletes'],
@@ -47,10 +52,7 @@ function AthletesPage() {
 
   return (
     <div className="relative flex-1 p-8">
-      <HeaderPage
-        title={t('athletes:title')}
-        description={t('athletes:description')}
-      />
+      <p className="text-muted-foreground mb-6">{t('athletes:description')}</p>
 
       <div>
         {athletesLoading ? (

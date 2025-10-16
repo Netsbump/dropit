@@ -7,7 +7,7 @@ import {
   Calendar,
   GraduationCap,
   Home,
-  LayoutDashboard,
+  BookOpen,
   CircleQuestionMark,
   Settings,
   LogOut,
@@ -55,7 +55,7 @@ export function AppSidebar() {
     {
       title: t('sidebar.menu.library'),
       url: '/library/workouts',
-      icon: LayoutDashboard,
+      icon: BookOpen,
     },
     {
       title: t('sidebar.menu.calendar'),
