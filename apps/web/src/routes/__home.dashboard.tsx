@@ -1,10 +1,11 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { HeaderPage } from '../shared/components/layout/header-page';
+import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Card, CardContent, CardHeader, CardTitle } from '../shared/components/ui/card';
 import { Button } from '../shared/components/ui/button';
 import { Badge } from '../shared/components/ui/badge';
 import { Users, Calendar, Dumbbell, TrendingUp, Plus, UserPlus, CalendarPlus, ChevronRight } from 'lucide-react';
+import { useEffect } from 'react';
 
 export const Route = createFileRoute('/__home/dashboard')({
   component: Dashboard,
@@ -12,13 +13,15 @@ export const Route = createFileRoute('/__home/dashboard')({
 
 function Dashboard() {
   const { t } = useTranslation();
+  const { setPageMeta } = usePageMeta();
+
+  useEffect(() => {
+    setPageMeta({ title: t('dashboard.title') });
+  }, [setPageMeta, t]);
 
   return (
     <div className="relative flex-1 p-8">
-      <HeaderPage
-        title={t('dashboard.title')}
-        description={t('dashboard.description')}
-      />
+      <p className="text-muted-foreground mb-6">{t('dashboard.description')}</p>
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

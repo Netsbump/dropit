@@ -4,8 +4,8 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
-import { useState } from 'react';
-import { HeaderPage } from '../shared/components/layout/header-page';
+import { useState, useEffect } from 'react';
+import { usePageMeta } from '../shared/hooks/use-page-meta';
 
 export const Route = createFileRoute('/__home/library/workouts')({
   component: WorkoutPage,
@@ -20,6 +20,11 @@ function WorkoutPage() {
     (match) => match.routeId === '/__home/workouts/$workoutId'
   );
   const { t } = useTranslation();
+  const { setPageMeta } = usePageMeta();
+
+  useEffect(() => {
+    setPageMeta({ title: t('library.title') });
+  }, [setPageMeta, t]);
 
 
   const { data: workouts, isLoading } = useQuery({
@@ -74,12 +79,9 @@ function WorkoutPage() {
   // Sinon on affiche la grille des workouts
   return (
     <div className="p-8">
-      <HeaderPage
-        title={t('library.title')}
-        description={t('library.description')}
-      />
+      <p className="text-muted-foreground mb-6">{t('library.description')}</p>
 
-      <div className="mt-6 mb-6">
+      <div className="mb-6">
         <WorkoutFilters
           onFilterChange={setFilter}
           onCategoryChange={setCategoryFilter}

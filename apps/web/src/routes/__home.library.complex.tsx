@@ -4,13 +4,13 @@ import { Spinner } from '@/shared/components/ui/spinner'
 import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ComplexCreationForm } from '../features/complex/complex-creation-form'
 import { ComplexDetail } from '../features/complex/complex-detail'
 import { ComplexFilters } from '../features/complex/complex-filters'
 import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
-import { HeaderPage } from '../shared/components/layout/header-page'
+import { usePageMeta } from '../shared/hooks/use-page-meta'
 
 export const Route = createFileRoute('/__home/library/complex')({
   component: ComplexPage,
@@ -18,11 +18,16 @@ export const Route = createFileRoute('/__home/library/complex')({
 
 function ComplexPage() {
   const { t } = useTranslation();
+  const { setPageMeta } = usePageMeta();
   const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false)
   const [filter, setFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const queryClient = useQueryClient()
   const [selectedComplex, setSelectedComplex] = useState<string | null>(null)
+
+  useEffect(() => {
+    setPageMeta({ title: t('library.title') });
+  }, [setPageMeta, t]);
 
   const { data: complexes, isLoading } = useQuery({
     queryKey: ['complexes'],
@@ -73,12 +78,9 @@ function ComplexPage() {
   return (
     <div className="h-full flex gap-0">
       <div className="flex-1 min-w-0 flex flex-col p-8">
-        <HeaderPage
-          title={t('library.title')}
-          description={t('library.description')}
-        />
+        <p className="text-muted-foreground mb-6">{t('library.description')}</p>
 
-        <div className="mt-6 flex-1 min-h-0">
+        <div className="flex-1 min-h-0">
           <ComplexFilters
             onFilterChange={setFilter}
             onCategoryChange={setCategoryFilter}
