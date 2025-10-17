@@ -1,5 +1,6 @@
 import { api } from '@/lib/api'
 import { DetailsPanel } from '@/shared/components/ui/details-panel'
+import { HeroCard } from '@/shared/components/ui/hero-card'
 import { Spinner } from '@/shared/components/ui/spinner'
 import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -78,7 +79,15 @@ function ComplexPage() {
   return (
     <div className="h-full flex gap-0">
       <div className="flex-1 min-w-0 flex flex-col p-8">
-        <p className="text-muted-foreground mb-6">{t('library.description')}</p>
+        <HeroCard
+          variant="complex"
+          title={t('complex.hero.title')}
+          description={t('complex.hero.description')}
+          stat={{
+            label: t('complex.hero.stat_label'),
+            value: complexes?.length || 0,
+          }}
+        />
 
         <div className="flex-1 min-h-0">
           <ComplexFilters

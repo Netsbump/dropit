@@ -1,6 +1,7 @@
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';
 import { api } from '@/lib/api';
+import { HeroCard } from '@/shared/components/ui/hero-card';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
@@ -79,7 +80,15 @@ function WorkoutPage() {
   // Sinon on affiche la grille des workouts
   return (
     <div className="p-8">
-      <p className="text-muted-foreground mb-6">{t('library.description')}</p>
+      <HeroCard
+        variant="workout"
+        title={t('workout.hero.title')}
+        description={t('workout.hero.description')}
+        stat={{
+          label: t('workout.hero.stat_label'),
+          value: workouts?.length || 0,
+        }}
+      />
 
       <div className="mb-6">
         <WorkoutFilters

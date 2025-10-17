@@ -57,6 +57,11 @@
     }
   },
   "workout": {
+    "hero": {
+      "title": "Créez vos programmes",
+      "description": "Composez des entrainements personnalisés pour vos athlètes",
+      "stat_label": "entrainements"
+    },
     "filters": {
       "search_placeholder": "Rechercher un entraînement...",
       "all_categories": "Toutes les catégories",
@@ -69,6 +74,11 @@
     }
   },
   "complex": {
+    "hero": {
+      "title": "Enchaînements techniques",
+      "description": "Créez des enchaînements d'exercices spécifiques pour vos athlètes",
+      "stat_label": "complexes"
+    },
     "filters": {
       "search_placeholder": "Rechercher un combiné...",
       "all_categories": "Toutes les catégories",
@@ -84,6 +94,11 @@
     }
   },
   "exercise": {
+    "hero": {
+      "title": "Bibliothèque de mouvements",
+      "description": "Tous vos exercices organisés et accessibles",
+      "stat_label": "exercices"
+    },
     "filters": {
       "search_placeholder": "Rechercher un exercice...",
       "all_categories": "Toutes les catégories",

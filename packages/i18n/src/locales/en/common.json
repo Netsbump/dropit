@@ -57,6 +57,11 @@
     }
   },
   "workout": {
+    "hero": {
+      "title": "Build Your Programs",
+      "description": "Create custom workouts for your athletes",
+      "stat_label": "workouts"
+    },
     "filters": {
       "search_placeholder": "Search for a workout...",
       "all_categories": "All categories",
@@ -69,6 +74,11 @@
     }
   },
   "complex": {
+    "hero": {
+      "title": "Technical Sequences",
+      "description": "Create complexes to work on fluidity",
+      "stat_label": "complexes"
+    },
     "filters": {
       "search_placeholder": "Search for a complex...",
       "all_categories": "All categories",
@@ -84,6 +94,11 @@
     }
   },
   "exercise": {
+    "hero": {
+      "title": "Movement Library",
+      "description": "All your exercises organized and accessible",
+      "stat_label": "exercises"
+    },
     "filters": {
       "search_placeholder": "Search for an exercise...",
       "all_categories": "All categories",

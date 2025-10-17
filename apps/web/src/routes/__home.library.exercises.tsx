@@ -10,6 +10,7 @@ import { DialogCreation } from '../features/exercises/dialog-creation'
 import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form'
 import { Button } from '../shared/components/ui/button'
 import { DetailsPanel } from '../shared/components/ui/details-panel'
+import { HeroCard } from '../shared/components/ui/hero-card'
 import { Spinner } from '../shared/components/ui/spinner'
 import { usePageMeta } from '../shared/hooks/use-page-meta'
 
@@ -62,7 +63,15 @@ function ExercisesPage() {
   return (
     <div className="h-full flex gap-0">
       <div className="flex-1 min-w-0 flex flex-col p-8">
-        <p className="text-muted-foreground mb-6">{t('library.description')}</p>
+        <HeroCard
+          variant="exercise"
+          title={t('exercise.hero.title')}
+          description={t('exercise.hero.description')}
+          stat={{
+            label: t('exercise.hero.stat_label'),
+            value: exercises?.length || 0,
+          }}
+        />
 
         <div className="flex-1 min-h-0">
           {exercisesLoading ? (
