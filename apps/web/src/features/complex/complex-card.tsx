@@ -26,7 +26,7 @@ interface ComplexCardProps {
 export function ComplexCard({ complex, onClick }: ComplexCardProps) {
   return (
     <Card
-      className="cursor-pointer shadow-none hover:shadow-md transition-all hover:border-slate-300 rounded-lg"
+      className="cursor-pointer shadow-none hover:shadow-md transition-all hover:border-slate-300 rounded-lg bg-white"
       onClick={onClick}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

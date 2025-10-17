@@ -29,7 +29,7 @@ const getCategoryColor = (category: string) => {
 export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
-      className="border border-gray-100 rounded-lg"
+      className="border border-gray-100 rounded-lg bg-white"
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
