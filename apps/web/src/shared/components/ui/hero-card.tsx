@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils'
 import { Dumbbell, Library, Zap } from 'lucide-react'
-import type * as React from 'react'
 
 const variantConfig = {
   workout: {

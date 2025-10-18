@@ -1,8 +1,3 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import {
@@ -60,11 +55,6 @@ type AthleteDetailProps = {
   onUpdateCompetitorStatus: (data: UpdateCompetitorStatus) => void;
   onCreateCompetitorStatus: (data: CreateCompetitorStatus) => void;
 };
-
-// Helper function to generate initials from name
-function getInitials(firstName: string, lastName: string): string {
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-}
 
 export function AthleteDetail({
   athlete,

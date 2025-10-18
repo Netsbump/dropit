@@ -3,7 +3,7 @@ import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import { WORKOUT_ELEMENT_TYPES, WorkoutDto } from '@dropit/schemas';
-import { ArrowLeft, Pencil } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 
 interface WorkoutDetailProps {
   workout: WorkoutDto;
