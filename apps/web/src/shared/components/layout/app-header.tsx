@@ -3,7 +3,8 @@ import { ChevronLeft, Bell } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
-import { usePageTitle } from '@/shared/hooks/use-page-meta';
+import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { useTranslation } from '@dropit/i18n';
 
 interface Tab {
   label: string;
@@ -12,15 +13,17 @@ interface Tab {
 
 interface AppHeaderProps {
   tabs?: Tab[];
-  showBackButton?: boolean;
-  onBackClick?: () => void;
 }
 
-export function AppHeader({ tabs, showBackButton = false, onBackClick }: AppHeaderProps) {
+export function AppHeader({ tabs }: AppHeaderProps) {
   const matches = useMatches();
   const router = useRouter();
   const { data: session } = authClient.useSession();
-  const pageTitle = usePageTitle();
+  const { pageMeta } = usePageMeta();
+  const { t } = useTranslation();
+  const pageTitle = pageMeta.title;
+  const showBackButton = pageMeta.showBackButton || false;
+  const onBackClick = pageMeta.onBackClick;
 
   // Function to get user initials from name
   const getUserInitials = (name?: string) => {
@@ -43,29 +46,33 @@ export function AppHeader({ tabs, showBackButton = false, onBackClick }: AppHead
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   return (
-    <header className="h-16 bg-slate-700 flex items-center justify-between pr-6">
-      {/* Left side: Back button and Page Title */}
-      <div className="flex items-center gap-4 min-w-0 pl-11">
-        {showBackButton && (
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleBackClick}
-            className="h-8 w-8 text-white hover:bg-white/10 flex-shrink-0"
-          >
-            <ChevronLeft className="h-5 w-5" />
-          </Button>
-        )}
-
-        {pageTitle && (
+    <header className="h-16 flex items-center justify-between pr-6" style={{ backgroundColor: '#262125' }}>
+      {/* Left side: Back button OR Page Title */}
+      <div className="flex items-center gap-3 min-w-0 pl-11">
+        {showBackButton ? (
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              onClick={handleBackClick}
+              className="h-8 w-8 px-3 rounded-full bg-white text-black hover:bg-white/80 flex items-center gap-2"
+            >
+              <ChevronLeft className="h-5 w-5" />
+            </Button>
+            <span className="text-sm font-medium text-white">{t('common.back')}</span>
+          </div>
+        ) : pageTitle ? (
           <h1 className="text-xl text-white truncate uppercase">
             {pageTitle}
           </h1>
-        )}
+        ) : null}
       </div>
 
-      {/* Center: Tabs */}
-      {tabs && tabs.length > 0 && (
+      {/* Center: Detail Title OR Tabs */}
+      {showBackButton && pageTitle ? (
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-xl text-white uppercase">
+          {pageTitle}
+        </h1>
+      ) : tabs && tabs.length > 0 ? (
         <nav className="flex gap-6 h-16 items-center absolute left-1/2 -translate-x-1/2">
           {tabs.map((tab) => {
             const isActive = currentPath === tab.path || currentPath.startsWith(`${tab.path}/`);
@@ -84,7 +91,7 @@ export function AppHeader({ tabs, showBackButton = false, onBackClick }: AppHead
             );
           })}
         </nav>
-      )}
+      ) : null}
 
       {/* Right side: Notifications and User Menu */}
       <div className="flex items-center gap-3">

@@ -84,28 +84,6 @@ export function AthleteDetail({
 
   return (
     <div className="space-y-6 w-full">
-      {/* Profile Header with Avatar */}
-      <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-        <Avatar className="h-16 w-16 border border-border">
-          <AvatarImage
-            src={athlete.image}
-            alt={`${athlete.firstName} ${athlete.lastName}`}
-          />
-          <AvatarFallback className="text-xl bg-primary/10">
-            {getInitials(athlete.firstName, athlete.lastName)}
-          </AvatarFallback>
-        </Avatar>
-
-        <div className="flex flex-col items-center md:items-start">
-          <h1 className="text-2xl font-bold mb-1">
-            {athlete.firstName} {athlete.lastName}
-          </h1>
-          {athlete.country && (
-            <p className="text-sm text-muted-foreground">{athlete.country}</p>
-          )}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
         <Card className="bg-background rounded-md border shadow-sm">

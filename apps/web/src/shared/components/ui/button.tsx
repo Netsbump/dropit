@@ -10,7 +10,7 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-slate-700 text-primary-foreground shadow hover:bg-slate-800",
+          "text-white shadow hover:opacity-90",
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
@@ -43,9 +43,11 @@ export interface ButtonProps
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant, size, asChild = false, ...props }, ref) => {
     const Comp = asChild ? Slot : "button"
+    const style = variant === 'default' ? { backgroundColor: '#ed960b' } : undefined
     return (
       <Comp
         className={cn(buttonVariants({ variant, size, className }))}
+        style={style}
         ref={ref}
         {...props}
       />

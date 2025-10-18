@@ -2,6 +2,7 @@
   "common": {
     "loading": "Loading...",
     "start_create": "Start by creating one!",
+    "back": "Back",
     "error": {
       "generic": "An error occurred",
       "not_found": "Not found"
@@ -61,6 +62,9 @@
       "title": "Build Your Programs",
       "description": "Create custom workouts for your athletes",
       "stat_label": "workouts"
+    },
+    "detail": {
+      "title": "Workout Detail"
     },
     "filters": {
       "search_placeholder": "Search for a workout...",

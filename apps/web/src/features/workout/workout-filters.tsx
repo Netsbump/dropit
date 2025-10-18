@@ -57,7 +57,7 @@ export function WorkoutFilters({
             </SelectContent>
           </Select>
           <Separator orientation="vertical" className="h-6" />
-          <Button onClick={onCreateClick} disabled={disabled}>
+          <Button onClick={onCreateClick} disabled={disabled} className="text-white border-0" style={{ backgroundColor: '#262125' }}>
             {t('workout.filters.create_workout')}
           </Button>
         </div>

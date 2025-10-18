@@ -2,6 +2,7 @@
   "common": {
     "loading": "Chargement...",
     "start_create": "Commencez par en créer un !",
+    "back": "Retour",
     "error": {
       "generic": "Une erreur est survenue",
       "not_found": "Non trouvé"
@@ -61,6 +62,9 @@
       "title": "Créez vos programmes",
       "description": "Composez des entrainements personnalisés pour vos athlètes",
       "stat_label": "entrainements"
+    },
+    "detail": {
+      "title": "Détail de l'entraînement"
     },
     "filters": {
       "search_placeholder": "Rechercher un entraînement...",

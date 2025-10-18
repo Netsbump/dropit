@@ -100,7 +100,7 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="w-[90px] h-screen bg-slate-700 flex flex-col items-center py-6 gap-8">
+    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8" style={{ backgroundColor: '#262125' }}>
       {/* Logo */}
       <div className="flex flex-col items-center gap-1 text-white">
         <BicepsFlexed className="h-8 w-8" />
@@ -117,11 +117,14 @@ export function AppSidebar() {
               to={item.url}
               className="flex flex-col items-center gap-1.5 px-4 py-3 transition-colors hover:text-white"
             >
-              <div className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors ${
-                isActive
-                  ? 'bg-white text-slate-700'
-                  : 'text-slate-300'
-              }`}>
+              <div
+                className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors ${
+                  isActive
+                    ? 'text-white'
+                    : 'text-slate-300'
+                }`}
+                style={isActive ? { backgroundColor: '#ed960b' } : undefined}
+              >
                 <item.icon className="h-6 w-6" />
               </div>
               <span className={`text-[10px] font-medium text-center leading-tight uppercase ${

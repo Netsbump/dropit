@@ -59,7 +59,7 @@ function HomeLayout() {
 
   return (
     <PageMetaProvider>
-      <div className="flex min-h-screen w-full bg-slate-700">
+      <div className="flex min-h-screen w-full" style={{ backgroundColor: '#262125' }}>
         <AppSidebar />
 
         <main className="flex-1 w-full h-screen flex flex-col">

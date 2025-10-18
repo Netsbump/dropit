@@ -58,7 +58,7 @@ export function ComplexFilters({
             </SelectContent>
           </Select>
           <Separator orientation="vertical" className="h-6" />
-          <Button onClick={onCreateClick}>{t('complex.filters.create_complex')}</Button>
+          <Button onClick={onCreateClick} className="text-white border-0" style={{ backgroundColor: '#262125' }}>{t('complex.filters.create_complex')}</Button>
         </div>
       </div>
     </div>

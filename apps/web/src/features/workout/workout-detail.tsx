@@ -7,42 +7,26 @@ import { ArrowLeft, Pencil } from 'lucide-react';
 
 interface WorkoutDetailProps {
   workout: WorkoutDto;
-  onNavigate: (path: string) => void;
   onEdit: () => void;
 }
 
 export function WorkoutDetail({
   workout,
-  onNavigate,
   onEdit,
 }: WorkoutDetailProps) {
   return (
-    <div className="h-full flex flex-col">
-      {/* Navigation Bar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center h-14 gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => onNavigate('/workouts')}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold">{workout.title}</h1>
-          </div>
-          <div className="flex gap-2">
-            <Button variant="outline" onClick={onEdit}>
-              <Pencil className="h-4 w-4 mr-2" />
-              Éditer
-            </Button>
-            <Button>Programmer</Button>
-          </div>
-        </div>
+    <div className="space-y-6">
+      {/* Actions */}
+      <div className="flex justify-end gap-2">
+        <Button variant="outline" onClick={onEdit}>
+          <Pencil className="h-4 w-4 mr-2" />
+          Éditer
+        </Button>
+        <Button className="text-white border-0" style={{ backgroundColor: '#ed960b' }}>Programmer</Button>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-auto">
+      <div>
         <div className="grid grid-cols-6 divide-x">
           {/* Left Column - Info */}
           <div className="col-span-1 py-6 pr-6 space-y-4">

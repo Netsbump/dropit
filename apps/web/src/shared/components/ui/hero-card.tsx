@@ -4,19 +4,22 @@ import type * as React from 'react'
 
 const variantConfig = {
   workout: {
-    gradient: 'from-slate-700 via-slate-600 to-blue-600',
+    gradient: 'from-orange-500 to-orange-600',
+    bgColor: '#ed960b',
     icon: Dumbbell,
-    iconColor: 'text-blue-100',
+    iconColor: 'text-orange-50',
   },
   complex: {
-    gradient: 'from-slate-700 via-slate-600 to-blue-600',
+    gradient: 'from-orange-500 to-orange-600',
+    bgColor: '#ed960b',
     icon: Zap,
-    iconColor: 'text-blue-100',
+    iconColor: 'text-orange-50',
   },
   exercise: {
-    gradient: 'from-slate-700 via-slate-600 to-blue-600',
+    gradient: 'from-orange-500 to-orange-600',
+    bgColor: '#ed960b',
     icon: Library,
-    iconColor: 'text-blue-100',
+    iconColor: 'text-orange-50',
   },
 }
 
@@ -49,10 +52,8 @@ export function HeroCard({
       )}
     >
       <div
-        className={cn(
-          'absolute inset-0 bg-gradient-to-r',
-          config.gradient
-        )}
+        className="absolute inset-0"
+        style={{ backgroundColor: config.bgColor }}
       />
       <div className="relative z-10 p-6 flex items-center gap-6">
         <div
