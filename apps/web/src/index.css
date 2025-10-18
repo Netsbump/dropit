@@ -29,6 +29,11 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem
   ;
+    /* Custom brand colors */
+    --brand-orange-primary: 37 91% 49%;
+    --brand-orange-secondary: 34 100% 95%;
+    --brand-black: 312 7% 14%;
+
     --sidebar-background: 0 0% 98%;
     --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;

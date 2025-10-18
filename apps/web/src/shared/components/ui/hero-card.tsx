@@ -4,22 +4,16 @@ import type * as React from 'react'
 
 const variantConfig = {
   workout: {
-    gradient: 'from-orange-500 to-orange-600',
-    bgColor: '#ed960b',
     icon: Dumbbell,
-    iconColor: 'text-orange-50',
+    iconColor: 'text-white',
   },
   complex: {
-    gradient: 'from-orange-500 to-orange-600',
-    bgColor: '#ed960b',
     icon: Zap,
-    iconColor: 'text-orange-50',
+    iconColor: 'text-white',
   },
   exercise: {
-    gradient: 'from-orange-500 to-orange-600',
-    bgColor: '#ed960b',
     icon: Library,
-    iconColor: 'text-orange-50',
+    iconColor: 'text-white',
   },
 }
 
@@ -47,14 +41,10 @@ export function HeroCard({
   return (
     <div
       className={cn(
-        'relative overflow-hidden rounded-lg shadow-md mb-6',
+        'relative overflow-hidden rounded-lg shadow-md mb-6 bg-brand-black',
         className
       )}
     >
-      <div
-        className="absolute inset-0"
-        style={{ backgroundColor: config.bgColor }}
-      />
       <div className="relative z-10 p-6 flex items-center gap-6">
         <div
           className={cn(

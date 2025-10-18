@@ -77,7 +77,7 @@ function ComplexPage() {
   }
 
   return (
-    <div className="h-full flex gap-0">
+    <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">
         <HeroCard
           variant="complex"

@@ -46,7 +46,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   return (
-    <header className="h-16 flex items-center justify-between pr-6" style={{ backgroundColor: '#262125' }}>
+    <header className="h-16 flex items-center justify-between pr-6 bg-brand-orange-primary">
       {/* Left side: Back button OR Page Title */}
       <div className="flex items-center gap-3 min-w-0 pl-11">
         {showBackButton ? (

@@ -21,11 +21,11 @@ export function AppSidebar() {
 
   const handleLogout = async () => {
     try {
-      // Appeler directement l'API pour se déconnecter
-      // Avec credentials: 'include', les cookies seront automatiquement envoyés
+      // Call the API directly to logout
+      // With credentials: 'include', the cookies will be automatically sent
       await authClient.signOut();
 
-      // Rediriger vers la page de connexion
+      // Redirect to the login page
       toast({
         title: 'Logout successful',
         description: 'You have been logged out successfully',
@@ -79,11 +79,11 @@ export function AppSidebar() {
     },
   ];
 
-  // Fonction pour vérifier si un item est actif
+  // Function to check if an item is active
   const isActiveItem = (itemUrl: string) => {
     const currentPath = matches[matches.length - 1]?.pathname || '';
 
-    // Gestion spéciale pour les routes imbriquées
+    // Special handling for nested routes
     if (itemUrl === '/library/workouts') {
       return currentPath.startsWith('/library/') || currentPath.startsWith('/workouts/');
     }
@@ -100,7 +100,7 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8" style={{ backgroundColor: '#262125' }}>
+    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8 bg-brand-orange-primary">
       {/* Logo */}
       <div className="flex flex-col items-center gap-1 text-white">
         <BicepsFlexed className="h-8 w-8" />
@@ -115,20 +115,19 @@ export function AppSidebar() {
             <Link
               key={item.title}
               to={item.url}
-              className="flex flex-col items-center gap-1.5 px-4 py-3 transition-colors hover:text-white"
+              className="flex flex-col items-center gap-1.5 px-4 py-3 transition-colors hover:text-white "
             >
               <div
-                className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors ${
+                className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors text-brand-black ${
                   isActive
-                    ? 'text-white'
-                    : 'text-slate-300'
+                    ? 'bg-white text-black'
+                    : 'text-white/70'
                 }`}
-                style={isActive ? { backgroundColor: '#ed960b' } : undefined}
+                
               >
-                <item.icon className="h-6 w-6" />
+                <item.icon className="h-6 w-6 text-brand-black" />
               </div>
-              <span className={`text-[10px] font-medium text-center leading-tight uppercase ${
-                isActive ? 'text-white' : 'text-slate-300'
+              <span className={`text-[10px] font-medium text-center leading-tight uppercase text-brand-black
               }`}>
                 {item.title}
               </span>
@@ -140,7 +139,7 @@ export function AppSidebar() {
       {/* Logout */}
       <button
         onClick={handleLogout}
-        className="flex flex-col items-center gap-1.5 px-4 py-3 text-slate-300 hover:text-white transition-colors"
+        className="flex flex-col items-center gap-1.5 px-4 py-3 text-brand-black hover:text-white transition-colors"
         type="button"
       >
         <div className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-white/5 transition-colors">

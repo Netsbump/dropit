@@ -61,7 +61,7 @@ function ExercisesPage() {
   if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
 
   return (
-    <div className="h-full flex gap-0">
+    <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">
         <HeroCard
           variant="exercise"
