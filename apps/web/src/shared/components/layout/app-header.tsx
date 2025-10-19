@@ -5,7 +5,6 @@ import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { usePageMeta } from '@/shared/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
-
 interface Tab {
   label: string;
   path: string;
@@ -46,7 +45,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   return (
-    <header className="h-16 flex items-center justify-between pr-6 bg-brand-orange-primary">
+    <header className="h-16 flex items-center justify-between pr-6">
       {/* Left side: Back button OR Page Title */}
       <div className="flex items-center gap-3 min-w-0 pl-11">
         {showBackButton ? (

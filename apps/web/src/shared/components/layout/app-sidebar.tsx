@@ -100,7 +100,7 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8 bg-brand-orange-primary">
+    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8">
       {/* Logo */}
       <div className="flex flex-col items-center gap-1 text-white">
         <BicepsFlexed className="h-8 w-8" />
@@ -120,14 +120,14 @@ export function AppSidebar() {
               <div
                 className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors text-brand-black ${
                   isActive
-                    ? 'bg-white text-black'
+                    ? 'bg-white text-white'
                     : 'text-white/70'
                 }`}
                 
               >
-                <item.icon className="h-6 w-6 text-brand-black" />
+                <item.icon className={`h-6 w-6 ${ isActive ? 'text-brand-black' : 'text-white'}`} />
               </div>
-              <span className={`text-[10px] font-medium text-center leading-tight uppercase text-brand-black
+              <span className={`text-[10px] font-medium text-center leading-tight uppercase text-white
               }`}>
                 {item.title}
               </span>
@@ -139,7 +139,7 @@ export function AppSidebar() {
       {/* Logout */}
       <button
         onClick={handleLogout}
-        className="flex flex-col items-center gap-1.5 px-4 py-3 text-brand-black hover:text-white transition-colors"
+        className="flex flex-col items-center gap-1.5 px-4 py-3 text-white hover:text-white transition-colors"
         type="button"
       >
         <div className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-white/5 transition-colors">

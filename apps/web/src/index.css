@@ -82,6 +82,121 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
+    /* Fond avec dégradé doux pour le glassmorphisme */
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%);
+  }
+}
+
+@layer components {
+  .glass-container {
+    /* Conteneur glassmorphisme avec effets avancés */
+    background: rgba(25, 25, 40, 0.6);
+    backdrop-filter: blur(25px) saturate(200%);
+    -webkit-backdrop-filter: blur(25px) saturate(200%);
+    
+    /* Bordure avec dégradé et glow */
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    position: relative;
+    
+    /* Effet de glow externe */
+    box-shadow: 
+      0 0 0 1px rgba(255, 255, 255, 0.1),
+      0 0 30px rgba(100, 150, 255, 0.15),
+      0 0 60px rgba(100, 150, 255, 0.1),
+      0 8px 32px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    
+    /* Coins arrondis */
+    border-radius: 20px;
+    
+    /* Pseudo-élément pour le dégradé de bordure */
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      border-radius: 20px;
+      padding: 1px;
+      background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(100, 150, 255, 0.3) 25%,
+        rgba(150, 100, 255, 0.2) 50%,
+        rgba(255, 100, 150, 0.3) 75%,
+        rgba(255, 255, 255, 0.2) 100%
+      );
+      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      mask-composite: xor;
+      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: xor;
+      pointer-events: none;
+    }
+  }
+  
+  .glass-content-area {
+    /* Zone de contenu avec fond blanc semi-transparent */
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.1),
+      inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  }
+  
+  /* Hero Cards Pages */
+  .hero-card-gradient-purple {
+    background: linear-gradient(135deg, 
+      rgba(100, 150, 255, 0.3) 0%,
+      rgba(150, 100, 255, 0.2) 50%,
+      rgba(255, 100, 150, 0.3) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 4px 20px rgba(150, 100, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Hero Stats Card */
+  .hero-stats-card {
+    background: linear-gradient(135deg, 
+      rgba(255, 100, 150, 0.4) 0%,
+      rgba(255, 100, 150, 0.3) 50%,
+      rgba(255, 100, 150, 0.2) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 
+      0 4px 20px rgba(255, 100, 150, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  
+  /* Bouton primary couleur unie */
+  .btn-primary-gradient {
+    background: #334067;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 
+      0 4px 16px rgba(255, 100, 150, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    color: white;
+    font-weight: 600;
+    transition: all 0.3s ease;
+  }
+  
+  /* A revoir */
+  .btn-primary-gradient:hover {
+    background: rgba(100, 150, 255, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 
+      0 6px 20px rgba(255, 100, 150, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 }

@@ -59,18 +59,20 @@ function HomeLayout() {
 
   return (
     <PageMetaProvider>
-      <div className="flex min-h-screen w-full bg-brand-black">
-        <AppSidebar />
+      <div className="min-h-screen w-full bg-brand-black">
+        <div className="h-screen w-full glass-container flex">
+          <AppSidebar />
 
-        <main className="flex-1 w-full h-screen flex flex-col">
-          <AppHeader tabs={getTabs()} />
+          <main className="flex-1 flex flex-col">
+            <AppHeader tabs={getTabs()}/>
 
-          <div className="flex-1 min-h-0 pb-3 px-3 pt-0 bg-brand-orange-primary">
-            <div className="bg-slate-50 rounded-3xl h-full shadow-xl overflow-auto">
-              <Outlet />
+            <div className="flex-1 min-h-0 pb-3 px-3 pt-0">
+              <div className="glass-content-area h-full overflow-auto">
+                <Outlet />
+              </div>
             </div>
-          </div>
-        </main>
+          </main>
+        </div>
       </div>
     </PageMetaProvider>
   );
