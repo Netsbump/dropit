@@ -108,9 +108,6 @@
       0 8px 32px rgba(0, 0, 0, 0.4),
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     
-    /* Coins arrondis */
-    border-radius: 20px;
-    
     /* Pseudo-élément pour le dégradé de bordure */
     &::before {
       content: '';
@@ -119,7 +116,6 @@
       left: 0;
       right: 0;
       bottom: 0;
-      border-radius: 20px;
       padding: 1px;
       background: linear-gradient(135deg, 
         rgba(255, 255, 255, 0.2) 0%,

@@ -68,7 +68,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
 
       {/* Center: Detail Title OR Tabs */}
       {showBackButton && pageTitle ? (
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-xl text-white uppercase">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-medium text-white uppercase">
           {pageTitle}
         </h1>
       ) : tabs && tabs.length > 0 ? (
@@ -79,7 +79,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`px-3 transition-all uppercase ${
+                className={`px-3 transition-all uppercase text-sm ${
                   isActive
                     ? 'text-white font-medium'
                     : 'text-white/40 hover:text-white/70'
