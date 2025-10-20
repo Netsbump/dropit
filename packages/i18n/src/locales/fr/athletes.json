@@ -1,6 +1,11 @@
 {
   "title": "Athlètes",
   "description": "Retrouvez et gérez tous les athlètes de votre club",
+  "hero": {
+    "title": "Gérez vos athlètes",
+    "description": "Suivez les performances et l'évolution de vos athlètes",
+    "stat_label": "athlètes"
+  },
   "filters": {
     "no_results": "Aucun athlète trouvé",
     "search_placeholder": "Rechercher un athlète...",

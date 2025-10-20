@@ -67,7 +67,7 @@ function HomeLayout() {
             <AppHeader tabs={getTabs()}/>
 
             <div className="flex-1 min-h-0 pb-3 px-3 pt-0">
-              <div className="glass-content-area h-full overflow-auto">
+              <div className="rounded-3xl h-full overflow-auto bg-slate-50 shadow-sm">
                 <Outlet />
               </div>
             </div>

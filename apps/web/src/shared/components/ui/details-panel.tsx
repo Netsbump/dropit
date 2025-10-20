@@ -44,7 +44,7 @@ export function DetailsPanel({
           'lg:static fixed inset-x-0 bottom-0 top-16 z-50 rounded-t-xl border-t lg:border-t-0',
           'flex flex-col',
           // Même fond que l'outlet avec bordure violette
-          'bg-white/70 backdrop-blur-md border border-[hsl(var(--primary))]/30 shadow-lg',
+          'bg-white/70 backdrop-blur-md border border-l-[hsl(var(--primary))]/30 shadow-[-4px_0_6px_-1px_rgba(0,0,0,0.03)]',
           className
         )}
       >

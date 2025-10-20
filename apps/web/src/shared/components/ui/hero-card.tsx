@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils'
-import { Dumbbell, Library, Zap } from 'lucide-react'
+import { Dumbbell, Library, Zap, Users } from 'lucide-react'
 
 const variantConfig = {
   workout: {
@@ -20,10 +20,16 @@ const variantConfig = {
     gradientClass: 'bg-gradient-to-br from-teal-50 to-cyan-50',
     image: '/src/assets/images/hero-pages/199308.svg',
   },
+  athlete: {
+    icon: Users,
+    iconColor: 'text-gray-700',
+    gradientClass: 'bg-gradient-to-br from-green-50 to-emerald-50',
+    image: '/src/assets/images/hero-pages/1993014.svg',
+  },
 }
 
 export interface HeroCardProps {
-  variant: 'workout' | 'complex' | 'exercise'
+  variant: 'workout' | 'complex' | 'exercise' | 'athlete'
   title: string
   description: string
   stat?: {

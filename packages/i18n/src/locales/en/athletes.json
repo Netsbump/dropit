@@ -1,6 +1,11 @@
 {
   "title": "Athletes",
   "description": "Manage your athletes",
+  "hero": {
+    "title": "Manage Your Athletes",
+    "description": "Track performance and progress of your athletes",
+    "stat_label": "athletes"
+  },
   "filters": {
     "no_results": "No athletes found",
     "search_placeholder": "Search an athlete...",

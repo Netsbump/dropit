@@ -85,92 +85,16 @@
   }
   body {
     @apply text-foreground;
-    /* Fond clair avec très léger dégradé */
-    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
+
+    background: linear-gradient(
+    135deg,
+    rgba(200, 180, 255, 0.5) 0%,
+    rgba(180, 200, 255, 0.4) 20%,
+    rgba(255, 200, 220, 0.3) 40%,
+    rgba(255, 220, 200, 0.35) 60%,
+    rgba(255, 200, 220, 0.4) 80%,
+    rgba(220, 180, 255, 0.5) 100%
+  );
   }
 }
 
-@layer components {
-  .glass-container {
-    /* Conteneur glassmorphisme */
-    background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-
-    /* Bordure avec effet de verre */
-    border: 1px solid transparent;
-    background-clip: padding-box;
-    position: relative;
-
-    /* Ombres pour la profondeur */
-    box-shadow:
-      0 8px 32px rgba(0, 0, 0, 0.06),
-      0 0 1px rgba(0, 0, 0, 0.05);
-
-    /* Effet de reflet lumineux sur le verre avec teintes colorées */
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      padding: 1px;
-      background: linear-gradient(
-        135deg,
-        rgba(200, 180, 255, 0.5) 0%,
-        rgba(180, 200, 255, 0.4) 20%,
-        rgba(255, 200, 220, 0.3) 40%,
-        rgba(255, 220, 200, 0.35) 60%,
-        rgba(255, 200, 220, 0.4) 80%,
-        rgba(220, 180, 255, 0.5) 100%
-      );
-      mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      mask-composite: xor;
-      -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-      -webkit-mask-composite: xor;
-      pointer-events: none;
-      border-radius: inherit;
-    }
-
-    /* Reflet lumineux interne avec légère teinte */
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 50%;
-      background: linear-gradient(
-        180deg,
-        rgba(230, 220, 255, 0.3) 0%,
-        rgba(255, 255, 255, 0) 100%
-      );
-      pointer-events: none;
-      border-radius: inherit;
-    }
-  }
-  
-  .glass-content-area {
-    /* Zone de contenu avec fond blanc semi-transparent */
-    background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border-radius: 16px;
-    box-shadow: 
-      0 4px 20px rgba(0, 0, 0, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.8);
-  }
-  
-  /* Hero Cards - Header simple sans fond */
-  .hero-card-gradient-purple {
-    /* Pas de fond coloré, juste transparent */
-    background: transparent;
-  }
-
-  /* Hero Stats Card - Header simple sans fond */
-  .hero-stats-card {
-    /* Pas de fond coloré, juste transparent */
-    background: transparent;
-  }
-}

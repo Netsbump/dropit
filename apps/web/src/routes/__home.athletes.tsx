@@ -9,6 +9,7 @@ import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Button } from '../shared/components/ui/button';
+import { HeroCard } from '../shared/components/ui/hero-card';
 
 export const Route = createFileRoute('/__home/athletes')({
   component: AthletesPage,
@@ -50,7 +51,15 @@ function AthletesPage() {
 
   return (
     <div className="relative flex-1 p-8">
-      <p className="text-muted-foreground mb-6">{t('athletes:description')}</p>
+      <HeroCard
+        variant="athlete"
+        title={t('athletes:hero.title')}
+        description={t('athletes:hero.description')}
+        stat={{
+          label: t('athletes:hero.stat_label'),
+          value: athletes?.length || 0,
+        }}
+      />
 
       <div>
         {athletesLoading ? (
