@@ -1,7 +1,6 @@
 import { toast } from '@/shared/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Github } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
@@ -15,7 +14,6 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { Separator } from '@/shared/components/ui/separator';
 import { useTranslation } from '@dropit/i18n';
 
 function getFormSchema(t: (key: string) => string) {
@@ -35,15 +33,13 @@ type LoginFormData = {
 interface LoginFormProps {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-  showAlternative?: boolean;
   showRedirect?: boolean;
   className?: string;
 }
 
-export function LoginForm({ 
-  onSuccess, 
-  onError, 
-  showAlternative = true, 
+export function LoginForm({
+  onSuccess,
+  onError,
   showRedirect = true,
   className = ""
 }: LoginFormProps) {
@@ -136,34 +132,14 @@ export function LoginForm({
         </form>
       </Form>
 
-      {showAlternative && (
-        <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                {t('login.alternative')}
-              </span>
-            </div>
-          </div>
-
-          <Button variant="outline" type="button" className="w-full">
-            <Github className="mr-2 h-4 w-4" />
-            {t('login.githubButton')}
-          </Button>
-        </>
-      )}
-
       {showRedirect && (
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          {t('login.redirect', { link: t('login.redirectLink') })}{' '}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Vous n'avez pas de compte ?{' '}
           <a
             href="/signup"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
           >
-            {t('login.redirectLink')}
+            S'inscrire
           </a>
         </p>
       )}

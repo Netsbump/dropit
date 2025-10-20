@@ -2,7 +2,6 @@ import { authClient } from '@/lib/auth-client';
 import { toast } from '@/shared/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
-import { Github } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/shared/components/ui/button';
@@ -15,7 +14,6 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
-import { Separator } from '@/shared/components/ui/separator';
 import { useTranslation } from '@dropit/i18n';
 
 function getFormSchema(t: (key: string) => string) {
@@ -37,16 +35,14 @@ type SignupFormData = {
 interface SignupFormProps {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
-  showAlternative?: boolean;
   showRedirect?: boolean;
   showTerms?: boolean;
   className?: string;
 }
 
-export function SignupForm({ 
-  onSuccess, 
-  onError, 
-  showAlternative = true, 
+export function SignupForm({
+  onSuccess,
+  onError,
   showRedirect = true,
   showTerms = true,
   className = ""
@@ -155,55 +151,35 @@ export function SignupForm({
         </form>
       </Form>
 
-      {showAlternative && (
-        <>
-          <div className="relative">
-            <div className="absolute inset-0 flex items-center">
-              <Separator className="w-full" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">
-                {t('signup.alternative')}
-              </span>
-            </div>
-          </div>
-
-          <Button variant="outline" type="button" className="w-full">
-            <Github className="mr-2 h-4 w-4" />
-            {t('signup.githubButton')}
-          </Button>
-        </>
-      )}
-
       {showRedirect && (
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          {t('signup.redirect', { link: t('signup.redirectLink') })}{' '}
+        <p className="text-center text-sm text-gray-600 mt-6">
+          Vous avez déjà un compte ?{' '}
           <a
             href="/login"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
           >
-            {t('signup.redirectLink')}
+            Se connecter
           </a>
         </p>
       )}
 
       {showTerms && (
-        <p className="px-8 text-center text-sm text-muted-foreground">
-          {t('signup.terms.prefix')}{' '}
+        <p className="text-center text-xs text-gray-500 mt-4 leading-relaxed">
+          En cliquant sur continuer, vous acceptez nos{' '}
           <a
             href="/terms"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-purple-600 hover:text-purple-700 hover:underline"
           >
-            {t('signup.termsLink')}
+            Conditions d'utilisation
           </a>{' '}
-          {t('signup.terms.middle')}{' '}
+          et notre{' '}
           <a
             href="/privacy"
-            className="underline underline-offset-4 hover:text-primary"
+            className="text-purple-600 hover:text-purple-700 hover:underline"
           >
-            {t('signup.privacyLink')}
+            Politique de confidentialité
           </a>
-          {t('signup.terms.suffix')}
+          .
         </p>
       )}
     </div>

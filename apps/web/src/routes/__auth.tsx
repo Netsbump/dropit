@@ -29,7 +29,12 @@ function AuthLayout() {
   }
   
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div
+      className="min-h-screen flex items-center justify-center"
+      style={{
+        background: 'linear-gradient(135deg, rgba(200, 180, 255, 0.5) 0%, rgba(180, 200, 255, 0.4) 20%, rgba(255, 200, 220, 0.3) 40%, rgba(255, 220, 200, 0.35) 60%, rgba(255, 200, 220, 0.4) 80%, rgba(220, 180, 255, 0.5) 100%)'
+      }}
+    >
       <Outlet />
     </div>
   );
