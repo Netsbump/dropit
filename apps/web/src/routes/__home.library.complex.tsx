@@ -1,6 +1,7 @@
 import { api } from '@/lib/api'
 import { DetailsPanel } from '@/shared/components/ui/details-panel'
 import { HeroCard } from '@/shared/components/ui/hero-card'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 import { Spinner } from '@/shared/components/ui/spinner'
 import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -80,17 +81,18 @@ function ComplexPage() {
   return (
     <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">
-        <HeroCard
-          variant="complex"
-          title={t('complex.hero.title')}
-          description={t('complex.hero.description')}
-          stat={{
-            label: t('complex.hero.stat_label'),
-            value: complexes?.length || 0,
-          }}
-        />
+        {/* Fixed header section */}
+        <div className="flex-none space-y-6 mb-6">
+          <HeroCard
+            variant="complex"
+            title={t('complex.hero.title')}
+            description={t('complex.hero.description')}
+            stat={{
+              label: t('complex.hero.stat_label'),
+              value: complexes?.length || 0,
+            }}
+          />
 
-        <div className="flex-1 min-h-0">
           <ComplexFilters
             onFilterChange={setFilter}
             onCategoryChange={setCategoryFilter}
@@ -98,7 +100,10 @@ function ComplexPage() {
             categories={categories}
             disabled={isLoading || !complexes?.length}
           />
+        </div>
 
+        {/* Scrollable content section */}
+        <ScrollArea className="flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               {t('common.loading')}
@@ -115,7 +120,7 @@ function ComplexPage() {
               onComplexClick={(complexId) => setSelectedComplex(complexId)}
             />
           )}
-        </div>
+        </ScrollArea>
       </div>
 
       <DetailsPanel

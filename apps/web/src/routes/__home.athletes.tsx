@@ -50,18 +50,22 @@ function AthletesPage() {
   }
 
   return (
-    <div className="relative flex-1 p-8">
-      <HeroCard
-        variant="athlete"
-        title={t('athletes:hero.title')}
-        description={t('athletes:hero.description')}
-        stat={{
-          label: t('athletes:hero.stat_label'),
-          value: athletes?.length || 0,
-        }}
-      />
+    <div className="flex flex-col h-full p-8">
+      {/* Fixed header section */}
+      <div className="flex-none mb-6">
+        <HeroCard
+          variant="athlete"
+          title={t('athletes:hero.title')}
+          description={t('athletes:hero.description')}
+          stat={{
+            label: t('athletes:hero.stat_label'),
+            value: athletes?.length || 0,
+          }}
+        />
+      </div>
 
-      <div>
+      {/* DataTable with internal scroll management */}
+      <div className="flex-1 min-h-0">
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common:loading')}

@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/shared/components/ui/button';
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { X } from 'lucide-react';
 
 interface DetailsPanelProps {
@@ -49,14 +50,14 @@ export function DetailsPanel({
         )}
       >
         <div className="flex flex-col w-full h-full px-8 my-8">
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 flex-none">
             <h2 className="text-lg font-semibold">{title}</h2>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
           </div>
 
-          <div className="flex-1 overflow-auto">{children}</div>
+          <ScrollArea className="flex-1">{children}</ScrollArea>
         </div>
       </div>
     </>

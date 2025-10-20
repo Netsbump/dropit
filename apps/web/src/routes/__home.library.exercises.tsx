@@ -60,16 +60,20 @@ function ExercisesPage() {
   return (
     <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">
-        <HeroCard
-          variant="exercise"
-          title={t('exercise.hero.title')}
-          description={t('exercise.hero.description')}
-          stat={{
-            label: t('exercise.hero.stat_label'),
-            value: exercises?.length || 0,
-          }}
-        />
+        {/* Fixed header section */}
+        <div className="flex-none mb-6">
+          <HeroCard
+            variant="exercise"
+            title={t('exercise.hero.title')}
+            description={t('exercise.hero.description')}
+            stat={{
+              label: t('exercise.hero.stat_label'),
+              value: exercises?.length || 0,
+            }}
+          />
+        </div>
 
+        {/* DataTable with internal scroll management */}
         <div className="flex-1 min-h-0">
           {exercisesLoading ? (
             <div className="flex items-center justify-center h-32">
