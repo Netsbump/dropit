@@ -39,10 +39,12 @@ export function DetailsPanel({
       <div
         className={cn(
           // Desktop: panel intégré dans le layout
-          'hidden lg:flex lg:w-[430px] lg:flex-shrink-0 lg:rounded-3xl lg:flex-col lg:h-full',
+          'hidden lg:flex lg:w-[430px] lg:flex-shrink-0 lg:rounded-tr-2xl lg:rounded-br-2xl lg:rounded-tl-3xl lg:rounded-bl-3xl lg:flex-col lg:h-full',
           // Mobile: drawer fixe en bas
           'lg:static fixed inset-x-0 bottom-0 top-16 z-50 rounded-t-xl border-t lg:border-t-0',
           'flex flex-col',
+          // Même fond que l'outlet avec bordure violette
+          'bg-white/70 backdrop-blur-md border border-[hsl(var(--primary))]/30 shadow-lg',
           className
         )}
       >
