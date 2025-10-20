@@ -580,7 +580,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       <Separator />
 
       <div className="flex justify-end">
-        <Button onClick={() => setIsEditing(true)} className="text-white border-0" style={{ backgroundColor: '#ed960b' }}>Modifier</Button>
+        <Button onClick={() => setIsEditing(true)}>Modifier</Button>
       </div>
     </div>
   );

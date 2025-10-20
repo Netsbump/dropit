@@ -41,7 +41,7 @@ export function DetailsPanel({
           // Desktop: panel intégré dans le layout
           'hidden lg:flex lg:w-[430px] lg:flex-shrink-0 lg:rounded-3xl lg:flex-col lg:h-full',
           // Mobile: drawer fixe en bas
-          'lg:static fixed inset-x-0 bottom-0 top-16 z-50 bg-brand-orange-secondary rounded-t-xl border-t lg:border-t-0',
+          'lg:static fixed inset-x-0 bottom-0 top-16 z-50 rounded-t-xl border-t lg:border-t-0',
           'flex flex-col',
           className
         )}

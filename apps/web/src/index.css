@@ -9,7 +9,7 @@
     --card-foreground: 0 0% 3.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 3.9%;
-    --primary: 0 0% 9%;
+    --primary: 252 100% 70%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 96.1%;
     --secondary-foreground: 0 0% 9%;
@@ -29,19 +29,21 @@
     --chart-5: 27 87% 67%;
     --radius: 0.5rem
   ;
-    /* Custom brand colors */
-    --brand-orange-primary: 37 91% 49%;
-    --brand-orange-secondary: 34 100% 95%;
-    --brand-black: 312 7% 14%;
-
     --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-foreground: 215 20% 15%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-accent: 330 60% 65%;
+    --sidebar-accent-foreground: 330 70% 45%;
+    --sidebar-logo: 250 70% 35%;
     --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%}
+    --sidebar-ring: 217.2 91.2% 59.8%;
+
+    /* App Header colors */
+    --appheader-foreground: 215 25% 8%;
+    --appheader-tab-active: 215 25% 8%;
+    --appheader-tab-inactive: 215 10% 45%;
+  }
   .dark {
     --background: 0 0% 3.9%;
     --foreground: 0 0% 98%;
@@ -83,32 +85,29 @@
   }
   body {
     @apply text-foreground;
-    /* Fond avec dégradé doux pour le glassmorphisme */
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f0f 100%);
+    /* Fond clair avec très léger dégradé */
+    background: linear-gradient(135deg, #fafafa 0%, #f5f5f5 100%);
   }
 }
 
 @layer components {
   .glass-container {
-    /* Conteneur glassmorphisme avec effets avancés */
-    background: rgba(25, 25, 40, 0.6);
-    backdrop-filter: blur(25px) saturate(200%);
-    -webkit-backdrop-filter: blur(25px) saturate(200%);
-    
-    /* Bordure avec dégradé et glow */
+    /* Conteneur glassmorphisme */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px) saturate(180%);
+    -webkit-backdrop-filter: blur(20px) saturate(180%);
+
+    /* Bordure avec effet de verre */
     border: 1px solid transparent;
     background-clip: padding-box;
     position: relative;
-    
-    /* Effet de glow externe */
-    box-shadow: 
-      0 0 0 1px rgba(255, 255, 255, 0.1),
-      0 0 30px rgba(100, 150, 255, 0.15),
-      0 0 60px rgba(100, 150, 255, 0.1),
-      0 8px 32px rgba(0, 0, 0, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    
-    /* Pseudo-élément pour le dégradé de bordure */
+
+    /* Ombres pour la profondeur */
+    box-shadow:
+      0 8px 32px rgba(0, 0, 0, 0.06),
+      0 0 1px rgba(0, 0, 0, 0.05);
+
+    /* Effet de reflet lumineux sur le verre avec teintes colorées */
     &::before {
       content: '';
       position: absolute;
@@ -117,18 +116,38 @@
       right: 0;
       bottom: 0;
       padding: 1px;
-      background: linear-gradient(135deg, 
-        rgba(255, 255, 255, 0.2) 0%,
-        rgba(100, 150, 255, 0.3) 25%,
-        rgba(150, 100, 255, 0.2) 50%,
-        rgba(255, 100, 150, 0.3) 75%,
-        rgba(255, 255, 255, 0.2) 100%
+      background: linear-gradient(
+        135deg,
+        rgba(200, 180, 255, 0.5) 0%,
+        rgba(180, 200, 255, 0.4) 20%,
+        rgba(255, 200, 220, 0.3) 40%,
+        rgba(255, 220, 200, 0.35) 60%,
+        rgba(255, 200, 220, 0.4) 80%,
+        rgba(220, 180, 255, 0.5) 100%
       );
       mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       mask-composite: xor;
       -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
       -webkit-mask-composite: xor;
       pointer-events: none;
+      border-radius: inherit;
+    }
+
+    /* Reflet lumineux interne avec légère teinte */
+    &::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(
+        180deg,
+        rgba(230, 220, 255, 0.3) 0%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      pointer-events: none;
+      border-radius: inherit;
     }
   }
   
@@ -143,56 +162,37 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.8);
   }
   
-  /* Hero Cards Pages */
+  /* Hero Cards - Header simple sans fond */
   .hero-card-gradient-purple {
-    background: linear-gradient(135deg, 
-      rgba(100, 150, 255, 0.3) 0%,
-      rgba(150, 100, 255, 0.2) 50%,
-      rgba(255, 100, 150, 0.3) 100%
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 4px 20px rgba(150, 100, 255, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    /* Pas de fond coloré, juste transparent */
+    background: transparent;
   }
-  
-  /* Hero Stats Card */
+
+  /* Hero Stats Card - Header simple sans fond */
   .hero-stats-card {
-    background: linear-gradient(135deg, 
-      rgba(255, 100, 150, 0.4) 0%,
-      rgba(255, 100, 150, 0.3) 50%,
-      rgba(255, 100, 150, 0.2) 100%
-    );
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    box-shadow: 
-      0 4px 20px rgba(255, 100, 150, 0.15),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    /* Pas de fond coloré, juste transparent */
+    background: transparent;
   }
   
-  /* Bouton primary couleur unie */
+  /* Bouton primary - utilise la variable --primary */
   .btn-primary-gradient {
-    background: #334067;
+    background: hsl(var(--primary) / 0.9);
     backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 
-      0 4px 16px rgba(255, 100, 150, 0.3),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow:
+      0 4px 16px hsl(var(--primary) / 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    color: hsl(var(--primary-foreground));
     font-weight: 600;
     transition: all 0.3s ease;
   }
-  
-  /* A revoir */
+
   .btn-primary-gradient:hover {
-    background: rgba(100, 150, 255, 0.3);
-    transform: translateY(-2px);
-    box-shadow: 
-      0 6px 20px rgba(255, 100, 150, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    background: hsl(var(--primary) / 0.95);
+    transform: translateY(-1px);
+    box-shadow:
+      0 6px 20px hsl(var(--primary) / 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.6);
   }
 }

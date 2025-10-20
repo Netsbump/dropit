@@ -53,14 +53,14 @@ export function AppHeader({ tabs }: AppHeaderProps) {
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="h-8 w-8 px-3 rounded-full bg-white text-black hover:bg-white/80 flex items-center gap-2"
+              className="h-8 w-8 px-3 rounded-full bg-white text-black hover:bg-white/80 flex items-center gap-2 shadow-md"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-medium text-white">{t('common.back')}</span>
+            <span className="text-sm font-bold text-[hsl(var(--appheader-foreground))]">{t('common.back')}</span>
           </div>
         ) : pageTitle ? (
-          <h1 className="text-xl text-white truncate uppercase">
+          <h1 className="text-xl font-extrabold truncate uppercase text-[hsl(var(--appheader-foreground))]">
             {pageTitle}
           </h1>
         ) : null}
@@ -68,7 +68,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
 
       {/* Center: Detail Title OR Tabs */}
       {showBackButton && pageTitle ? (
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-medium text-white uppercase">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-medium font-extrabold uppercase text-[hsl(var(--appheader-foreground))]">
           {pageTitle}
         </h1>
       ) : tabs && tabs.length > 0 ? (
@@ -81,8 +81,8 @@ export function AppHeader({ tabs }: AppHeaderProps) {
                 to={tab.path}
                 className={`px-3 transition-all uppercase text-sm ${
                   isActive
-                    ? 'text-white font-medium'
-                    : 'text-white/40 hover:text-white/70'
+                    ? 'text-[hsl(var(--appheader-tab-active))] font-extrabold'
+                    : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
                 }`}
               >
                 {tab.label}
@@ -95,16 +95,16 @@ export function AppHeader({ tabs }: AppHeaderProps) {
       {/* Right side: Notifications and User Menu */}
       <div className="flex items-center gap-3">
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="h-9 w-9 relative text-white hover:bg-white/10">
-          <Bell className="h-5 w-5" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full" />
+        <Button variant="ghost" size="icon" className="h-9 w-9 relative text-[hsl(var(--appheader-foreground))] hover:bg-white/50">
+          <Bell className="h-5 w-5 stroke-[2.5]" />
+          <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full shadow-sm" />
         </Button>
 
         {/* User Profile */}
         <Link to="/profile">
-          <Button variant="ghost" className="h-9 w-9 rounded-full p-0 hover:bg-white/10">
-            <Avatar className="h-9 w-9">
-              <AvatarFallback className="bg-white text-slate-700 text-sm font-medium">
+          <Button variant="ghost" className="h-9 w-9 rounded-full p-0 hover:bg-white/50">
+            <Avatar className="h-9 w-9 shadow-md">
+              <AvatarFallback className="bg-white text-[hsl(var(--appheader-foreground))] text-sm font-bold">
                 {getUserInitials(session?.user?.name)}
               </AvatarFallback>
             </Avatar>

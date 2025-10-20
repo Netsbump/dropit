@@ -22,7 +22,7 @@ export function WorkoutDetail({
           <Pencil className="h-4 w-4 mr-2" />
           Éditer
         </Button>
-        <Button className="text-white border-0" style={{ backgroundColor: '#ed960b' }}>Programmer</Button>
+        <Button>Programmer</Button>
       </div>
 
       {/* Main Content */}

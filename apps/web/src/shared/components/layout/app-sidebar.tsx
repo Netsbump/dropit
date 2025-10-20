@@ -46,7 +46,7 @@ export function AppSidebar() {
     }
   };
 
-  const items = [
+  const mainItems = [
     {
       title: t('sidebar.menu.dashboard'),
       url: '/dashboard',
@@ -67,6 +67,9 @@ export function AppSidebar() {
       url: '/athletes',
       icon: GraduationCap,
     },
+  ]
+
+  const secondaryItems = [
     {
       title: t('sidebar.menu.help'),
       url: '/help',
@@ -100,35 +103,29 @@ export function AppSidebar() {
   };
 
   return (
-    <aside className="w-[90px] h-screen flex flex-col items-center py-6 gap-8">
+    <aside className="w-[200px] h-screen flex flex-col py-6 px-4 gap-8">
       {/* Logo */}
-      <div className="flex flex-col items-center gap-1 text-white">
-        <BicepsFlexed className="h-8 w-8" />
-        <span className="text-xs font-semibold">Dropit</span>
+      <div className="flex items-center gap-2 px-2">
+        <BicepsFlexed className="h-7 w-7 stroke-[2.5] text-[hsl(var(--sidebar-logo))]" />
+        <span className="text-base font-bold text-[hsl(var(--sidebar-logo))]">Dropit</span>
       </div>
 
       {/* Main Menu */}
-      <nav className="flex-1 flex flex-col justify-center">
-        {items.map((item) => {
+      <nav className="flex-1 flex flex-col gap-1">
+        {mainItems.map((item) => {
           const isActive = isActiveItem(item.url);
           return (
             <Link
               key={item.title}
               to={item.url}
-              className="flex flex-col items-center gap-1.5 px-4 py-3 transition-colors hover:text-white "
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                  ? 'bg-[hsl(var(--sidebar-accent))]/20 backdrop-blur-sm text-[hsl(var(--sidebar-accent-foreground))] border border-[hsl(var(--sidebar-accent))]/30'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
+              }`}
             >
-              <div
-                className={`flex items-center justify-center h-12 w-12 rounded-full transition-colors text-brand-black ${
-                  isActive
-                    ? 'bg-white text-white'
-                    : 'text-white/70'
-                }`}
-                
-              >
-                <item.icon className={`h-6 w-6 ${ isActive ? 'text-brand-black' : 'text-white'}`} />
-              </div>
-              <span className={`text-[10px] font-medium text-center leading-tight uppercase text-white
-              }`}>
+              <item.icon className="h-5 w-5 stroke-[2.5]" />
+              <span className="text-sm font-semibold uppercase">
                 {item.title}
               </span>
             </Link>
@@ -136,19 +133,39 @@ export function AppSidebar() {
         })}
       </nav>
 
-      {/* Logout */}
-      <button
-        onClick={handleLogout}
-        className="flex flex-col items-center gap-1.5 px-4 py-3 text-white hover:text-white transition-colors"
-        type="button"
-      >
-        <div className="flex items-center justify-center h-12 w-12 rounded-full hover:bg-white/5 transition-colors">
-          <LogOut className="h-6 w-6" />
-        </div>
-        <span className="text-[10px] font-medium text-center leading-tight uppercase">
-          {t('sidebar.user.logout')}
-        </span>
-      </button>
+      {/* Secondary Menu (Aide, Réglages, Déconnexion) */}
+      <div className="flex flex-col gap-1">
+        {secondaryItems.map((item) => {
+          const isActive = isActiveItem(item.url);
+          return (
+            <Link
+              key={item.title}
+              to={item.url}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                  ? 'bg-[hsl(var(--sidebar-accent))]/20 backdrop-blur-sm text-[hsl(var(--sidebar-accent-foreground))] border border-[hsl(var(--sidebar-accent))]/30'
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
+              }`}
+            >
+              <item.icon className="h-5 w-5 stroke-[2.5]" />
+              <span className="text-sm font-semibold uppercase">
+                {item.title}
+              </span>
+            </Link>
+          );
+        })}
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all"
+          type="button"
+        >
+          <LogOut className="h-5 w-5 stroke-[2.5]" />
+          <span className="text-sm font-semibold uppercase">
+            {t('sidebar.user.logout')}
+          </span>
+        </button>
+      </div>
     </aside>
   );
 }

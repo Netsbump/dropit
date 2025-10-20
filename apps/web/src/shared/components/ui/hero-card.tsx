@@ -5,17 +5,20 @@ const variantConfig = {
   workout: {
     icon: Dumbbell,
     iconColor: 'text-gray-700',
-    gradientClass: 'hero-card-gradient-blue',
+    gradientClass: 'bg-gradient-to-br from-blue-50 to-indigo-50',
+    image: null, // À définir plus tard
   },
   complex: {
     icon: Zap,
     iconColor: 'text-gray-700',
-    gradientClass: 'hero-card-gradient-purple',
+    gradientClass: 'bg-gradient-to-br from-purple-50 to-pink-50',
+    image: '/src/assets/images/hero-pages/199307.svg',
   },
   exercise: {
     icon: Library,
     iconColor: 'text-gray-700',
-    gradientClass: 'hero-card-gradient-teal',
+    gradientClass: 'bg-gradient-to-br from-teal-50 to-cyan-50',
+    image: null, // À définir plus tard
   },
 }
 
@@ -38,40 +41,42 @@ export function HeroCard({
   className,
 }: HeroCardProps) {
   const config = variantConfig[variant]
-  const Icon = config.icon
 
   return (
-    <div className="flex gap-4 mb-6">
-      {/* Carte principale avec titre et description */}
+    <div className="flex gap-6 mb-6">
+      {/* Carte principale avec titre, description et image - 2/3 */}
       <div
         className={cn(
-          'relative overflow-hidden rounded-lg shadow-md flex-1',
-          config.gradientClass,
+          'relative overflow-visible rounded-2xl shadow-sm flex-[2]',
+          'bg-white/80 backdrop-blur-sm border border-gray-200',
+          'h-52',
           className
         )}
       >
-        <div className="relative z-10 p-6 flex items-center gap-6">
-          <div
-            className={cn(
-              'flex-shrink-0 w-14 h-14 rounded-lg bg-white/15 backdrop-blur-sm flex items-center justify-center',
-              'border border-white/20'
-            )}
-          >
-            <Icon className={cn('w-7 h-7', config.iconColor)} strokeWidth={2.5} />
+        <div className="relative z-10 p-8 h-full flex items-center">
+          <div className="flex-1 min-w-0 pr-40">
+            <h2 className="text-2xl font-bold text-gray-800 mb-3">{title}</h2>
+            <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
           </div>
 
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xl font-semibold text-gray-800 mb-1">{title}</h2>
-            <p className="text-gray-700 text-sm leading-relaxed">{description}</p>
-          </div>
+          {/* Image qui déborde en miroir */}
+          {config.image && (
+            <div className="absolute -right-4 -bottom-6 w-64 h-64 pointer-events-none">
+              <img
+                src={config.image}
+                alt=""
+                className="w-full h-full object-contain drop-shadow-lg scale-x-[-1]"
+              />
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Carte séparée pour les statistiques */}
+      {/* Carte séparée pour les statistiques - 1/3 */}
       {stat && (
-        <div className="hero-stats-card relative overflow-hidden rounded-lg shadow-md px-6 py-4 flex flex-col items-center justify-center min-w-[120px]">
-          <div className="text-3xl font-bold text-gray-800 mb-1">{stat.value}</div>
-          <div className="text-gray-700 text-xs uppercase tracking-wide font-medium text-center">
+        <div className="relative overflow-hidden rounded-2xl shadow-sm flex-[1] flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100">
+          <div className="text-5xl font-bold text-gray-800 mb-2">{stat.value}</div>
+          <div className="text-gray-600 text-xs uppercase tracking-wide font-semibold text-center">
             {stat.label}
           </div>
         </div>

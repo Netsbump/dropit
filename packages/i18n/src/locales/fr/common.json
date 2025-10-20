@@ -21,7 +21,7 @@
     "/": "Tableau de bord",
     "/library/workouts": "Entrainements",
     "/library/exercises": "Exercices",
-    "/library/complex": "Combinés",
+    "/library/complex": "Complexes",
     "/library/workouts/$workoutId": "Nom Entrainement",
     "/planning": "Calendrier",
     "/athletes": "Athlètes",
@@ -50,10 +50,10 @@
   },
   "library": {
     "title": "Bibliothèque",
-    "description": "Retrouvez et gérez tous vos entrainements, combinés et exercices ici",
+    "description": "Retrouvez et gérez tous vos entrainements, complexes et exercices ici",
     "tabs": {
       "workouts": "Entrainements",
-      "complex": "Combinés",
+      "complex": "Complexes",
       "exercises": "Exercices"
     }
   },
@@ -84,17 +84,17 @@
       "stat_label": "complexes"
     },
     "filters": {
-      "search_placeholder": "Rechercher un combiné...",
+      "search_placeholder": "Rechercher un complex...",
       "all_categories": "Toutes les catégories",
-      "create_complex": "Créer un combiné",
-      "no_results": "Aucun combiné trouvé"
+      "create_complex": "Créer un complex",
+      "no_results": "Aucun complex trouvé"
     },
     "details": {
-      "title": "Détails du combiné"
+      "title": "Détails du complex"
     },
     "creation": {
-      "title": "Créer un combiné",
-      "description": "Ajoutez un nouveau combiné à votre catalogue."
+      "title": "Créer un complex",
+      "description": "Ajoutez un nouveau complex à votre catalogue."
     }
   },
   "exercise": {

@@ -59,7 +59,7 @@ function HomeLayout() {
 
   return (
     <PageMetaProvider>
-      <div className="min-h-screen w-full bg-brand-black">
+      <div className="min-h-screen w-full">
         <div className="h-screen w-full glass-container flex">
           <AppSidebar />
 
