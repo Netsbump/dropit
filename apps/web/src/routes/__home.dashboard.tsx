@@ -25,7 +25,7 @@ function Dashboard() {
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card>
+          <Card className='shadow-none'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Athlètes actifs
@@ -40,7 +40,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='shadow-none'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Séances prévues
@@ -55,7 +55,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='shadow-none'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Exercices disponibles
@@ -70,7 +70,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='shadow-none'>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Taux de participation
@@ -87,7 +87,7 @@ function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Card>
+        <Card className='shadow-none'>
             <CardHeader>
               <CardTitle>Actions rapides</CardTitle>
             </CardHeader>
@@ -110,12 +110,12 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className='shadow-none'>
             <CardHeader>
               <CardTitle>Séances d'aujourd'hui</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border rounded-xl">
                 <div>
                   <p className="font-medium">Groupe Elite - Force</p>
                   <p className="text-sm text-muted-foreground">9:00 - 10:30</p>
@@ -124,7 +124,7 @@ function Dashboard() {
                   En cours
                 </Badge>
               </div>
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between p-3 border rounded-xl">
                 <div>
                   <p className="font-medium">Formation junior</p>
                   <p className="text-sm text-muted-foreground">14:00 - 15:30</p>

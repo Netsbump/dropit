@@ -10,6 +10,7 @@ import { DialogCreation } from '../features/athletes/dialog-creation';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Button } from '../shared/components/ui/button';
 import { HeroCard } from '../shared/components/ui/hero-card';
+import { Users } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/athletes')({
   component: AthletesPage,
@@ -60,6 +61,14 @@ function AthletesPage() {
           stat={{
             label: t('athletes:hero.stat_label'),
             value: athletes?.length || 0,
+            icon: Users,
+            description: t('athletes:hero.stat_description'),
+            callToAction: {
+              text: t('athletes:hero.stat_cta'),
+              onClick: () => {
+                console.log('Open athletes tutorial video');
+              }
+            }
           }}
         />
       </div>

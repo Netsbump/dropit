@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils'
-import { Dumbbell, Library, Zap, Users } from 'lucide-react'
+import { Dumbbell, Library, Zap, Users, Play, type LucideIcon } from 'lucide-react'
+import { Button } from './button'
 
 const variantConfig = {
   workout: {
@@ -35,6 +36,12 @@ export interface HeroCardProps {
   stat?: {
     label: string
     value: number | string
+    description?: string
+    icon?: LucideIcon
+    callToAction?: {
+      text: string
+      onClick: () => void
+    }
   }
   className?: string
 }
@@ -83,11 +90,32 @@ export function HeroCard({
 
       {/* Carte séparée pour les statistiques - 1/3 */}
       {stat && (
-        <div className="relative overflow-hidden rounded-2xl shadow-sm flex-[1] flex flex-col items-center justify-center bg-gradient-to-br from-orange-50 to-red-50 border border-orange-100">
-          <div className="text-5xl font-bold text-gray-800 mb-2">{stat.value}</div>
-          <div className="text-gray-600 text-xs uppercase tracking-wide font-semibold text-center">
+        <div className="relative overflow-hidden rounded-2xl shadow-sm flex-[1] flex flex-col items-center justify-center bg-orange-50 border border-orange-100 p-6">
+          {/* Valeur et icône */}
+          <div className="flex items-center gap-3 mb-2">
+            <div className="text-5xl font-bold text-gray-800">{stat.value}</div>
+            {stat.icon && <stat.icon className="h-8 w-8 text-orange-600" />}
+          </div>
+
+          {/* Label principal */}
+          <div className="text-gray-600 text-xs uppercase tracking-wide font-semibold text-center mb-3">
             {stat.label}
           </div>
+
+          {/* Call to action optionnel */}
+          {stat.callToAction && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={stat.callToAction.onClick}
+              className="bg-white hover:bg-gray-50 text-gray-700 text-xs shadow-sm border border-gray-200 h-auto py-2 px-3 whitespace-normal text-center leading-tight flex items-center gap-2"
+            >
+              {stat.callToAction.text}
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500 flex-shrink-0">
+                <Play className="h-3 w-3 text-white fill-white" />
+              </div>
+            </Button>
+          )}
         </div>
       )}
     </div>

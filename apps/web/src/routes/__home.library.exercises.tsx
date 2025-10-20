@@ -13,6 +13,7 @@ import { DetailsPanel } from '../shared/components/ui/details-panel'
 import { HeroCard } from '../shared/components/ui/hero-card'
 import { Spinner } from '../shared/components/ui/spinner'
 import { usePageMeta } from '../shared/hooks/use-page-meta'
+import { Library } from 'lucide-react'
 
 export const Route = createFileRoute('/__home/library/exercises')({
   component: ExercisesPage,
@@ -69,6 +70,14 @@ function ExercisesPage() {
             stat={{
               label: t('exercise.hero.stat_label'),
               value: exercises?.length || 0,
+              icon: Library,
+              description: t('exercise.hero.stat_description'),
+              callToAction: {
+                text: t('exercise.hero.stat_cta'),
+                onClick: () => {
+                  console.log('Open exercises tutorial video');
+                }
+              }
             }}
           />
         </div>

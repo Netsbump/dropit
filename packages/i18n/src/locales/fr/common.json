@@ -61,7 +61,8 @@
     "hero": {
       "title": "Créez vos programmes",
       "description": "Composez des entrainements personnalisés pour vos athlètes",
-      "stat_label": "entrainements"
+      "stat_label": "entrainements",
+      "stat_cta": "Apprendre comment composer vos entraînements avec vos complexes et erxercices disponibles"
     },
     "detail": {
       "title": "Détail de l'entraînement"
@@ -81,7 +82,8 @@
     "hero": {
       "title": "Enchaînements techniques",
       "description": "Créez des enchaînements d'exercices spécifiques pour vos athlètes",
-      "stat_label": "complexes"
+      "stat_label": "complexes",
+      "stat_cta": "Découvrir comment les complexes peuvent transformer vos séances d'entraînement"
     },
     "filters": {
       "search_placeholder": "Rechercher un complex...",
@@ -101,7 +103,8 @@
     "hero": {
       "title": "Bibliothèque de mouvements",
       "description": "Tous les exercices disponibles pour composer vos entrainements",
-      "stat_label": "exercices"
+      "stat_label": "exercices",
+      "stat_cta": "En savoir plus sur la bibliothèque d'exercices et comment les utiliser efficacement"
     },
     "filters": {
       "search_placeholder": "Rechercher un exercice...",

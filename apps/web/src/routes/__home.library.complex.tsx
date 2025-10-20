@@ -14,6 +14,7 @@ import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
 import { usePageMeta } from '../shared/hooks/use-page-meta'
 import { Button } from '@/shared/components/ui/button'
+import { Zap } from 'lucide-react'
 
 export const Route = createFileRoute('/__home/library/complex')({
   component: ComplexPage,
@@ -90,6 +91,14 @@ function ComplexPage() {
             stat={{
               label: t('complex.hero.stat_label'),
               value: complexes?.length || 0,
+              icon: Zap,
+              description: t('complex.hero.stat_description'),
+              callToAction: {
+                text: t('complex.hero.stat_cta'),
+                onClick: () => {
+                  console.log('Open complex tutorial video');
+                }
+              }
             }}
           />
 

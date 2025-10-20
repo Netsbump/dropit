@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
+import { Layers } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/library/workouts')({
   component: WorkoutPage,
@@ -90,6 +91,15 @@ function WorkoutPage() {
           stat={{
             label: t('workout.hero.stat_label'),
             value: workouts?.length || 0,
+            icon: Layers,
+            description: t('workout.hero.stat_description'),
+            callToAction: {
+              text: t('workout.hero.stat_cta'),
+              onClick: () => {
+                // TODO: Ouvrir une popup avec vidéo explicative
+                console.log('Open workout tutorial video');
+              }
+            }
           }}
         />
 
