@@ -2,13 +2,6 @@
 export default {
   darkMode: ['class'],
   content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
-  safelist: [
-    'bg-brand-orange-primary',
-    'bg-brand-orange-secondary',
-    'bg-brand-black',
-    'text-brand-black',
-    'border-brand-orange-primary',
-  ],
   theme: {
     extend: {
       borderRadius: {
@@ -66,13 +59,6 @@ export default {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
-        },
-        brand: {
-          orange: {
-            primary: 'hsl(var(--brand-orange-primary))',
-            secondary: 'hsl(var(--brand-orange-secondary))',
-          },
-          black: 'hsl(var(--brand-black))',
         },
       },
     },

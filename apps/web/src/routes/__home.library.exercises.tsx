@@ -57,9 +57,6 @@ function ExercisesPage() {
     queryClient.invalidateQueries({ queryKey: ['exercises'] })
   }
 
-  if (exercisesLoading) return <div>{t('common.loading')}</div>
-  if (!exercises) return <div>{t('exercise.filters.no_results')}</div>
-
   return (
     <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">

@@ -112,7 +112,7 @@ export function DataTable<TData extends { id: string }, TValue>({
               </DropdownMenuContent>
             </DropdownMenu>
             <Separator orientation="vertical" className="h-6" />
-            <Button onClick={() => onDialogCreation(true)} className="text-white border-0" style={{ backgroundColor: '#262125' }}>
+            <Button onClick={() => onDialogCreation(true)}>
               {t('exercise.filters.create_exercise')}
             </Button>
           </div>

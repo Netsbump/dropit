@@ -58,7 +58,7 @@ export function ComplexFilters({
             </SelectContent>
           </Select>
           <Separator orientation="vertical" className="h-6" />
-          <Button onClick={onCreateClick} className="btn-primary-gradient">{t('complex.filters.create_complex')}</Button>
+          <Button onClick={onCreateClick}>{t('complex.filters.create_complex')}</Button>
         </div>
       </div>
     </div>

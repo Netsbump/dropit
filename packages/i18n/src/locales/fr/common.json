@@ -100,7 +100,7 @@
   "exercise": {
     "hero": {
       "title": "Bibliothèque de mouvements",
-      "description": "Tous vos exercices organisés et accessibles",
+      "description": "Tous les exercices disponibles pour composer vos entrainements",
       "stat_label": "exercices"
     },
     "filters": {

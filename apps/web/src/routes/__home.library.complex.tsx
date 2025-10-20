@@ -12,6 +12,7 @@ import { ComplexFilters } from '../features/complex/complex-filters'
 import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
 import { usePageMeta } from '../shared/hooks/use-page-meta'
+import { Button } from '@/shared/components/ui/button'
 
 export const Route = createFileRoute('/__home/library/complex')({
   component: ComplexPage,
@@ -106,6 +107,7 @@ function ComplexPage() {
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
               <p>{t('complex.filters.no_results')}</p>
               <p className="text-sm">{t('common.start_create')}</p>
+              <Button onClick={() => setCreateComplexModalOpen(true)}>{t('complex.filters.create_complex')}</Button>
             </div>
           ) : (
             <ComplexGrid

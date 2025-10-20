@@ -6,7 +6,7 @@ const variantConfig = {
     icon: Dumbbell,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-    image: null, // À définir plus tard
+    image: '/src/assets/images/hero-pages/199309.svg',
   },
   complex: {
     icon: Zap,
@@ -18,7 +18,7 @@ const variantConfig = {
     icon: Library,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-teal-50 to-cyan-50',
-    image: null, // À définir plus tard
+    image: '/src/assets/images/hero-pages/199308.svg',
   },
 }
 
@@ -59,13 +59,16 @@ export function HeroCard({
             <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
           </div>
 
-          {/* Image qui déborde en miroir */}
+          {/* Image qui déborde */}
           {config.image && (
             <div className="absolute -right-4 -bottom-6 w-64 h-64 pointer-events-none">
               <img
                 src={config.image}
                 alt=""
-                className="w-full h-full object-contain drop-shadow-lg scale-x-[-1]"
+                className={cn(
+                  "w-full h-full object-contain drop-shadow-lg",
+                  variant === 'complex' && "scale-x-[-1]"
+                )}
               />
             </div>
           )}

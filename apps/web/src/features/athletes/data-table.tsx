@@ -144,7 +144,7 @@ export function DataTable<TValue>({
               </DropdownMenuContent>
             </DropdownMenu>
             <Separator orientation="vertical" className="h-6" />
-            <Button onClick={() => onDialogCreation(true)} className="text-white border-0" style={{ backgroundColor: '#ed960b' }}>
+            <Button onClick={() => onDialogCreation(true)}>
               {t('athletes:filters.create_athlete')}
             </Button>
           </div>

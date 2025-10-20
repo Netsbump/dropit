@@ -72,12 +72,12 @@ function WorkoutPage() {
     navigate({ to: `/workouts/${workoutId}` });
   };
 
-  // Si on est sur un détail de workout, on affiche directement le contenu
+  // If we are on a workout detail, display the content directly
   if (isWorkoutDetail) {
     return <Outlet />;
   }
 
-  // Sinon on affiche la grille des workouts
+  // Otherwise display the grid of workouts
   return (
     <div className="p-8">
       <HeroCard

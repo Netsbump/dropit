@@ -57,7 +57,7 @@ export function WorkoutFilters({
             </SelectContent>
           </Select>
           <Separator orientation="vertical" className="h-6" />
-          <Button onClick={onCreateClick} disabled={disabled} className="btn-primary-gradient">
+          <Button onClick={onCreateClick} disabled={disabled}>
             {t('workout.filters.create_workout')}
           </Button>
         </div>

@@ -1,6 +1,6 @@
 {
-  "title": "Planification d'entraînement",
-  "description": "Planifiez vos entraînements d'haltérophilie",
+  "title": "Planning d'entraînement",
+  "description": "Visualisez et planifiez les entraînements de votre club",
   "eventMoved": "Entraînement déplacé",
   "eventMovedDescription": "L'entraînement a été replanifié",
   "createWorkout": "Créer un entraînement",
