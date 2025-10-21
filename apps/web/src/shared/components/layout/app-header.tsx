@@ -57,10 +57,10 @@ export function AppHeader({ tabs }: AppHeaderProps) {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-bold text-[hsl(var(--appheader-foreground))]">{t('common.back')}</span>
+            <span className="text-sm font-medium text-[hsl(var(--appheader-foreground))]">{t('common.back')}</span>
           </div>
         ) : pageTitle ? (
-          <h1 className="text-xl font-extrabold truncate uppercase text-[hsl(var(--appheader-foreground))]">
+          <h1 className="text-xl font-medium truncate uppercase text-[hsl(var(--appheader-foreground))]">
             {pageTitle}
           </h1>
         ) : null}
@@ -68,7 +68,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
 
       {/* Center: Detail Title OR Tabs */}
       {showBackButton && pageTitle ? (
-        <h1 className="absolute left-1/2 -translate-x-1/2 text-medium font-extrabold uppercase text-[hsl(var(--appheader-foreground))]">
+        <h1 className="absolute left-1/2 -translate-x-1/2 text-medium font-semibold uppercase text-[hsl(var(--appheader-foreground))]">
           {pageTitle}
         </h1>
       ) : tabs && tabs.length > 0 ? (
@@ -81,7 +81,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
                 to={tab.path}
                 className={`px-3 transition-all uppercase text-sm ${
                   isActive
-                    ? 'text-[hsl(var(--appheader-tab-active))] font-extrabold'
+                    ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
                     : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
                 }`}
               >
@@ -109,7 +109,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
               </AvatarFallback>
             </Avatar>
             <div className="flex flex-col items-start">
-              <span className="text-sm font-semibold text-[hsl(var(--appheader-foreground))] leading-tight">
+              <span className="text-sm font-medium text-[hsl(var(--appheader-foreground))] leading-tight">
                 {session?.user?.name || 'User'}
               </span>
               <span className="text-xs text-[hsl(var(--appheader-foreground))]/60 leading-tight">

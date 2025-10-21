@@ -33,9 +33,9 @@ function Dashboard() {
 
   // Données pour le graphique de répartition des entraînements
   const trainingDistribution = [
-    { name: 'Exercices', value: 89, color: '#3b82f6' },
-    { name: 'Complexes', value: 24, color: '#8b5cf6' },
-    { name: 'Entraînements', value: 32, color: '#06b6d4' },
+    { name: 'Exercices', value: 89, color: '#a855f7' },
+    { name: 'Complexes', value: 24, color: '#c084fc' },
+    { name: 'Entraînements', value: 32, color: '#d8b4fe' },
   ];
 
   // Générer les 7 prochains jours pour le calendrier
@@ -174,13 +174,13 @@ function Dashboard() {
                   <div className="space-y-2 flex flex-col px-4">
                     <div className="flex items-center justify-between">
                       <p className="font-bold text-gray-800 text-6xl">24</p>
-                      <div className="w-16 h-16 rounded-2xl border border-purple-200 bg-purple-100 inline-flex items-center justify-center">
-                      <Users className="h-8 w-8 text-purple-600" />
+                      <div className="w-16 h-16 rounded-2xl border border-orange-200 bg-orange-100 inline-flex items-center justify-center">
+                      <Users className="h-8 w-8 text-orange-600" />
                       </div>
                     </div>
                     <p className="text-gray-600 text-md">athlètes dans votre club</p>
                   </div>
-                  <Button className="w-full bg-purple-500 hover:bg-purple-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-orange-400 hover:bg-orange-500 text-white border-0 h-10" size="sm">
                     Inviter un athlète
                   </Button>
                 </div>
@@ -193,14 +193,14 @@ function Dashboard() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-bold text-gray-800">Prochaine compétition</h3>
-                    <div className="w-10 h-10 rounded-xl border border-purple-200 bg-purple-100 inline-flex items-center justify-center">
-                      <TrendingUp className="h-5 w-5 text-purple-600" />
+                    <div className="w-10 h-10 rounded-xl border border-orange-200 bg-orange-100 inline-flex items-center justify-center">
+                      <TrendingUp className="h-5 w-5 text-orange-600" />
                     </div>
                   </div>
-                  <div className="bg-white/60 rounded-xl p-4 border border-purple-100">
+                  <div className="bg-white/60 rounded-xl p-4 border border-orange-100">
                     <p className="text-sm text-gray-600 mb-2">Régional Nord - 28 Octobre</p>
                     <div className="flex items-baseline gap-2">
-                      <p className="text-4xl font-bold text-purple-600">8</p>
+                      <p className="text-4xl font-bold text-orange-400">8</p>
                       <p className="text-sm text-gray-600">athlètes inscrits</p>
                     </div>
                   </div>
@@ -218,13 +218,13 @@ function Dashboard() {
                   <div className="space-y-2 flex flex-col px-4">
                     <div className="flex items-center justify-between">
                       <p className="font-bold text-gray-800 text-6xl">12</p>
-                      <div className="w-16 h-16 rounded-2xl border border-orange-200 bg-orange-100 inline-flex items-center justify-center">
-                      <Calendar className="h-8 w-8 text-orange-600" />
+                      <div className="w-16 h-16 rounded-2xl border border-pink-200 bg-pink-100 inline-flex items-center justify-center">
+                      <Calendar className="h-8 w-8 text-pink-600" />
                       </div>
                     </div>
                     <p className="text-gray-600 text-md">sessions programmées</p>
                   </div>
-                  <Button className="w-full bg-orange-500 hover:bg-orange-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-pink-400 hover:bg-pink-500 text-white border-0 h-10" size="sm">
                     Ajouter une séance
                   </Button>
                 </div>
@@ -243,10 +243,10 @@ function Dashboard() {
                         className={cn(
                           "flex flex-col items-center p-2 rounded-lg transition-all",
                           day.hasSession
-                            ? "bg-orange-500 text-white"
+                            ? "bg-pink-400 text-white"
                             : index === 0
-                            ? "bg-orange-100 border border-orange-300"
-                            : "bg-white/60 border border-orange-100"
+                            ? "bg-pink-100 border border-pink-300"
+                            : "bg-white/60 border border-pink-100"
                         )}
                       >
                         <span className="text-xs font-medium mb-1">{day.day}</span>
@@ -310,7 +310,7 @@ function Dashboard() {
                       ))}
                     </div>
                   </div>
-                  <Button className="w-full bg-blue-500 hover:bg-blue-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-purple-500 hover:bg-purple-600 text-white border-0 h-10" size="sm">
                     Créer un entraînement
                   </Button>
                 </div>

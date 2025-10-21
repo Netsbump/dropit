@@ -124,8 +124,8 @@ export function AppSidebar() {
                   : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
               }`}
             >
-              <item.icon className="h-5 w-5 stroke-[2.5]" />
-              <span className="text-sm font-semibold uppercase">
+              <item.icon className="h-5 w-5 stroke-[2]" />
+              <span className="text-sm font-normal uppercase">
                 {item.title}
               </span>
             </Link>
@@ -147,8 +147,8 @@ export function AppSidebar() {
                   : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
               }`}
             >
-              <item.icon className="h-5 w-5 stroke-[2.5]" />
-              <span className="text-sm font-semibold uppercase">
+              <item.icon className="h-5 w-5 stroke-[2]" />
+              <span className="text-sm font-normal uppercase">
                 {item.title}
               </span>
             </Link>
@@ -160,8 +160,8 @@ export function AppSidebar() {
           className="flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all"
           type="button"
         >
-          <LogOut className="h-5 w-5 stroke-[2.5]" />
-          <span className="text-sm font-semibold uppercase">
+          <LogOut className="h-5 w-5 stroke-[2]" />
+          <span className="text-sm font-normal uppercase">
             {t('sidebar.user.logout')}
           </span>
         </button>
