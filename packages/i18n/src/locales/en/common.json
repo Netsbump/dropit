@@ -130,7 +130,11 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "description": "Overview of your coaching activity"
+    "description": "Overview of your coaching activity",
+    "welcome": {
+      "greeting": "Hello {{name}}!",
+      "description": "Welcome to your dashboard. Manage your athletes, schedule sessions, and track their performance."
+    }
   },
   "organization": {
     "setup": {

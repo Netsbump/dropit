@@ -127,6 +127,10 @@
   },
   "dashboard": {
     "title": "Tableau de bord",
-    "description": "Vue d'ensemble de votre activité coaching"
+    "description": "Vue d'ensemble de votre activité coaching",
+    "welcome": {
+      "greeting": "Bonjour {{name}} !",
+      "description": "Bienvenue sur votre tableau de bord. Gérez vos athlètes, programmez vos séances et suivez leurs performances."
+    }
   }
 }
