@@ -1,5 +1,5 @@
 import { Link, useMatches, useRouter } from '@tanstack/react-router';
-import { ChevronLeft, Bell } from 'lucide-react';
+import { ChevronLeft, Bell, ChevronRight } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
@@ -45,7 +45,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   return (
-    <header className="h-16 flex items-center justify-between pr-6">
+    <header className="h-20 flex items-center justify-between pr-6">
       {/* Left side: Back button OR Page Title */}
       <div className="flex items-center gap-3 min-w-0 pl-11">
         {showBackButton ? (
@@ -93,21 +93,30 @@ export function AppHeader({ tabs }: AppHeaderProps) {
       ) : null}
 
       {/* Right side: Notifications and User Menu */}
-      <div className="flex items-center gap-3">
+      <div className="flex gap-3 items-center">
         {/* Notifications */}
-        <Button variant="ghost" size="icon" className="h-9 w-9 relative text-[hsl(var(--appheader-foreground))] hover:bg-white/50">
+        <Button variant="ghost" className="h-auto px-3 py-2 relative text-[hsl(var(--appheader-foreground))] hover:bg-white/50 rounded-xl">
           <Bell className="h-5 w-5 stroke-[2.5]" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full shadow-sm" />
+          <span className="absolute top-1 right-1 h-2 w-2 bg-purple-500 rounded-full shadow-sm" />
         </Button>
 
         {/* User Profile */}
         <Link to="/profile">
-          <Button variant="ghost" className="h-9 w-9 rounded-full p-0 hover:bg-white/50">
-            <Avatar className="h-9 w-9 shadow-md">
-              <AvatarFallback className="bg-white text-[hsl(var(--appheader-foreground))] text-sm font-bold">
+          <Button variant="ghost" className="h-auto px-3 py-2 rounded-xl bg-purple-50 border border-purple-400 hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
+            <Avatar className="h-10 w-10 shadow-sm">
+              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm font-bold">
                 {getUserInitials(session?.user?.name)}
               </AvatarFallback>
             </Avatar>
+            <div className="flex flex-col items-start">
+              <span className="text-sm font-semibold text-[hsl(var(--appheader-foreground))] leading-tight">
+                {session?.user?.name || 'User'}
+              </span>
+              <span className="text-xs text-[hsl(var(--appheader-foreground))]/60 leading-tight">
+                Coach
+              </span>
+            </div>
+            <ChevronRight className="h-4 w-4 text-[hsl(var(--appheader-foreground))]/60" />
           </Button>
         </Link>
       </div>

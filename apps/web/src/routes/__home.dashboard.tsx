@@ -180,7 +180,7 @@ function Dashboard() {
                     </div>
                     <p className="text-gray-600 text-md">athlètes dans votre club</p>
                   </div>
-                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-purple-500 hover:bg-purple-700 text-white border-0 h-10" size="sm">
                     Inviter un athlète
                   </Button>
                 </div>
@@ -224,7 +224,7 @@ function Dashboard() {
                     </div>
                     <p className="text-gray-600 text-md">sessions programmées</p>
                   </div>
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-orange-500 hover:bg-orange-700 text-white border-0 h-10" size="sm">
                     Ajouter une séance
                   </Button>
                 </div>
@@ -310,7 +310,7 @@ function Dashboard() {
                       ))}
                     </div>
                   </div>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0 h-10" size="sm">
+                  <Button className="w-full bg-blue-500 hover:bg-blue-700 text-white border-0 h-10" size="sm">
                     Créer un entraînement
                   </Button>
                 </div>
