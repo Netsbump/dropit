@@ -62,10 +62,7 @@ function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
           
         {/* Overview Card - Large */}
-        <Card className={cn(
-          "lg:col-span-2 relative overflow-visible rounded-2xl flex flex-col min-h-[400px]",
-          "bg-white/80 backdrop-blur-sm border border-gray-200"
-        )}>
+        <Card className="lg:col-span-2 relative overflow-visible rounded-2xl flex flex-col min-h-[400px] bg-white/80 border border-gray-200">
           <CardHeader className="relative pb-0 flex-1">
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] pointer-events-none">
               <img
@@ -98,10 +95,7 @@ function Dashboard() {
 
         <div className='flex flex-col gap-6'>
           {/* Taux de participation */}
-          <Card className={cn(
-            "relative overflow-hidden rounded-2xl shadow-sm",
-            "bg-orange-50 border border-orange-100"
-          )}>
+          <Card className="rounded-2xl bg-white/80 border border-gray-200">
             <CardContent className="p-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
@@ -144,10 +138,7 @@ function Dashboard() {
             </CardContent>
           </Card>
 
-          <Card className={cn(
-            "relative overflow-hidden rounded-2xl shadow-sm",
-            "bg-pink-50 border border-pink-100"
-          )}>
+          <Card className="rounded-2xl bg-white/80 border border-gray-200">
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-lg font-bold text-gray-800">Actualité du club</CardTitle>
@@ -177,7 +168,7 @@ function Dashboard() {
           {/* Colonne 1 : Athlètes */}
           <div className="flex flex-col gap-6">
             {/* Athlètes */}
-            <Card className="flex-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl">
+            <Card className="flex-1 bg-white/80 border border-gray-200 rounded-2xl">
               <CardContent className="p-6 pt-12">
                 <div className="space-y-6">
                   <div className="space-y-2 flex flex-col px-4">
@@ -189,7 +180,7 @@ function Dashboard() {
                     </div>
                     <p className="text-gray-600 text-md">athlètes dans votre club</p>
                   </div>
-                  <Button className="w-full bg-transparent hover:bg-purple-50 text-purple-700 border border-purple-200 h-10" size="sm">
+                  <Button className="w-full bg-purple-600 hover:bg-purple-700 text-white border-0 h-10" size="sm">
                     Inviter un athlète
                   </Button>
                 </div>
@@ -197,7 +188,7 @@ function Dashboard() {
             </Card>
 
             {/* Compétition */}
-            <Card className="flex-1 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl">
+            <Card className="flex-1 bg-white/80 border border-gray-200 rounded-2xl">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
@@ -221,7 +212,7 @@ function Dashboard() {
           {/* Colonne 2 : Planning */}
           <div className="flex flex-col gap-6">
             {/* Planning */}
-            <Card className="flex-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl">
+            <Card className="flex-1 bg-white/80 border border-gray-200 rounded-2xl">
               <CardContent className="p-6 pt-12">
                 <div className="space-y-6">
                   <div className="space-y-2 flex flex-col px-4">
@@ -233,7 +224,7 @@ function Dashboard() {
                     </div>
                     <p className="text-gray-600 text-md">sessions programmées</p>
                   </div>
-                  <Button className="w-full bg-transparent hover:bg-orange-50 text-orange-700 border border-orange-200 h-10" size="sm">
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white border-0 h-10" size="sm">
                     Ajouter une séance
                   </Button>
                 </div>
@@ -241,7 +232,7 @@ function Dashboard() {
             </Card>
 
             {/* Mini calendrier */}
-            <Card className="flex-1 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-2xl">
+            <Card className="flex-1 bg-white/80 border border-gray-200 rounded-2xl">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <h3 className="text-lg font-bold text-gray-800 text-center">7 prochains jours</h3>
@@ -252,7 +243,7 @@ function Dashboard() {
                         className={cn(
                           "flex flex-col items-center p-2 rounded-lg transition-all",
                           day.hasSession
-                            ? "bg-orange-500 text-white shadow-md"
+                            ? "bg-orange-500 text-white"
                             : index === 0
                             ? "bg-orange-100 border border-orange-300"
                             : "bg-white/60 border border-orange-100"
@@ -275,7 +266,7 @@ function Dashboard() {
           {/* Colonne 3 : Répartition bibliothèque */}
           <div className="flex flex-col">
             {/* Répartition */}
-            <Card className="relative overflow-visible bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl flex-1 flex flex-col">
+            <Card className="bg-white/80 border border-gray-200 rounded-2xl flex-1 flex flex-col">
               <CardContent className="p-6 flex-1 flex flex-col">
                 <div className="flex-1 flex flex-col justify-between space-y-6">
                   <div className="space-y-4">
@@ -319,7 +310,7 @@ function Dashboard() {
                       ))}
                     </div>
                   </div>
-                  <Button className="w-full bg-transparent hover:bg-blue-50 text-blue-700 border border-blue-200 h-10" size="sm">
+                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white border-0 h-10" size="sm">
                     Créer un entraînement
                   </Button>
                 </div>
