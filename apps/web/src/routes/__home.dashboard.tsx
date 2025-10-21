@@ -2,11 +2,12 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Card, CardContent, CardHeader, CardTitle } from '../shared/components/ui/card';
-import { Badge } from '../shared/components/ui/badge';
 import { Button } from '../shared/components/ui/button';
-import { Users, Calendar, Library, TrendingUp, Newspaper, UserPlus, Plus, CalendarPlus } from 'lucide-react';
+import { ScrollArea } from '../shared/components/ui/scroll-area';
+import { Users, Calendar, TrendingUp, Newspaper } from 'lucide-react';
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
 
 export const Route = createFileRoute('/__home/dashboard')({
   component: Dashboard,
@@ -20,46 +21,75 @@ function Dashboard() {
     setPageMeta({ title: t('dashboard.title') });
   }, [setPageMeta, t]);
 
+  // Données pour le graphique de participation (6 derniers mois)
+  const participationData = [
+    { month: 'Mai', rate: 78 },
+    { month: 'Juin', rate: 82 },
+    { month: 'Juil', rate: 75 },
+    { month: 'Août', rate: 88 },
+    { month: 'Sept', rate: 85 },
+    { month: 'Oct', rate: 94 },
+  ];
+
+  // Données pour le graphique de répartition des entraînements
+  const trainingDistribution = [
+    { name: 'Exercices', value: 89, color: '#3b82f6' },
+    { name: 'Complexes', value: 24, color: '#8b5cf6' },
+    { name: 'Entraînements', value: 32, color: '#06b6d4' },
+  ];
+
+  // Générer les 7 prochains jours pour le calendrier
+  const getDaysArray = () => {
+    const days = [];
+    const today = new Date();
+    for (let i = 0; i < 7; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      days.push({
+        day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
+        date: date.getDate(),
+        hasSession: i === 2, // Session dans 2 jours
+      });
+    }
+    return days;
+  };
+
+  const calendarDays = getDaysArray();
+
   return (
-    <div className="relative flex-1 p-8">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+    <ScrollArea className="flex-1 h-full">
+      <div className="relative p-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-12">
+          
         {/* Overview Card - Large */}
         <Card className={cn(
-          "lg:col-span-2 relative overflow-visible rounded-2xl shadow-sm",
+          "lg:col-span-2 relative overflow-visible rounded-2xl flex flex-col min-h-[400px]",
           "bg-white/80 backdrop-blur-sm border border-gray-200"
         )}>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-bold text-gray-800">Overview</CardTitle>
-              <Badge className="bg-gray-100 text-gray-700 hover:bg-gray-200 border-0">
-                Mensuel
-              </Badge>
-            </div>
-          </CardHeader>
-          <CardContent className="relative">
-            {/* Image illustration qui déborde en haut */}
-            <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-96 h-96 pointer-events-none">
+          <CardHeader className="relative pb-0 flex-1">
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[28rem] h-[28rem] pointer-events-none">
               <img
                 src="/src/assets/images/hero-pages/199306.svg"
                 alt=""
                 className="w-full h-full object-contain drop-shadow-lg"
               />
             </div>
-
-            <div className="grid grid-cols-3 gap-8 pt-48">
+          </CardHeader>
+          <CardContent className="mt-auto pb-6">
+            <div className="grid grid-cols-3 gap-6">
               <div className="text-center">
-                <p className="text-gray-500 text-xs mb-2 uppercase tracking-wide">Total Athlètes</p>
-                <p className="text-4xl font-bold text-gray-800 mb-1">24</p>
+                <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Total Athlètes</p>
+                <p className="text-3xl font-bold text-gray-800 mb-1">24</p>
                 <p className="text-xs text-gray-400">Dans le club</p>
               </div>
               <div className="text-center">
-                <p className="text-gray-500 text-xs mb-2 uppercase tracking-wide">Séances programmées</p>
-                <p className="text-4xl font-bold text-gray-800 mb-1">156</p>
-                <p className="text-xs text-gray-400">Ce mois</p>
+                <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Séances programmées</p>
+                <p className="text-3xl font-bold text-gray-800 mb-1">101</p>
+                <p className="text-xs text-gray-400">Total</p>
               </div>
               <div className="text-center">
-                <p className="text-gray-500 text-xs mb-2 uppercase tracking-wide">Entraînements créés</p>
-                <p className="text-4xl font-bold text-gray-800 mb-1">89</p>
+                <p className="text-gray-500 text-xs mb-1 uppercase tracking-wide">Entraînements créés</p>
+                <p className="text-3xl font-bold text-gray-800 mb-1">32</p>
                 <p className="text-xs text-gray-400">Total</p>
               </div>
             </div>
@@ -72,23 +102,44 @@ function Dashboard() {
             "relative overflow-hidden rounded-2xl shadow-sm",
             "bg-orange-50 border border-orange-100"
           )}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-2xl bg-orange-100 flex items-center justify-center">
-                  <TrendingUp className="h-6 w-6 text-orange-600" />
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div>
+                  <p className="text-xs text-gray-600 mb-1">Taux de participation</p>
+                  <p className="text-3xl font-bold text-gray-800">94%</p>
                 </div>
-                <CardTitle className="text-lg font-bold text-gray-800">Taux de participation</CardTitle>
+                <div className="w-10 h-10 rounded-xl border border-orange-200 bg-orange-100 inline-flex items-center justify-center">
+                  <TrendingUp className="h-5 w-5 text-orange-600" />
+                </div>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="mb-2">
-                <p className="text-5xl font-bold text-gray-800 mb-1">94%</p>
-                <p className="text-gray-600 text-sm">Ce mois</p>
-              </div>
-              <div className="flex items-center gap-2 mt-4">
-                <Badge className="bg-orange-200 text-orange-800 hover:bg-orange-300 border-0 text-xs">
-                  +3% ce mois
-                </Badge>
+              <div className="h-16 -mx-2">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={participationData}>
+                    <defs>
+                      <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#f97316" stopOpacity={0.3}/>
+                        <stop offset="95%" stopColor="#f97316" stopOpacity={0}/>
+                      </linearGradient>
+                    </defs>
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #fed7aa',
+                        borderRadius: '8px',
+                        padding: '8px'
+                      }}
+                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
+                      formatter={(value: number) => [`${value}%`, 'Taux']}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="rate"
+                      stroke="#f97316"
+                      strokeWidth={2}
+                      fill="url(#colorRate)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </CardContent>
           </Card>
@@ -98,11 +149,11 @@ function Dashboard() {
             "bg-pink-50 border border-pink-100"
           )}>
             <CardHeader className="pb-2">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-pink-100 flex items-center justify-center">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-lg font-bold text-gray-800">Actualité du club</CardTitle>
+                <div className="w-12 h-12 rounded-2xl border border-pink-200 bg-pink-100 inline-flex items-center justify-center">
                   <Newspaper className="h-6 w-6 text-pink-600" />
                 </div>
-                <CardTitle className="text-lg font-bold text-gray-800">Actualité du club</CardTitle>
               </div>
             </CardHeader>
             <CardContent>
@@ -121,71 +172,162 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Trois cards en bas */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Athlètes */}
-        <Card className="relative overflow-visible bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          {/* Icône qui déborde */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-400 to-purple-500 inline-flex items-center justify-center shadow-lg shrink-0">
-            <Users className="h-8 w-8 text-white shrink-0" />
+        {/* Grille de cards en bas */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Colonne 1 : Athlètes */}
+          <div className="flex flex-col gap-6">
+            {/* Athlètes */}
+            <Card className="flex-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl">
+              <CardContent className="p-6 pt-12">
+                <div className="space-y-6">
+                  <div className="space-y-2 flex flex-col px-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-gray-800 text-6xl">24</p>
+                      <div className="w-16 h-16 rounded-2xl border border-purple-200 bg-purple-100 inline-flex items-center justify-center">
+                      <Users className="h-8 w-8 text-purple-600" />
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-md">athlètes dans votre club</p>
+                  </div>
+                  <Button className="w-full bg-transparent hover:bg-purple-50 text-purple-700 border border-purple-200 h-10" size="sm">
+                    Inviter un athlète
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Compétition */}
+            <Card className="flex-1 bg-gradient-to-br from-purple-50 to-pink-50 border border-purple-200 rounded-2xl">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-bold text-gray-800">Prochaine compétition</h3>
+                    <div className="w-10 h-10 rounded-xl border border-purple-200 bg-purple-100 inline-flex items-center justify-center">
+                      <TrendingUp className="h-5 w-5 text-purple-600" />
+                    </div>
+                  </div>
+                  <div className="bg-white/60 rounded-xl p-4 border border-purple-100">
+                    <p className="text-sm text-gray-600 mb-2">Régional Nord - 28 Octobre</p>
+                    <div className="flex items-baseline gap-2">
+                      <p className="text-4xl font-bold text-purple-600">8</p>
+                      <p className="text-sm text-gray-600">athlètes inscrits</p>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <CardContent className="p-6 pt-12">
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <p className="font-bold text-gray-800 text-6xl">24</p>
-                <p className="text-gray-600 text-sm">athlètes dans votre club</p>
-              </div>
-              <Button className="w-full bg-transparent hover:bg-purple-50 text-purple-700 border border-purple-200 h-10" size="sm">
-                <UserPlus className="h-4 w-4 mr-2" />
-                Inviter un athlète
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+          {/* Colonne 2 : Planning */}
+          <div className="flex flex-col gap-6">
+            {/* Planning */}
+            <Card className="flex-1 bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl">
+              <CardContent className="p-6 pt-12">
+                <div className="space-y-6">
+                  <div className="space-y-2 flex flex-col px-4">
+                    <div className="flex items-center justify-between">
+                      <p className="font-bold text-gray-800 text-6xl">12</p>
+                      <div className="w-16 h-16 rounded-2xl border border-orange-200 bg-orange-100 inline-flex items-center justify-center">
+                      <Calendar className="h-8 w-8 text-orange-600" />
+                      </div>
+                    </div>
+                    <p className="text-gray-600 text-md">sessions programmées</p>
+                  </div>
+                  <Button className="w-full bg-transparent hover:bg-orange-50 text-orange-700 border border-orange-200 h-10" size="sm">
+                    Ajouter une séance
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-        {/* Bibliothèque */}
-        <Card className="relative overflow-visible bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          {/* Icône qui déborde */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-500 inline-flex items-center justify-center shadow-lg shrink-0">
-            <Library className="h-8 w-8 text-white shrink-0" />
+            {/* Mini calendrier */}
+            <Card className="flex-1 bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-2xl">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  <h3 className="text-lg font-bold text-gray-800 text-center">7 prochains jours</h3>
+                  <div className="grid grid-cols-7 gap-1">
+                    {calendarDays.map((day, index) => (
+                      <div
+                        key={index}
+                        className={cn(
+                          "flex flex-col items-center p-2 rounded-lg transition-all",
+                          day.hasSession
+                            ? "bg-orange-500 text-white shadow-md"
+                            : index === 0
+                            ? "bg-orange-100 border border-orange-300"
+                            : "bg-white/60 border border-orange-100"
+                        )}
+                      >
+                        <span className="text-xs font-medium mb-1">{day.day}</span>
+                        <span className="text-lg font-bold">{day.date}</span>
+                        {day.hasSession && (
+                          <div className="w-1.5 h-1.5 rounded-full bg-white mt-1" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-600 text-center">Une session programmée</p>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <CardContent className="p-6 pt-12">
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <p className="font-bold text-gray-800 text-6xl">89</p>
-                <p className="text-gray-600 text-sm">exercices dans votre bibliothèque</p>
-              </div>
-              <Button className="w-full bg-transparent hover:bg-blue-50 text-blue-700 border border-blue-200 h-10" size="sm">
-                <Plus className="h-4 w-4 mr-2" />
-                Créer un entraînement
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Planning */}
-        <Card className="relative overflow-visible bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-          {/* Icône qui déborde */}
-          <div className="absolute -top-8 left-1/2 -translate-x-1/2 w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-orange-500 inline-flex items-center justify-center shadow-lg shrink-0">
-            <Calendar className="h-8 w-8 text-white shrink-0" />
+          {/* Colonne 3 : Répartition bibliothèque */}
+          <div className="flex flex-col">
+            {/* Répartition */}
+            <Card className="relative overflow-visible bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-200 rounded-2xl flex-1 flex flex-col">
+              <CardContent className="p-6 flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col justify-between space-y-6">
+                  <div className="space-y-4">
+                    <h3 className="text-lg font-bold text-gray-800 text-center">Répartition bibliothèque</h3>
+                    <div className="h-64">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <PieChart>
+                          <Pie
+                            data={trainingDistribution}
+                            cx="50%"
+                            cy="50%"
+                            innerRadius={55}
+                            outerRadius={85}
+                            paddingAngle={4}
+                            dataKey="value"
+                          >
+                            {trainingDistribution.map((entry, index) => (
+                              <Cell key={`cell-${index}`} fill={entry.color} />
+                            ))}
+                          </Pie>
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: 'white',
+                              border: '1px solid #e5e7eb',
+                              borderRadius: '8px',
+                              padding: '8px'
+                            }}
+                          />
+                        </PieChart>
+                      </ResponsiveContainer>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      {trainingDistribution.map((item) => (
+                        <div key={item.name}>
+                          <div className="flex items-center justify-center gap-1 mb-1">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
+                          </div>
+                          <p className="text-xs text-gray-600">{item.name}</p>
+                          <p className="text-sm font-bold text-gray-800">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <Button className="w-full bg-transparent hover:bg-blue-50 text-blue-700 border border-blue-200 h-10" size="sm">
+                    Créer un entraînement
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
           </div>
-
-          <CardContent className="p-6 pt-12">
-            <div className="space-y-6">
-              <div className="text-center space-y-2">
-                <p className="font-bold text-gray-800 text-6xl">12</p>
-                <p className="text-gray-600 text-sm">sessions de programmées</p>
-              </div>
-              <Button className="w-full bg-transparent hover:bg-orange-50 text-orange-700 border border-orange-200 h-10" size="sm">
-                <CalendarPlus className="h-4 w-4 mr-2" />
-                Ajouter une séance
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+        </div>
       </div>
-    </div>
+    </ScrollArea>
   );
 }
