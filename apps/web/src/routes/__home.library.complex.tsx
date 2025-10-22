@@ -80,8 +80,8 @@ function ComplexPage() {
   }
 
   return (
-    <div className="h-full flex gap-6">
-      <div className="flex-1 min-w-0 flex flex-col p-8">
+    <div className="h-full flex gap-6 p-4">
+      <div className="flex-1 min-w-0 flex flex-col">
         {/* Fixed header section */}
         <div className="flex-none space-y-6">
           <HeroCard

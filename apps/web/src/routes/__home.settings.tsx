@@ -15,5 +15,5 @@ function RouteComponent() {
     setPageMeta({ title: t('sidebar.menu.settings') })
   }, [setPageMeta, t])
 
-  return <div className="p-8">Hello "/__home/settings"!</div>
+  return <div className="p-4">Hello "/__home/settings"!</div>
 }

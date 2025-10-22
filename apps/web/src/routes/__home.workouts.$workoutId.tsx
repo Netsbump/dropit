@@ -72,7 +72,7 @@ function WorkoutDetailPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4">
       <WorkoutDetail
         workout={workout}
         onEdit={() => setIsEditing(true)}

@@ -51,7 +51,7 @@ function AthletesPage() {
   }
 
   return (
-    <div className="flex flex-col h-full p-8">
+    <div className="flex flex-col h-full p-4">
       {/* Fixed header section */}
       <div className="flex-none">
         <HeroCard

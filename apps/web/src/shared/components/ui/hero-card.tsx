@@ -74,7 +74,7 @@ export function HeroCard({
 
           {/* Image qui déborde */}
           {config.image && (
-            <div className="absolute -right-4 -bottom-6 w-64 h-64 pointer-events-none">
+            <div className="absolute -right-4 bottom-2 w-52 h-52 pointer-events-none">
               <img
                 src={config.image}
                 alt=""

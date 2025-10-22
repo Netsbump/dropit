@@ -16,7 +16,7 @@ function RouteComponent() {
   }, [setPageMeta, t])
 
   return (
-    <div className="p-8">
+    <div className="p-4">
       <div>Profile page</div>
     </div>
   )

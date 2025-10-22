@@ -57,7 +57,7 @@ function Dashboard() {
 
   return (
     <ScrollArea className="flex-1 h-full">
-      <div className="grid grid-cols-[2fr_1fr] gap-6 p-8">
+      <div className="grid grid-cols-[2fr_1fr] gap-6 p-4">
 
         <div className="flex flex-col gap-6">
           {/* Row main KPIs */}

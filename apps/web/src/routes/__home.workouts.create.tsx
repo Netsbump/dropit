@@ -92,7 +92,7 @@ function CreateWorkoutPage() {
   }, [setPageMeta, currentStep]);
 
   return (
-    <div className="h-full flex flex-col p-8">
+    <div className="h-full flex flex-col p-4">
       <WorkoutCreationStepper
         currentStep={currentStep}
         setCurrentStep={setCurrentStep}

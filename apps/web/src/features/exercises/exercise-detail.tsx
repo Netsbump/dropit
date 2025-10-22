@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { toast } from '@/shared/hooks/use-toast';
 import { UpdateExercise, updateExerciseSchema } from '@dropit/schemas';
@@ -260,8 +259,6 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
               </CardContent>
             </Card>
 
-            <Separator />
-
             <div className="flex justify-end gap-2">
               <Button
                 type="button"
@@ -357,8 +354,6 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
           </div>
         </CardContent>
       </Card>
-
-      <Separator />
 
       <div className="flex justify-end">
         <Button variant="default" onClick={() => setIsEditing(true)}>

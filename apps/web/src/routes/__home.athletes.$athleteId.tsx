@@ -255,7 +255,7 @@ function AthleteDetailPage() {
   }
 
   return (
-    <div className="p-8">
+    <div className="p-4">
       <AthleteDetail
         athlete={athlete}
         personalRecords={personalRecords || []}

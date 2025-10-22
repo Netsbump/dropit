@@ -19,7 +19,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
@@ -457,8 +456,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
             </CardContent>
           </Card>
 
-          <Separator />
-
           <div className="flex justify-end gap-2">
             <Button
               type="button"
@@ -576,8 +573,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           </div>
         </CardContent>
       </Card>
-
-      <Separator />
 
       <div className="flex justify-end">
         <Button onClick={() => setIsEditing(true)}>Modifier</Button>
