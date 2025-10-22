@@ -83,7 +83,7 @@ export function DataTable<TData extends { id: string }, TValue>({
                 onChange={(event) =>
                   table.getColumn('name')?.setFilterValue(event.target.value)
                 }
-                className="pl-8 bg-sidebar max-w-lg"
+                className="pl-8 bg-background max-w-lg"
               />
             </div>
             <div className="flex items-center gap-2">

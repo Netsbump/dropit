@@ -62,7 +62,7 @@
       "title": "Créez vos programmes",
       "description": "Composez des entrainements personnalisés pour vos athlètes",
       "stat_label": "entrainements",
-      "stat_cta": "Apprendre comment composer vos entraînements avec vos complexes et erxercices disponibles"
+      "stat_cta": "Apprenez à composer vos entraînements avec vos complexes et exercices disponibles"
     },
     "detail": {
       "title": "Détail de l'entraînement"
@@ -83,7 +83,7 @@
       "title": "Enchaînements techniques",
       "description": "Créez des enchaînements d'exercices spécifiques pour vos athlètes",
       "stat_label": "complexes",
-      "stat_cta": "Découvrir comment les complexes peuvent transformer vos séances d'entraînement"
+      "stat_cta": "Découvrez comment les complexes peuvent transformer vos séances d'entraînement"
     },
     "filters": {
       "search_placeholder": "Rechercher un complex...",

@@ -39,7 +39,7 @@ export function ComplexFilters({
             placeholder={t('complex.filters.search_placeholder')}
             onChange={(e) => onFilterChange(e.target.value)}
             disabled={disabled}
-            className="pl-8 bg-sidebar max-w-lg"
+            className="pl-8 bg-background max-w-lg"
           />
         </div>
         {/* Filters */}

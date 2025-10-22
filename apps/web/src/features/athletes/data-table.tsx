@@ -115,7 +115,7 @@ export function DataTable<TValue>({
                   placeholder={t('athletes:filters.search_placeholder')}
                   value={globalFilter ?? ''}
                   onChange={(event) => setGlobalFilter(event.target.value)}
-                  className="pl-8 bg-sidebar max-w-lg"
+                  className="pl-8 bg-background max-w-lg"
                 />
             </div>
             <div className="flex items-center gap-2">

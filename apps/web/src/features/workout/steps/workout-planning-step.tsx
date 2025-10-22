@@ -199,7 +199,7 @@ export function WorkoutPlanningStep({
                         placeholder="Rechercher un athlète..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-background"
                         disabled={!isScheduled}
                       />
                     </div>

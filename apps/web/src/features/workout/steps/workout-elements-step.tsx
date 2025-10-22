@@ -199,7 +199,7 @@ export function WorkoutElementsStep({
                           placeholder="Rechercher un exercice..."
                           value={exerciseSearch}
                           onChange={(e) => setExerciseSearch(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 bg-background"
                         />
                       </div>
                       
@@ -263,7 +263,7 @@ export function WorkoutElementsStep({
                           placeholder="Rechercher un complexe..."
                           value={complexSearch}
                           onChange={(e) => setComplexSearch(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 bg-background"
                         />
                       </div>
                       
