@@ -51,7 +51,12 @@ function PlanningPage() {
     navigate({ to: '/workouts/create', search: { date: dateParam } });
   };
 
-  const handleEventClick = (info: EventClickArg) => {
+  const handleEventClick = (info: EventClickArg, currentView: string) => {
+    // Ne pas ouvrir le popover en vue semaine (les détails sont déjà affichés)
+    if (currentView === 'dayGridWeek') {
+      return;
+    }
+
     // Fermer d'abord si un autre popover est déjà ouvert
     if (isDetailPopoverOpen) {
       setIsDetailPopoverOpen(false);

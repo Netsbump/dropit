@@ -14,18 +14,6 @@ interface WorkoutCardProps {
   onWorkoutClick: (id: string) => void;
 }
 
-// Fonction pour obtenir la couleur pastel selon la catégorie (jaune ou rouge pâle)
-const getCategoryColor = (category: string) => {
-  const colors: Record<string, string> = {
-    Force: 'bg-red-50 text-red-700 border-red-200',
-    Technique: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    Endurance: 'bg-red-50 text-red-700 border-red-200',
-    Mobilité: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    Conditioning: 'bg-red-50 text-red-700 border-red-200',
-  };
-  return colors[category] || 'bg-yellow-50 text-yellow-700 border-yellow-200';
-};
-
 export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
@@ -39,7 +27,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
           {workout.workoutCategory && (
             <Badge
               variant="outline"
-              className={`text-xs font-medium shrink-0 ${getCategoryColor(workout.workoutCategory)}`}
+              className="text-xs font-medium shrink-0 bg-primary/10 text-primary border-primary/20"
             >
               {workout.workoutCategory}
             </Badge>
@@ -55,11 +43,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
             return (
               <div
                 key={element.id}
-                className={`p-3 rounded-lg border ${
-                  isExercise
-                    ? 'bg-tertiary/50 border-tertiary'
-                    : 'bg-secondary/50 border-secondary'
-                }`}
+                className="p-3 rounded-lg border border-gray-200 bg-gray-50"
               >
                 {/* Header avec type et sets/reps */}
                 <div className="flex items-center justify-between mb-2">

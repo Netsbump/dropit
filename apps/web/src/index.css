@@ -106,3 +106,7 @@
   }
 }
 
+/* FullCalendar customization */
+.fc .fc-day-today {
+  background-color: hsl(var(--primary) / 0.1) !important;
+}
