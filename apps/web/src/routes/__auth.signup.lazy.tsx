@@ -59,7 +59,7 @@ function Signup() {
 
         {/* Formulaire à droite */}
         <div className="w-full max-w-md mx-auto flex items-center">
-          <div className="bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm p-8">
+          <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-8">
               <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-600" />

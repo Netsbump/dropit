@@ -29,7 +29,7 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
                     'flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-all duration-200 shrink-0',
                     {
                       'bg-primary text-primary-foreground': currentStep >= index,
-                      'bg-gray-100 text-gray-600 border border-gray-200': currentStep < index,
+                      'bg-gray-100 text-gray-600 border': currentStep < index,
                       'cursor-pointer hover:bg-primary/90': onStepClick && currentStep < index,
                       'cursor-default': !onStepClick,
                     }

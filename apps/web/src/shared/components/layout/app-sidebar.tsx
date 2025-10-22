@@ -120,20 +120,22 @@ export function AppSidebar() {
               to={item.url}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
                 isActive
-                  ? 'bg-[hsl(var(--sidebar-accent))]/20 backdrop-blur-sm text-[hsl(var(--sidebar-accent-foreground))] border border-[hsl(var(--sidebar-accent))]/30'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
+                  ? 'bg-purple-100 border border-purple-200'
+                  : 'text-sidebar-foreground hover:bg-purple-200'
               }`}
             >
-              <item.icon className="h-5 w-5 stroke-[2]" />
-              <span className="text-sm font-normal uppercase">
-                {item.title}
+              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                  {item.title}
+                </span>
               </span>
             </Link>
           );
         })}
       </nav>
 
-      {/* Secondary Menu (Aide, Réglages, Déconnexion) */}
+      {/* Secondary Menu (Help, Settings, Logout) */}
       <div className="flex flex-col gap-1">
         {secondaryItems.map((item) => {
           const isActive = isActiveItem(item.url);
@@ -143,13 +145,15 @@ export function AppSidebar() {
               to={item.url}
               className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
                 isActive
-                  ? 'bg-[hsl(var(--sidebar-accent))]/20 backdrop-blur-sm text-[hsl(var(--sidebar-accent-foreground))] border border-[hsl(var(--sidebar-accent))]/30'
-                  : 'text-sidebar-foreground hover:bg-sidebar-accent/10'
+                  ? 'bg-purple-100 border border-purple-200'
+                  : 'text-sidebar-foreground hover:bg-purple-200'
               }`}
             >
-              <item.icon className="h-5 w-5 stroke-[2]" />
-              <span className="text-sm font-normal uppercase">
-                {item.title}
+              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                  {item.title}
+                </span>
               </span>
             </Link>
           );
@@ -157,11 +161,11 @@ export function AppSidebar() {
 
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all"
+          className="flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground hover:bg-purple-200 transition-all"
           type="button"
         >
           <LogOut className="h-5 w-5 stroke-[2]" />
-          <span className="text-sm font-normal uppercase">
+          <span className="text-md font-normal">
             {t('sidebar.user.logout')}
           </span>
         </button>

@@ -57,8 +57,8 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                 key={element.id}
                 className={`p-3 rounded-lg border ${
                   isExercise
-                    ? 'bg-yellow-50/50 border-yellow-100'
-                    : 'bg-red-50/50 border-red-100'
+                    ? 'bg-tertiary/50 border-tertiary'
+                    : 'bg-secondary/50 border-secondary'
                 }`}
               >
                 {/* Header avec type et sets/reps */}
@@ -67,8 +67,8 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                     variant="secondary"
                     className={`text-[10px] font-semibold uppercase ${
                       isExercise
-                        ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100'
-                        : 'bg-red-100 text-red-700 hover:bg-red-100'
+                        ? 'bg-tertiary text-tertiary-foreground hover:bg-tertiary'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary'
                     }`}
                   >
                     {isExercise ? 'exercise' : 'complex'}

@@ -66,8 +66,8 @@ function HomeLayout() {
           <main className="flex-1 flex flex-col">
             <AppHeader tabs={getTabs()}/>
 
-            <div className="flex-1 min-h-0 pb-3 px-3 pt-0">
-              <div className="rounded-3xl h-full overflow-hidden bg-slate-50 shadow-sm">
+            <div className="flex-1 min-h-0 pb-3 px-3 pt-0 ">
+              <div className="rounded-3xl h-full overflow-hidden shadow-none border bg-outlet">
                 <Outlet />
               </div>
             </div>

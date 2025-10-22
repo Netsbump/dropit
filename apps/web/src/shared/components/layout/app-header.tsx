@@ -1,5 +1,5 @@
 import { Link, useMatches, useRouter } from '@tanstack/react-router';
-import { ChevronLeft, Bell, ChevronRight } from 'lucide-react';
+import { ChevronLeft } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
@@ -45,7 +45,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   return (
-    <header className="h-20 flex items-center justify-between pr-6">
+    <header className="h-20 flex items-center justify-between pr-3">
       {/* Left side: Back button OR Page Title */}
       <div className="flex items-center gap-3 min-w-0 pl-11">
         {showBackButton ? (
@@ -60,7 +60,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
             <span className="text-sm font-medium text-[hsl(var(--appheader-foreground))]">{t('common.back')}</span>
           </div>
         ) : pageTitle ? (
-          <h1 className="text-xl font-medium truncate uppercase text-[hsl(var(--appheader-foreground))]">
+          <h1 className="text-xl font-medium truncate text-[hsl(var(--appheader-foreground))]">
             {pageTitle}
           </h1>
         ) : null}
@@ -95,16 +95,12 @@ export function AppHeader({ tabs }: AppHeaderProps) {
       {/* Right side: Notifications and User Menu */}
       <div className="flex gap-3 items-center">
         {/* Notifications */}
-        <Button variant="ghost" className="h-auto px-3 py-2 relative text-[hsl(var(--appheader-foreground))] hover:bg-white/50 rounded-xl">
-          <Bell className="h-5 w-5 stroke-[2.5]" />
-          <span className="absolute top-1 right-1 h-2 w-2 bg-purple-500 rounded-full shadow-sm" />
-        </Button>
 
         {/* User Profile */}
         <Link to="/profile">
-          <Button variant="ghost" className="h-auto px-3 py-2 rounded-xl bg-purple-50 border border-purple-400 hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
+          <Button variant="ghost" className="h-auto py-2 rounded-lg border bg-outlet hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
             <Avatar className="h-10 w-10 shadow-sm">
-              <AvatarFallback className="bg-gradient-to-br from-purple-500 to-blue-500 text-white text-sm font-bold">
+              <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
                 {getUserInitials(session?.user?.name)}
               </AvatarFallback>
             </Avatar>
@@ -116,7 +112,6 @@ export function AppHeader({ tabs }: AppHeaderProps) {
                 Coach
               </span>
             </div>
-            <ChevronRight className="h-4 w-4 text-[hsl(var(--appheader-foreground))]/60" />
           </Button>
         </Link>
       </div>

@@ -1,13 +1,9 @@
 export const getCategoryBadgeVariant = (categoryName: string) => {
 
     const colorVariants = [
-      'bg-yellow-100 text-yellow-800 hover:bg-yellow-100 rounded-sm shadow-none',
-      'bg-green-100 text-green-800 hover:bg-green-100 rounded-sm shadow-none', 
-      'bg-red-100 text-red-800 hover:bg-red-100 rounded-sm shadow-none',
-      'bg-blue-100 text-blue-800 hover:bg-blue-100 rounded-sm shadow-none',
-      'bg-orange-100 text-orange-800 hover:bg-orange-100 rounded-sm shadow-none',
-      'bg-purple-100 text-purple-800 hover:bg-purple-100 rounded-sm shadow-none',
-      'bg-pink-100 text-pink-800 hover:bg-pink-100 rounded-sm shadow-none',
+      'bg-tertiary text-tertiary-foreground hover:bg-tertiary rounded-sm shadow-none',
+      'bg-primary/60 text-primary-foreground hover:bg-primary/30 rounded-sm shadow-none',
+      'bg-secondary text-secondary-foreground hover:bg-secondary rounded-sm shadow-none',
     ];
   
      // Hash simple basé sur les caractères du nom

@@ -59,7 +59,7 @@ function OnboardingChoice() {
           <Card
             className={cn(
               "relative overflow-visible cursor-pointer group transition-all duration-200",
-              "bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm",
+              "bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm",
               "hover:shadow-lg hover:scale-[1.02]"
             )}
           >
@@ -129,7 +129,7 @@ function OnboardingChoice() {
           <Card
             className={cn(
               "relative overflow-visible cursor-pointer group transition-all duration-200",
-              "bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm",
+              "bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm",
               "hover:shadow-lg hover:scale-[1.02]"
             )}
           >

@@ -84,7 +84,7 @@ function JoinOrganizationPage() {
       background: 'linear-gradient(135deg, rgba(200, 180, 255, 0.5) 0%, rgba(180, 200, 255, 0.4) 20%, rgba(255, 200, 220, 0.3) 40%, rgba(255, 220, 200, 0.35) 60%, rgba(255, 200, 220, 0.4) 80%, rgba(220, 180, 255, 0.5) 100%)'
     }}>
       <div className="w-full max-w-md mx-auto">
-        <Card className="w-full bg-white/80 backdrop-blur-sm border border-gray-200 rounded-2xl shadow-sm">
+        <Card className="w-full bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm">
           <CardHeader className="text-center p-8 pb-6">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-6">

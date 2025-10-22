@@ -25,7 +25,7 @@ const variantConfig = {
     icon: Users,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-green-50 to-emerald-50',
-    image: '/src/assets/images/hero-pages/1993014.svg',
+    image: '/src/assets/images/hero-pages/199306.svg',
   },
 }
 
@@ -60,8 +60,8 @@ export function HeroCard({
       {/* Carte principale avec titre, description et image - 2/3 */}
       <div
         className={cn(
-          'relative overflow-visible rounded-2xl shadow-sm flex-[2]',
-          'bg-white/80 backdrop-blur-sm border border-gray-200',
+          'relative overflow-visible rounded-2xl shadow-none flex-[2]',
+          'bg-white/80 backdrop-blur-sm border',
           'h-52',
           className
         )}
@@ -90,11 +90,11 @@ export function HeroCard({
 
       {/* Carte séparée pour les statistiques - 1/3 */}
       {stat && (
-        <div className="relative overflow-hidden rounded-2xl shadow-sm flex-[1] flex flex-col items-center justify-center bg-orange-50 border border-orange-100 p-6">
+        <div className="relative overflow-hidden rounded-2xl shadow-none flex-[1] flex flex-col items-center justify-center bg-purple-100 border p-6">
           {/* Valeur et icône */}
           <div className="flex items-center gap-3 mb-2">
             <div className="text-5xl font-bold text-gray-800">{stat.value}</div>
-            {stat.icon && <stat.icon className="h-8 w-8 text-orange-600" />}
+            {stat.icon && <stat.icon className="h-8 w-8 text-purple-700" />}
           </div>
 
           {/* Label principal */}
@@ -108,10 +108,10 @@ export function HeroCard({
               variant="secondary"
               size="sm"
               onClick={stat.callToAction.onClick}
-              className="bg-white hover:bg-gray-50 text-gray-700 text-xs shadow-sm border border-gray-200 h-auto py-2 px-3 whitespace-normal text-center leading-tight flex items-center gap-2"
+              className="bg-white hover:bg-gray-50 text-gray-700 text-xs shadow-sm border h-auto py-2 px-3 whitespace-normal text-center leading-tight flex items-center gap-2"
             >
               {stat.callToAction.text}
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-orange-500 flex-shrink-0">
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
                 <Play className="h-3 w-3 text-white fill-white" />
               </div>
             </Button>
