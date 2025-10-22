@@ -43,7 +43,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
             return (
               <div
                 key={element.id}
-                className="p-3 rounded-lg border border-gray-200 bg-gray-50"
+                className="p-3 rounded-lg border bg-gray-50"
               >
                 {/* Header avec type et sets/reps */}
                 <div className="flex items-center justify-between mb-2">

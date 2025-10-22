@@ -76,7 +76,7 @@ export function AthleteDetail({
     <div className="space-y-6 w-full">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
-        <Card className="bg-background rounded-md border shadow-sm">
+        <Card className="bg-background rounded-xl border shadow-none">
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold mb-4">
               {t('athletes:details.personal_info')}
@@ -116,7 +116,7 @@ export function AthleteDetail({
         {/* Stats & Club */}
         <div className="space-y-6">
           {/* Stats */}
-          <Card className="bg-background rounded-md border shadow-sm">
+          <Card className="bg-background rounded-xl border shadow-none">
             <CardContent className="space-y-4 pt-6">
               <h2 className="text-lg font-semibold mb-4">
                 {t('athletes:details.statistics')}
@@ -140,7 +140,7 @@ export function AthleteDetail({
           </Card>
 
           {/* Competitor Status */}
-          <Card className="bg-background rounded-md border shadow-sm">
+          <Card className="bg-background rounded-xl border shadow-none">
             <CardContent className="space-y-4 pt-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -438,7 +438,7 @@ export function AthleteDetail({
       </div>
 
       {/* Personal Records Section */}
-      <Card className="bg-background rounded-md border shadow-sm">
+      <Card className="bg-background rounded-xl border shadow-none">
         <CardContent className="space-y-4 pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">
@@ -462,7 +462,7 @@ export function AthleteDetail({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {athlete.personalRecords ? (
                     <>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -473,7 +473,7 @@ export function AthleteDetail({
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -484,7 +484,7 @@ export function AthleteDetail({
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -512,7 +512,7 @@ export function AthleteDetail({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {personalRecords ? (
                     personalRecords.map((record) => (
-                      <Card key={record.id} className="bg-primary/5">
+                      <Card key={record.id} className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6">
                           <div className="text-sm font-medium">
                             {record.exerciseName ||
@@ -546,7 +546,7 @@ export function AthleteDetail({
       </Card>
 
       {/* History */}
-      <Card className="bg-background rounded-md border shadow-sm">
+      <Card className="bg-background rounded-xl border shadow-none">
         <CardContent className="space-y-4 pt-6">
           <h2 className="text-lg font-semibold mb-4">
             {t('athletes:details.training_history')}
