@@ -53,7 +53,7 @@ function AthletesPage() {
   return (
     <div className="flex flex-col h-full p-8">
       {/* Fixed header section */}
-      <div className="flex-none mb-6">
+      <div className="flex-none">
         <HeroCard
           variant="athlete"
           title={t('athletes:hero.title')}

@@ -158,11 +158,11 @@ export function DataTable<TValue>({
       <ScrollArea className="flex-1">
         <div className="space-y-4">
           {/* Table */}
-          <div className="rounded-md border bg-card">
+          <div className="rounded-2xl border bg-card shadow-none overflow-hidden">
             <Table>
               <TableHeader>
                 {table.getHeaderGroups().map((headerGroup) => (
-                  <TableRow key={headerGroup.id} className="bg-sidebar">
+                  <TableRow key={headerGroup.id} className="bg-sidebar h-14">
                     {headerGroup.headers.map((header) => {
                       return (
                         <TableHead key={header.id}>
@@ -184,7 +184,7 @@ export function DataTable<TValue>({
                     <TableRow
                       key={row.id}
                       data-state={row.getIsSelected() && 'selected'}
-                      className="cursor-pointer hover:bg-muted/50"
+                      className="cursor-pointer hover:bg-primary/5"
                       onClick={() => onRowClick?.(row.original.id)}
                     >
                       {row.getVisibleCells().map((cell) => (
