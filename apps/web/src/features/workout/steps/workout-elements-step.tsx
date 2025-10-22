@@ -149,7 +149,7 @@ export function WorkoutElementsStep({
       <div className="h-full flex flex-col">
 
       {/* Layout principal : 2 colonnes */}
-      <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 mt-6">
+      <div className="flex-1 grid grid-cols-4 gap-6 min-h-0">
 
         {/* Colonne gauche : Liste des éléments disponibles */}
         <div className="col-span-1 flex flex-col min-h-0">

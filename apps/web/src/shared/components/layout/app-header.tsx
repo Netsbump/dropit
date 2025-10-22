@@ -23,6 +23,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const pageTitle = pageMeta.title;
   const showBackButton = pageMeta.showBackButton || false;
   const onBackClick = pageMeta.onBackClick;
+  const middleContent = pageMeta.middleContent;
 
   // Function to get user initials from name
   const getUserInitials = (name?: string) => {
@@ -47,13 +48,13 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   return (
     <header className="h-20 flex items-center justify-between pr-3">
       {/* Left side: Back button OR Page Title */}
-      <div className="flex items-center gap-3 min-w-0 pl-11">
+      <div className="flex items-center gap-3 min-w-0 pl-3">
         {showBackButton ? (
           <div className="flex items-center gap-2">
             <Button
               variant="ghost"
               onClick={handleBackClick}
-              className="h-8 w-8 px-3 rounded-full bg-white text-black hover:bg-white/80 flex items-center gap-2 shadow-md"
+              className="h-8 w-8 px-3 rounded-full border bg-outlet text-black hover:bg-white/80 flex items-center gap-2"
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
@@ -66,8 +67,12 @@ export function AppHeader({ tabs }: AppHeaderProps) {
         ) : null}
       </div>
 
-      {/* Center: Detail Title OR Tabs */}
-      {showBackButton && pageTitle ? (
+      {/* Center: Custom Content OR Detail Title OR Tabs */}
+      {middleContent ? (
+        <div className="absolute left-1/2 -translate-x-1/2">
+          {middleContent}
+        </div>
+      ) : showBackButton && pageTitle ? (
         <h1 className="absolute left-1/2 -translate-x-1/2 text-medium font-semibold uppercase text-[hsl(var(--appheader-foreground))]">
           {pageTitle}
         </h1>
@@ -98,7 +103,7 @@ export function AppHeader({ tabs }: AppHeaderProps) {
 
         {/* User Profile */}
         <Link to="/profile">
-          <Button variant="ghost" className="h-auto py-2 rounded-lg border bg-outlet hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
+          <Button variant="ghost" className="h-auto py-2 rounded-full border bg-outlet hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
             <Avatar className="h-10 w-10 shadow-sm">
               <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
                 {getUserInitials(session?.user?.name)}
