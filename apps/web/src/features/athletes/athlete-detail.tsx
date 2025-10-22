@@ -34,7 +34,7 @@ import {
 } from '@radix-ui/react-select';
 import { format as formatDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Dumbbell, Pencil, Plus } from 'lucide-react';
+import { Dumbbell, Pencil } from 'lucide-react';
 import { Form, useForm } from 'react-hook-form';
 
 type AthleteDetailProps = {
@@ -150,7 +150,6 @@ export function AthleteDetail({
                   {athlete.competitorStatus && (
                     <Button
                       variant="outline"
-                      size="sm"
                       onClick={() => {
                         setIsEditingCompetitorStatus(
                           !isEditingCompetitorStatus
@@ -159,15 +158,13 @@ export function AthleteDetail({
                       }}
                       disabled={isCreatingCompetitorStatus}
                     >
-                      <Pencil className="h-4 w-4 mr-2" />
                       {isEditingCompetitorStatus
                         ? t('athletes:details.cancel')
                         : t('athletes:details.edit')}
+                      <Pencil className="h-4 w-4 opacity-50" />
                     </Button>
                   )}
                   <Button
-                    variant="outline"
-                    size="sm"
                     onClick={() => {
                       setIsCreatingCompetitorStatus(
                         !isCreatingCompetitorStatus
@@ -176,7 +173,6 @@ export function AthleteDetail({
                     }}
                     disabled={isEditingCompetitorStatus}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
                     {isCreatingCompetitorStatus
                       ? t('athletes:details.cancel')
                       : t('athletes:details.new_status')}
@@ -290,7 +286,7 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button type="submit" disabled={isLoading}>
+                      <Button type="submit" variant="default" disabled={isLoading}>
                         {t('athletes:details.edit')}
                       </Button>
                     </div>
@@ -402,7 +398,7 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button type="submit" disabled={isLoading}>
+                      <Button variant="default" type="submit" disabled={isLoading}>
                         {t('athletes:details.create_new_status')}
                       </Button>
                     </div>

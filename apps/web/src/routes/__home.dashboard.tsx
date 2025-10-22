@@ -22,11 +22,11 @@ function Dashboard() {
 
   // Données pour le graphique de participation (6 derniers mois)
   const participationData = [
-    { month: 'Mai', rate: 78 },
-    { month: 'Juin', rate: 82 },
-    { month: 'Juil', rate: 75 },
-    { month: 'Août', rate: 88 },
-    { month: 'Sept', rate: 85 },
+    { month: 'Mai', rate: 68 },
+    { month: 'Juin', rate: 10 },
+    { month: 'Juil', rate: 72 },
+    { month: 'Août', rate: 50 },
+    { month: 'Sept', rate: 60 },
     { month: 'Oct', rate: 94 },
   ];
 
@@ -57,20 +57,20 @@ function Dashboard() {
 
   return (
     <ScrollArea className="flex-1 h-full">
-      <div className="grid grid-cols-[2fr_1fr] gap-6 p-4">
+      <div className="grid grid-cols-[3fr_2fr] gap-4 p-4 h-full">
 
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-4 h-full">
           {/* Row main KPIs */}
-          <div className="grid grid-cols-3 gap-6">
+          <div className="grid grid-cols-3 gap-4">
             {/* Colonne 1 : Athlètes */}
-            <Card className="flex-1 bg-white/80 border rounded-2xl flex flex-col justify-center shadow-none">
+            <Card className="flex-1 bg-background border rounded-2xl flex flex-col justify-center shadow-none">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="space-y-2 flex flex-col">
-                    <p className="text-gray-500 text-lg">Athlètes dans votre club</p>
-                    <p className="font-bold text-gray-800 text-4xl">24</p>
+                    <p className="text-gray-500 text-md">Athlètes dans votre club</p>
+                    <p className="font-bold text-gray-800 text-3xl">24</p>
                   </div>
-                  <Button className="w-full text-lg h-12 rounded-full">
+                  <Button className="w-full text-md h-10 rounded-full">
                     Inviter un athlète
                   </Button>
                 </div>
@@ -78,14 +78,14 @@ function Dashboard() {
             </Card>
 
             {/* Colonne 2 : Planning */}
-            <Card className="flex-1 bg-white/80 border rounded-2xl flex flex-col justify-center shadow-none">
+            <Card className="flex-1 bg-background border rounded-2xl flex flex-col justify-center shadow-none">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="space-y-2 flex flex-col">
-                    <p className="text-gray-500 text-lg">Sessions programmées</p>
-                    <p className="font-bold text-gray-800 text-4xl">12</p>
+                    <p className="text-gray-500 text-md">Sessions programmées</p>
+                    <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
-                  <Button className="w-full text-lg h-12 rounded-full">
+                  <Button className="w-full text-md h-10 rounded-full">
                     Ajouter une séance
                   </Button>
                 </div>
@@ -93,14 +93,14 @@ function Dashboard() {
             </Card>
 
             {/* Colonne 3: Entrainements */}
-            <Card className="flex-1 bg-white/80 border rounded-2xl flex flex-col justify-center shadow-none">
+            <Card className="flex-1 bg-background border rounded-2xl flex flex-col justify-center shadow-none">
               <CardContent className="p-6">
                 <div className="space-y-4">
                   <div className="space-y-2 flex flex-col">
-                    <p className="text-gray-500 text-lg">Entrainements programmés</p>
-                    <p className="font-bold text-gray-800 text-4xl">12</p>
+                    <p className="text-gray-500 text-md">Entrainements programmés</p>
+                    <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
-                  <Button className="w-full text-lg h-12 rounded-full">
+                  <Button className="w-full text-md h-10 rounded-full">
                     Créer un entraînement
                   </Button>
                 </div>
@@ -109,12 +109,12 @@ function Dashboard() {
           </div>
 
           {/*Particitation graph*/}
-          <Card className="rounded-2xl bg-white/80 border shadow-none">
+          <Card className="rounded-2xl bg-background border shadow-none">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div className="space-y-2 flex flex-col">
-                  <p className="text-gray-500 text-lg">Taux de participation</p>
-                  <p className="font-bold text-gray-800 text-4xl">94%</p>
+                  <p className="text-gray-500 text-md">Taux de participation</p>
+                  <p className="font-bold text-gray-800 text-3xl">94%</p>
                 </div>
               </div>
               <div className="h-16 -mx-2">
@@ -150,10 +150,10 @@ function Dashboard() {
           </Card>
 
           {/* Planning */}
-          <Card className="flex-1 bg-white/80 border rounded-2xl shadow-none">
+          <Card className="flex-1 bg-background border rounded-2xl shadow-none">
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  <p className="text-gray-500 text-lg">Planning des 7 prochains jours</p>
+                  <p className="text-gray-500 text-md">Planning des 7 prochains jours</p>
                   <div className="grid grid-cols-7 gap-1">
                     {calendarDays.map((day, index) => (
                       <div
@@ -164,7 +164,7 @@ function Dashboard() {
                             ? "bg-purple-500 text-white"
                             : index === 0
                             ? "bg-purple-100 border border-purple-300 text-purple-700"
-                            : "bg-white/60 border border-purple-100"
+                            : "bg-white/60 border"
                         )}
                       >
                         <span className="text-xs font-medium mb-1">{day.day}</span>
@@ -180,12 +180,12 @@ function Dashboard() {
           </Card>
 
           {/* Library repartition */}
-          <Card className="bg-white/80 border rounded-2xl flex-1 flex flex-col shadow-none">
+          <Card className="bg-background border rounded-2xl flex-1 flex flex-col shadow-none">
             <CardContent className="p-6 flex-1 flex flex-col">
               <div className="flex-1 flex flex-col justify-between space-y-6">
                 <div className="space-y-6">
-                  <p className="text-gray-500 text-lg">Répartition bibliothèque</p>
-                  <div className="h-64">
+                  <p className="text-gray-500 text-md">Répartition bibliothèque</p>
+                  <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
                         <Pie
@@ -230,27 +230,27 @@ function Dashboard() {
         </div>
 
         <div className="flex-1 gap-6">
-          <Card className="rounded-2xl bg-white/80 border shadow-none flex flex-col h-full">
+          <Card className="rounded-2xl bg-background border shadow-none flex flex-col h-full">
             {/* Club news */}
             <div>
               <CardHeader className="pb-2">
-                <p className="text-gray-500 text-lg">Actualité du club</p>
+                <p className="text-gray-500 text-md">Actualité du club</p>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="bg-white rounded-xl p-4 border">
+                  <div className="bg-background rounded-xl p-4 border">
                     <p className="font-medium text-md text-gray-700">Nouvelle session de force débute lundi</p>
                     <p className="text-xs text-gray-500 mt-1">Il y a 2 heures</p>
                   </div>
-                  <div className="bg-white rounded-xl p-4 border">
+                  <div className="bg-background rounded-xl p-4 border">
                     <p className="font-medium text-md text-gray-700">Compétition régionale ce weekend</p>
                     <p className="text-xs text-gray-500 mt-1">Il y a 5 heures</p>
                   </div>
-                  <div className="bg-white rounded-xl p-4 border">
+                  <div className="bg-background rounded-xl p-4 border">
                     <p className="font-medium text-md text-gray-700">Mise à jour du planning de novembre</p>
                     <p className="text-xs text-gray-500 mt-1">Il y a 1 jour</p>
                   </div>
-                  <div className="bg-white rounded-xl p-4 border">
+                  <div className="bg-background rounded-xl p-4 border">
                     <p className="font-medium text-md text-gray-700">3 nouveaux athlètes ont rejoint le club</p>
                     <p className="text-xs text-gray-500 mt-1">Il y a 2 jours</p>
                   </div>
@@ -265,7 +265,7 @@ function Dashboard() {
             <div>
               <CardContent className="p-6">
                 <div className="space-y-4">
-                  <p className="text-gray-500 text-lg">Prochaines compétitions</p>
+                  <p className="text-gray-500 text-md">Prochaines compétitions</p>
                   <div className="bg-white rounded-xl p-4 border space-y-3">
                     <div>
                       <p className="font-bold text-gray-800">Régional Sénior</p>

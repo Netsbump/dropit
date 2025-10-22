@@ -161,14 +161,11 @@ function PlanningPage() {
 
   return (
     <div className="relative flex-1 p-4">
-      <p className="text-muted-foreground mb-6">{t('description')}</p>
-
       <PlanningCalendar
         initialEvents={calendarEvents}
         onDateClick={handleDateClick}
         onEventClick={handleEventClick}
       />
-
 
       <TrainingSessionDetailPopover
         isOpen={isDetailPopoverOpen}

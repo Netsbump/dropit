@@ -29,7 +29,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { ChevronDown, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { useState } from 'react';
 
 interface DataTableProps<TData extends { id: string }, TValue> {
@@ -89,8 +89,9 @@ export function DataTable<TData extends { id: string }, TValue>({
             <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="ml-auto bg-card">
-                    {t('exercise.table.columns')}
+                  <Button variant="outline" className="bg-card rounded-md shadow-none">
+                    {t('common:table.columns')}
+                    <ChevronDown className="h-4 w-4 opacity-50" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
