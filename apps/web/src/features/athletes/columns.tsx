@@ -3,16 +3,19 @@ import {
   AvatarFallback,
   AvatarImage,
 } from '@/shared/components/ui/avatar';
+import { Badge } from '@/shared/components/ui/badge';
 import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
 import { AthleteDetailsDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
+import { Mars, Venus } from 'lucide-react';
+import { getLevelBadgeVariant } from '@/shared/utils';
 
 export const columns: ColumnDef<AthleteDetailsDto>[] = [
   {
     id: 'select',
     header: ({ table }) => (
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-start pl-4">
       <Checkbox
         checked={
           table.getIsAllPageRowsSelected() ||
@@ -24,7 +27,7 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-start pl-4">
       <Checkbox
         checked={row.getIsSelected()}
         onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -65,10 +68,26 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
     id: 'sexCategory',
     header: () => {
       const { t } = useTranslation(['athletes']);
-      return t('columns.sex_category');
+      return <div className="text-center">{t('columns.sex_category')}</div>;
     },
     cell: ({ row }) => {
-      return row.original.competitorStatus?.sexCategory || '-';
+      const sexCategory = row.original.competitorStatus?.sexCategory;
+      if (!sexCategory) return <div className="text-center">-</div>;
+
+      const isMale = sexCategory.toLowerCase() === 'men' || sexCategory.toLowerCase() === 'male' || sexCategory.toLowerCase() === 'm';
+      const isFemale = sexCategory.toLowerCase() === 'women' || sexCategory.toLowerCase() === 'female' || sexCategory.toLowerCase() === 'f';
+
+      return (
+        <div className="flex items-center justify-center">
+          {isMale ? (
+            <Mars className="h-5 w-5 text-blue-600" />
+          ) : isFemale ? (
+            <Venus className="h-5 w-5 text-pink-600" />
+          ) : (
+            sexCategory
+          )}
+        </div>
+      );
     },
   },
   {
@@ -125,7 +144,16 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
       return t('columns.level');
     },
     cell: ({ row }) => {
-      return row.original.competitorStatus?.level || '-';
+      const level = row.original.competitorStatus?.level;
+      if (!level) return '-';
+
+      const badgeVariant = getLevelBadgeVariant(level);
+
+      return (
+        <Badge className={badgeVariant}>
+          {level}
+        </Badge>
+      );
     },
   },
   {

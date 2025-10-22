@@ -90,7 +90,7 @@ export function HeroCard({
 
       {/* Carte séparée pour les statistiques - 1/3 */}
       {stat && (
-        <div className="relative overflow-hidden rounded-2xl shadow-none flex-[1] flex flex-col items-center justify-center bg-purple-100 border p-6">
+        <div className="relative overflow-hidden rounded-2xl shadow-none flex-1 flex flex-col items-center justify-center bg-purple-100 border">
           {/* Valeur et icône */}
           <div className="flex items-center gap-3 mb-2">
             <div className="text-5xl font-bold text-gray-800">{stat.value}</div>
@@ -108,9 +108,9 @@ export function HeroCard({
               variant="secondary"
               size="sm"
               onClick={stat.callToAction.onClick}
-              className="bg-white hover:bg-gray-50 text-gray-700 text-xs border h-auto py-3 px-4 whitespace-normal text-left leading-relaxed flex items-center gap-3 w-full"
+              className="bg-white hover:bg-gray-50 text-gray-700 text-xs border h-12 py-1 px-4 flex items-center gap-3"
             >
-              <span className="flex-1">{stat.callToAction.text}</span>
+              <span>{stat.callToAction.text}</span>
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
                 <Play className="h-3 w-3 text-white fill-white" />
               </div>
