@@ -83,7 +83,7 @@ function WorkoutPage() {
   return (
     <div className="flex flex-col h-full p-8">
       {/* Fixed header section */}
-      <div className="flex-none space-y-6 mb-6">
+      <div className="flex-none space-y-6">
         <HeroCard
           variant="workout"
           title={t('workout.hero.title')}

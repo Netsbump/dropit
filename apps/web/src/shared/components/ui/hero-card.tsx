@@ -56,7 +56,7 @@ export function HeroCard({
   const config = variantConfig[variant]
 
   return (
-    <div className="flex gap-6 mb-6">
+    <div className="flex gap-6 mb-12 shadow-none">
       {/* Carte principale avec titre, description et image - 2/3 */}
       <div
         className={cn(
@@ -108,9 +108,9 @@ export function HeroCard({
               variant="secondary"
               size="sm"
               onClick={stat.callToAction.onClick}
-              className="bg-white hover:bg-gray-50 text-gray-700 text-xs shadow-sm border h-auto py-2 px-3 whitespace-normal text-center leading-tight flex items-center gap-2"
+              className="bg-white hover:bg-gray-50 text-gray-700 text-xs border h-auto py-3 px-4 whitespace-normal text-left leading-relaxed flex items-center gap-3 w-full"
             >
-              {stat.callToAction.text}
+              <span className="flex-1">{stat.callToAction.text}</span>
               <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
                 <Play className="h-3 w-3 text-white fill-white" />
               </div>

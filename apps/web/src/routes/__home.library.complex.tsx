@@ -83,7 +83,7 @@ function ComplexPage() {
     <div className="h-full flex gap-6">
       <div className="flex-1 min-w-0 flex flex-col p-8">
         {/* Fixed header section */}
-        <div className="flex-none space-y-6 mb-6">
+        <div className="flex-none space-y-6">
           <HeroCard
             variant="complex"
             title={t('complex.hero.title')}
