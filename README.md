@@ -103,7 +103,9 @@ Assurez-vous d'avoir installé les éléments suivants avant de commencer :
 
 - **Node.js** : Version 22 ou supérieure (requis pour better-auth et support ESM).
 - **pnpm** : Gestionnaire de paquets version 9.7.1+ (installer avec `npm install -g pnpm@latest`).
-- **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, Typesense).
+- **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, PgAdmin).
+  - **Windows/macOS** : Docker Desktop doit être installé et **lancé** avant d'exécuter les commandes Docker.
+  - **Linux** : Docker Engine et Docker Compose suffisent.
 
 ### Cloner le projet
 
@@ -143,17 +145,34 @@ cp apps/web/.env.example apps/web/.env
 
 ### Lancer le projet (développement)
 
-Démarrer les services via Docker Compose (ex: PostgreSQL, PgAdmin):
+Démarrer les services via Docker Compose (PostgreSQL, PgAdmin):
 
 ```bash
 docker-compose up -d
 ```
 
-Lancer le monorepo (backend + frontends) en mode développement:
+Vérifier que les services sont bien démarrés :
+
+```bash
+docker-compose ps
+```
+
+Attendre quelques secondes que PostgreSQL soit complètement démarré, puis lancer le monorepo (backend + frontends) en mode développement:
 
 ```bash
 pnpm dev
 ```
+
+Les services seront accessibles aux URLs suivantes :
+- **Frontend Web** : http://localhost:5173
+- **API** : http://localhost:3000
+- **Documentation API (Swagger)** : http://localhost:3000/api
+- **PgAdmin** : http://localhost:5050
+- **Application Mobile** : Un QR code s'affichera dans le terminal pour Expo Go
+
+### Migrations de base de données
+
+Les migrations sont appliquées automatiquement au démarrage de l'API. Pour plus de détails sur la gestion des migrations (création, application manuelle, etc.), consultez le [README de l'API](apps/api/README.md#database-migrations).
 
 ### Données de test (Seeds)
 
@@ -185,6 +204,26 @@ Pour vous connecter, utilisez l'un des utilisateurs générés par les seeds. Le
 - Mot de passe universel pour tous les utilisateurs seeds : `Password123!`
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+
+***
+
+<!-- DOCUMENTATION COMPLEMENTAIRE -->
+<p id="documentation-complementaire"></p>
+
+## Documentation Complémentaire
+
+Pour approfondir certains aspects techniques du projet, consultez les guides suivants :
+
+### Déploiement et Infrastructure
+- **[Guide de Déploiement](docs/deployment.md)** : Configuration complète de l'infrastructure de production (VPS, Dokploy, Traefik, Docker Swarm)
+- **[Plan de Récupération d'Urgence](docs/emergency-recovery.md)** : Procédures de restauration en cas de défaillance majeure
+
+### Gestion de Base de Données
+- **[Guide des Migrations en Production](docs/migrations-production.md)** : Stratégies et bonnes pratiques pour gérer les migrations avec de vraies données utilisateur
+
+<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+
+***
 
 <!-- LICENCE -->
 <p id="licence"></p>
