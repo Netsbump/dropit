@@ -9,7 +9,7 @@ FROM node:20-alpine AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 # Use pnpm version according to our package.json, if not the pnpm store will not be in synced later on, resulting in errors
-RUN corepack enable && corepack prepare pnpm@8.15.4 --activate
+RUN corepack enable && corepack prepare pnpm@9.7.1 --activate
 WORKDIR /app
 
 # -----------------------------------------------------------------------------
