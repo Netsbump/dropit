@@ -75,16 +75,14 @@ function CreateOrganizationPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8" style={{
-      background: 'linear-gradient(135deg, rgba(200, 180, 255, 0.5) 0%, rgba(180, 200, 255, 0.4) 20%, rgba(255, 200, 220, 0.3) 40%, rgba(255, 220, 200, 0.35) 60%, rgba(255, 200, 220, 0.4) 80%, rgba(220, 180, 255, 0.5) 100%)'
-    }}>
+    <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-md mx-auto">
         <Card className="w-full bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm">
           <CardHeader className="text-center p-8 pb-6">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-6">
-              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-600" />
-              <span className="text-xl font-bold text-purple-600">Dropit</span>
+              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-700" />
+              <span className="text-xl font-bold text-purple-700">Dropit</span>
             </div>
 
             <CardTitle className="text-2xl text-gray-800">{t('create_organization.title')}</CardTitle>
@@ -142,7 +140,7 @@ function CreateOrganizationPage() {
 
               <Button
                 type="submit"
-                className="w-full h-11 text-base shadow hover:shadow-md transition-shadow"
+                className="w-full h-11"
                 disabled={createOrganizationMutation.isPending}
               >
                 {createOrganizationMutation.isPending
