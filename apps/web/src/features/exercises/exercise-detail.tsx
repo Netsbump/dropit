@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import { CardContent, CardHeader } from '@/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -30,6 +30,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Badge } from '@/shared/components/ui/badge';
 import { getCategoryBadgeVariant } from '@/shared/utils';
+import { Separator } from '@/shared/components/ui/separator';
 
 interface ExerciseDetailProps {
   exercise: {
@@ -117,147 +118,147 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="space-y-6">
-            <Card className="bg-background rounded-md shadow-none">
-              <CardHeader className="space-y-4">
-                {' '}
-                <Label>Vidéo</Label>
-                <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
-                  Aucune vidéo (placeholder)
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field, fieldState }) => (
-                    <FormItem>
-                      <FormLabel>Nom</FormLabel>
-                      <FormControl className="bg-white">
-                        <Input placeholder="Nom de l'exercice" {...field} />
-                      </FormControl>
-                      {fieldState.error && (
-                        <FormMessage>{fieldState.error.message}</FormMessage>
-                      )}
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="description"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Description</FormLabel>
-                      <FormControl className="bg-white">
-                        <Textarea
-                          placeholder="Description de l'exercice"
-                          {...field}
-                        />
-                      </FormControl>
-                    </FormItem>
-                  )}
-                />
-              </CardContent>
-            </Card>
 
-            <Card className="bg-background rounded-md shadow-none">
-              <CardContent className="pt-6">
-                <div className="space-y-4">
+            {/* Premier bloc - Vidéo */}
+            <CardHeader className="space-y-4 p-0">
+              <Label className='text-gray-500' >Vidéo</Label>
+              <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+                Aucune vidéo (placeholder)
+              </div>
+            </CardHeader>
+
+            {/* Second bloc - Nom et description */}
+            <CardContent className="space-y-4 p-0">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field, fieldState }) => (
+                  <FormItem>
+                    <FormLabel className='text-gray-500' >Nom</FormLabel>
+                    <FormControl className="bg-white">
+                      <Input placeholder="Nom de l'exercice" {...field} />
+                    </FormControl>
+                    {fieldState.error && (
+                      <FormMessage>{fieldState.error.message}</FormMessage>
+                    )}
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className='text-gray-500' >Description</FormLabel>
+                    <FormControl className="bg-white">
+                      <Textarea
+                        placeholder="Description de l'exercice"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </CardContent>
+
+            <Separator />
+            {/* Troisième bloc - Catégorie et noms alternatifs */}
+            <CardContent className="p-0">
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <FormField
+                    control={form.control}
+                    name="exerciseCategory"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className='text-gray-500' >Catégorie</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          defaultValue={field.value}
+                        >
+                          <FormControl className="bg-white">
+                            <SelectTrigger>
+                              <SelectValue placeholder="Sélectionner une catégorie" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {categoriesLoading ? (
+                              <SelectItem value="loading">
+                                Chargement...
+                              </SelectItem>
+                            ) : (
+                              exerciseCategories?.map((category) => (
+                                <SelectItem
+                                  key={category.id}
+                                  value={category.id}
+                                >
+                                  {category.name}
+                                </SelectItem>
+                              ))
+                            )}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <FormField
                       control={form.control}
-                      name="exerciseCategory"
+                      name="shortName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>Catégorie</FormLabel>
-                          <Select
-                            onValueChange={field.onChange}
-                            defaultValue={field.value}
-                          >
-                            <FormControl className="bg-white">
-                              <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une catégorie" />
-                              </SelectTrigger>
-                            </FormControl>
-                            <SelectContent>
-                              {categoriesLoading ? (
-                                <SelectItem value="loading">
-                                  Chargement...
-                                </SelectItem>
-                              ) : (
-                                exerciseCategories?.map((category) => (
-                                  <SelectItem
-                                    key={category.id}
-                                    value={category.id}
-                                  >
-                                    {category.name}
-                                  </SelectItem>
-                                ))
-                              )}
-                            </SelectContent>
-                          </Select>
+                          <FormLabel className='text-gray-500' >Abbréviation</FormLabel>
+                          <FormControl className="bg-white">
+                            <Input placeholder="Abbréviation" {...field} />
+                          </FormControl>
                         </FormItem>
                       )}
                     />
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="shortName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Abbréviation</FormLabel>
-                            <FormControl className="bg-white">
-                              <Input placeholder="Abbréviation" {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <FormField
-                        control={form.control}
-                        name="englishName"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nom en anglais</FormLabel>
-                            <FormControl className="bg-white">
-                              <Input {...field} />
-                            </FormControl>
-                          </FormItem>
-                        )}
-                      />
-                    </div>
+                  <div className="space-y-2">
+                    <FormField
+                      control={form.control}
+                      name="englishName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className='text-gray-500' >Nom en anglais</FormLabel>
+                          <FormControl className="bg-white">
+                            <Input {...field} />
+                          </FormControl>
+                        </FormItem>
+                      )}
+                    />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-
-            {/* Troisième bloc - Métadonnées */}
-            <Card className="bg-background rounded-md shadow-none">
-              <CardContent className="pt-6">
-                <div className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Créé le</Label>
-                      <p className="text-sm">
-                        {format(new Date(), 'Pp', { locale: fr })}
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Dernière modification</Label>
-                      <p className="text-sm">
-                        {format(new Date(), 'Pp', { locale: fr })}
-                      </p>
-                    </div>
+              </div>
+            </CardContent>
+     
+            <Separator />
+            {/* Quatrième bloc - Métadonnées */}
+            <CardContent className="p-0">
+              <div className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className='text-gray-500'>Créé le</Label>
+                    <p className="text-sm font-semibold text-gray-600">
+                      {format(new Date(), 'Pp', { locale: fr })}
+                    </p>
                   </div>
                   <div className="space-y-2">
-                    <Label>Auteur</Label>
-                    <p className="text-sm">John Doe</p>
+                    <Label className='text-gray-500'>Dernière modification</Label>
+                    <p className="text-sm font-semibold text-gray-600">
+                      {format(new Date(), 'Pp', { locale: fr })}
+                    </p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="space-y-2">
+                  <Label className='text-gray-500'>Auteur</Label>
+                  <p className="text-sm font-semibold text-gray-600">John Doe</p>
+                </div>
+              </div>
+            </CardContent>
 
             <div className="flex justify-end gap-2">
               <Button
@@ -280,80 +281,78 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
 
   return (
     <div className="space-y-6">
-      {/* Premier bloc - Informations principales */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardHeader className="space-y-4">
-          <Label>Vidéo</Label>
-          <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
-            Aucune vidéo (placeholder)
-          </div>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label>Nom</Label>
-            <p className="text-sm">{exercise.name}</p>
-          </div>
+      {/* Premier bloc - Vidéo */}
+      <CardHeader className="space-y-4 p-0">
+        <Label className='text-gray-500' >Vidéo</Label>
+        <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
+          Aucune vidéo (placeholder)
+        </div>
+      </CardHeader>
 
-          <div className="space-y-2">
-            <Label>Description</Label>
-            <p className="text-sm text-muted-foreground">
-              {exercise.description || 'pas de description'}
-            </p>
-          </div>
-        </CardContent>
-      </Card>
+       {/* Second bloc - Informations principales */}
+      <CardContent className="space-y-4 p-0">
+        <div className="space-y-2">
+          <Label className='text-gray-500' >Nom</Label>
+          <p className="text-sm font-semibold text-gray-600">{exercise.name}</p>
+        </div>
 
-      {/* Second bloc - Catégorie et noms alternatifs */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="space-y-2 space-x-2">
-              <Label>Catégorie</Label>
-              <Badge 
-                className={`text-xs border-0 ${getCategoryBadgeVariant(exercise.exerciseCategory.name)}`}
-              >
-                {exercise.exerciseCategory.name}
-              </Badge>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Nom court</Label>
-                <p className="text-sm">{exercise.shortName || '-'}</p>
-              </div>
-              <div className="space-y-2">
-                <Label>Nom anglais</Label>
-                <p className="text-sm">{exercise.englishName || '-'}</p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        <div className="space-y-2">
+          <Label className='text-gray-500' >Description</Label>
+          <p className="text-sm font-semibold text-gray-600">
+            {exercise.description || 'pas de description'}
+          </p>
+        </div>
+      </CardContent>
 
-      {/* Troisième bloc - Métadonnées */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Créé le</Label>
-                <p className="text-sm">
-                  {format(new Date(), 'Pp', { locale: fr })}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label>Dernière modification</Label>
-                <p className="text-sm">
-                  {format(new Date(), 'Pp', { locale: fr })}
-                </p>
-              </div>
+      <Separator />
+      {/* Troisième bloc - Catégorie et noms alternatifs */}
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <div className="space-y-2 space-x-2">
+            <Label className='text-gray-500' >Catégorie</Label>
+            <Badge 
+              className={`text-xs border-0 ${getCategoryBadgeVariant(exercise.exerciseCategory.name)}`}
+            >
+              {exercise.exerciseCategory.name}
+            </Badge>
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className='text-gray-500' >Nom court</Label>
+              <p className="text-sm font-semibold text-gray-600">{exercise.shortName || '-'}</p>
             </div>
             <div className="space-y-2">
-              <Label>Auteur</Label>
-              <p className="text-sm">John Doe</p>
+              <Label className='text-gray-500' >Nom anglais</Label>
+              <p className="text-sm font-semibold text-gray-600">{exercise.englishName || '-'}</p>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
+
+      <Separator />
+      {/* Quatrième bloc - Métadonnées */}
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className='text-gray-500' >Créé le</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {format(new Date(), 'Pp', { locale: fr })}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label className='text-gray-500' >Dernière modification</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {format(new Date(), 'Pp', { locale: fr })}
+              </p>
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Label className='text-gray-500' >Auteur</Label>
+            <p className="text-sm font-semibold text-gray-600">John Doe</p>
+          </div>
+        </div>
+      </CardContent>
 
       <div className="flex justify-end">
         <Button variant="default" onClick={() => setIsEditing(true)}>

@@ -70,7 +70,7 @@ function Dashboard() {
                     <p className="text-gray-500 text-md">Athlètes dans votre club</p>
                     <p className="font-bold text-gray-800 text-3xl">24</p>
                   </div>
-                  <Button className="w-full text-md h-10 rounded-full">
+                  <Button variant="outline" className="w-full text-md h-10 rounded-full">
                     Inviter un athlète
                   </Button>
                 </div>
@@ -85,7 +85,7 @@ function Dashboard() {
                     <p className="text-gray-500 text-md">Sessions programmées</p>
                     <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
-                  <Button className="w-full text-md h-10 rounded-full">
+                  <Button variant="outline" className="w-full text-md h-10 rounded-full">
                     Ajouter une séance
                   </Button>
                 </div>
@@ -100,7 +100,7 @@ function Dashboard() {
                     <p className="text-gray-500 text-md">Entrainements programmés</p>
                     <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
-                  <Button className="w-full text-md h-10 rounded-full">
+                  <Button variant="outline" className="w-full text-md h-10 rounded-full">
                     Créer un entraînement
                   </Button>
                 </div>
