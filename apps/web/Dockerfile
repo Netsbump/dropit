@@ -1,7 +1,7 @@
 FROM node:20-slim AS base
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
-RUN corepack enable
+RUN corepack enable && corepack prepare pnpm@9.7.1 --activate
 
 FROM base AS builder
 
@@ -14,9 +14,8 @@ COPY ./packages/contract/ ./packages/contract/
 COPY ./packages/schemas/ ./packages/schemas/
 COPY ./packages/permissions/ ./packages/permissions/
 COPY ./packages/i18n/ ./packages/i18n/
-COPY ./packages/tsconfig/ ./packages/tsconfig/
 
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile
 RUN pnpm run -r build
 
 FROM nginx:alpine
