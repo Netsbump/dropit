@@ -104,17 +104,17 @@ export function HeroCard({
 
           {/* Call to action optionnel */}
           {stat.callToAction && (
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={stat.callToAction.onClick}
-              className="bg-white hover:bg-gray-50 text-gray-700 text-xs border h-12 py-1 px-4 flex items-center gap-3"
-            >
-              <span>{stat.callToAction.text}</span>
-              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
-                <Play className="h-3 w-3 text-white fill-white" />
-              </div>
-            </Button>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={stat.callToAction.onClick}
+            className="bg-white hover:bg-gray-50 text-gray-700 text-xs border min-h-12 py-2 px-3 flex items-center gap-2 whitespace-normal rounded-xl max-w-[90%]"
+          >
+            <span className="text-center leading-snug flex-1">{stat.callToAction.text}</span>
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
+              <Play className="h-3 w-3 text-white fill-white" />
+            </div>
+          </Button>
           )}
         </div>
       )}
