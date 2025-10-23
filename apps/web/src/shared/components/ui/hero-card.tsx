@@ -1,31 +1,35 @@
 import { cn } from '@/lib/utils'
 import { Dumbbell, Library, Zap, Users, Play, type LucideIcon } from 'lucide-react'
 import { Button } from './button'
+import workoutImage from '@/assets/images/hero-pages/199309.svg'
+import complexImage from '@/assets/images/hero-pages/199307.svg'
+import exerciseImage from '@/assets/images/hero-pages/199308.svg'
+import athleteImage from '@/assets/images/hero-pages/199306.svg'
 
 const variantConfig = {
   workout: {
     icon: Dumbbell,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-blue-50 to-indigo-50',
-    image: '/src/assets/images/hero-pages/199309.svg',
+    image: workoutImage,
   },
   complex: {
     icon: Zap,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-purple-50 to-pink-50',
-    image: '/src/assets/images/hero-pages/199307.svg',
+    image: complexImage,
   },
   exercise: {
     icon: Library,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-teal-50 to-cyan-50',
-    image: '/src/assets/images/hero-pages/199308.svg',
+    image: exerciseImage,
   },
   athlete: {
     icon: Users,
     iconColor: 'text-gray-700',
     gradientClass: 'bg-gradient-to-br from-green-50 to-emerald-50',
-    image: '/src/assets/images/hero-pages/199306.svg',
+    image: athleteImage,
   },
 }
 
