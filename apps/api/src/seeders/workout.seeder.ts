@@ -54,13 +54,14 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          complexIndex: 0, // Premier complex créé (EMOM Technique Arraché)
+          complexIndex: 0,
           order: 0,
           sets: 4,
           reps: 1,
           rest: 180,
           startWeight_percent: 80,
           endWeight_percent: 92,
+          description: 'Monter progressivement la charge à chaque série',
         },
         {
           type: WORKOUT_ELEMENT_TYPES.EXERCISE,
@@ -70,6 +71,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           reps: 3,
           rest: 180,
           startWeight_percent: 85,
+          description: '2 secondes de descente, pause en bas et on remonte fort',
         },
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
@@ -79,6 +81,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           reps: 1,
           rest: 180,
           startWeight_percent: 75,
+          description: 'Focus sur la vitesse de passage sous la barre',
         },
         {
           type: WORKOUT_ELEMENT_TYPES.EXERCISE,
@@ -88,6 +91,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           reps: 8,
           rest: 120,
           startWeight_percent: 65,
+          description: 'Maintenir le tronc gainé, coudes légèrement en avant',
         },
       ],
     },
@@ -98,7 +102,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          complexIndex: 3, // Quatrième complex créé (Technique Arraché Complet)
+          complexIndex: 3,
           order: 0,
           sets: 3,
           reps: 2,
@@ -116,7 +120,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         },
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          complexIndex: 4, // Cinquième complex créé (EMOM Épaulé)
+          complexIndex: 4,
           order: 2,
           sets: 3,
           reps: 2,
@@ -141,7 +145,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       elements: [
         {
           type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-          complexIndex: 2, // Troisième complex créé (TABATA Force)
+          complexIndex: 2,
           order: 0,
           sets: 4,
           reps: 1,
@@ -187,6 +191,9 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
       workoutElement.sets = element.sets;
       workoutElement.reps = element.reps;
       workoutElement.startWeight_percent = element.startWeight_percent;
+      if ('description' in element) {
+        workoutElement.description = element.description;
+      }
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
         workoutElement.exercise = exercisesMap[element.id];

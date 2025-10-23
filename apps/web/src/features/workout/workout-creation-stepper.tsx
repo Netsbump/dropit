@@ -1,8 +1,6 @@
 import { Form } from '@/shared/components/ui/form';
-import { Steps } from '@/shared/components/ui/steps';
 import { createWorkoutSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { WorkoutElementsStep } from './steps/workout-elements-step';
@@ -21,7 +19,7 @@ const extendedWorkoutSchema = createWorkoutSchema.extend({
 
 type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
 
-const steps = [
+export const workoutCreationSteps = [
   {
     id: 'info',
     name: 'Description',
@@ -37,15 +35,18 @@ const steps = [
 ];
 
 interface WorkoutCreationStepperProps {
+  currentStep: number;
+  setCurrentStep: (step: number) => void;
   onSuccess: (data: z.infer<typeof createWorkoutSchema>) => void;
   onCancel: () => void;
 }
 
 export function WorkoutCreationStepper({
+  currentStep,
+  setCurrentStep,
   onSuccess,
   onCancel,
 }: WorkoutCreationStepperProps) {
-  const [currentStep, setCurrentStep] = useState(0);
   const form = useForm<ExtendedWorkoutSchema>({
     resolver: zodResolver(extendedWorkoutSchema),
     defaultValues: {
@@ -76,12 +77,6 @@ export function WorkoutCreationStepper({
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="h-full flex flex-col">
-        <Steps
-          steps={steps}
-          currentStep={currentStep}
-          onStepClick={setCurrentStep}
-        />
-
         <div className="flex-1 min-h-0">
           {currentStep === 0 && (
             <WorkoutInfoStep

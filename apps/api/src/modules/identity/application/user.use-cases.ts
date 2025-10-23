@@ -1,18 +1,27 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../domain/auth/user.entity';
-import { IUserRepository, USER_REPO } from './ports/user.repository';
+import { IUserRepository } from './ports/user.repository.port';
+import { IUserUseCases } from './ports/user-use-cases.port';
 
-@Injectable()
-export class UserUseCases {
+/**
+ * User Use Cases Implementation
+ *
+ * @description
+ * Framework-agnostic implementation of user business logic.
+ * No NestJS dependencies - pure TypeScript.
+ *
+ * @remarks
+ * Dependencies are injected via constructor following dependency inversion principle.
+ * All dependencies are interfaces (ports), not concrete implementations.
+ */
+export class UserUseCases implements IUserUseCases {
   constructor(
-    @Inject(USER_REPO)
     private readonly userRepository: IUserRepository,
   ) {}
 
   async getOne(userId: string): Promise<User> {
     const user = await this.userRepository.getOne(userId);
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new Error(`User with ID ${userId} not found`);
     }
     return user;
   }
@@ -20,7 +29,7 @@ export class UserUseCases {
   async getByEmail(email: string): Promise<User | null> {
     const user = await this.userRepository.getByEmail(email);
     if (!user) {
-      throw new NotFoundException(`User with email ${email} not found`);
+      throw new Error(`User with email ${email} not found`);
     }
     return user;
   }
@@ -29,7 +38,7 @@ export class UserUseCases {
     const user = await this.userRepository.getOne(userId);
     
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new Error(`User with ID ${userId} not found`);
     }
 
     Object.assign(user, updateData);
@@ -44,7 +53,7 @@ export class UserUseCases {
     const user = await this.userRepository.getOne(userId);
 
     if (!user) {
-      throw new NotFoundException(`User with ID ${userId} not found`);
+      throw new Error(`User with ID ${userId} not found`);
     }
 
     await this.userRepository.remove(user);

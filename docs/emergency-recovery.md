@@ -198,6 +198,23 @@ sudo docker logs [traefik_container_id] | grep -i error
 - **Base de données** : Backup automatique via Dokploy
 - **Secrets** : Sauvegarde sécurisée des variables d'environnement
 
+### ⚠️ RGPD : Anonymisation des données de test
+
+**Important :** Si vous restaurez un backup de production dans un environnement non-production (staging, développement local, tests de migration), vous **devez impérativement anonymiser les données personnelles** conformément au RGPD.
+
+**Données à anonymiser :**
+- Emails, noms, prénoms, téléphones
+- Photos de profil
+- Adresses postales et dates de naissance
+- Tout identifiant personnel (numéros de licence, etc.)
+
+**Procédure :**
+1. Restaurer le backup en environnement de staging
+2. Exécuter le script d'anonymisation : `scripts/anonymize-data.sql`
+3. Vérifier que les données sensibles sont bien anonymisées avant utilisation
+
+Consultez le guide `docs/migrations-production.md` section "Conformité RGPD" pour la procédure complète.
+
 ## Escalade
 
 **En cas d'échec de récupération :**
@@ -205,8 +222,3 @@ sudo docker logs [traefik_container_id] | grep -i error
 2. Contrôler les logs détaillés de chaque service
 3. Tester la connectivité réseau depuis plusieurs sources
 4. Consulter la documentation officielle Dokploy pour les dernières mises à jour
-
----
-
-**Dernière mise à jour :** [Date de création]
-**Testé le :** [À compléter lors du premier test]

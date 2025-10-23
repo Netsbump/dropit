@@ -38,7 +38,7 @@ export function WorkoutFilters({
           <Input
             placeholder={t('workout.filters.search_placeholder')}
             onChange={(e) => onFilterChange(e.target.value)}
-            className="pl-8 bg-sidebar max-w-lg"
+            className="pl-8 bg-background max-w-lg"
             disabled={disabled}
           />
         </div>

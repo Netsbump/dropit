@@ -70,11 +70,11 @@ function DownloadAppPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="w-full max-w-4xl mx-auto">
         <div className="text-center mb-8">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
-            <Smartphone className="h-8 w-8 text-blue-600" />
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
+            <Smartphone className="h-8 w-8 text-purple-600" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             {isAthlete ? 'Bienvenue sur DropIt !' : t('download_app.title')}
@@ -86,8 +86,8 @@ function DownloadAppPage() {
             }
           </p>
           {isAthlete && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg max-w-2xl mx-auto">
-              <p className="text-sm text-blue-700">
+            <div className="mt-4 p-4 bg-purple-50 rounded-lg max-w-2xl mx-auto">
+              <p className="text-sm text-purple-700">
                 💡 L'interface web est réservée aux coachs pour la gestion des programmes d'entraînement. 
                 Votre espace athlète vous attend sur mobile !
               </p>
@@ -192,7 +192,7 @@ function DownloadAppPage() {
         <div className="text-center mt-8 pt-8 border-t border-gray-200">
           <p className="text-sm text-gray-500">
             {t('download_app.footer.support')}{' '}
-            <a href="/support" className="text-blue-600 hover:underline">
+            <a href="/support" className="text-purple-600 hover:underline">
               {t('download_app.footer.contact')}
             </a>
           </p>

@@ -1,7 +1,7 @@
 import { AthleteDetail } from '@/features/athletes/athlete-detail';
 import { api } from '@/lib/api';
-import { Button } from '@/shared/components/ui/button';
 import { toast } from '@/shared/hooks/use-toast';
+import { usePageMeta } from '@/shared/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
 import {
   CompetitorLevel,
@@ -14,7 +14,6 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { ArrowLeft } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
@@ -26,6 +25,7 @@ function AthleteDetailPage() {
   const { athleteId } = Route.useParams();
   const navigate = Route.useNavigate();
   const { t } = useTranslation(['common', 'athletes']);
+  const { setPageMeta } = usePageMeta();
   const [isEditingCompetitorStatus, setIsEditingCompetitorStatus] =
     useState(false);
   const [isCreatingCompetitorStatus, setIsCreatingCompetitorStatus] =
@@ -222,6 +222,26 @@ function AthleteDetailPage() {
     }
   }, [athlete, updateCompetitorStatusForm]);
 
+  // Update page meta with athlete name and back button
+  useEffect(() => {
+    if (athlete) {
+      setPageMeta({
+        title: `${athlete.firstName} ${athlete.lastName}`,
+        showBackButton: true,
+        onBackClick: () => navigate({ to: '/athletes' })
+      });
+    }
+
+    // Cleanup: reset to default when leaving the page
+    return () => {
+      setPageMeta({
+        title: t('common:routes./athletes'),
+        showBackButton: false,
+        onBackClick: undefined
+      });
+    };
+  }, [athlete, setPageMeta, navigate, t]);
+
   if (athleteLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
@@ -235,44 +255,21 @@ function AthleteDetailPage() {
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {/* Navigation Bar */}
-      <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="flex items-center h-14 gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigate({ to: '/athletes' })}
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-semibold">
-              {athlete.firstName} {athlete.lastName}
-            </h1>
-          </div>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto p-6">
-        <div className="w-full">
-          <AthleteDetail
-            athlete={athlete}
-            personalRecords={personalRecords || []}
-            personalRecordsLoading={personalRecordsLoading}
-            isEditingCompetitorStatus={isEditingCompetitorStatus}
-            setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
-            isCreatingCompetitorStatus={isCreatingCompetitorStatus}
-            setIsCreatingCompetitorStatus={setIsCreatingCompetitorStatus}
-            updateCompetitorStatusForm={updateCompetitorStatusForm}
-            createCompetitorStatusForm={createCompetitorStatusForm}
-            isLoading={isLoading}
-            onUpdateCompetitorStatus={updateCompetitorStatus}
-            onCreateCompetitorStatus={createCompetitorStatus}
-          />
-        </div>
-      </div>
+    <div className="p-4">
+      <AthleteDetail
+        athlete={athlete}
+        personalRecords={personalRecords || []}
+        personalRecordsLoading={personalRecordsLoading}
+        isEditingCompetitorStatus={isEditingCompetitorStatus}
+        setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
+        isCreatingCompetitorStatus={isCreatingCompetitorStatus}
+        setIsCreatingCompetitorStatus={setIsCreatingCompetitorStatus}
+        updateCompetitorStatusForm={updateCompetitorStatusForm}
+        createCompetitorStatusForm={createCompetitorStatusForm}
+        isLoading={isLoading}
+        onUpdateCompetitorStatus={updateCompetitorStatus}
+        onCreateCompetitorStatus={createCompetitorStatus}
+      />
     </div>
   );
 }

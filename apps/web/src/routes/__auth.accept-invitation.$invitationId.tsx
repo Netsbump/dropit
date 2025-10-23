@@ -141,19 +141,17 @@ function AcceptInvitationPage() {
             </TabsList>
 
             <TabsContent value="login">
-              <LoginForm 
+              <LoginForm
                 onSuccess={handleAuthSuccess}
                 onError={handleAuthError}
-                showAlternative={false}
                 showRedirect={false}
               />
             </TabsContent>
 
             <TabsContent value="signup">
-              <SignupForm 
+              <SignupForm
                 onSuccess={handleAuthSuccess}
                 onError={handleAuthError}
-                showAlternative={false}
                 showRedirect={false}
                 showTerms={true}
               />

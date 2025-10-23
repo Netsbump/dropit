@@ -1,6 +1,13 @@
 {
   "title": "Athletes",
   "description": "Manage your athletes",
+  "hero": {
+    "title": "Manage Your Athletes",
+    "description": "Track performance and progress of your athletes",
+    "stat_label": "athletes",
+    "stat_description": "Active athletes following your personalized programs",
+    "stat_cta": "Discover how to efficiently manage your athletes and track their progress"
+  },
   "filters": {
     "no_results": "No athletes found",
     "search_placeholder": "Search an athlete...",

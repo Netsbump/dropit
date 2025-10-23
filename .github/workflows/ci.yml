@@ -16,7 +16,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -40,7 +40,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -79,7 +79,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 22
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -91,6 +91,26 @@ jobs:
      
       - name: Build dependencies
         run: pnpm run build
+
+      - name: Check database migrations
+        working-directory: apps/api
+        run: |
+          if [ -n "$(find src/modules/db/migrations -name '*.ts' -not -name '.gitkeep' 2>/dev/null)" ]; then
+            pnpm run db:migration:check
+            pnpm run db:migration:up
+          else
+            echo "No migrations found, skipping migration checks (prototyping phase)"
+          fi
+        env:
+          API_PORT: 3001
+          NODE_ENV: test
+          DB_USER: ${{ secrets.TEST_POSTGRES_USER }}
+          DB_PASSWORD: ${{ secrets.TEST_POSTGRES_PASSWORD }}
+          DB_NAME: dropit_test
+          DB_HOST: localhost
+          DB_PORT: 5433
+          BETTER_AUTH_SECRET: test-secret-for-ci
+          TRUSTED_ORIGINS: "http://localhost:3000"
 
       - name: Run api tests
         working-directory: apps/api

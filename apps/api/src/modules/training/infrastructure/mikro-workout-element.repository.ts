@@ -1,7 +1,7 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { WorkoutElement } from '../domain/workout-element.entity';
-import { IWorkoutElementRepository } from '../application/ports/workout-element.repository';
+import { IWorkoutElementRepository } from '../application/ports/workout-element.repository.port';
 
 @Injectable()
 export class MikroWorkoutElementRepository extends EntityRepository<WorkoutElement> implements IWorkoutElementRepository {

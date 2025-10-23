@@ -1,61 +1,31 @@
 import { authClient } from '@/lib/auth-client';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import { Separator } from '@/shared/components/ui/separator';
-import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarFooter,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarSeparator,
-} from '@/shared/components/ui/sidebar';
-import { toast } from '@/shared/hooks/use-toast';
+import { useToast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { Link, useMatches, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
   Calendar,
-  ChevronUp,
   GraduationCap,
   Home,
-  LayoutDashboard,
-  LifeBuoy,
+  BookOpen,
+  CircleQuestionMark,
+  Settings,
+  LogOut,
 } from 'lucide-react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const matches = useMatches();
-  const { data: session } = authClient.useSession();
-
-  // Function to get user initials from name
-  const getUserInitials = (name?: string) => {
-    if (!name) return 'U';
-    const names = name.trim().split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
-  };
+  const { toast } = useToast();
 
   const handleLogout = async () => {
     try {
-      // Appeler directement l'API pour se déconnecter
-      // Avec credentials: 'include', les cookies seront automatiquement envoyés
+      // Call the API directly to logout
+      // With credentials: 'include', the cookies will be automatically sent
       await authClient.signOut();
 
-      // Rediriger vers la page de connexion
+      // Redirect to the login page
       toast({
         title: 'Logout successful',
         description: 'You have been logged out successfully',
@@ -76,16 +46,16 @@ export function AppSidebar() {
     }
   };
 
-  const items = [
+  const mainItems = [
     {
       title: t('sidebar.menu.dashboard'),
       url: '/dashboard',
       icon: Home,
     },
     {
-      title: t('sidebar.menu.programming'),
-      url: '/programs/workouts',
-      icon: LayoutDashboard,
+      title: t('sidebar.menu.library'),
+      url: '/library/workouts',
+      icon: BookOpen,
     },
     {
       title: t('sidebar.menu.calendar'),
@@ -97,121 +67,109 @@ export function AppSidebar() {
       url: '/athletes',
       icon: GraduationCap,
     },
+  ]
+
+  const secondaryItems = [
     {
       title: t('sidebar.menu.help'),
-      url: '/about',
-      icon: LifeBuoy,
+      url: '/help',
+      icon: CircleQuestionMark,
+    },
+    {
+      title: t('sidebar.menu.settings'),
+      url: '/settings',
+      icon: Settings,
     },
   ];
 
-  // Fonction pour vérifier si un item est actif
+  // Function to check if an item is active
   const isActiveItem = (itemUrl: string) => {
     const currentPath = matches[matches.length - 1]?.pathname || '';
-    
-    // Gestion spéciale pour les routes imbriquées
-    if (itemUrl === '/programs/workouts') {
-      return currentPath.startsWith('/programs/') || currentPath.startsWith('/workouts/');
+
+    // Special handling for nested routes
+    if (itemUrl === '/library/workouts') {
+      return currentPath.startsWith('/library/') || currentPath.startsWith('/workouts/');
     }
-    
+
     if (itemUrl === '/athletes') {
       return currentPath.startsWith('/athletes');
     }
-    
+
     if (itemUrl === '/dashboard') {
       return currentPath === '/dashboard' || currentPath === '/';
     }
-    
+
     return currentPath === itemUrl;
   };
 
   return (
-    <Sidebar collapsible="icon">
-      <SidebarHeader>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton asChild>
-              <Link to="/" className="flex items-center gap-2">
-                <BicepsFlexed className="h-6 w-6" />
-                <span className="text-lg font-bold">Dropit</span>
-              </Link>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarHeader>
-      <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            {t('sidebar.sections.application')}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                const isActive = isActiveItem(item.url);
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton 
-                      asChild
-                      className={isActive ? 'bg-white text-gray-900 hover:bg-gray-50 rounded-lg shadow-sm border border-gray-200' : 'hover:bg-gray-100'}
-                    >
-                      <Link to={item.url} className="flex items-center gap-2">
-                        <item.icon className={`h-4 w-4 ${isActive ? 'text-gray-700' : ''}`} />
-                        <span className={isActive ? 'text-gray-900 font-medium' : ''}>
-                          {item.title}
-                        </span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-      <SidebarSeparator />
-      <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="h-12 px-2">
-                  <Avatar className="h-8 w-8">
-                    <AvatarFallback className="bg-white text-sm font-medium flex items-center justify-center">
-                      {getUserInitials(session?.user?.name)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div className="flex flex-col items-start min-w-0 flex-1">
-                    <span className="text-sm font-medium truncate">
-                      {session?.user?.name || 'User'}
-                    </span>
-                    <span className="text-xs text-muted-foreground truncate">
-                      {session?.user?.email || 'user@example.com'}
-                    </span>
-                  </div>
-                  <ChevronUp className="h-4 w-4 shrink-0" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-popper-anchor-width]"
-              >
-                <DropdownMenuItem>
-                  <span>{t('sidebar.user.profile')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>{t('sidebar.user.settings')}</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <span>{t('sidebar.user.help')}</span>
-                </DropdownMenuItem>
-                <Separator />
-                <DropdownMenuItem onClick={handleLogout}>
-                  <span>{t('sidebar.user.logout')}</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
-      </SidebarFooter>
-    </Sidebar>
+    <aside className="w-[200px] h-screen flex flex-col py-6 px-4 gap-8">
+      {/* Logo */}
+      <div className="flex items-center gap-2 px-2">
+        <BicepsFlexed className="h-7 w-7 stroke-[2.5] text-[hsl(var(--sidebar-logo))]" />
+        <span className="text-base font-bold text-[hsl(var(--sidebar-logo))]">Dropit</span>
+      </div>
+
+      {/* Main Menu */}
+      <nav className="flex-1 flex flex-col gap-1">
+        {mainItems.map((item) => {
+          const isActive = isActiveItem(item.url);
+          return (
+            <Link
+              key={item.title}
+              to={item.url}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                  ? 'bg-purple-100 border border-purple-200'
+                  : 'text-sidebar-foreground hover:bg-purple-200'
+              }`}
+            >
+              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                  {item.title}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+      </nav>
+
+      {/* Secondary Menu (Help, Settings, Logout) */}
+      <div className="flex flex-col gap-1">
+        {secondaryItems.map((item) => {
+          const isActive = isActiveItem(item.url);
+          return (
+            <Link
+              key={item.title}
+              to={item.url}
+              className={`flex items-center gap-3 px-3 py-3 rounded-lg transition-all ${
+                isActive
+                  ? 'bg-purple-100 border border-purple-200'
+                  : 'text-sidebar-foreground hover:bg-purple-200'
+              }`}
+            >
+              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                  {item.title}
+                </span>
+              </span>
+            </Link>
+          );
+        })}
+
+        <button
+          onClick={handleLogout}
+          className="flex items-center gap-3 px-3 py-3 rounded-lg text-sidebar-foreground hover:bg-purple-200 transition-all"
+          type="button"
+        >
+          <LogOut className="h-5 w-5 stroke-[2]" />
+          <span className="text-md font-normal">
+            {t('sidebar.user.logout')}
+          </span>
+        </button>
+      </div>
+    </aside>
   );
 }

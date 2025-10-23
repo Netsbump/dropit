@@ -2,13 +2,16 @@ import { athleteContract } from '@dropit/contract';
 import {
   Controller,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
 import { NoOrganization, RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
 import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
-import { AthleteUseCases } from '../../application/use-cases/athlete-use-cases';
+import { IAthleteUseCases, ATHLETE_USE_CASES } from '../../application/ports/athlete-use-cases.port';
+import { AthleteMapper } from '../mappers/athlete.mapper';
+import { AthletePresenter } from '../presenter/athlete.presenter';
 
 const c = athleteContract;
 
@@ -26,14 +29,15 @@ const c = athleteContract;
  * and are scoped to the current organization, except for create and update
  * operations which use @NoOrganization() decorator.
  * 
- * @see {@link AthleteUseCases} for business logic implementation
+ * @see {@link IAthleteUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class AthleteController {
   constructor(
-    private readonly athleteUseCases: AthleteUseCases
+    @Inject(ATHLETE_USE_CASES)
+    private readonly athleteUseCases: IAthleteUseCases
   ) {}
 
   /**
@@ -49,7 +53,13 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
-      return await this.athleteUseCases.findAllWithDetails(user.id, organizationId);
+      try {
+        const athletes = await this.athleteUseCases.findAllWithDetails(user.id, organizationId);
+        const athletesDto = AthleteMapper.toDtoListDetails(athletes);
+        return AthletePresenter.presentListDetails(athletesDto);
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -68,7 +78,13 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
-      return await this.athleteUseCases.findOneWithDetails(params.id, user.id, organizationId);
+      try {
+        const athlete = await this.athleteUseCases.findOneWithDetails(params.id, user.id, organizationId);
+        const athleteDto = AthleteMapper.toDtoDetails(athlete);
+        return AthletePresenter.presentOneDetails(athleteDto);
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -85,11 +101,17 @@ export class AthleteController {
   @TsRestHandler(c.createAthlete)
   @RequirePermissions('create')
   @NoOrganization()
-  createAthlete(    
+  createAthlete(
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
     return tsRestHandler(c.createAthlete, async ({ body }) => {
-      return await this.athleteUseCases.create(body, user.id);
+      try {
+        const athlete = await this.athleteUseCases.create(body, user.id);
+        const athleteDto = AthleteMapper.toDto(athlete);
+        return AthletePresenter.presentOne(athleteDto);
+      } catch (error) {
+        return AthletePresenter.presentCreationError(error as Error);
+      }
     });
   }
 
@@ -108,7 +130,13 @@ export class AthleteController {
   @NoOrganization()
   updateAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
-      return await this.athleteUseCases.update(params.id, body, user.id);
+      try {
+        const athlete = await this.athleteUseCases.update(params.id, body, user.id);
+        const athleteDto = AthleteMapper.toDto(athlete);
+        return AthletePresenter.presentOne(athleteDto);
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -125,7 +153,12 @@ export class AthleteController {
   @RequirePermissions('delete')
   deleteAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
-      return await this.athleteUseCases.delete(params.id, user.id);
+      try {
+        await this.athleteUseCases.delete(params.id, user.id);
+        return AthletePresenter.presentSuccess('Athlete deleted successfully');
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
     });
   }
 }

@@ -149,7 +149,7 @@ export function WorkoutElementsStep({
       <div className="h-full flex flex-col">
 
       {/* Layout principal : 2 colonnes */}
-      <div className="flex-1 grid grid-cols-4 gap-6 min-h-0 mt-6">
+      <div className="flex-1 grid grid-cols-4 gap-6 min-h-0">
 
         {/* Colonne gauche : Liste des éléments disponibles */}
         <div className="col-span-1 flex flex-col min-h-0">
@@ -160,7 +160,7 @@ export function WorkoutElementsStep({
             </p>
           </div>
 
-          <Card className="flex-1 flex flex-col min-h-0">
+          <Card className="flex-1 flex flex-col min-h-0 shadow-none">
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               <div className="flex-1 flex flex-col min-h-0">
                 {/* Tabs List */}
@@ -168,9 +168,9 @@ export function WorkoutElementsStep({
                   <button
                     type="button"
                     onClick={() => setActiveTab('exercise')}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors ${
                       activeTab === 'exercise'
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-secondary text-secondary-foreground'
                         : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                   >
@@ -179,9 +179,9 @@ export function WorkoutElementsStep({
                   <button
                     type="button"
                     onClick={() => setActiveTab('complex')}
-                    className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors ${
                       activeTab === 'complex'
-                        ? 'bg-primary text-primary-foreground'
+                        ? 'bg-secondary text-secondary-foreground'
                         : 'bg-muted text-muted-foreground hover:bg-muted/80'
                     }`}
                   >
@@ -199,23 +199,21 @@ export function WorkoutElementsStep({
                           placeholder="Rechercher un exercice..."
                           value={exerciseSearch}
                           onChange={(e) => setExerciseSearch(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 bg-background"
                         />
                       </div>
                       
-                      <div className="mb-3 flex-shrink-0">
+                      <div className="mb-3 flex-shrink-0 pb-2">
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setCreateExerciseModalOpen(true);
                           }}
-                          className="w-full bg-primary/5 hover:bg-primary/10"
+                          className="w-full h-10 text-sm"
                         >
-                          <Plus className="h-4 w-4 mr-2" />
                           Créer un nouvel exercice
                         </Button>
                       </div>
@@ -263,23 +261,21 @@ export function WorkoutElementsStep({
                           placeholder="Rechercher un complexe..."
                           value={complexSearch}
                           onChange={(e) => setComplexSearch(e.target.value)}
-                          className="pl-10"
+                          className="pl-10 bg-background"
                         />
                       </div>
                       
-                      <div className="mb-3 flex-shrink-0">
+                      <div className="mb-3 flex-shrink-0 pb-2">
                         <Button
                           type="button"
                           variant="outline"
-                          size="sm"
                           onClick={(e) => {
                             e.preventDefault();
                             e.stopPropagation();
                             setCreateComplexModalOpen(true);
                           }}
-                          className="w-full bg-secondary hover:bg-secondary/80"
+                          className="w-full h-10 text-sm"
                         >
-                          <Plus className="h-4 w-4 mr-2" />
                           Créer un nouveau complexe
                         </Button>
                       </div>
@@ -342,7 +338,7 @@ export function WorkoutElementsStep({
             </p>
           </div>
           
-          <Card className="flex-1 flex flex-col min-h-0 relative">
+          <Card className="flex-1 flex flex-col min-h-0 relative shadow-none">
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               {fields.length === 0 ? (
                 <div className="flex items-center justify-center h-32 border-2 border-dashed rounded-lg">

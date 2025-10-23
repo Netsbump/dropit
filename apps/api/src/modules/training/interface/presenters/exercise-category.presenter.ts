@@ -1,5 +1,5 @@
 import { ExerciseCategoryDto } from '@dropit/schemas';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ExerciseCategoryException } from '../../application/exceptions/exercise-category.exceptions';
 
 export const ExerciseCategoryPresenter = {
   present(categories: ExerciseCategoryDto[]) {
@@ -30,32 +30,15 @@ export const ExerciseCategoryPresenter = {
     };
   },
 
-  presentCreationError(error: Error) {
-    if (error instanceof BadRequestException) {
-      return { status: 400 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof ForbiddenException) {
-      return { status: 403 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
-    }
-    
-    console.error('ExerciseCategory error:', error);
-    return {
-      status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
-    };
-  },
-
   presentError(error: Error) {
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
+    if (error instanceof ExerciseCategoryException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
-    
-    console.error('ExerciseCategory error:', error);
+
+    console.error('ExerciseCategory unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }

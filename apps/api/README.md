@@ -61,6 +61,8 @@ pnpm db:migration:create --name <MigrationName>
 pnpm db:migration:up
 ```
 
+**Note:** For production migrations with real user data, see the [Production Migrations Guide](../../docs/migrations-production.md) which details backup strategies, rollback procedures, and security best practices.
+
 ## Database Seeding
 
 The application includes seeders to populate the database with initial data:
@@ -107,4 +109,8 @@ The API documentation is automatically generated from ts-rest contracts and is a
 3. Explore available endpoints, schemas, and test API calls directly
 
 The documentation is automatically kept in sync with the API contracts defined in the shared packages, ensuring that it's always up-to-date with the latest API changes.
+
+## Architecture
+
+This API follows a hexagonal architecture (Ports & Adapters) approach to separate business logic from infrastructure concerns. For a comprehensive guide on the architecture patterns, dependency injection, and implementation details, see the [Hexagonal Architecture Guide](../../docs/architecture-hexagonale.md).
 

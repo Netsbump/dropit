@@ -2,6 +2,7 @@
   "common": {
     "loading": "Chargement...",
     "start_create": "Commencez par en créer un !",
+    "back": "Retour",
     "error": {
       "generic": "Une erreur est survenue",
       "not_found": "Non trouvé"
@@ -18,22 +19,24 @@
   },
   "routes": {
     "/": "Tableau de bord",
-    "/programs/workouts": "Entrainements",
-    "/programs/exercises": "Exercices",
-    "/programs/complex": "Combinés",
-    "/programs/workouts/$workoutId": "Nom Entrainement",
+    "/library/workouts": "Entrainements",
+    "/library/exercises": "Exercices",
+    "/library/complex": "Complexes",
+    "/library/workouts/$workoutId": "Nom Entrainement",
     "/planning": "Calendrier",
     "/athletes": "Athlètes",
     "/athletes/$athleteId": "Athlète",
-    "/about": "Aide & Support"
+    "/help": "Aide",
+    "/settings": "Réglages"
   },
   "sidebar": {
     "menu": {
-      "dashboard": "Tableau de bord",
-      "programming": "Programmation",
+      "dashboard": "Accueil",
+      "library": "Bibliothèque",
       "calendar": "Calendrier",
       "athletes": "Athlètes",
-      "help": "Aide & Support"
+      "help": "Aide",
+      "settings": "Réglages"
     },
     "user": {
       "profile": "Profil",
@@ -45,16 +48,25 @@
       "application": "Application"
     }
   },
-  "programs": {
-    "title": "Programmation",
-    "description": "Retrouvez et gérez tous vos entrainements, combinés et exercices ici",
+  "library": {
+    "title": "Bibliothèque",
+    "description": "Retrouvez et gérez tous vos entrainements, complexes et exercices ici",
     "tabs": {
       "workouts": "Entrainements",
-      "complex": "Combinés",
+      "complex": "Complexes",
       "exercises": "Exercices"
     }
   },
   "workout": {
+    "hero": {
+      "title": "Créez vos programmes",
+      "description": "Composez des entrainements personnalisés pour vos athlètes",
+      "stat_label": "entrainements",
+      "stat_cta": "Apprenez à composer vos entraînements avec vos complexes et exercices disponibles"
+    },
+    "detail": {
+      "title": "Détail de l'entraînement"
+    },
     "filters": {
       "search_placeholder": "Rechercher un entraînement...",
       "all_categories": "Toutes les catégories",
@@ -67,21 +79,33 @@
     }
   },
   "complex": {
+    "hero": {
+      "title": "Enchaînements techniques",
+      "description": "Créez des enchaînements d'exercices spécifiques pour vos athlètes",
+      "stat_label": "complexes",
+      "stat_cta": "Découvrez comment les complexes peuvent transformer vos séances d'entraînement"
+    },
     "filters": {
-      "search_placeholder": "Rechercher un combiné...",
+      "search_placeholder": "Rechercher un complex...",
       "all_categories": "Toutes les catégories",
-      "create_complex": "Créer un combiné",
-      "no_results": "Aucun combiné trouvé"
+      "create_complex": "Créer un complex",
+      "no_results": "Aucun complex trouvé"
     },
     "details": {
-      "title": "Détails du combiné"
+      "title": "Détails du complex"
     },
     "creation": {
-      "title": "Créer un combiné",
-      "description": "Ajoutez un nouveau combiné à votre catalogue."
+      "title": "Créer un complex",
+      "description": "Ajoutez un nouveau complex à votre catalogue."
     }
   },
   "exercise": {
+    "hero": {
+      "title": "Bibliothèque de mouvements",
+      "description": "Tous les exercices disponibles pour composer vos entrainements",
+      "stat_label": "exercices",
+      "stat_cta": "En savoir plus sur la bibliothèque d'exercices et comment les utiliser efficacement"
+    },
     "filters": {
       "search_placeholder": "Rechercher un exercice...",
       "all_categories": "Toutes les catégories",
@@ -103,6 +127,10 @@
   },
   "dashboard": {
     "title": "Tableau de bord",
-    "description": "Vue d'ensemble de votre activité coaching"
+    "description": "Vue d'ensemble de votre activité coaching",
+    "welcome": {
+      "greeting": "Bonjour {{name}} !",
+      "description": "Bienvenue sur votre tableau de bord. Gérez vos athlètes, programmez vos séances et suivez leurs performances."
+    }
   }
 }

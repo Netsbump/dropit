@@ -30,21 +30,16 @@ export class WorkoutElement {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  // @Property({ type: 'string' })
-  // @Check({ 
-  //   name: 'valid_workout_element_type',
-  //   expression: `type IN ('exercise', 'complex')`
-  // })
   @Enum({ items: () => Object.values(WORKOUT_ELEMENT_TYPES) })
   type!: WorkoutElementType;
 
-  @ManyToOne(() => Workout)
+  @ManyToOne(() => Workout, { deleteRule: 'cascade' })
   workout!: Workout;
 
-  @ManyToOne(() => Exercise, { nullable: true })
+  @ManyToOne(() => Exercise, { nullable: true, deleteRule: 'cascade' })
   exercise?: Exercise;
 
-  @ManyToOne(() => Complex, { nullable: true })
+  @ManyToOne(() => Complex, { nullable: true, deleteRule: 'cascade' })
   complex?: Complex;
 
   @Property()
@@ -61,6 +56,9 @@ export class WorkoutElement {
 
   @Property({ nullable: true })
   duration?: number;
+
+  @Property({ nullable: true })
+  description?: string;
 
   @Property({ nullable: true })
   startWeight_percent?: number;

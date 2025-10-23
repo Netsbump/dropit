@@ -7,7 +7,7 @@
     "ignore": [
       "**/node_modules/**",
       "**/dist/**",
-      ".turbo/**",
+      "**/coverage/**",
       "./.vscode/**",
       "apps/web/src/routeTree.gen.ts"
     ]

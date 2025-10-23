@@ -8,11 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Users } from "lucide-react";
+import { BicepsFlexed, ArrowRight } from "lucide-react";
 import { Label } from "@/shared/components/ui/label";
 import { Input } from "@/shared/components/ui/input";
 import { Button } from "@/shared/components/ui/button";
-import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute('/join-organization')({
   beforeLoad: async () => {
@@ -81,19 +80,23 @@ function JoinOrganizationPage() {
   };
 
   return (
-    <div className="w-full max-w-md mx-auto">
-      <Card className="w-full">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <Users className="h-6 w-6 text-blue-600" />
-          </div>
-          <CardTitle className="text-2xl">{t('join_organization.title')}</CardTitle>
-          <CardDescription>
-            {t('join_organization.description')}
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+    <div className="min-h-screen flex items-center justify-center p-8">
+      <div className="w-full max-w-md mx-auto">
+        <Card className="w-full bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm">
+          <CardHeader className="text-center p-8 pb-6">
+            {/* Logo */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-700" />
+              <span className="text-xl font-bold text-purple-700">Dropit</span>
+            </div>
+
+            <CardTitle className="text-2xl text-gray-800">{t('join_organization.title')}</CardTitle>
+            <CardDescription className="text-base text-gray-600">
+              {t('join_organization.description')}
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="px-8 pb-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-2">
               <Label htmlFor="code">{t('join_organization.fields.code')}</Label>
               <Input
@@ -112,7 +115,8 @@ function JoinOrganizationPage() {
 
             <Button
               type="submit"
-              className="w-full"
+              variant='default'
+              className="w-full h-11"
               disabled={joinOrganizationMutation.isPending}
             >
               {joinOrganizationMutation.isPending ? (
@@ -120,22 +124,23 @@ function JoinOrganizationPage() {
               ) : (
                 <>
                   {t('join_organization.button')}
-                  <ArrowRight className="h-4 w-4" />
+                  <ArrowRight className="h-5 w-5" />
                 </>
               )}
             </Button>
           </form>
 
-          <div className="mt-6 pt-6 border-t">
+          <div className="mt-6 pt-6 border-t border-gray-200">
             <div className="text-center text-sm text-gray-600">
               <p className="mb-2">{t('join_organization.help.no_code')}</p>
-              <p>
+              <p className="text-xs text-gray-500">
                 {t('join_organization.help.contact_coach')}
               </p>
             </div>
           </div>
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }

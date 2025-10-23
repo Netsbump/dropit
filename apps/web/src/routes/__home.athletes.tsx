@@ -2,13 +2,15 @@ import { api } from '@/lib/api';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AthleteInvitationForm } from '../features/athletes/athlete-invitation-form';
 import { columns } from '../features/athletes/columns';
 import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
-import { HeaderPage } from '../shared/components/layout/header-page';
+import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Button } from '../shared/components/ui/button';
+import { HeroCard } from '../shared/components/ui/hero-card';
+import { Users } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/athletes')({
   component: AthletesPage,
@@ -16,6 +18,7 @@ export const Route = createFileRoute('/__home/athletes')({
 
 function AthletesPage() {
   const { t } = useTranslation(['common', 'athletes']);
+  const { setPageMeta } = usePageMeta();
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
   const queryClient = useQueryClient();
   const navigate = Route.useNavigate();
@@ -23,6 +26,10 @@ function AthletesPage() {
   const isAthleteDetail = matches.some(
     (match) => match.routeId === '/__home/athletes/$athleteId'
   );
+
+  useEffect(() => {
+    setPageMeta({ title: t('athletes:title') });
+  }, [setPageMeta, t]);
 
   const { data: athletes, isLoading: athletesLoading } = useQuery({
     queryKey: ['athletes'],
@@ -42,17 +49,32 @@ function AthletesPage() {
   if (isAthleteDetail) {
     return <Outlet />;
   }
-  if (athletesLoading) return <div>{t('common:loading')}</div>;
-  if (!athletes) return <div>{t('common:no_results')}</div>;
 
   return (
-    <div className="relative flex-1">
-      <HeaderPage
-        title={t('athletes:title')}
-        description={t('athletes:description')}
-      />
+    <div className="flex flex-col h-full p-4">
+      {/* Fixed header section */}
+      <div className="flex-none">
+        <HeroCard
+          variant="athlete"
+          title={t('athletes:hero.title')}
+          description={t('athletes:hero.description')}
+          stat={{
+            label: t('athletes:hero.stat_label'),
+            value: athletes?.length || 0,
+            icon: Users,
+            description: t('athletes:hero.stat_description'),
+            callToAction: {
+              text: t('athletes:hero.stat_cta'),
+              onClick: () => {
+                console.log('Open athletes tutorial video');
+              }
+            }
+          }}
+        />
+      </div>
 
-      <div>
+      {/* DataTable with internal scroll management */}
+      <div className="flex-1 min-h-0">
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common:loading')}

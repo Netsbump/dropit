@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
-import { IOrganizationRepository } from "../../application/ports/organization.repository";
+import { IOrganizationRepository } from "../../application/ports/organization.repository.port";
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { Organization } from "../../domain/organization/organization.entity";
 

@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import { CardContent, CardHeader } from '@/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
   Select,
@@ -19,8 +18,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
 import { Textarea } from '@/shared/components/ui/textarea';
+import { Separator } from '@/shared/components/ui/separator';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
   DndContext,
@@ -45,7 +44,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -62,7 +61,6 @@ function SortableExerciseItem({
   id,
   index,
   children,
-  form,
   remove,
 }: {
   id: string;
@@ -99,24 +97,6 @@ function SortableExerciseItem({
       >
         <GripVertical className="h-4 w-4" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`exercises.${index}.reps`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input
-                type="number"
-                min={1}
-                className="w-16 h-8 text-center rounded-md bg-muted text-muted-foreground"
-                {...field}
-                onChange={(e) => field.onChange(parseInt(e.target.value))}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
 
       {children}
 
@@ -301,163 +281,156 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           className="space-y-6"
         >
           {/* Informations principales */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardContent className="space-y-4 pt-6">
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Description</FormLabel>
-                    <FormControl>
-                      <Textarea {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Catégorie dans une Card séparée */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardContent className="pt-6">
-              <FormField
-                control={form.control}
-                name="complexCategory"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Catégorie</FormLabel>
-                    <Select
-                      onValueChange={(value) => {
-                        if (value === 'new') {
-                          setCreateCategoryModalOpen(true);
-                        } else {
-                          field.onChange(value);
-                        }
-                      }}
-                      value={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Sélectionner une catégorie" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {categories?.map((category) => (
-                          <SelectItem key={category.id} value={category.id}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                        <SelectItem value="new">
-                          + Créer une nouvelle catégorie
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Liste des exercices avec drag & drop */}
-          <Card className="bg-background rounded-md shadow-none">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <Label>Exercices ({fields.length})</Label>
-              <Button
-                type="button"
-                size="sm"
-                onClick={() =>
-                  append({
-                    exerciseId: '',
-                    order: fields.length,
-                    reps: 1,
-                  })
-                }
-                disabled={!exercises?.length}
-              >
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Ajouter un exercice
-              </Button>
-            </CardHeader>
-
-            <CardContent>
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={fields.map((field) => field.id)}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <div className="space-y-2">
-                    {fields.map((field, index) => (
-                      <SortableExerciseItem
-                        key={field.id}
-                        id={field.id}
-                        index={index}
-                        form={form}
-                        remove={remove}
-                      >
-                        <FormField
-                          control={form.control}
-                          name={`exercises.${index}.exerciseId`}
-                          render={({ field: formField }) => (
-                            <FormItem className="flex-1">
-                              <Select
-                                onValueChange={(value) => {
-                                  formField.onChange(value);
-                                  if (value === 'new') {
-                                    setCurrentEditingIndex(index);
-                                    setCreateExerciseModalOpen(true);
-                                  }
-                                }}
-                                value={formField.value}
-                              >
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Sélectionner un exercice" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {exercises?.map((exercise) => (
-                                    <SelectItem
-                                      key={exercise.id}
-                                      value={exercise.id}
-                                      disabled={
-                                        selectedExerciseIds.includes(
-                                          exercise.id
-                                        ) && formField.value !== exercise.id
-                                      }
-                                    >
-                                      {exercise.name}
-                                      {selectedExerciseIds.includes(
-                                        exercise.id
-                                      ) &&
-                                        formField.value !== exercise.id &&
-                                        ' (déjà sélectionné)'}
-                                    </SelectItem>
-                                  ))}
-                                  <SelectItem value="new">
-                                    + Créer un nouvel exercice
-                                  </SelectItem>
-                                </SelectContent>
-                              </Select>
-                              <FormMessage />
-                            </FormItem>
-                          )}
-                        />
-                      </SortableExerciseItem>
-                    ))}
-                  </div>
-                </SortableContext>
-              </DndContext>
-            </CardContent>
-          </Card>
+          <CardContent className="space-y-4 p-0">
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-gray-500'>Description</FormLabel>
+                  <FormControl className="bg-white">
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
 
           <Separator />
+          {/* Catégorie dans une Card séparée */}
+          <CardContent className="p-0">
+            <FormField
+              control={form.control}
+              name="complexCategory"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='text-gray-500'>Catégorie</FormLabel>
+                  <Select
+                    onValueChange={(value) => {
+                      if (value === 'new') {
+                        setCreateCategoryModalOpen(true);
+                      } else {
+                        field.onChange(value);
+                      }
+                    }}
+                    value={field.value}
+                  >
+                    <FormControl className="bg-white">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionner une catégorie" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {categories?.map((category) => (
+                        <SelectItem key={category.id} value={category.id}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                      <SelectItem value="new">
+                        + Créer une nouvelle catégorie
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </CardContent>
+
+          <Separator />
+          {/* Liste des exercices avec drag & drop */}
+          <CardHeader className="flex flex-row items-center justify-between p-0">
+            <Label className='text-gray-500'>Exercices ({fields.length})</Label>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() =>
+                append({
+                  exerciseId: '',
+                  order: fields.length,
+                  reps: 1,
+                })
+              }
+              disabled={!exercises?.length}
+            >
+              Ajouter un exercice
+            </Button>
+          </CardHeader>
+
+          <CardContent>
+            <DndContext
+              sensors={sensors}
+              collisionDetection={closestCenter}
+              onDragEnd={handleDragEnd}
+            >
+              <SortableContext
+                items={fields.map((field) => field.id)}
+                strategy={verticalListSortingStrategy}
+              >
+                <div className="space-y-2">
+                  {fields.map((field, index) => (
+                    <SortableExerciseItem
+                      key={field.id}
+                      id={field.id}
+                      index={index}
+                      form={form}
+                      remove={remove}
+                    >
+                      <FormField
+                        control={form.control}
+                        name={`exercises.${index}.exerciseId`}
+                        render={({ field: formField }) => (
+                          <FormItem className="flex-1">
+                            <Select
+                              onValueChange={(value) => {
+                                formField.onChange(value);
+                                if (value === 'new') {
+                                  setCurrentEditingIndex(index);
+                                  setCreateExerciseModalOpen(true);
+                                }
+                              }}
+                              value={formField.value}
+                            >
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Sélectionner un exercice" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {exercises?.map((exercise) => (
+                                  <SelectItem
+                                    key={exercise.id}
+                                    value={exercise.id}
+                                    disabled={
+                                      selectedExerciseIds.includes(
+                                        exercise.id
+                                      ) && formField.value !== exercise.id
+                                    }
+                                  >
+                                    {exercise.name}
+                                    {selectedExerciseIds.includes(
+                                      exercise.id
+                                    ) &&
+                                      formField.value !== exercise.id &&
+                                      ' (déjà sélectionné)'}
+                                  </SelectItem>
+                                ))}
+                                <SelectItem value="new">
+                                  + Créer un nouvel exercice
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </SortableExerciseItem>
+                  ))}
+                </div>
+              </SortableContext>
+            </DndContext>
+          </CardContent>
 
           <div className="flex justify-end gap-2">
             <Button
@@ -510,74 +483,61 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   return (
     <div className="space-y-6">
       {/* Informations principales */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="space-y-4 pt-6">
-          <div className="space-y-2">
-              <Label>Description</Label>
-              <p className="text-sm text-muted-foreground">
-                {complex.description || 'Pas de description'}
-              </p>
-          </div>
-        </CardContent>
-      </Card>
+      <CardContent className="space-y-4 p-0">
+        <div className="space-y-2">
+            <Label className='text-gray-500'>Description</Label>
+            <p className="text-sm font-semibold text-gray-600">{complex.description || '-'}</p>
+        </div>
+      </CardContent>
 
+      <Separator />
       {/* Catégorie dans une Card séparée */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="pt-6">
-          <div className="space-y-2 space-x-2">
-            <Label>Catégorie</Label>
-            <Badge 
-              className={`border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}
-            >
+      <CardContent className="p-0">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Label className='text-gray-500'>Catégorie</Label>
+            <Badge className={`text-xs border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}>
               {complex.complexCategory.name}
             </Badge>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Liste des exercices */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardHeader>
-          <Label>Exercices ({complex.exercises?.length || 0})</Label>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {complex.exercises?.map((exercise) => (
-            <div
-              key={exercise.id}
-              className="flex items-center gap-4 p-2 rounded-md bg-muted"
-            >
-              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-background text-foreground">
-                {exercise.reps}
-              </div>
-              <span className="text-sm">{exercise.name}</span>
-            </div>
-          ))}
-        </CardContent>
-      </Card>
-
-      {/* Métadonnées */}
-      <Card className="bg-background rounded-md shadow-none">
-        <CardContent className="pt-6">
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Créé le</Label>
-                <p className="text-sm">
-                  {format(new Date(), 'Pp', { locale: fr })}
-                </p>
-              </div>
-              <div className="space-y-2">
-                <Label>Dernière modification</Label>
-                <p className="text-sm">
-                  {format(new Date(), 'Pp', { locale: fr })}
-                </p>
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+        </div>
+      </CardContent>
 
       <Separator />
+      {/* Liste des exercices */}
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <Label className='text-gray-500'>Exercices ({complex.exercises?.length || 0})</Label>
+          <div className="space-y-3">
+            {complex.exercises?.map((exercise) => (
+              <div key={exercise.id} className="bg-background rounded-xl p-4 border">
+                <p className="font-medium text-sm text-gray-700">{exercise.name}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </CardContent>
+
+      <Separator />
+      {/* Métadonnées */}
+      <CardContent className="p-0">
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className='text-gray-500'>Créé le</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {format(new Date(), 'Pp', { locale: fr })}
+              </p>
+            </div>
+            <div className="space-y-2">
+              <Label className='text-gray-500'>Dernière modification</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {format(new Date(), 'Pp', { locale: fr })}
+              </p>
+            </div>
+          </div>
+        </div>
+      </CardContent>
 
       <div className="flex justify-end">
         <Button onClick={() => setIsEditing(true)}>Modifier</Button>

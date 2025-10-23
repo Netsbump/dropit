@@ -12,7 +12,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useNavigate } from '@tanstack/react-router';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
-import { Building } from 'lucide-react';
+import { BicepsFlexed } from 'lucide-react';
 
 export const Route = createFileRoute('/create-organization')({
   beforeLoad: async () => {
@@ -75,20 +75,23 @@ function CreateOrganizationPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-full max-w-md mx-auto">
-        <Card className="w-full shadow-lg">
-          <CardHeader className="text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
-              <Building className="h-8 w-8 text-green-600" />
+        <Card className="w-full bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm">
+          <CardHeader className="text-center p-8 pb-6">
+            {/* Logo */}
+            <div className="flex items-center justify-center gap-2 mb-6">
+              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-700" />
+              <span className="text-xl font-bold text-purple-700">Dropit</span>
             </div>
-            <CardTitle className="text-2xl">{t('create_organization.title')}</CardTitle>
-            <CardDescription className="text-base">
+
+            <CardTitle className="text-2xl text-gray-800">{t('create_organization.title')}</CardTitle>
+            <CardDescription className="text-base text-gray-600">
               {t('create_organization.description')}
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <CardContent className="px-8 pb-8">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
               <div className="space-y-2">
                 <Label htmlFor="name">{t('create_organization.fields.name')}</Label>
                 <Input
@@ -137,7 +140,7 @@ function CreateOrganizationPage() {
 
               <Button
                 type="submit"
-                className="w-full h-12 text-lg bg-green-600 hover:bg-green-700"
+                className="w-full h-11"
                 disabled={createOrganizationMutation.isPending}
               >
                 {createOrganizationMutation.isPending

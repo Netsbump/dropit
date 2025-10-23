@@ -136,7 +136,7 @@ export function WorkoutPlanningStep({
   return (
     <div className="h-full flex flex-col">
       {/* Layout principal : une seule colonne centrée */}
-      <div className="flex-1 flex justify-center min-h-0 mt-6">
+      <div className="flex-1 flex justify-center min-h-0">
         <div className="w-full max-w-2xl flex flex-col min-h-0">
           <div className="mb-4">
             <div className="flex items-center justify-between">
@@ -154,7 +154,7 @@ export function WorkoutPlanningStep({
             </div>
           </div>
 
-          <Card className={`flex-1 flex flex-col min-h-0 ${!isScheduled ? 'opacity-50 pointer-events-none' : ''}`}>
+          <Card className={`flex-1 flex flex-col min-h-0 shadow-none ${!isScheduled ? 'opacity-50 pointer-events-none' : ''}`}>
             <CardContent className="p-6 flex-1 flex flex-col min-h-0">
               {!isScheduled ? (
                 <div className="flex items-center justify-center h-32 text-center text-muted-foreground">
@@ -168,7 +168,7 @@ export function WorkoutPlanningStep({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Date de programmation</FormLabel>
-                        <FormControl className="bg-sidebar">
+                        <FormControl>
                           <Input
                             type="date"
                             placeholder="Sélectionner une date"
@@ -199,7 +199,7 @@ export function WorkoutPlanningStep({
                         placeholder="Rechercher un athlète..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-background"
                         disabled={!isScheduled}
                       />
                     </div>

@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { EntityManager, EntityRepository } from "@mikro-orm/core";
 import { CompetitorStatus } from "../domain/competitor-status.entity";
-import { ICompetitorStatusRepository } from "../application/ports/competitor-status.repository";
+import { ICompetitorStatusRepository } from "../application/ports/competitor-status.repository.port";
 
 @Injectable()
 export class MikroCompetitorStatusRepository extends EntityRepository<CompetitorStatus> implements ICompetitorStatusRepository {

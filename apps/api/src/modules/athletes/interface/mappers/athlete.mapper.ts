@@ -1,5 +1,5 @@
 import { AthleteDetailsDto, AthleteDto } from '@dropit/schemas';
-import { AthleteDetails } from '../../application/ports/athlete.repository';
+import { AthleteDetails } from '../../application/ports/athlete.repository.port';
 import { Athlete } from '../../domain/athlete.entity';
 
 export const AthleteMapper = {

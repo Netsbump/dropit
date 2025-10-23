@@ -1,5 +1,5 @@
 import { ComplexDto } from '@dropit/schemas';
-import { BadRequestException, ForbiddenException, NotFoundException } from '@nestjs/common';
+import { ComplexException } from '../../application/exceptions/complex.exceptions';
 
 export const ComplexPresenter = {
   present(complexes: ComplexDto[]) {
@@ -31,19 +31,16 @@ export const ComplexPresenter = {
   },
 
   presentCreationError(error: Error) {
-    if (error instanceof BadRequestException) {
-      return { status: 400 as const, body: { message: error.message } };
+    // Handle custom complex exceptions
+    if (error instanceof ComplexException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
 
-    if (error instanceof ForbiddenException) {
-      return { status: 403 as const, body: { message: error.message } };
-    }
-
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
-    }
-    
-    console.error('Complex error:', error);
+    // Fallback for unexpected errors
+    console.error('Complex unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }
@@ -51,11 +48,16 @@ export const ComplexPresenter = {
   },
 
   presentError(error: Error) {
-    if (error instanceof NotFoundException) {
-      return { status: 404 as const, body: { message: error.message } };
+    // Handle custom complex exceptions
+    if (error instanceof ComplexException) {
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
     }
-    
-    console.error('Complex error:', error);
+
+    // Fallback for unexpected errors
+    console.error('Complex unexpected error:', error);
     return {
       status: 500 as const,
       body: { message: 'An error occurred while processing the request' }

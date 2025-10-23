@@ -1,14 +1,14 @@
 import { PlanningCalendar } from '@/features/planning/planning-calendar';
 import { TrainingSessionDetailPopover } from '@/features/planning/training-session-detail-popover';
 import { api } from '@/lib/api';
-import { HeaderPage } from '@/shared/components/layout/header-page';
 import { useToast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { EventClickArg } from '@fullcalendar/core';
 import { DateClickArg } from '@fullcalendar/interaction';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { usePageMeta } from '@/shared/hooks/use-page-meta';
 
 export const Route = createFileRoute('/__home/planning')({
   component: PlanningPage,
@@ -16,6 +16,7 @@ export const Route = createFileRoute('/__home/planning')({
 
 function PlanningPage() {
   const { t } = useTranslation('planning');
+  const { setPageMeta } = usePageMeta();
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isDetailPopoverOpen, setIsDetailPopoverOpen] = useState(false);
@@ -25,6 +26,10 @@ function PlanningPage() {
   const [popoverAnchorEl, setPopoverAnchorEl] = useState<HTMLElement | null>(
     null
   );
+
+  useEffect(() => {
+    setPageMeta({ title: t('title') });
+  }, [setPageMeta, t]);
 
   const {
     data: calendarEvents,
@@ -46,7 +51,12 @@ function PlanningPage() {
     navigate({ to: '/workouts/create', search: { date: dateParam } });
   };
 
-  const handleEventClick = (info: EventClickArg) => {
+  const handleEventClick = (info: EventClickArg, currentView: string) => {
+    // Ne pas ouvrir le popover en vue semaine (les détails sont déjà affichés)
+    if (currentView === 'dayGridWeek') {
+      return;
+    }
+
     // Fermer d'abord si un autre popover est déjà ouvert
     if (isDetailPopoverOpen) {
       setIsDetailPopoverOpen(false);
@@ -150,15 +160,12 @@ function PlanningPage() {
   if (calendarEventsLoading) return <div>{t('common:loading')}</div>;
 
   return (
-    <div className="relative flex-1">
-      <HeaderPage title={t('title')} description={t('description')} />
-
+    <div className="relative flex-1 p-4">
       <PlanningCalendar
         initialEvents={calendarEvents}
         onDateClick={handleDateClick}
         onEventClick={handleEventClick}
       />
-
 
       <TrainingSessionDetailPopover
         isOpen={isDetailPopoverOpen}
