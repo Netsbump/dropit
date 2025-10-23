@@ -20,10 +20,10 @@ export const getLevelBadgeVariant = (level: string) => {
 
   // Mapping des niveaux vers les couleurs
   const levelColors: Record<string, string> = {
-    'rookie': 'bg-gray-300 text-gray-800 hover:bg-gray-300 rounded-sm shadow-none',
-    'regional': 'bg-secondary text-secondary-foreground hover:bg-secondary rounded-sm shadow-none',
-    'elite': 'bg-tertiary text-tertiary-foreground hover:bg-tertiary rounded-sm shadow-none',
-    'international': 'bg-purple-100 text-primary hover:bg-purple-100 rounded-sm shadow-none',
+    rookie: 'bg-gray-300 text-gray-800 hover:bg-gray-300 rounded-sm shadow-none',
+    regional: 'bg-secondary text-secondary-foreground hover:bg-secondary rounded-sm shadow-none',
+    elite: 'bg-tertiary text-tertiary-foreground hover:bg-tertiary rounded-sm shadow-none',
+    international: 'bg-purple-100 text-primary hover:bg-purple-100 rounded-sm shadow-none',
   };
 
   return levelColors[levelLower] || 'bg-gray-300 text-gray-800 hover:bg-gray-300 rounded-sm shadow-none';

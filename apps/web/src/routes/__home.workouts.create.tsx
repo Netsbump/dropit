@@ -89,7 +89,7 @@ function CreateWorkoutPage() {
         middleContent: undefined,
       });
     };
-  }, [setPageMeta, currentStep]);
+  }, [setPageMeta, currentStep, handleCancel]);
 
   return (
     <div className="h-full flex flex-col p-4">

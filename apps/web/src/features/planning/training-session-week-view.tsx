@@ -1,4 +1,3 @@
-import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/shared/components/ui/badge';
 import { useTranslation } from '@dropit/i18n';

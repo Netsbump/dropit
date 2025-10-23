@@ -157,7 +157,7 @@ function Dashboard() {
                   <div className="grid grid-cols-7 gap-1">
                     {calendarDays.map((day, index) => (
                       <div
-                        key={index}
+                        key={`${day.day}-${day.date}`}
                         className={cn(
                           "flex flex-col items-center p-2 rounded-lg transition-all",
                           day.hasSession
@@ -197,8 +197,8 @@ function Dashboard() {
                           paddingAngle={4}
                           dataKey="value"
                         >
-                          {trainingDistribution.map((entry, index) => (
-                            <Cell key={`cell-${index}`} fill={entry.color} />
+                          {trainingDistribution.map((entry) => (
+                            <Cell key={entry.name} fill={entry.color} />
                           ))}
                         </Pie>
                         <Tooltip
