@@ -10,6 +10,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import onboardingImage from '@/assets/images/hero-pages/199306.svg';
 
 export const Route = createFileRoute('/onboarding')({
   beforeLoad: async () => {
@@ -40,7 +41,7 @@ function OnboardingChoice() {
         <div className="text-center mb-12">
           <div className="mx-auto mb-6 w-32 h-32 flex items-center justify-center">
             <img
-              src="/src/assets/images/hero-pages/199306.svg"
+              src={onboardingImage}
               alt=""
               className="w-full h-full object-contain"
             />

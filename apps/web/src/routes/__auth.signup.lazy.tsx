@@ -4,6 +4,7 @@ import { SignupForm } from '@/shared/components/auth/signup-form';
 import { authClient } from '../lib/auth-client';
 import { useEffect } from 'react';
 import { BicepsFlexed } from 'lucide-react';
+import loginImage from '@/assets/images/hero-pages/login.svg';
 
 export const Route = createLazyFileRoute('/__auth/signup')({
   component: Signup,
@@ -51,7 +52,7 @@ function Signup() {
         {/* Image à gauche */}
         <div className="hidden lg:flex items-center justify-center py-12">
           <img
-            src="/src/assets/images/hero-pages/login.svg"
+            src={loginImage}
             alt="Signup illustration"
             className="w-full h-full max-h-[800px] object-contain"
           />
