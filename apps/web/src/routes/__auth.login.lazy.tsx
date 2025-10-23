@@ -63,8 +63,8 @@ function Login() {
           <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
             {/* Logo */}
             <div className="flex items-center justify-center gap-2 mb-8">
-              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-600" />
-              <span className="text-xl font-bold text-purple-600">Dropit</span>
+              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-700" />
+              <span className="text-xl font-bold text-purple-700">Dropit</span>
             </div>
 
             <div className="flex flex-col space-y-2 text-center mb-6">

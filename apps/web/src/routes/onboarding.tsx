@@ -77,7 +77,7 @@ function OnboardingChoice() {
               className="p-8"
             >
               <CardHeader className="text-center p-0 mb-6">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-100 group-hover:bg-purple-200 transition-colors">
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-purple-100">
                   <Trophy className="h-8 w-8 text-purple-600" />
                 </div>
                 <CardTitle className="text-2xl text-gray-800 mb-2">{t('onboarding.roles.coach.title')}</CardTitle>
@@ -147,8 +147,8 @@ function OnboardingChoice() {
               className="p-8"
             >
               <CardHeader className="text-center p-0 mb-6">
-                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-orange-100 group-hover:bg-orange-200 transition-colors">
-                  <UserCheck className="h-8 w-8 text-orange-600" />
+                <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-pink-100">
+                  <UserCheck className="h-8 w-8 text-pink-600" />
                 </div>
                 <CardTitle className="text-2xl text-gray-800 mb-2">{t('onboarding.roles.athlete.title')}</CardTitle>
                 <CardDescription className="text-base text-gray-600">
@@ -159,33 +159,33 @@ function OnboardingChoice() {
               <CardContent className="p-0">
                 <ul className="space-y-3 mb-8">
                   <li className="flex items-start gap-3 text-sm text-gray-700">
-                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-                      <CheckIcon className="w-3 h-3 text-orange-600" />
+                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center">
+                      <CheckIcon className="w-3 h-3 text-pink-600" />
                     </div>
                     <span>{t('onboarding.roles.athlete.features.join_club')}</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700">
-                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-                      <CheckIcon className="w-3 h-3 text-orange-600" />
+                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center">
+                      <CheckIcon className="w-3 h-3 text-pink-600" />
                     </div>
                     <span>{t('onboarding.roles.athlete.features.follow_training')}</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700">
-                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-                      <CheckIcon className="w-3 h-3 text-orange-600" />
+                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center">
+                      <CheckIcon className="w-3 h-3 text-pink-600" />
                     </div>
                     <span>{t('onboarding.roles.athlete.features.record_performance')}</span>
                   </li>
                   <li className="flex items-start gap-3 text-sm text-gray-700">
-                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-orange-100 flex items-center justify-center">
-                      <CheckIcon className="w-3 h-3 text-orange-600" />
+                    <div className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-pink-100 flex items-center justify-center">
+                      <CheckIcon className="w-3 h-3 text-pink-600" />
                     </div>
                     <span>{t('onboarding.roles.athlete.features.communicate_coach')}</span>
                   </li>
                 </ul>
 
                 <Button
-                  className="w-full h-11 text-base bg-orange-500 hover:bg-orange-600 text-white shadow hover:shadow-md transition-shadow"
+                  className="w-full h-11 text-base bg-pink-500 hover:bg-pink-600 text-white shadow hover:shadow-md transition-shadow"
                   size="lg"
                 >
                   {t('onboarding.roles.athlete.button')}
