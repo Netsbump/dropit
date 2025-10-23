@@ -1,5 +1,7 @@
 import { api } from '@/lib/api'
 import { DetailsPanel } from '@/shared/components/ui/details-panel'
+import { HeroCard } from '@/shared/components/ui/hero-card'
+import { ScrollArea } from '@/shared/components/ui/scroll-area'
 import { Spinner } from '@/shared/components/ui/spinner'
 import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
@@ -11,6 +13,8 @@ import { ComplexFilters } from '../features/complex/complex-filters'
 import { ComplexGrid } from '../features/complex/complex-grid'
 import { DialogCreation } from '../features/exercises/dialog-creation'
 import { usePageMeta } from '../shared/hooks/use-page-meta'
+import { Button } from '@/shared/components/ui/button'
+import { Zap } from 'lucide-react'
 
 export const Route = createFileRoute('/__home/library/complex')({
   component: ComplexPage,
@@ -76,11 +80,28 @@ function ComplexPage() {
   }
 
   return (
-    <div className="h-full flex gap-0">
-      <div className="flex-1 min-w-0 flex flex-col p-8">
-        <p className="text-muted-foreground mb-6">{t('library.description')}</p>
+    <div className="h-full flex gap-6 p-4">
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Fixed header section */}
+        <div className="flex-none space-y-6">
+          <HeroCard
+            variant="complex"
+            title={t('complex.hero.title')}
+            description={t('complex.hero.description')}
+            stat={{
+              label: t('complex.hero.stat_label'),
+              value: complexes?.length || 0,
+              icon: Zap,
+              description: t('complex.hero.stat_description'),
+              callToAction: {
+                text: t('complex.hero.stat_cta'),
+                onClick: () => {
+                  console.log('Open complex tutorial video');
+                }
+              }
+            }}
+          />
 
-        <div className="flex-1 min-h-0">
           <ComplexFilters
             onFilterChange={setFilter}
             onCategoryChange={setCategoryFilter}
@@ -88,7 +109,10 @@ function ComplexPage() {
             categories={categories}
             disabled={isLoading || !complexes?.length}
           />
+        </div>
 
+        {/* Scrollable content section */}
+        <ScrollArea className="flex-1">
           {isLoading ? (
             <div className="flex items-center justify-center h-32">
               {t('common.loading')}
@@ -97,6 +121,7 @@ function ComplexPage() {
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
               <p>{t('complex.filters.no_results')}</p>
               <p className="text-sm">{t('common.start_create')}</p>
+              <Button onClick={() => setCreateComplexModalOpen(true)}>{t('complex.filters.create_complex')}</Button>
             </div>
           ) : (
             <ComplexGrid
@@ -104,7 +129,7 @@ function ComplexPage() {
               onComplexClick={(complexId) => setSelectedComplex(complexId)}
             />
           )}
-        </div>
+        </ScrollArea>
       </div>
 
       <DetailsPanel

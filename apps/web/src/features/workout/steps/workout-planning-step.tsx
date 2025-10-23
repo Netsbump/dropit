@@ -136,7 +136,7 @@ export function WorkoutPlanningStep({
   return (
     <div className="h-full flex flex-col">
       {/* Layout principal : une seule colonne centrée */}
-      <div className="flex-1 flex justify-center min-h-0 mt-6">
+      <div className="flex-1 flex justify-center min-h-0">
         <div className="w-full max-w-2xl flex flex-col min-h-0">
           <div className="mb-4">
             <div className="flex items-center justify-between">
@@ -199,7 +199,7 @@ export function WorkoutPlanningStep({
                         placeholder="Rechercher un athlète..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10"
+                        className="pl-10 bg-background"
                         disabled={!isScheduled}
                       />
                     </div>

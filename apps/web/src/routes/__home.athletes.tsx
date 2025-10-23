@@ -9,6 +9,8 @@ import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
 import { Button } from '../shared/components/ui/button';
+import { HeroCard } from '../shared/components/ui/hero-card';
+import { Users } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/athletes')({
   component: AthletesPage,
@@ -47,14 +49,32 @@ function AthletesPage() {
   if (isAthleteDetail) {
     return <Outlet />;
   }
-  if (athletesLoading) return <div>{t('common:loading')}</div>;
-  if (!athletes) return <div>{t('common:no_results')}</div>;
 
   return (
-    <div className="relative flex-1 p-8">
-      <p className="text-muted-foreground mb-6">{t('athletes:description')}</p>
+    <div className="flex flex-col h-full p-4">
+      {/* Fixed header section */}
+      <div className="flex-none">
+        <HeroCard
+          variant="athlete"
+          title={t('athletes:hero.title')}
+          description={t('athletes:hero.description')}
+          stat={{
+            label: t('athletes:hero.stat_label'),
+            value: athletes?.length || 0,
+            icon: Users,
+            description: t('athletes:hero.stat_description'),
+            callToAction: {
+              text: t('athletes:hero.stat_cta'),
+              onClick: () => {
+                console.log('Open athletes tutorial video');
+              }
+            }
+          }}
+        />
+      </div>
 
-      <div>
+      {/* DataTable with internal scroll management */}
+      <div className="flex-1 min-h-0">
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common:loading')}

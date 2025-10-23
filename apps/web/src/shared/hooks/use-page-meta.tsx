@@ -2,6 +2,9 @@ import { createContext, useContext, useState, type ReactNode } from 'react';
 
 interface PageMeta {
   title?: string;
+  showBackButton?: boolean;
+  onBackClick?: () => void;
+  middleContent?: React.ReactNode;
 }
 
 interface PageMetaContextValue {

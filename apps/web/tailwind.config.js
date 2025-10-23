@@ -28,6 +28,10 @@ export default {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
         },
+        tertiary: {
+          DEFAULT: 'hsl(var(--tertiary))',
+          foreground: 'hsl(var(--tertiary-foreground))',
+        },
         muted: {
           DEFAULT: 'hsl(var(--muted))',
           foreground: 'hsl(var(--muted-foreground))',
@@ -43,6 +47,7 @@ export default {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
         ring: 'hsl(var(--ring))',
+        outlet: 'hsl(var(--outlet))',
         chart: {
           1: 'hsl(var(--chart-1))',
           2: 'hsl(var(--chart-2))',
@@ -59,6 +64,19 @@ export default {
           'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
           border: 'hsl(var(--sidebar-border))',
           ring: 'hsl(var(--sidebar-ring))',
+        },
+        purple: {
+          50: 'hsl(256, 100%, 97%)',
+          100: 'hsl(256, 100%, 94%)',
+          200: 'hsl(256, 100%, 91%)',
+          300: 'hsl(256, 100%, 88%)',
+          400: 'hsl(256, 100%, 86%)',
+          500: 'hsl(256, 100%, 85%)',
+          600: 'hsl(256, 100%, 75%)',
+          700: 'hsl(256, 100%, 65%)',
+          800: 'hsl(256, 95%, 55%)',
+          900: 'hsl(256, 90%, 45%)',
+          950: 'hsl(256, 85%, 30%)',
         },
       },
     },

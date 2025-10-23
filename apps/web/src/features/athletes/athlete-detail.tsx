@@ -1,8 +1,3 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/shared/components/ui/avatar';
 import { Button } from '@/shared/components/ui/button';
 import { Card, CardContent } from '@/shared/components/ui/card';
 import {
@@ -39,7 +34,7 @@ import {
 } from '@radix-ui/react-select';
 import { format as formatDate } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { Dumbbell, Pencil, Plus } from 'lucide-react';
+import { Dumbbell, Pencil } from 'lucide-react';
 import { Form, useForm } from 'react-hook-form';
 
 type AthleteDetailProps = {
@@ -61,11 +56,6 @@ type AthleteDetailProps = {
   onCreateCompetitorStatus: (data: CreateCompetitorStatus) => void;
 };
 
-// Helper function to generate initials from name
-function getInitials(firstName: string, lastName: string): string {
-  return `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase();
-}
-
 export function AthleteDetail({
   athlete,
   personalRecords,
@@ -84,31 +74,9 @@ export function AthleteDetail({
 
   return (
     <div className="space-y-6 w-full">
-      {/* Profile Header with Avatar */}
-      <div className="w-full flex flex-col md:flex-row items-center md:items-start gap-6 mb-8">
-        <Avatar className="h-16 w-16 border border-border">
-          <AvatarImage
-            src={athlete.image}
-            alt={`${athlete.firstName} ${athlete.lastName}`}
-          />
-          <AvatarFallback className="text-xl bg-primary/10">
-            {getInitials(athlete.firstName, athlete.lastName)}
-          </AvatarFallback>
-        </Avatar>
-
-        <div className="flex flex-col items-center md:items-start">
-          <h1 className="text-2xl font-bold mb-1">
-            {athlete.firstName} {athlete.lastName}
-          </h1>
-          {athlete.country && (
-            <p className="text-sm text-muted-foreground">{athlete.country}</p>
-          )}
-        </div>
-      </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Personal Information */}
-        <Card className="bg-background rounded-md border shadow-sm">
+        <Card className="bg-background rounded-xl border shadow-none">
           <CardContent className="space-y-4 pt-6">
             <h2 className="text-lg font-semibold mb-4">
               {t('athletes:details.personal_info')}
@@ -148,7 +116,7 @@ export function AthleteDetail({
         {/* Stats & Club */}
         <div className="space-y-6">
           {/* Stats */}
-          <Card className="bg-background rounded-md border shadow-sm">
+          <Card className="bg-background rounded-xl border shadow-none">
             <CardContent className="space-y-4 pt-6">
               <h2 className="text-lg font-semibold mb-4">
                 {t('athletes:details.statistics')}
@@ -172,7 +140,7 @@ export function AthleteDetail({
           </Card>
 
           {/* Competitor Status */}
-          <Card className="bg-background rounded-md border shadow-sm">
+          <Card className="bg-background rounded-xl border shadow-none">
             <CardContent className="space-y-4 pt-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-semibold">
@@ -182,7 +150,6 @@ export function AthleteDetail({
                   {athlete.competitorStatus && (
                     <Button
                       variant="outline"
-                      size="sm"
                       onClick={() => {
                         setIsEditingCompetitorStatus(
                           !isEditingCompetitorStatus
@@ -191,15 +158,13 @@ export function AthleteDetail({
                       }}
                       disabled={isCreatingCompetitorStatus}
                     >
-                      <Pencil className="h-4 w-4 mr-2" />
                       {isEditingCompetitorStatus
                         ? t('athletes:details.cancel')
                         : t('athletes:details.edit')}
+                      <Pencil className="h-4 w-4 opacity-50" />
                     </Button>
                   )}
                   <Button
-                    variant="outline"
-                    size="sm"
                     onClick={() => {
                       setIsCreatingCompetitorStatus(
                         !isCreatingCompetitorStatus
@@ -208,7 +173,6 @@ export function AthleteDetail({
                     }}
                     disabled={isEditingCompetitorStatus}
                   >
-                    <Plus className="h-4 w-4 mr-2" />
                     {isCreatingCompetitorStatus
                       ? t('athletes:details.cancel')
                       : t('athletes:details.new_status')}
@@ -322,7 +286,7 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button type="submit" disabled={isLoading}>
+                      <Button type="submit" variant="default" disabled={isLoading}>
                         {t('athletes:details.edit')}
                       </Button>
                     </div>
@@ -434,7 +398,7 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button type="submit" disabled={isLoading}>
+                      <Button variant="default" type="submit" disabled={isLoading}>
                         {t('athletes:details.create_new_status')}
                       </Button>
                     </div>
@@ -470,7 +434,7 @@ export function AthleteDetail({
       </div>
 
       {/* Personal Records Section */}
-      <Card className="bg-background rounded-md border shadow-sm">
+      <Card className="bg-background rounded-xl border shadow-none">
         <CardContent className="space-y-4 pt-6">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-lg font-semibold">
@@ -494,7 +458,7 @@ export function AthleteDetail({
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   {athlete.personalRecords ? (
                     <>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -505,7 +469,7 @@ export function AthleteDetail({
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -516,7 +480,7 @@ export function AthleteDetail({
                           </div>
                         </CardContent>
                       </Card>
-                      <Card className="bg-primary/5">
+                      <Card className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6 text-center">
                           <Dumbbell className="h-8 w-8 mx-auto mb-2 text-primary" />
                           <div className="text-sm font-medium">
@@ -544,7 +508,7 @@ export function AthleteDetail({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {personalRecords ? (
                     personalRecords.map((record) => (
-                      <Card key={record.id} className="bg-primary/5">
+                      <Card key={record.id} className="bg-gray-50 rounded-xl shadow-none">
                         <CardContent className="pt-6">
                           <div className="text-sm font-medium">
                             {record.exerciseName ||
@@ -578,7 +542,7 @@ export function AthleteDetail({
       </Card>
 
       {/* History */}
-      <Card className="bg-background rounded-md border shadow-sm">
+      <Card className="bg-background rounded-xl border shadow-none">
         <CardContent className="space-y-4 pt-6">
           <h2 className="text-lg font-semibold mb-4">
             {t('athletes:details.training_history')}

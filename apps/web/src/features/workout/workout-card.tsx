@@ -14,22 +14,10 @@ interface WorkoutCardProps {
   onWorkoutClick: (id: string) => void;
 }
 
-// Fonction pour obtenir la couleur pastel selon la catégorie (jaune ou rouge pâle)
-const getCategoryColor = (category: string) => {
-  const colors: Record<string, string> = {
-    Force: 'bg-red-50 text-red-700 border-red-200',
-    Technique: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    Endurance: 'bg-red-50 text-red-700 border-red-200',
-    Mobilité: 'bg-yellow-50 text-yellow-700 border-yellow-200',
-    Conditioning: 'bg-red-50 text-red-700 border-red-200',
-  };
-  return colors[category] || 'bg-yellow-50 text-yellow-700 border-yellow-200';
-};
-
 export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
   return (
     <Card
-      className="border border-gray-100 rounded-2xl"
+      className="rounded-2xl bg-white shadow-none"
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
@@ -39,7 +27,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
           {workout.workoutCategory && (
             <Badge
               variant="outline"
-              className={`text-xs font-medium shrink-0 ${getCategoryColor(workout.workoutCategory)}`}
+              className="text-xs font-medium shrink-0 bg-primary/10 text-primary border-primary/20"
             >
               {workout.workoutCategory}
             </Badge>
@@ -55,11 +43,7 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
             return (
               <div
                 key={element.id}
-                className={`p-3 rounded-lg border ${
-                  isExercise
-                    ? 'bg-yellow-50/50 border-yellow-100'
-                    : 'bg-red-50/50 border-red-100'
-                }`}
+                className="p-3 rounded-lg border bg-gray-50"
               >
                 {/* Header avec type et sets/reps */}
                 <div className="flex items-center justify-between mb-2">
@@ -67,8 +51,8 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                     variant="secondary"
                     className={`text-[10px] font-semibold uppercase ${
                       isExercise
-                        ? 'bg-yellow-100 text-yellow-700 hover:bg-yellow-100'
-                        : 'bg-red-100 text-red-700 hover:bg-red-100'
+                        ? 'bg-tertiary text-tertiary-foreground hover:bg-tertiary'
+                        : 'bg-secondary text-secondary-foreground hover:bg-secondary'
                     }`}
                   >
                     {isExercise ? 'exercise' : 'complex'}

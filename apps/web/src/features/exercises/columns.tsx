@@ -20,7 +20,7 @@ export const columns: ColumnDef<Exercise>[] = [
   {
     id: 'select',
     header: ({ table }) => (
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-start pl-4">
         <Checkbox
           checked={
             table.getIsAllPageRowsSelected() ||
@@ -32,7 +32,7 @@ export const columns: ColumnDef<Exercise>[] = [
       </div>
     ),
     cell: ({ row }) => (
-      <div className="flex items-center justify-start">
+      <div className="flex items-center justify-start pl-4">
         <Checkbox
           checked={row.getIsSelected()}
           onCheckedChange={(value) => row.toggleSelected(!!value)}

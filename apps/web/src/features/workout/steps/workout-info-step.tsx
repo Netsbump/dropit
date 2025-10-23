@@ -91,7 +91,7 @@ export function WorkoutInfoStep({
   return (
     <div className="h-full flex flex-col">
       {/* Layout principal : 2 colonnes */}
-      <div className="flex-1 grid grid-cols-3 gap-6 min-h-0 mt-6">
+      <div className="flex-1 grid grid-cols-3 gap-6 min-h-0">
         
         {/* Colonne gauche : Formulaire d'informations */}
         <div className="col-span-2 flex flex-col min-h-0">

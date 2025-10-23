@@ -4,7 +4,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/shared/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { TrainingSessionDto } from '@dropit/schemas';
-import { Duration, EventApi, EventClickArg } from '@fullcalendar/core';
+import { Duration, EventApi, EventClickArg, EventContentArg } from '@fullcalendar/core';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -13,6 +13,7 @@ import multiMonthPlugin from '@fullcalendar/multimonth';
 import FullCalendar from '@fullcalendar/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRef, useState } from 'react';
+import { TrainingSessionWeekView } from './training-session-week-view';
 
 interface EventDropInfo {
   event: EventApi;
@@ -24,7 +25,7 @@ interface EventDropInfo {
 interface PlanningCalendarProps {
   className?: string;
   initialEvents?: TrainingSessionDto[];
-  onEventClick?: (eventInfo: EventClickArg) => void;
+  onEventClick?: (eventInfo: EventClickArg, currentView: string) => void;
   onDateClick?: (dateInfo: DateClickArg) => void;
   onEventDrop?: (eventDropInfo: EventDropInfo) => void;
 }
@@ -45,7 +46,7 @@ export function PlanningCalendar({
 
   const handleEventClick = (info: EventClickArg) => {
     if (onEventClick) {
-      onEventClick(info);
+      onEventClick(info, currentView);
     }
   };
 
@@ -122,6 +123,23 @@ export function PlanningCalendar({
     }
   };
 
+  const renderEventContent = (eventInfo: EventContentArg) => {
+    // Rendu personnalisé pour la vue semaine
+    if (eventInfo.view.type === 'dayGridWeek') {
+      const trainingSession = eventInfo.event.extendedProps.trainingSession as TrainingSessionDto;
+      if (trainingSession) {
+        return <TrainingSessionWeekView trainingSession={trainingSession} />;
+      }
+    }
+
+    // Rendu par défaut pour les autres vues
+    return (
+      <div className="p-1">
+        <div className="font-medium text-xs line-clamp-2">{eventInfo.event.title}</div>
+      </div>
+    );
+  };
+
   return (
     <div className={cn('planning-calendar', className)}>
       {/* Custom Toolbar */}
@@ -160,7 +178,7 @@ export function PlanningCalendar({
         {/* View Selector */}
         <div className="flex items-center gap-2">
           <Select value={currentView} onValueChange={handleViewChange}>
-            <SelectTrigger className="w-[140px]">
+            <SelectTrigger className="w-[140px] bg-background">
               <SelectValue>
                 {getViewLabel(currentView)}
               </SelectValue>
@@ -198,7 +216,11 @@ export function PlanningCalendar({
             title: event.workout.title,
             start: event.scheduledDate,
             end: event.scheduledDate,
+            extendedProps: {
+              trainingSession: event,
+            },
           }))}
+          eventContent={renderEventContent}
           eventClick={handleEventClick}
           dateClick={handleDateClick}
           eventDrop={handleEventDrop}

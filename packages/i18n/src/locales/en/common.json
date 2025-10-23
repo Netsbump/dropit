@@ -2,6 +2,7 @@
   "common": {
     "loading": "Loading...",
     "start_create": "Start by creating one!",
+    "back": "Back",
     "error": {
       "generic": "An error occurred",
       "not_found": "Not found"
@@ -57,6 +58,16 @@
     }
   },
   "workout": {
+    "hero": {
+      "title": "Build Your Programs",
+      "description": "Create custom workouts for your athletes",
+      "stat_label": "workouts",
+      "stat_description": "Reusable workouts with complexes and exercises",
+      "stat_cta": "Learn how to compose your workouts with available complexes or create your own"
+    },
+    "detail": {
+      "title": "Workout Detail"
+    },
     "filters": {
       "search_placeholder": "Search for a workout...",
       "all_categories": "All categories",
@@ -69,6 +80,13 @@
     }
   },
   "complex": {
+    "hero": {
+      "title": "Technical Sequences",
+      "description": "Create complexes to work on fluidity",
+      "stat_label": "complexes",
+      "stat_description": "Exercise combinations to maximize intensity",
+      "stat_cta": "Discover how complexes can transform your training sessions"
+    },
     "filters": {
       "search_placeholder": "Search for a complex...",
       "all_categories": "All categories",
@@ -84,6 +102,13 @@
     }
   },
   "exercise": {
+    "hero": {
+      "title": "Movement Library",
+      "description": "All your exercises organized and accessible",
+      "stat_label": "exercises",
+      "stat_description": "Fundamental movements to build your programs",
+      "stat_cta": "Learn more about the exercise library and how to use them effectively"
+    },
     "filters": {
       "search_placeholder": "Search for an exercise...",
       "all_categories": "All categories",
@@ -105,7 +130,11 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "description": "Overview of your coaching activity"
+    "description": "Overview of your coaching activity",
+    "welcome": {
+      "greeting": "Hello {{name}}!",
+      "description": "Welcome to your dashboard. Manage your athletes, schedule sessions, and track their performance."
+    }
   },
   "organization": {
     "setup": {

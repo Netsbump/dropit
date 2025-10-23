@@ -50,7 +50,7 @@ export function TrainingSessionDetailPopover({
         <PopoverAnchor asChild virtualRef={{ current: anchorElement }} />
       )}
       <PopoverContent
-        className="w-[400px] p-0 shadow-lg border-gray-200 max-h-[80vh]"
+        className="w-[400px] p-0 shadow-lg border max-h-[80vh]"
         align="start"
         side="right"
         sideOffset={5}

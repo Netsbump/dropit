@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
 import { Badge } from '@/shared/components/ui/badge';
 import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent, CardHeader } from '@/shared/components/ui/card';
+import { CardContent, CardHeader } from '@/shared/components/ui/card';
 import {
   Form,
   FormControl,
@@ -10,7 +10,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import { Label } from '@/shared/components/ui/label';
 import {
   Select,
@@ -19,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
 import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
@@ -45,7 +43,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { GripVertical, PlusCircle, Trash2 } from 'lucide-react';
+import { GripVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -62,7 +60,6 @@ function SortableExerciseItem({
   id,
   index,
   children,
-  form,
   remove,
 }: {
   id: string;
@@ -99,24 +96,6 @@ function SortableExerciseItem({
       >
         <GripVertical className="h-4 w-4" />
       </div>
-
-      <FormField
-        control={form.control}
-        name={`exercises.${index}.reps`}
-        render={({ field }) => (
-          <FormItem>
-            <FormControl>
-              <Input
-                type="number"
-                min={1}
-                className="w-16 h-8 text-center rounded-md bg-muted text-muted-foreground"
-                {...field}
-                onChange={(e) => field.onChange(parseInt(e.target.value))}
-              />
-            </FormControl>
-          </FormItem>
-        )}
-      />
 
       {children}
 
@@ -301,7 +280,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           className="space-y-6"
         >
           {/* Informations principales */}
-          <Card className="bg-background rounded-md shadow-none">
             <CardContent className="space-y-4 pt-6">
               <FormField
                 control={form.control}
@@ -317,10 +295,8 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                 )}
               />
             </CardContent>
-          </Card>
 
           {/* Catégorie dans une Card séparée */}
-          <Card className="bg-background rounded-md shadow-none">
             <CardContent className="pt-6">
               <FormField
                 control={form.control}
@@ -359,15 +335,12 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                 )}
               />
             </CardContent>
-          </Card>
 
           {/* Liste des exercices avec drag & drop */}
-          <Card className="bg-background rounded-md shadow-none">
             <CardHeader className="flex flex-row items-center justify-between">
               <Label>Exercices ({fields.length})</Label>
               <Button
                 type="button"
-                size="sm"
                 onClick={() =>
                   append({
                     exerciseId: '',
@@ -376,8 +349,8 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                   })
                 }
                 disabled={!exercises?.length}
+                className="bg-secondary-foreground text-secondary hover:bg-secondary-foreground/80"
               >
-                <PlusCircle className="h-4 w-4 mr-2" />
                 Ajouter un exercice
               </Button>
             </CardHeader>
@@ -455,9 +428,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                 </SortableContext>
               </DndContext>
             </CardContent>
-          </Card>
-
-          <Separator />
 
           <div className="flex justify-end gap-2">
             <Button
@@ -508,37 +478,29 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-2">
       {/* Informations principales */}
-      <Card className="bg-background rounded-md shadow-none">
         <CardContent className="space-y-4 pt-6">
           <div className="space-y-2">
-              <Label>Description</Label>
-              <p className="text-sm text-muted-foreground">
-                {complex.description || 'Pas de description'}
-              </p>
+              <Label className='text-md text-gray-500'>Description</Label>
+              <p className="font-bold text-gray-800 text-lg"> {complex.description || '-'}</p>
           </div>
         </CardContent>
-      </Card>
 
       {/* Catégorie dans une Card séparée */}
-      <Card className="bg-background rounded-md shadow-none">
         <CardContent className="pt-6">
-          <div className="space-y-2 space-x-2">
-            <Label>Catégorie</Label>
-            <Badge 
-              className={`border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}
+          <div className="space-y-2 space-x-2 flex flex-col">
+            <Label className='text-md text-gray-500'>Catégorie</Label>
+            <Badge className={`border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}
             >
               {complex.complexCategory.name}
             </Badge>
           </div>
         </CardContent>
-      </Card>
 
       {/* Liste des exercices */}
-      <Card className="bg-background rounded-md shadow-none">
         <CardHeader>
-          <Label>Exercices ({complex.exercises?.length || 0})</Label>
+        <Label className='text-md text-gray-500'>Exercices ({complex.exercises?.length || 0})</Label>
         </CardHeader>
         <CardContent className="space-y-2">
           {complex.exercises?.map((exercise) => (
@@ -546,17 +508,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
               key={exercise.id}
               className="flex items-center gap-4 p-2 rounded-md bg-muted"
             >
-              <div className="flex items-center justify-center w-8 h-8 rounded-md bg-background text-foreground">
-                {exercise.reps}
-              </div>
               <span className="text-sm">{exercise.name}</span>
             </div>
           ))}
         </CardContent>
-      </Card>
+
 
       {/* Métadonnées */}
-      <Card className="bg-background rounded-md shadow-none">
         <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
@@ -575,9 +533,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
             </div>
           </div>
         </CardContent>
-      </Card>
-
-      <Separator />
 
       <div className="flex justify-end">
         <Button onClick={() => setIsEditing(true)}>Modifier</Button>

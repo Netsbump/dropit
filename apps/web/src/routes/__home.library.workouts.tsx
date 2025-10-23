@@ -1,11 +1,14 @@
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';
 import { api } from '@/lib/api';
+import { HeroCard } from '@/shared/components/ui/hero-card';
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { usePageMeta } from '../shared/hooks/use-page-meta';
+import { Layers } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/library/workouts')({
   component: WorkoutPage,
@@ -71,17 +74,35 @@ function WorkoutPage() {
     navigate({ to: `/workouts/${workoutId}` });
   };
 
-  // Si on est sur un détail de workout, on affiche directement le contenu
+  // If we are on a workout detail, display the content directly
   if (isWorkoutDetail) {
     return <Outlet />;
   }
 
-  // Sinon on affiche la grille des workouts
+  // Otherwise display the grid of workouts
   return (
-    <div className="p-8">
-      <p className="text-muted-foreground mb-6">{t('library.description')}</p>
+    <div className="flex flex-col h-full p-4">
+      {/* Fixed header section */}
+      <div className="flex-none space-y-6">
+        <HeroCard
+          variant="workout"
+          title={t('workout.hero.title')}
+          description={t('workout.hero.description')}
+          stat={{
+            label: t('workout.hero.stat_label'),
+            value: workouts?.length || 0,
+            icon: Layers,
+            description: t('workout.hero.stat_description'),
+            callToAction: {
+              text: t('workout.hero.stat_cta'),
+              onClick: () => {
+                // TODO: Ouvrir une popup avec vidéo explicative
+                console.log('Open workout tutorial video');
+              }
+            }
+          }}
+        />
 
-      <div className="mb-6">
         <WorkoutFilters
           onFilterChange={setFilter}
           onCategoryChange={setCategoryFilter}
@@ -91,22 +112,25 @@ function WorkoutPage() {
         />
       </div>
 
-      {isLoading ? (
-        <div className="flex items-center justify-center h-32">
-          {t('common.loading')}
-        </div>
-      ) : !workouts?.length ? (
-        <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-          <p>{t('workout.filters.no_results')}</p>
-          <p className="text-sm">{t('common.start_create')}</p>
-        </div>
-      ) : (
-        <WorkoutGrid
-          workouts={filteredWorkouts || []}
-          trainingSessions={trainingSessions || []}
-          onWorkoutClick={handleWorkoutClick}
-        />
-      )}
+      {/* Scrollable content section */}
+      <ScrollArea className="flex-1">
+        {isLoading ? (
+          <div className="flex items-center justify-center h-32">
+            {t('common.loading')}
+          </div>
+        ) : !workouts?.length ? (
+          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+            <p>{t('workout.filters.no_results')}</p>
+            <p className="text-sm">{t('common.start_create')}</p>
+          </div>
+        ) : (
+          <WorkoutGrid
+            workouts={filteredWorkouts || []}
+            trainingSessions={trainingSessions || []}
+            onWorkoutClick={handleWorkoutClick}
+          />
+        )}
+      </ScrollArea>
     </div>
   );
 }

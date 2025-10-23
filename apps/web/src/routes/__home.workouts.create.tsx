@@ -1,14 +1,12 @@
-import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
+import { WorkoutCreationStepper, workoutCreationSteps } from '@/features/workout/workout-creation-stepper';
 import { api } from '@/lib/api';
-import { Button } from '@/shared/components/ui/button';
+import { Steps } from '@/shared/components/ui/steps';
 import { useToast } from '@/shared/hooks/use-toast';
-import { useTranslation } from '@dropit/i18n';
+import { usePageMeta } from '@/shared/hooks/use-page-meta';
 import { CreateWorkout } from '@dropit/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { format } from 'date-fns';
-import { enGB, fr } from 'date-fns/locale';
-import { ArrowLeft } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { z } from 'zod';
 
 const createWorkoutSearchSchema = z.object({
@@ -22,13 +20,10 @@ export const Route = createFileRoute('/__home/workouts/create')({
 
 function CreateWorkoutPage() {
   const navigate = Route.useNavigate();
-  const { date } = Route.useSearch();
   const queryClient = useQueryClient();
-  const { t, i18n } = useTranslation();
   const { toast } = useToast();
-  const locale = i18n.language === 'fr' ? fr : enGB;
-
-  const selectedDate = date ? new Date(date) : undefined;
+  const { setPageMeta } = usePageMeta();
+  const [currentStep, setCurrentStep] = useState(0);
 
   // Mutation pour créer un workout
   const { mutate: createWorkoutMutation } = useMutation({
@@ -70,32 +65,40 @@ function CreateWorkoutPage() {
     navigate({ to: '/library/workouts' });
   };
 
-  return (
-    <div className="h-full flex flex-col">
-      {/* Navigation Bar */}
-      <div>
-        <div className="flex items-center h-14 gap-4">
-          <Button variant="outline" size="icon" onClick={handleCancel}>
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-2xl font-bold">
-                {t('workout.creation.title')}
-                {selectedDate && ` - ${format(selectedDate, 'PPP', { locale })}`}
-            </h1>
-          </div>
-        </div>
-      </div>
+  // Update page meta with title, back button, and steps in the middle
+  useEffect(() => {
+    setPageMeta({
+      title: 'Création entrainement',
+      showBackButton: true,
+      onBackClick: handleCancel,
+      middleContent: (
+        <Steps
+          steps={workoutCreationSteps}
+          currentStep={currentStep}
+          onStepClick={setCurrentStep}
+        />
+      ),
+    });
 
-      {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="h-full">
-          <WorkoutCreationStepper
-            onSuccess={handleCreationSuccess}
-            onCancel={handleCancel}
-          />
-        </div>
-      </div>
+    // Cleanup on unmount
+    return () => {
+      setPageMeta({
+        title: undefined,
+        showBackButton: false,
+        onBackClick: undefined,
+        middleContent: undefined,
+      });
+    };
+  }, [setPageMeta, currentStep, handleCancel]);
+
+  return (
+    <div className="h-full flex flex-col p-4">
+      <WorkoutCreationStepper
+        currentStep={currentStep}
+        setCurrentStep={setCurrentStep}
+        onSuccess={handleCreationSuccess}
+        onCancel={handleCancel}
+      />
     </div>
   );
 }

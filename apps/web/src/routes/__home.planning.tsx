@@ -51,7 +51,12 @@ function PlanningPage() {
     navigate({ to: '/workouts/create', search: { date: dateParam } });
   };
 
-  const handleEventClick = (info: EventClickArg) => {
+  const handleEventClick = (info: EventClickArg, currentView: string) => {
+    // Ne pas ouvrir le popover en vue semaine (les détails sont déjà affichés)
+    if (currentView === 'dayGridWeek') {
+      return;
+    }
+
     // Fermer d'abord si un autre popover est déjà ouvert
     if (isDetailPopoverOpen) {
       setIsDetailPopoverOpen(false);
@@ -155,15 +160,12 @@ function PlanningPage() {
   if (calendarEventsLoading) return <div>{t('common:loading')}</div>;
 
   return (
-    <div className="relative flex-1 p-8">
-      <p className="text-muted-foreground mb-6">{t('description')}</p>
-
+    <div className="relative flex-1 p-4">
       <PlanningCalendar
         initialEvents={calendarEvents}
         onDateClick={handleDateClick}
         onEventClick={handleEventClick}
       />
-
 
       <TrainingSessionDetailPopover
         isOpen={isDetailPopoverOpen}
