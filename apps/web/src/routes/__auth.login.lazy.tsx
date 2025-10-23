@@ -4,6 +4,7 @@ import { useTranslation } from '@dropit/i18n';
 import { LoginForm } from '@/shared/components/auth/login-form';
 import { useEffect } from 'react';
 import { BicepsFlexed } from 'lucide-react';
+import loginImage from '@/assets/images/hero-pages/login.svg';
 
 export const Route = createLazyFileRoute('/__auth/login')({
   component: Login,
@@ -52,7 +53,7 @@ function Login() {
         {/* Image à gauche */}
         <div className="hidden lg:flex items-center justify-center py-12">
           <img
-            src="/src/assets/images/hero-pages/login.svg"
+            src={loginImage}
             alt="Login illustration"
             className="w-full h-full max-h-[800px] object-contain"
           />
