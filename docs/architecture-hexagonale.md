@@ -2,13 +2,28 @@
 
 ## Vue d'ensemble
 
-DropIt utilise l'architecture hexagonale (aussi appelée "Ports & Adapters") pour isoler la **logique métier** des **frameworks et infrastructures**.
+DropIt utilise une approche inspirée de l'architecture hexagonale (aussi appelée "Ports & Adapters") pour isoler la **logique métier** des **frameworks et infrastructures**.
+
+### ⚠️ Implémentation Partielle
+
+Cette architecture est une **implémentation pragmatique** de l'hexagonale, avec un compromis assumé :
+- ✅ **Use-cases framework-agnostic** : Logique métier pure TypeScript
+- ✅ **Ports & Adapters** : Injection via interfaces
+- 🟡 **Entités avec MikroORM** : Les entités domaine utilisent les décorateurs ORM pour éviter un double mapping
+
+Ce compromis permet de bénéficier des avantages de l'architecture hexagonale (testabilité, indépendance des use-cases) sans la complexité d'un mapping complet.
 
 ### Objectifs
 - ✅ **Indépendance du framework** : La logique métier ne dépend pas de NestJS
 - ✅ **Testabilité** : Les use-cases sont testables sans mock du framework
 - ✅ **Flexibilité** : Possibilité de changer de framework (NestJS → Express, etc.) sans toucher au métier
 - ✅ **Clarté** : Séparation nette des responsabilités
+
+### Pourquoi cette architecture ?
+
+L'API a progressivement évolué d'une architecture n-tiers classique vers cette approche hexagonale partielle. Cette évolution répond à une double motivation : approfondir ma compréhension de patterns architecturaux rencontrés en contexte professionnel, et anticiper des évolutions futures nécessitant l'isolation de la logique métier (intégration matériel externe, sources de données tierces).
+
+Cette implémentation reste partielle : mes entités domaine conservent les décorateurs MikroORM plutôt que d'être des objets métier purs. Ce compromis pragmatique m'a permis de livrer un MVP fonctionnel tout en explorant concrètement les bénéfices et contraintes de l'architecture hexagonale, au-delà de la théorie.
 
 ---
 
