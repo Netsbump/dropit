@@ -102,7 +102,7 @@ export function WorkoutInfoStep({
             </p>
           </div>
 
-          <Card className="flex-1">
+          <Card className="flex-1 shadow-none">
             <CardContent className="p-6 space-y-6">
               <FormField
                 control={form.control}
@@ -110,7 +110,7 @@ export function WorkoutInfoStep({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nom</FormLabel>
-                    <FormControl className="bg-sidebar">
+                    <FormControl>
                       <Input placeholder="Nom de l'entraînement" {...field} />
                     </FormControl>
                     <FormMessage />
@@ -124,7 +124,7 @@ export function WorkoutInfoStep({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Description</FormLabel>
-                    <FormControl className="bg-sidebar">
+                    <FormControl>
                       <Textarea
                         placeholder="Description, commentaires de l'entraînement"
                         className="min-h-[120px]"
@@ -143,7 +143,7 @@ export function WorkoutInfoStep({
                   <FormItem>
                     <FormLabel>Catégorie</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
-                      <FormControl className="bg-sidebar">
+                      <FormControl>
                         <SelectTrigger>
                           <SelectValue placeholder="Sélectionner une catégorie" />
                         </SelectTrigger>
@@ -181,7 +181,7 @@ export function WorkoutInfoStep({
             </div>
           </div>
 
-          <Card className={`flex-1 flex flex-col min-h-0 ${!useTemplate ? 'opacity-50 pointer-events-none' : ''}`}>
+          <Card className={`flex-1 flex flex-col min-h-0 shadow-none ${!useTemplate ? 'opacity-50 pointer-events-none' : ''}`}>
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />

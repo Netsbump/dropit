@@ -40,7 +40,7 @@ export function DetailsPanel({
       <div
         className={cn(
           // Desktop: panel intégré dans le layout
-          'hidden lg:flex lg:w-[430px] lg:flex-shrink-0 lg:rounded-2xl lg:flex-col lg:h-full',
+          'hidden lg:flex lg:w-[430px] lg:flex-shrink-0 lg:rounded-2xl lg:flex-col lg:h-full p-2',
           // Mobile: drawer fixe en bas
           'lg:static fixed inset-x-0 bottom-0 top-16 z-50 rounded-t-xl border-t lg:border-t-0',
           'flex flex-col',
@@ -51,7 +51,7 @@ export function DetailsPanel({
       >
         <div className="flex flex-col w-full h-full p-4">
           <div className="flex items-center justify-between mb-4 flex-none">
-            <h2 className="text-lg font-semibold">{title}</h2>
+            <h2 className="text-lg text-gray-700">{title}</h2>
             <Button variant="ghost" size="icon" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>

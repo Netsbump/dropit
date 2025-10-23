@@ -6,7 +6,7 @@ import { usePageMeta } from '@/shared/hooks/use-page-meta';
 import { CreateWorkout } from '@dropit/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { z } from 'zod';
 
 const createWorkoutSearchSchema = z.object({
@@ -61,9 +61,9 @@ function CreateWorkoutPage() {
     }
   };
 
-  const handleCancel = () => {
+  const handleCancel = useCallback(() => {
     navigate({ to: '/library/workouts' });
-  };
+  }, [navigate]);
 
   // Update page meta with title, back button, and steps in the middle
   useEffect(() => {

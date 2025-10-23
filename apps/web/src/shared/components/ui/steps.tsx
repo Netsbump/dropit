@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
 import { Check } from 'lucide-react';
+import * as React from 'react';
 
 interface Step {
   id: string;
@@ -18,8 +19,8 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
     <nav aria-label="Progress" className="w-full">
       <div className="flex items-center">
         {steps.map((step, index) => (
-          <>
-            <div key={step.id} className="flex items-center">
+          <React.Fragment key={step.id}>
+            <div className="flex items-center">
               <button
                 type="button"
                 onClick={() => onStepClick?.(index)}
@@ -56,7 +57,7 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
 
             {/* Trait de liaison */}
             {index < steps.length - 1 && (
-              <div key={`line-${step.id}-${steps[index + 1].id}`} className="mx-3">
+              <div className="mx-3">
                 <div className={cn(
                   'h-0.5 w-8 transition-colors duration-200',
                   {
@@ -66,7 +67,7 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
                 )} />
               </div>
             )}
-          </>
+          </React.Fragment>
         ))}
       </div>
     </nav>
