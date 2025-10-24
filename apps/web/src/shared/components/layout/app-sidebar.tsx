@@ -9,7 +9,6 @@ import {
   Home,
   BookOpen,
   CircleQuestionMark,
-  Settings,
   LogOut,
 } from 'lucide-react';
 
@@ -74,11 +73,6 @@ export function AppSidebar() {
       title: t('sidebar.menu.help'),
       url: '/help',
       icon: CircleQuestionMark,
-    },
-    {
-      title: t('sidebar.menu.settings'),
-      url: '/settings',
-      icon: Settings,
     },
   ];
 

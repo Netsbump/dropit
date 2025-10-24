@@ -45,7 +45,7 @@ function RouteComponent() {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Contact Section */}
-          <Card className="w-full">
+          <Card className="w-full shadow-none">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <Mail className="h-5 w-5 text-primary" />
@@ -72,7 +72,7 @@ function RouteComponent() {
           </Card>
 
           {/* Legal Documents Section */}
-          <Card className="w-full">
+          <Card className="w-full shadow-none">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <FileText className="h-5 w-5 text-primary" />
@@ -125,7 +125,7 @@ function RouteComponent() {
         </div>
 
         {/* FAQ Section */}
-        <Card className="w-full">
+        <Card className="w-full shadow-none">
           <CardHeader>
             <div className="flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-primary" />
