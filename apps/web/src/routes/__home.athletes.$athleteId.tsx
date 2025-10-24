@@ -16,6 +16,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { ScrollArea } from '@/shared/components/ui/scroll-area';
 
 export const Route = createFileRoute('/__home/athletes/$athleteId')({
   component: AthleteDetailPage,
@@ -255,21 +256,23 @@ function AthleteDetailPage() {
   }
 
   return (
-    <div className="p-4">
-      <AthleteDetail
-        athlete={athlete}
-        personalRecords={personalRecords || []}
-        personalRecordsLoading={personalRecordsLoading}
-        isEditingCompetitorStatus={isEditingCompetitorStatus}
-        setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
-        isCreatingCompetitorStatus={isCreatingCompetitorStatus}
-        setIsCreatingCompetitorStatus={setIsCreatingCompetitorStatus}
-        updateCompetitorStatusForm={updateCompetitorStatusForm}
-        createCompetitorStatusForm={createCompetitorStatusForm}
-        isLoading={isLoading}
-        onUpdateCompetitorStatus={updateCompetitorStatus}
-        onCreateCompetitorStatus={createCompetitorStatus}
-      />
-    </div>
+    <ScrollArea className="flex-1 h-full">
+      <div className="p-4">
+        <AthleteDetail
+          athlete={athlete}
+          personalRecords={personalRecords || []}
+          personalRecordsLoading={personalRecordsLoading}
+          isEditingCompetitorStatus={isEditingCompetitorStatus}
+          setIsEditingCompetitorStatus={setIsEditingCompetitorStatus}
+          isCreatingCompetitorStatus={isCreatingCompetitorStatus}
+          setIsCreatingCompetitorStatus={setIsCreatingCompetitorStatus}
+          updateCompetitorStatusForm={updateCompetitorStatusForm}
+          createCompetitorStatusForm={createCompetitorStatusForm}
+          isLoading={isLoading}
+          onUpdateCompetitorStatus={updateCompetitorStatus}
+          onCreateCompetitorStatus={createCompetitorStatus}
+        />
+      </div>
+    </ScrollArea>
   );
 }
