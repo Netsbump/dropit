@@ -18,7 +18,6 @@ import { Route as CreateOrganizationRouteImport } from './routes/create-organiza
 import { Route as _homeRouteImport } from './routes/__home'
 import { Route as _authRouteImport } from './routes/__auth'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as _homeSettingsRouteImport } from './routes/__home.settings'
 import { Route as _homeProfileRouteImport } from './routes/__home.profile'
 import { Route as _homePlanningRouteImport } from './routes/__home.planning'
 import { Route as _homeLibraryRouteImport } from './routes/__home.library'
@@ -99,11 +98,6 @@ const _authLoginLazyRoute = _authLoginLazyRouteImport
     getParentRoute: () => _authRoute,
   } as any)
   .lazy(() => import('./routes/__auth.login.lazy').then((d) => d.Route))
-const _homeSettingsRoute = _homeSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => _homeRoute,
-} as any)
 const _homeProfileRoute = _homeProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -183,7 +177,6 @@ export interface FileRoutesByFullPath {
   '/library': typeof _homeLibraryRouteWithChildren
   '/planning': typeof _homePlanningRoute
   '/profile': typeof _homeProfileRoute
-  '/settings': typeof _homeSettingsRoute
   '/login': typeof _authLoginLazyRoute
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
@@ -208,7 +201,6 @@ export interface FileRoutesByTo {
   '/library': typeof _homeLibraryRouteWithChildren
   '/planning': typeof _homePlanningRoute
   '/profile': typeof _homeProfileRoute
-  '/settings': typeof _homeSettingsRoute
   '/login': typeof _authLoginLazyRoute
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
@@ -236,7 +228,6 @@ export interface FileRoutesById {
   '/__home/library': typeof _homeLibraryRouteWithChildren
   '/__home/planning': typeof _homePlanningRoute
   '/__home/profile': typeof _homeProfileRoute
-  '/__home/settings': typeof _homeSettingsRoute
   '/__auth/login': typeof _authLoginLazyRoute
   '/__auth/privacy': typeof _authPrivacyLazyRoute
   '/__auth/signup': typeof _authSignupLazyRoute
@@ -263,7 +254,6 @@ export interface FileRouteTypes {
     | '/library'
     | '/planning'
     | '/profile'
-    | '/settings'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -288,7 +278,6 @@ export interface FileRouteTypes {
     | '/library'
     | '/planning'
     | '/profile'
-    | '/settings'
     | '/login'
     | '/privacy'
     | '/signup'
@@ -315,7 +304,6 @@ export interface FileRouteTypes {
     | '/__home/library'
     | '/__home/planning'
     | '/__home/profile'
-    | '/__home/settings'
     | '/__auth/login'
     | '/__auth/privacy'
     | '/__auth/signup'
@@ -417,13 +405,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof _authLoginLazyRouteImport
       parentRoute: typeof _authRoute
-    }
-    '/__home/settings': {
-      id: '/__home/settings'
-      path: '/settings'
-      fullPath: '/settings'
-      preLoaderRoute: typeof _homeSettingsRouteImport
-      parentRoute: typeof _homeRoute
     }
     '/__home/profile': {
       id: '/__home/profile'
@@ -573,7 +554,6 @@ interface _homeRouteChildren {
   _homeLibraryRoute: typeof _homeLibraryRouteWithChildren
   _homePlanningRoute: typeof _homePlanningRoute
   _homeProfileRoute: typeof _homeProfileRoute
-  _homeSettingsRoute: typeof _homeSettingsRoute
   _homeWorkoutsWorkoutIdRoute: typeof _homeWorkoutsWorkoutIdRoute
   _homeWorkoutsCreateRoute: typeof _homeWorkoutsCreateRoute
 }
@@ -585,7 +565,6 @@ const _homeRouteChildren: _homeRouteChildren = {
   _homeLibraryRoute: _homeLibraryRouteWithChildren,
   _homePlanningRoute: _homePlanningRoute,
   _homeProfileRoute: _homeProfileRoute,
-  _homeSettingsRoute: _homeSettingsRoute,
   _homeWorkoutsWorkoutIdRoute: _homeWorkoutsWorkoutIdRoute,
   _homeWorkoutsCreateRoute: _homeWorkoutsCreateRoute,
 }

@@ -79,6 +79,19 @@
       "delete_error": "Error deleting athlete profile"
     }
   },
+  "settings": {
+    "title": "Preferences",
+    "description": "Customize your DropIt experience",
+    "language": {
+      "label": "Language",
+      "description": "Choose the application language"
+    },
+    "dark_mode": {
+      "label": "Dark mode",
+      "description": "Enable dark theme",
+      "coming_soon": "Dark mode is under development"
+    }
+  },
   "danger": {
     "title": "Danger zone",
     "description": "Irreversible actions concerning your account",

@@ -225,7 +225,7 @@ export function AthleteProfileSection() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="w-full shadow-none">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -241,9 +241,9 @@ export function AthleteProfileSection() {
   // No athlete profile
   if (!athlete && !isCreating) {
     return (
-      <Card>
+      <Card className="w-full">
         <CardHeader>
-          <CardTitle>{t('profile:athlete.title')}</CardTitle>
+          <CardTitle className="text-2xl shadow-none">{t('profile:athlete.title')}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-8">
@@ -264,9 +264,9 @@ export function AthleteProfileSection() {
 
   return (
     <>
-      <Card>
+      <Card className="w-full shadow-none">
         <CardHeader>
-          <CardTitle>{t('profile:athlete.title')}</CardTitle>
+          <CardTitle className="text-2xl">{t('profile:athlete.title')}</CardTitle>
           {!isEditing && !isCreating && (
             <CardDescription>
               {athlete?.firstName} {athlete?.lastName}

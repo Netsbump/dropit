@@ -162,5 +162,64 @@
       "description": "Description",
       "description_placeholder": "Enter organization description"
     }
+  },
+  "help": {
+    "title": "Help Center",
+    "description": "Need assistance? Check our resources or contact us",
+    "contact": {
+      "title": "Contact Us",
+      "description": "Our team is here to help",
+      "email": {
+        "label": "Support Email",
+        "value": "levasseur.sten@gmail.com",
+        "action": "Send an email"
+      },
+      "response_time": "We typically respond within 24-48 hours"
+    },
+    "legal": {
+      "title": "Legal Documents",
+      "description": "Review our policies and terms of use",
+      "privacy": {
+        "title": "Privacy Policy",
+        "description": "Learn how we protect your personal data in compliance with GDPR",
+        "action": "View policy"
+      },
+      "terms": {
+        "title": "Terms of Use",
+        "description": "Review DropIt's general terms and conditions",
+        "action": "View terms"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": {
+        "account": {
+          "question": "How can I update my personal information?",
+          "answer": "Go to your profile via the user menu in the top right, then click on 'Profile'. You can update your name and email there."
+        },
+        "athlete": {
+          "question": "How do I create an athlete profile?",
+          "answer": "In your profile, you'll find an 'Athlete Profile' section. If you don't have one yet, click on 'Create my athlete profile' and fill in the required information."
+        },
+        "data": {
+          "question": "How can I delete my data?",
+          "answer": "In your profile, in the 'Danger Zone' section, you can delete your athlete profile or your complete account. Warning: these actions are irreversible."
+        },
+        "support": {
+          "question": "How can I get additional help?",
+          "answer": "Feel free to contact us by email at levasseur.sten@gmail.com. Our team will respond as soon as possible."
+        }
+      }
+    },
+    "dialogs": {
+      "privacy": {
+        "title": "Privacy Policy",
+        "close": "Close"
+      },
+      "terms": {
+        "title": "Terms of Use",
+        "close": "Close"
+      }
+    }
   }
 }
