@@ -225,7 +225,7 @@ export function AthleteProfileSection() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <Skeleton className="h-6 w-48" />
           <Skeleton className="h-4 w-64" />
@@ -241,7 +241,7 @@ export function AthleteProfileSection() {
   // No athlete profile
   if (!athlete && !isCreating) {
     return (
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>{t('profile:athlete.title')}</CardTitle>
         </CardHeader>
@@ -264,7 +264,7 @@ export function AthleteProfileSection() {
 
   return (
     <>
-      <Card>
+      <Card className="w-full">
         <CardHeader>
           <CardTitle>{t('profile:athlete.title')}</CardTitle>
           {!isEditing && !isCreating && (

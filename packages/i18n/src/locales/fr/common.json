@@ -132,5 +132,64 @@
       "greeting": "Bonjour {{name}} !",
       "description": "Bienvenue sur votre tableau de bord. Gérez vos athlètes, programmez vos séances et suivez leurs performances."
     }
+  },
+  "help": {
+    "title": "Centre d'aide",
+    "description": "Besoin d'assistance ? Consultez nos ressources ou contactez-nous",
+    "contact": {
+      "title": "Nous contacter",
+      "description": "Notre équipe est là pour vous aider",
+      "email": {
+        "label": "Email de support",
+        "value": "levasseur.sten@gmail.com",
+        "action": "Envoyer un email"
+      },
+      "response_time": "Nous répondons généralement sous 24-48h"
+    },
+    "legal": {
+      "title": "Documents légaux",
+      "description": "Consultez nos politiques et conditions d'utilisation",
+      "privacy": {
+        "title": "Politique de confidentialité",
+        "description": "Découvrez comment nous protégeons vos données personnelles conformément au RGPD",
+        "action": "Voir la politique"
+      },
+      "terms": {
+        "title": "Conditions d'utilisation",
+        "description": "Consultez les conditions générales d'utilisation de DropIt",
+        "action": "Voir les conditions"
+      }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": {
+        "account": {
+          "question": "Comment puis-je modifier mes informations personnelles ?",
+          "answer": "Rendez-vous dans votre profil via le menu utilisateur en haut à droite, puis cliquez sur 'Profil'. Vous pourrez y modifier votre nom et votre email."
+        },
+        "athlete": {
+          "question": "Comment créer un profil athlète ?",
+          "answer": "Dans votre profil, vous trouverez une section 'Profil Athlète'. Si vous n'en avez pas encore, cliquez sur 'Créer mon profil athlète' et remplissez les informations demandées."
+        },
+        "data": {
+          "question": "Comment supprimer mes données ?",
+          "answer": "Dans votre profil, dans la section 'Zone de danger', vous pouvez supprimer votre profil athlète ou votre compte complet. Attention, ces actions sont irréversibles."
+        },
+        "support": {
+          "question": "Comment obtenir de l'aide supplémentaire ?",
+          "answer": "N'hésitez pas à nous contacter par email à levasseur.sten@gmail.com. Notre équipe vous répondra dans les plus brefs délais."
+        }
+      }
+    },
+    "dialogs": {
+      "privacy": {
+        "title": "Politique de confidentialité",
+        "close": "Fermer"
+      },
+      "terms": {
+        "title": "Conditions d'utilisation",
+        "close": "Fermer"
+      }
+    }
   }
 }

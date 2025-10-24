@@ -20,11 +20,11 @@ function RouteComponent() {
   }, [setPageMeta, t]);
 
   return (
-    <div className="container mx-auto p-6 max-w-7xl">
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <div className="container p-4 w-full">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
         {/* Left Column: User Profile + Danger Zone */}
-        <div className="space-y-6">
-          <Card>
+        <div className="space-y-6 w-full">
+          <Card className="w-full">
             <CardContent className="p-6 space-y-6">
               <UserProfileSection />
               <div className="border-t pt-6">
@@ -35,7 +35,7 @@ function RouteComponent() {
         </div>
 
         {/* Right Column: Athlete Profile */}
-        <div>
+        <div className="w-full">
           <AthleteProfileSection />
         </div>
       </div>
