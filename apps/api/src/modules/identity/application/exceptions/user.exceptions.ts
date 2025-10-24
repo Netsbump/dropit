@@ -14,11 +14,11 @@ export class UserException extends Error {
     return new UserException(`User with ID ${userId} not found`, 404);
   }
 
-  static unauthorized(message: string = 'Unauthorized'): UserException {
+  static unauthorized(message = 'Unauthorized'): UserException {
     return new UserException(message, 401);
   }
 
-  static forbidden(message: string = 'Forbidden'): UserException {
+  static forbidden(message = 'Forbidden'): UserException {
     return new UserException(message, 403);
   }
 

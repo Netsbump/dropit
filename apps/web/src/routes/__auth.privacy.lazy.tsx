@@ -4,6 +4,52 @@ import { Button } from '../shared/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '../shared/components/ui/card';
 import { useTranslation } from '@dropit/i18n';
 
+// Privacy Policy Types
+type ProcessingPurpose = {
+  purpose: string;
+  data: string;
+  reason: string;
+};
+
+type LegalBasis = {
+  type: string;
+  description: string;
+  examples: string[];
+};
+
+type RetentionDuration = {
+  category: string;
+  duration: string;
+  details: string;
+};
+
+type GdprRight = {
+  name: string;
+  description: string;
+  howTo: string;
+};
+
+type Infrastructure = {
+  service: string;
+  provider: string;
+  location: string;
+  details: string;
+};
+
+type CookieType = {
+  name: string;
+  cookie: string;
+  purpose: string;
+  duration: string;
+  type: string;
+  security: string;
+};
+
+type SecurityMeasure = {
+  category: string;
+  measures: string[];
+};
+
 export const Route = createLazyFileRoute('/__auth/privacy')({
   component: Privacy,
 });
@@ -51,8 +97,8 @@ function Privacy() {
               <div>
                 <h4 className="font-semibold mb-2">{t('sections.donneesCollectees.categories.compte.title')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  {(t('sections.donneesCollectees.categories.compte.items', { returnObjects: true }) as string[]).map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
+                  {(t('sections.donneesCollectees.categories.compte.items', { returnObjects: true }) as string[]).map((item: string) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -60,8 +106,8 @@ function Privacy() {
               <div>
                 <h4 className="font-semibold mb-2">{t('sections.donneesCollectees.categories.athlete.title')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  {(t('sections.donneesCollectees.categories.athlete.items', { returnObjects: true }) as string[]).map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
+                  {(t('sections.donneesCollectees.categories.athlete.items', { returnObjects: true }) as string[]).map((item: string) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -69,8 +115,8 @@ function Privacy() {
               <div>
                 <h4 className="font-semibold mb-2">{t('sections.donneesCollectees.categories.performance.title')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  {(t('sections.donneesCollectees.categories.performance.items', { returnObjects: true }) as string[]).map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
+                  {(t('sections.donneesCollectees.categories.performance.items', { returnObjects: true }) as string[]).map((item: string) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -78,8 +124,8 @@ function Privacy() {
               <div>
                 <h4 className="font-semibold mb-2">{t('sections.donneesCollectees.categories.technique.title')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  {(t('sections.donneesCollectees.categories.technique.items', { returnObjects: true }) as string[]).map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
+                  {(t('sections.donneesCollectees.categories.technique.items', { returnObjects: true }) as string[]).map((item: string) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -87,8 +133,8 @@ function Privacy() {
               <div>
                 <h4 className="font-semibold mb-2">{t('sections.donneesCollectees.categories.organisation.title')}</h4>
                 <ul className="list-disc pl-6 space-y-1">
-                  {(t('sections.donneesCollectees.categories.organisation.items', { returnObjects: true }) as string[]).map((item: string, idx: number) => (
-                    <li key={idx}>{item}</li>
+                  {(t('sections.donneesCollectees.categories.organisation.items', { returnObjects: true }) as string[]).map((item: string) => (
+                    <li key={item}>{item}</li>
                   ))}
                 </ul>
               </div>
@@ -104,8 +150,8 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.finalites.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.finalites.items', { returnObjects: true }) as Array<{ purpose: string; data: string; reason: string }>).map((item, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.finalites.items', { returnObjects: true }) as ProcessingPurpose[]).map((item) => (
+                <div key={item.purpose} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{item.purpose}</p>
                   <p className="text-sm text-muted-foreground">Données: {item.data}</p>
                   <p className="text-sm">{item.reason}</p>
@@ -123,13 +169,13 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.baseLegale.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.baseLegale.bases', { returnObjects: true }) as Array<{ type: string; description: string; examples: string[] }>).map((basis, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.baseLegale.bases', { returnObjects: true }) as LegalBasis[]).map((basis) => (
+                <div key={basis.type} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{basis.type}</p>
                   <p className="text-sm mb-2">{basis.description}</p>
                   <ul className="list-disc pl-6 text-sm">
-                    {basis.examples.map((example, exIdx) => (
-                      <li key={exIdx}>{example}</li>
+                    {basis.examples.map((example) => (
+                      <li key={example}>{example}</li>
                     ))}
                   </ul>
                 </div>
@@ -146,8 +192,8 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.conservation.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.conservation.durations', { returnObjects: true }) as Array<{ category: string; duration: string; details: string }>).map((duration, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.conservation.durations', { returnObjects: true }) as RetentionDuration[]).map((duration) => (
+                <div key={duration.category} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{duration.category}</p>
                   <p className="text-sm text-muted-foreground">{duration.duration}</p>
                   <p className="text-sm">{duration.details}</p>
@@ -166,8 +212,8 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.droits.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.droits.rights', { returnObjects: true }) as Array<{ name: string; description: string; howTo: string }>).map((right, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.droits.rights', { returnObjects: true }) as GdprRight[]).map((right) => (
+                <div key={right.name} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{right.name}</p>
                   <p className="text-sm mb-1">{right.description}</p>
                   <p className="text-sm text-primary">→ {right.howTo}</p>
@@ -177,8 +223,8 @@ function Privacy() {
             <div className="bg-primary/10 p-4 rounded-md">
               <p className="font-semibold mb-2">{t('sections.droits.exercice.title')}</p>
               <ul className="list-disc pl-6 text-sm space-y-1">
-                {(t('sections.droits.exercice.methods', { returnObjects: true }) as string[]).map((method, idx) => (
-                  <li key={idx}>{method}</li>
+                {(t('sections.droits.exercice.methods', { returnObjects: true }) as string[]).map((method) => (
+                  <li key={method}>{method}</li>
                 ))}
               </ul>
             </div>
@@ -193,8 +239,8 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.localisation.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.localisation.infrastructure', { returnObjects: true }) as Array<{ service: string; provider: string; location: string; details: string }>).map((infra, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.localisation.infrastructure', { returnObjects: true }) as Infrastructure[]).map((infra) => (
+                <div key={infra.service} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{infra.service}</p>
                   <p className="text-sm">Fournisseur: {infra.provider}</p>
                   <p className="text-sm">Localisation: {infra.location}</p>
@@ -208,15 +254,15 @@ function Privacy() {
               <p className="font-semibold">{t('sections.localisation.soustraitants.title')}</p>
               <p className="text-sm">{t('sections.localisation.soustraitants.intro')}</p>
               <ul className="list-disc pl-6 text-sm space-y-1">
-                {(t('sections.localisation.soustraitants.list', { returnObjects: true }) as string[]).map((subcontractor, idx) => (
-                  <li key={idx}>{subcontractor}</li>
+                {(t('sections.localisation.soustraitants.list', { returnObjects: true }) as string[]).map((subcontractor) => (
+                  <li key={subcontractor}>{subcontractor}</li>
                 ))}
               </ul>
               <p className="text-sm font-semibold text-primary">{t('sections.localisation.soustraitants.engagement')}</p>
               <p className="text-sm">{t('sections.localisation.soustraitants.partage')}</p>
               <ul className="list-disc pl-6 text-sm space-y-1">
-                {(t('sections.localisation.soustraitants.conditions', { returnObjects: true }) as string[]).map((condition, idx) => (
-                  <li key={idx}>{condition}</li>
+                {(t('sections.localisation.soustraitants.conditions', { returnObjects: true }) as string[]).map((condition) => (
+                  <li key={condition}>{condition}</li>
                 ))}
               </ul>
             </div>
@@ -231,8 +277,8 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.cookies.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.cookies.types', { returnObjects: true }) as Array<{ name: string; cookie: string; purpose: string; duration: string; type: string; security: string }>).map((cookie, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.cookies.types', { returnObjects: true }) as CookieType[]).map((cookie) => (
+                <div key={cookie.cookie} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold">{cookie.name}</p>
                   <p className="text-sm font-mono text-muted-foreground">{cookie.cookie}</p>
                   <p className="text-sm">Finalité: {cookie.purpose}</p>
@@ -255,12 +301,12 @@ function Privacy() {
           <CardContent className="space-y-4">
             <p>{t('sections.securite.intro')}</p>
             <div className="space-y-3">
-              {(t('sections.securite.mesures', { returnObjects: true }) as Array<{ category: string; measures: string[] }>).map((measure, idx: number) => (
-                <div key={idx} className="bg-muted p-3 rounded-md">
+              {(t('sections.securite.mesures', { returnObjects: true }) as SecurityMeasure[]).map((measure) => (
+                <div key={measure.category} className="bg-muted p-3 rounded-md">
                   <p className="font-semibold mb-2">{measure.category}</p>
                   <ul className="list-disc pl-6 text-sm space-y-1">
-                    {measure.measures.map((m, mIdx) => (
-                      <li key={mIdx}>{m}</li>
+                    {measure.measures.map((m) => (
+                      <li key={m}>{m}</li>
                     ))}
                   </ul>
                 </div>
@@ -319,8 +365,8 @@ function Privacy() {
             <p>{t('sections.modifications.content')}</p>
             <p>{t('sections.modifications.notification')}</p>
             <ul className="list-disc pl-6 text-sm space-y-1">
-              {(t('sections.modifications.moyens', { returnObjects: true }) as string[]).map((moyen, idx) => (
-                <li key={idx}>{moyen}</li>
+              {(t('sections.modifications.moyens', { returnObjects: true }) as string[]).map((moyen) => (
+                <li key={moyen}>{moyen}</li>
               ))}
             </ul>
             <p className="text-sm text-muted-foreground">{t('sections.modifications.date')}</p>
