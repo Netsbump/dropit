@@ -134,12 +134,12 @@ export function LoginForm({
 
       {showRedirect && (
         <p className="text-center text-sm text-gray-600 mt-6">
-          Vous n'avez pas de compte ?{' '}
+          {t('login.redirect').split('{{link}}')[0]}
           <a
             href="/signup"
             className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
           >
-            S'inscrire
+            {t('login.redirectLink')}
           </a>
         </p>
       )}

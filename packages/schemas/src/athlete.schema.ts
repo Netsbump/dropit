@@ -3,7 +3,7 @@ import { z } from 'zod';
 export const createAthleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.string().or(z.date()),
+  birthday: z.string().or(z.date()).optional(),
   country: z.string().optional(),
 });
 

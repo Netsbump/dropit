@@ -1,0 +1,382 @@
+{
+  "title": "Privacy Policy",
+  "lastUpdated": "Last updated: October 2025",
+  "introduction": "This privacy policy explains how we collect, use, and protect your information in accordance with the General Data Protection Regulation (GDPR).",
+
+  "sections": {
+    "responsable": {
+      "title": "1. Data Controller",
+      "content": "The controller of your personal data is:",
+      "name": "LEVASSEUR Sten",
+      "email": "Levasseur.sten@gmail.com",
+      "note": "As an individual operating DropIt, I am responsible for the collection and processing of your personal data.",
+      "contact": "For any questions regarding your personal data or the exercise of your rights, you can contact me at the email address above."
+    },
+
+    "donneesCollectees": {
+      "title": "2. Personal Data Collected",
+      "intro": "We collect and process the following categories of personal data:",
+      "categories": {
+        "compte": {
+          "title": "User Account Data",
+          "items": [
+            "Full name",
+            "Email address",
+            "Password (encrypted with bcrypt, never stored in plain text)",
+            "Profile picture (optional)",
+            "Account creation date",
+            "Email verification status",
+            "Organization role (owner, admin, member)"
+          ]
+        },
+        "athlete": {
+          "title": "Athlete Profile Data",
+          "items": [
+            "First name",
+            "Last name",
+            "Date of birth",
+            "Country",
+            "Physical metrics (weight, etc.)",
+            "Personal records (snatch, clean and jerk)",
+            "Competitor status (level, sex category, weight category)"
+          ]
+        },
+        "performance": {
+          "title": "Sports Performance Data",
+          "items": [
+            "Training sessions and their content",
+            "Exercises performed and results",
+            "Exercise complexes",
+            "Completed workouts",
+            "Training dates and times"
+          ]
+        },
+        "technique": {
+          "title": "Technical Data",
+          "items": [
+            "Connection IP address",
+            "Browser type and device (User-Agent)",
+            "Authentication session tokens",
+            "Login timestamps",
+            "Application browsing history"
+          ]
+        },
+        "organisation": {
+          "title": "Organization Data",
+          "items": [
+            "Organization/club name",
+            "Role and permissions within the organization",
+            "Organization membership date",
+            "Sent and received invitations"
+          ]
+        }
+      }
+    },
+
+    "finalites": {
+      "title": "3. Processing Purposes",
+      "intro": "Your personal data is collected and processed for the following purposes:",
+      "items": [
+        {
+          "purpose": "Authentication and account management",
+          "data": "Email, password, session tokens",
+          "reason": "To allow you to securely access your account"
+        },
+        {
+          "purpose": "Sports training management",
+          "data": "Athlete profile, training sessions, exercises",
+          "reason": "To provide you with a personalized training tracking and planning service"
+        },
+        {
+          "purpose": "Competition category calculation",
+          "data": "Date of birth, weight, sex",
+          "reason": "To determine age and weight categories for competitions"
+        },
+        {
+          "purpose": "Progress tracking",
+          "data": "Personal records, session history",
+          "reason": "To allow you to visualize your evolution and performance"
+        },
+        {
+          "purpose": "Notifications and communications",
+          "data": "Email, notification preferences",
+          "reason": "To inform you about important events related to your account"
+        },
+        {
+          "purpose": "Security and fraud prevention",
+          "data": "IP address, User-Agent, connection logs",
+          "reason": "To protect your account against unauthorized access and detect suspicious activities"
+        },
+        {
+          "purpose": "Organization and club management",
+          "data": "Memberships, roles, permissions",
+          "reason": "To enable collaboration between coaches and athletes within a club"
+        }
+      ]
+    },
+
+    "baseLegale": {
+      "title": "4. Legal Basis for Processing",
+      "intro": "In accordance with Article 6 of the GDPR, we process your personal data on the following legal bases:",
+      "bases": [
+        {
+          "type": "Consent (Art. 6.1.a GDPR)",
+          "description": "You consented to the processing of your personal data when you signed up by accepting this privacy policy through the mandatory checkbox.",
+          "examples": ["Account creation", "Acceptance of terms of use"]
+        },
+        {
+          "type": "Contract performance (Art. 6.1.b GDPR)",
+          "description": "The processing is necessary for the performance of the service you requested: managing your sports training and tracking your performance.",
+          "examples": ["Access to application features", "Training tracking", "Statistics calculation"]
+        },
+        {
+          "type": "Legitimate interest (Art. 6.1.f GDPR)",
+          "description": "We have a legitimate interest in processing certain data to ensure platform security and prevent fraud.",
+          "examples": ["Security logs", "Detection of suspicious activities", "Service improvement"]
+        }
+      ]
+    },
+
+    "conservation": {
+      "title": "5. Data Retention Period",
+      "intro": "We retain your personal data only for as long as necessary for the purposes for which it was collected:",
+      "durations": [
+        {
+          "category": "Active account",
+          "duration": "As long as you actively use the service",
+          "details": "All your data is retained as long as your account is active."
+        },
+        {
+          "category": "Inactive account",
+          "duration": "24 months without login",
+          "details": "If you do not log in for 24 consecutive months, we will send you a warning email at 22 months, then automatically delete your account and all your data."
+        },
+        {
+          "category": "Expired sessions",
+          "duration": "90 days after expiration",
+          "details": "Expired session tokens are automatically deleted after 90 days."
+        },
+        {
+          "category": "Security logs",
+          "duration": "12 months",
+          "details": "Technical logs (logins, IP addresses) are kept for 12 months for security and traceability purposes."
+        },
+        {
+          "category": "Email verification tokens",
+          "duration": "24 hours",
+          "details": "Tokens sent by email to verify your address expire after 24 hours."
+        },
+        {
+          "category": "Password reset tokens",
+          "duration": "1 hour",
+          "details": "Password reset links expire after 1 hour for security reasons."
+        },
+        {
+          "category": "After account deletion",
+          "duration": "Immediate deletion",
+          "details": "When you delete your account, all your personal data is immediately and permanently deleted from our servers (hard delete). No copy is retained."
+        }
+      ],
+      "note": "Anonymized and aggregated data (statistics without personal identification) may be retained indefinitely for analysis purposes."
+    },
+
+    "droits": {
+      "title": "6. Your GDPR Rights",
+      "intro": "In accordance with Articles 15 to 22 of the GDPR, you have the following rights regarding your personal data:",
+      "rights": [
+        {
+          "name": "Right of access (Art. 15)",
+          "description": "You have the right to obtain confirmation that data concerning you is being processed and to access that data.",
+          "howTo": "Access your Profile page in the application to view all your data."
+        },
+        {
+          "name": "Right to rectification (Art. 16)",
+          "description": "You can request the correction of your inaccurate or incomplete data.",
+          "howTo": "Directly edit your information from your Profile page > My Profile or Athlete Profile."
+        },
+        {
+          "name": "Right to erasure / Right to be forgotten (Art. 17)",
+          "description": "You can request the deletion of your personal data.",
+          "howTo": "Use the 'Delete my account' button in Profile > Danger Zone. You will need to confirm with your email, password and the word 'DELETE'."
+        },
+        {
+          "name": "Right to data portability (Art. 20)",
+          "description": "You have the right to receive your data in a structured and commonly used format (JSON).",
+          "howTo": "Use the 'Download my data' button on your Profile page (feature coming soon)."
+        },
+        {
+          "name": "Right to object (Art. 21)",
+          "description": "You can object to the processing of your data for reasons relating to your particular situation.",
+          "howTo": "Contact us at [YOUR EMAIL] explaining your situation."
+        },
+        {
+          "name": "Right to restriction of processing (Art. 18)",
+          "description": "You can request the restriction of the processing of your data under certain circumstances.",
+          "howTo": "Contact us at [YOUR EMAIL] to make your request."
+        },
+        {
+          "name": "Right to withdraw consent",
+          "description": "You can withdraw your consent at any time for processing based on it.",
+          "howTo": "Delete your account via Profile > Danger Zone."
+        }
+      ],
+      "exercice": {
+        "title": "How to exercise your rights?",
+        "methods": [
+          "Directly from your Profile page (/profile) for viewing, editing and deletion",
+          "By email at [YOUR EMAIL] for any other request",
+          "We commit to responding to any request within a maximum of 1 month"
+        ]
+      }
+    },
+
+    "localisation": {
+      "title": "7. Data Location and Hosting",
+      "intro": "Your personal data is hosted and processed in the European Union:",
+      "infrastructure": [
+        {
+          "service": "Servers and database",
+          "provider": "Infomaniak",
+          "location": "Switzerland / France (European Union)",
+          "details": "VPS hosted by Infomaniak with PostgreSQL for data storage"
+        },
+        {
+          "service": "Orchestration and deployment",
+          "provider": "Dokploy",
+          "location": "On Infomaniak VPS",
+          "details": "Orchestration platform for managing Docker containers"
+        },
+        {
+          "service": "Transactional email delivery",
+          "provider": "Brevo (formerly Sendinblue)",
+          "location": "European Union",
+          "details": "Email service for notifications, verifications and password resets"
+        }
+      ],
+      "transfert": "No personal data is transferred outside the European Union. All your data remains hosted in Europe and is protected by GDPR.",
+      "soustraitants": {
+        "title": "Subcontractors and partners",
+        "intro": "We work with the following subcontractors, all GDPR compliant:",
+        "list": [
+          "Infomaniak: Server and PostgreSQL database hosting",
+          "Brevo: Transactional email delivery (email verification, password reset)"
+        ],
+        "engagement": "We commit to never sell, rent or share your personal data for commercial or advertising purposes.",
+        "partage": "Your data is only shared with:",
+        "conditions": [
+          "The subcontractors mentioned above, strictly for the provision of the service",
+          "Your organization's administrators (coach, club admin) if you are part of a club",
+          "Competent authorities in case of legal obligation or judicial request",
+          "With your explicit consent for any other sharing"
+        ]
+      }
+    },
+
+    "cookies": {
+      "title": "8. Cookies and Similar Technologies",
+      "intro": "We use cookies strictly necessary for the operation of the service. No advertising or tracking cookies are used.",
+      "types": [
+        {
+          "name": "Authentication session cookie",
+          "cookie": "better-auth.session_token",
+          "purpose": "To keep your session active after login",
+          "duration": "7 days",
+          "type": "Strictly necessary cookie (no consent required under GDPR)",
+          "security": "HttpOnly (inaccessible via JavaScript), Secure (HTTPS only), SameSite=Lax (CSRF protection)"
+        }
+      ],
+      "analytics": "We currently do not use any third-party analytics, advertising or tracking cookies (Google Analytics, Facebook Pixel, etc.).",
+      "gestion": "You can manage or delete cookies through your browser settings. Warning: deleting the session cookie will log you out of the application."
+    },
+
+    "securite": {
+      "title": "9. Data Security",
+      "intro": "We implement appropriate technical and organizational measures to protect your personal data against loss, misuse, unauthorized access, disclosure, alteration or destruction.",
+      "mesures": [
+        {
+          "category": "Encryption",
+          "measures": [
+            "Passwords encrypted with bcrypt (never stored in plain text)",
+            "HTTPS connections with TLS 1.3",
+            "Encrypted communications between server and database"
+          ]
+        },
+        {
+          "category": "Session protection",
+          "measures": [
+            "Secure cookies (HttpOnly, Secure, SameSite)",
+            "Automatic expiration of inactive sessions",
+            "CSRF tokens to prevent attacks"
+          ]
+        },
+        {
+          "category": "Data access",
+          "measures": [
+            "Strict authentication to access the database",
+            "Principle of least privilege (access limited to strict necessity)",
+            "Access and audit logs"
+          ]
+        },
+        {
+          "category": "Backup and continuity",
+          "measures": [
+            "Regular and automatic backups",
+            "Business continuity plan in case of incident",
+            "Periodic restoration tests"
+          ]
+        },
+        {
+          "category": "Updates",
+          "measures": [
+            "Security patches applied regularly",
+            "Software dependencies kept up to date",
+            "Monitoring of known vulnerabilities"
+          ]
+        }
+      ],
+      "incident": "In the event of a personal data breach likely to pose a risk to your rights and freedoms, we will inform you within 72 hours in accordance with Article 33 of the GDPR."
+    },
+
+    "mineur": {
+      "title": "10. Data of Minors",
+      "content": "Our service is intended for users of all ages, including minors practicing weightlifting.",
+      "consentement": "For minors under 15 years of age, consent to data processing must be given or authorized by the holder of parental authority.",
+      "responsabilite": "We ask parents or legal guardians to supervise their minor children's use of the service.",
+      "verification": "If you believe a minor has provided data without required parental consent, contact us at [YOUR EMAIL] so we can take appropriate action."
+    },
+
+    "reclamation": {
+      "title": "11. Right to Lodge a Complaint with the CNIL",
+      "intro": "If you believe that the processing of your personal data constitutes a violation of the GDPR, you have the right to lodge a complaint with the competent supervisory authority:",
+      "cnil": {
+        "name": "CNIL (National Commission for Information Technology and Liberties)",
+        "address": "3 Place de Fontenoy, TSA 80715, 75334 PARIS CEDEX 07, France",
+        "phone": "+33 1 53 73 22 22",
+        "website": "https://www.cnil.fr/",
+        "plainte": "Online complaint form: https://www.cnil.fr/fr/plaintes"
+      },
+      "autre": "If you reside in another European Union country, you can also contact the data protection authority of your country of residence.",
+      "avant": "Before lodging a complaint, we encourage you to contact us directly at [YOUR EMAIL] so that we can resolve your concern amicably."
+    },
+
+    "modifications": {
+      "title": "12. Changes to the Privacy Policy",
+      "content": "We reserve the right to modify this privacy policy at any time to reflect changes in our practices, our service, or legal obligations.",
+      "notification": "In the event of a substantial modification, we will inform you by:",
+      "moyens": [
+        "A visible notice on the application's home page",
+        "An email to the address associated with your account",
+        "A notification in the application"
+      ],
+      "date": "The date of last update is indicated at the top of this document.",
+      "acceptation": "By continuing to use our service after the publication of modifications, you accept the revised privacy policy."
+    }
+  },
+
+  "contact": {
+    "title": "Contact",
+    "description": "For any questions regarding this privacy policy or the processing of your personal data, you can contact us at:",
+    "email": "[YOUR EMAIL]",
+    "delai": "We commit to responding to any request within a maximum of one month."
+  }
+}

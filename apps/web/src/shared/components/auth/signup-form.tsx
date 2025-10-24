@@ -14,6 +14,7 @@ import {
   FormMessage,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
+import { Checkbox } from '@/shared/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
 
 function getFormSchema(t: (key: string) => string) {
@@ -23,6 +24,9 @@ function getFormSchema(t: (key: string) => string) {
       .string()
       .min(6, { message: t('common.validation.passwordMinLength') }),
     name: z.string().min(1, { message: t('common.validation.nameRequired') }),
+    dataConsent: z.boolean().refine((val) => val === true, {
+      message: t('signup.dataConsent.required'),
+    }),
   });
 }
 
@@ -30,6 +34,7 @@ type SignupFormData = {
   email: string;
   password: string;
   name: string;
+  dataConsent: boolean;
 };
 
 interface SignupFormProps {
@@ -57,6 +62,7 @@ export function SignupForm({
       email: '',
       password: '',
       name: '',
+      dataConsent: false,
     },
   });
 
@@ -139,6 +145,34 @@ export function SignupForm({
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name="dataConsent"
+            render={({ field }) => (
+              <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                <FormControl>
+                  <Checkbox
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                  />
+                </FormControl>
+                <div className="space-y-1 leading-none">
+                  <FormLabel className="text-sm font-normal text-gray-700 cursor-pointer">
+                    {t('signup.dataConsent.prefix')}{' '}
+                    <a
+                      href="/privacy"
+                      className="text-purple-600 hover:text-purple-700 hover:underline font-medium"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {t('signup.dataConsent.linkText')}
+                    </a>
+                  </FormLabel>
+                  <FormMessage />
+                </div>
+              </FormItem>
+            )}
+          />
           <Button
             type="submit"
             className="w-full"
@@ -153,33 +187,26 @@ export function SignupForm({
 
       {showRedirect && (
         <p className="text-center text-sm text-gray-600 mt-6">
-          Vous avez déjà un compte ?{' '}
+          {t('signup.redirect').split('{{link}}')[0]}
           <a
             href="/login"
             className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
           >
-            Se connecter
+            {t('signup.redirectLink')}
           </a>
         </p>
       )}
 
       {showTerms && (
         <p className="text-center text-xs text-gray-500 mt-4 leading-relaxed">
-          En cliquant sur continuer, vous acceptez nos{' '}
+          {t('signup.terms.prefix')}{' '}
           <a
             href="/terms"
             className="text-purple-600 hover:text-purple-700 hover:underline"
           >
-            Conditions d'utilisation
-          </a>{' '}
-          et notre{' '}
-          <a
-            href="/privacy"
-            className="text-purple-600 hover:text-purple-700 hover:underline"
-          >
-            Politique de confidentialité
+            {t('signup.termsLink')}
           </a>
-          .
+          {t('signup.terms.suffix')}
         </p>
       )}
     </div>

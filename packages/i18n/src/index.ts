@@ -7,11 +7,15 @@ import en from './locales/en/common.json';
 import enPlanning from './locales/en/planning.json';
 import enOnboarding from './locales/en/onboarding.json';
 import enAuth from './locales/en/auth.json';
+import enProfile from './locales/en/profile.json';
+import enPrivacy from './locales/en/privacy.json';
 import frAthletes from './locales/fr/athletes.json';
 import fr from './locales/fr/common.json';
 import frPlanning from './locales/fr/planning.json';
 import frAuth from './locales/fr/auth.json';
 import frOnboarding from './locales/fr/onboarding.json';
+import frProfile from './locales/fr/profile.json';
+import frPrivacy from './locales/fr/privacy.json';
 
 export const defaultNS = 'common';
 export const resources = {
@@ -21,6 +25,8 @@ export const resources = {
     planning: enPlanning,
     auth: enAuth,
     onboarding: enOnboarding,
+    profile: enProfile,
+    privacy: enPrivacy,
   },
   fr: {
     common: fr,
@@ -28,6 +34,8 @@ export const resources = {
     planning: frPlanning,
     auth: frAuth,
     onboarding: frOnboarding,
+    profile: frProfile,
+    privacy: frPrivacy,
   },
 } as const;
 
