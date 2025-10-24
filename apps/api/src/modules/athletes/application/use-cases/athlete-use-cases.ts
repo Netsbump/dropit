@@ -137,7 +137,9 @@ export class AthleteUseCases implements IAthleteUseCases {
     const athlete = new Athlete();
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
+    if (data.birthday) {
     athlete.birthday = new Date(data.birthday);
+    }
     if (data.country) {
       athlete.country = data.country;
     }

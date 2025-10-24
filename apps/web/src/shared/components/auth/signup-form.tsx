@@ -187,33 +187,26 @@ export function SignupForm({
 
       {showRedirect && (
         <p className="text-center text-sm text-gray-600 mt-6">
-          Vous avez déjà un compte ?{' '}
+          {t('signup.redirect').split('{{link}}')[0]}
           <a
             href="/login"
             className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
           >
-            Se connecter
+            {t('signup.redirectLink')}
           </a>
         </p>
       )}
 
       {showTerms && (
         <p className="text-center text-xs text-gray-500 mt-4 leading-relaxed">
-          En cliquant sur continuer, vous acceptez nos{' '}
+          {t('signup.terms.prefix')}{' '}
           <a
             href="/terms"
             className="text-purple-600 hover:text-purple-700 hover:underline"
           >
-            Conditions d'utilisation
-          </a>{' '}
-          et notre{' '}
-          <a
-            href="/privacy"
-            className="text-purple-600 hover:text-purple-700 hover:underline"
-          >
-            Politique de confidentialité
+            {t('signup.termsLink')}
           </a>
-          .
+          {t('signup.terms.suffix')}
         </p>
       )}
     </div>

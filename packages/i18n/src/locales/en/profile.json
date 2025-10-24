@@ -1,0 +1,114 @@
+{
+  "title": "My Profile",
+  "description": "Manage your personal information and athlete profile",
+  "tabs": {
+    "user": "My Profile",
+    "athlete": "Athlete Profile",
+    "danger": "Danger Zone"
+  },
+  "user": {
+    "title": "User information",
+    "description": "Manage your personal information",
+    "view": {
+      "name": "Full name",
+      "email": "Email address",
+      "created_at": "Member since",
+      "edit_button": "Edit my profile"
+    },
+    "edit": {
+      "title": "Edit my profile",
+      "name_label": "Full name",
+      "name_placeholder": "Your name",
+      "email_label": "Email address",
+      "email_placeholder": "your@email.com",
+      "cancel_button": "Cancel",
+      "save_button": "Save",
+      "saving_button": "Saving..."
+    },
+    "toast": {
+      "update_success": "Profile updated successfully",
+      "update_error": "Error updating profile"
+    }
+  },
+  "athlete": {
+    "title": "Athlete Profile",
+    "no_profile": {
+      "title": "No athlete profile",
+      "description": "You haven't created an athlete profile yet. Create one to access training features and performance tracking.",
+      "create_button": "Create my athlete profile"
+    },
+    "view": {
+      "first_name": "First name",
+      "last_name": "Last name",
+      "birthday": "Date of birth",
+      "country": "Country",
+      "created_at": "Created on",
+      "edit_button": "Edit",
+      "delete_button": "Delete athlete profile"
+    },
+    "form": {
+      "create_title": "Create my athlete profile",
+      "edit_title": "Edit my athlete profile",
+      "first_name_label": "First name",
+      "first_name_placeholder": "Your first name",
+      "last_name_label": "Last name",
+      "last_name_placeholder": "Your last name",
+      "birthday_label": "Date of birth",
+      "birthday_placeholder": "DD/MM/YYYY",
+      "country_label": "Country",
+      "country_placeholder": "United States",
+      "cancel_button": "Cancel",
+      "save_button": "Save",
+      "create_button": "Create",
+      "saving_button": "Saving...",
+      "creating_button": "Creating..."
+    },
+    "delete": {
+      "dialog_title": "Delete athlete profile",
+      "dialog_description": "Are you sure you want to delete your athlete profile? This will delete all your training data, personal records, and statistics.",
+      "warning": "This action is irreversible",
+      "cancel_button": "Cancel",
+      "confirm_button": "Delete permanently"
+    },
+    "toast": {
+      "create_success": "Athlete profile created successfully",
+      "create_error": "Error creating athlete profile",
+      "update_success": "Athlete profile updated successfully",
+      "update_error": "Error updating athlete profile",
+      "delete_success": "Athlete profile deleted successfully",
+      "delete_error": "Error deleting athlete profile"
+    }
+  },
+  "danger": {
+    "title": "Danger zone",
+    "description": "Irreversible actions concerning your account",
+    "delete_athlete": {
+      "title": "Delete my athlete profile",
+      "description": "Permanently delete your athlete profile and all associated data (training sessions, records, statistics).",
+      "button": "Delete athlete profile"
+    },
+    "delete_account": {
+      "title": "Delete my account",
+      "description": "Permanently delete your user account and all your data. This action is irreversible.",
+      "button": "Delete my account",
+      "dialog_title": "Permanently delete my account",
+      "dialog_description": "This action will permanently delete your account and all your data. This action is irreversible and cannot be undone.",
+      "warning_title": "Warning",
+      "warning_text": "You are about to permanently delete your account. All your data will be lost.",
+      "email_label": "Confirm your email address",
+      "email_placeholder": "your@email.com",
+      "password_label": "Confirm your password",
+      "password_placeholder": "Your password",
+      "confirmation_label": "Type DELETE to confirm",
+      "confirmation_placeholder": "DELETE",
+      "cancel_button": "Cancel",
+      "confirm_button": "Permanently delete my account",
+      "deleting_button": "Deleting..."
+    },
+    "toast": {
+      "delete_account_success": "Your account has been deleted successfully",
+      "delete_account_error": "Error deleting account",
+      "confirmation_mismatch": "Confirmation does not match"
+    }
+  }
+}
