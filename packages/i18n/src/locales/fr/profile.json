@@ -79,6 +79,19 @@
       "delete_error": "Erreur lors de la suppression du profil athlète"
     }
   },
+  "settings": {
+    "title": "Préférences",
+    "description": "Personnalisez votre expérience sur DropIt",
+    "language": {
+      "label": "Langue",
+      "description": "Choisissez la langue de l'application"
+    },
+    "dark_mode": {
+      "label": "Mode sombre",
+      "description": "Activer le thème sombre",
+      "coming_soon": "Le mode sombre est en cours de développement"
+    }
+  },
   "danger": {
     "title": "Zone de danger",
     "description": "Actions irréversibles concernant votre compte",
