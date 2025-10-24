@@ -1,0 +1,114 @@
+{
+  "title": "Mon Profil",
+  "description": "Gérez vos informations personnelles et votre profil athlète",
+  "tabs": {
+    "user": "Mon Profil",
+    "athlete": "Profil Athlète",
+    "danger": "Danger Zone"
+  },
+  "user": {
+    "title": "Informations utilisateur",
+    "description": "Gérez vos informations personnelles",
+    "view": {
+      "name": "Nom complet",
+      "email": "Adresse email",
+      "created_at": "Membre depuis",
+      "edit_button": "Modifier mon profil"
+    },
+    "edit": {
+      "title": "Modifier mon profil",
+      "name_label": "Nom complet",
+      "name_placeholder": "Votre nom",
+      "email_label": "Adresse email",
+      "email_placeholder": "votre@email.com",
+      "cancel_button": "Annuler",
+      "save_button": "Enregistrer",
+      "saving_button": "Enregistrement..."
+    },
+    "toast": {
+      "update_success": "Profil mis à jour avec succès",
+      "update_error": "Erreur lors de la mise à jour du profil"
+    }
+  },
+  "athlete": {
+    "title": "Profil Athlète",
+    "no_profile": {
+      "title": "Aucun profil athlète",
+      "description": "Vous n'avez pas encore créé de profil athlète. Créez-en un pour accéder aux fonctionnalités d'entraînement et de suivi des performances.",
+      "create_button": "Créer mon profil athlète"
+    },
+    "view": {
+      "first_name": "Prénom",
+      "last_name": "Nom",
+      "birthday": "Date de naissance",
+      "country": "Pays",
+      "created_at": "Créé le",
+      "edit_button": "Modifier",
+      "delete_button": "Supprimer le profil athlète"
+    },
+    "form": {
+      "create_title": "Créer mon profil athlète",
+      "edit_title": "Modifier mon profil athlète",
+      "first_name_label": "Prénom",
+      "first_name_placeholder": "Votre prénom",
+      "last_name_label": "Nom",
+      "last_name_placeholder": "Votre nom",
+      "birthday_label": "Date de naissance",
+      "birthday_placeholder": "JJ/MM/AAAA",
+      "country_label": "Pays",
+      "country_placeholder": "France",
+      "cancel_button": "Annuler",
+      "save_button": "Enregistrer",
+      "create_button": "Créer",
+      "saving_button": "Enregistrement...",
+      "creating_button": "Création..."
+    },
+    "delete": {
+      "dialog_title": "Supprimer le profil athlète",
+      "dialog_description": "Êtes-vous sûr de vouloir supprimer votre profil athlète ? Cette action supprimera toutes vos données d'entraînement, records personnels et statistiques.",
+      "warning": "Cette action est irréversible",
+      "cancel_button": "Annuler",
+      "confirm_button": "Supprimer définitivement"
+    },
+    "toast": {
+      "create_success": "Profil athlète créé avec succès",
+      "create_error": "Erreur lors de la création du profil athlète",
+      "update_success": "Profil athlète mis à jour avec succès",
+      "update_error": "Erreur lors de la mise à jour du profil athlète",
+      "delete_success": "Profil athlète supprimé avec succès",
+      "delete_error": "Erreur lors de la suppression du profil athlète"
+    }
+  },
+  "danger": {
+    "title": "Zone de danger",
+    "description": "Actions irréversibles concernant votre compte",
+    "delete_athlete": {
+      "title": "Supprimer mon profil athlète",
+      "description": "Supprimer définitivement votre profil athlète et toutes les données associées (entraînements, records, statistiques).",
+      "button": "Supprimer le profil athlète"
+    },
+    "delete_account": {
+      "title": "Supprimer mon compte",
+      "description": "Supprimer définitivement votre compte utilisateur et toutes vos données. Cette action est irréversible.",
+      "button": "Supprimer mon compte",
+      "dialog_title": "Supprimer définitivement mon compte",
+      "dialog_description": "Cette action supprimera définitivement votre compte et toutes vos données. Cette action est irréversible et ne peut pas être annulée.",
+      "warning_title": "Attention",
+      "warning_text": "Vous êtes sur le point de supprimer définitivement votre compte. Toutes vos données seront perdues.",
+      "email_label": "Confirmez votre adresse email",
+      "email_placeholder": "votre@email.com",
+      "password_label": "Confirmez votre mot de passe",
+      "password_placeholder": "Votre mot de passe",
+      "confirmation_label": "Tapez DELETE pour confirmer",
+      "confirmation_placeholder": "DELETE",
+      "cancel_button": "Annuler",
+      "confirm_button": "Supprimer définitivement mon compte",
+      "deleting_button": "Suppression en cours..."
+    },
+    "toast": {
+      "delete_account_success": "Votre compte a été supprimé avec succès",
+      "delete_account_error": "Erreur lors de la suppression du compte",
+      "confirmation_mismatch": "La confirmation ne correspond pas"
+    }
+  }
+}

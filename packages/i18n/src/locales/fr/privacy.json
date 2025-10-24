@@ -1,0 +1,382 @@
+{
+  "title": "Politique de Confidentialité",
+  "lastUpdated": "Dernière mise à jour : Octobre 2025",
+  "introduction": "Cette politique de confidentialité explique comment nous collectons, utilisons, et protégeons vos informations conformément au Règlement Général sur la Protection des Données (RGPD).",
+
+  "sections": {
+    "responsable": {
+      "title": "1. Responsable du traitement des données",
+      "content": "Le responsable du traitement de vos données personnelles est :",
+      "name": "LEVASSEUR Sten",
+      "email": "Levasseur.sten@gmail.com",
+      "note": "En tant que personne physique exploitant DropIt, je suis responsable de la collecte et du traitement de vos données personnelles.",
+      "contact": "Pour toute question concernant vos données personnelles ou l'exercice de vos droits, vous pouvez me contacter à l'adresse email ci-dessus."
+    },
+
+    "donneesCollectees": {
+      "title": "2. Données personnelles collectées",
+      "intro": "Nous collectons et traitons les catégories de données personnelles suivantes :",
+      "categories": {
+        "compte": {
+          "title": "Données de compte utilisateur",
+          "items": [
+            "Nom complet",
+            "Adresse email",
+            "Mot de passe (chiffré avec bcrypt, jamais stocké en clair)",
+            "Photo de profil (optionnel)",
+            "Date de création du compte",
+            "Statut de vérification de l'email",
+            "Rôle au sein de l'organisation (owner, admin, member)"
+          ]
+        },
+        "athlete": {
+          "title": "Données du profil athlète",
+          "items": [
+            "Prénom",
+            "Nom de famille",
+            "Date de naissance",
+            "Pays",
+            "Métriques physiques (poids, etc.)",
+            "Records personnels (arraché, épaulé-jeté)",
+            "Statut de compétiteur (niveau, catégorie de sexe, catégorie de poids)"
+          ]
+        },
+        "performance": {
+          "title": "Données de performance sportive",
+          "items": [
+            "Sessions d'entraînement et leur contenu",
+            "Exercices effectués et résultats",
+            "Complexes d'exercices",
+            "Workouts réalisés",
+            "Dates et horaires des entraînements"
+          ]
+        },
+        "technique": {
+          "title": "Données techniques",
+          "items": [
+            "Adresse IP de connexion",
+            "Type de navigateur et appareil (User-Agent)",
+            "Jetons de session d'authentification",
+            "Horodatage des connexions",
+            "Historique de navigation dans l'application"
+          ]
+        },
+        "organisation": {
+          "title": "Données d'organisation",
+          "items": [
+            "Nom de l'organisation/club",
+            "Rôle et permissions au sein de l'organisation",
+            "Date d'adhésion à l'organisation",
+            "Invitations envoyées et reçues"
+          ]
+        }
+      }
+    },
+
+    "finalites": {
+      "title": "3. Finalités du traitement",
+      "intro": "Vos données personnelles sont collectées et traitées pour les finalités suivantes :",
+      "items": [
+        {
+          "purpose": "Authentification et gestion de compte",
+          "data": "Email, mot de passe, jetons de session",
+          "reason": "Vous permettre d'accéder de manière sécurisée à votre compte"
+        },
+        {
+          "purpose": "Gestion de l'entraînement sportif",
+          "data": "Profil athlète, sessions d'entraînement, exercices",
+          "reason": "Vous offrir un service de suivi et planification d'entraînement personnalisé"
+        },
+        {
+          "purpose": "Calcul des catégories de compétition",
+          "data": "Date de naissance, poids, sexe",
+          "reason": "Déterminer les catégories d'âge et de poids pour les compétitions"
+        },
+        {
+          "purpose": "Suivi de progression",
+          "data": "Records personnels, historique des sessions",
+          "reason": "Vous permettre de visualiser votre évolution et vos performances"
+        },
+        {
+          "purpose": "Notifications et communications",
+          "data": "Email, préférences de notification",
+          "reason": "Vous informer des événements importants liés à votre compte"
+        },
+        {
+          "purpose": "Sécurité et prévention de la fraude",
+          "data": "Adresse IP, User-Agent, logs de connexion",
+          "reason": "Protéger votre compte contre les accès non autorisés et détecter les activités suspectes"
+        },
+        {
+          "purpose": "Gestion des organisations et clubs",
+          "data": "Appartenances, rôles, permissions",
+          "reason": "Permettre la collaboration entre coachs et athlètes au sein d'un club"
+        }
+      ]
+    },
+
+    "baseLegale": {
+      "title": "4. Base légale du traitement",
+      "intro": "Conformément à l'article 6 du RGPD, nous traitons vos données personnelles sur les bases légales suivantes :",
+      "bases": [
+        {
+          "type": "Consentement (Art. 6.1.a RGPD)",
+          "description": "Vous avez consenti au traitement de vos données personnelles lors de votre inscription en acceptant cette politique de confidentialité via la case à cocher obligatoire.",
+          "examples": ["Création de compte", "Acceptation des conditions d'utilisation"]
+        },
+        {
+          "type": "Exécution d'un contrat (Art. 6.1.b RGPD)",
+          "description": "Le traitement est nécessaire à l'exécution du service que vous avez demandé : la gestion de votre entraînement sportif et le suivi de vos performances.",
+          "examples": ["Accès aux fonctionnalités de l'application", "Suivi des entraînements", "Calcul des statistiques"]
+        },
+        {
+          "type": "Intérêt légitime (Art. 6.1.f RGPD)",
+          "description": "Nous avons un intérêt légitime à traiter certaines données pour assurer la sécurité de la plateforme et prévenir la fraude.",
+          "examples": ["Logs de sécurité", "Détection d'activités suspectes", "Amélioration du service"]
+        }
+      ]
+    },
+
+    "conservation": {
+      "title": "5. Durée de conservation des données",
+      "intro": "Nous conservons vos données personnelles uniquement le temps nécessaire aux finalités pour lesquelles elles sont collectées :",
+      "durations": [
+        {
+          "category": "Compte actif",
+          "duration": "Tant que vous utilisez activement le service",
+          "details": "Toutes vos données sont conservées tant que votre compte est actif."
+        },
+        {
+          "category": "Compte inactif",
+          "duration": "24 mois sans connexion",
+          "details": "Si vous ne vous connectez pas pendant 24 mois consécutifs, nous vous enverrons un email d'avertissement à 22 mois, puis supprimerons automatiquement votre compte et toutes vos données."
+        },
+        {
+          "category": "Sessions expirées",
+          "duration": "90 jours après expiration",
+          "details": "Les jetons de session expirés sont automatiquement supprimés après 90 jours."
+        },
+        {
+          "category": "Logs de sécurité",
+          "duration": "12 mois",
+          "details": "Les logs techniques (connexions, adresses IP) sont conservés 12 mois pour des raisons de sécurité et de traçabilité."
+        },
+        {
+          "category": "Tokens de vérification email",
+          "duration": "24 heures",
+          "details": "Les tokens envoyés par email pour vérifier votre adresse expirent après 24 heures."
+        },
+        {
+          "category": "Tokens de réinitialisation de mot de passe",
+          "duration": "1 heure",
+          "details": "Les liens de réinitialisation de mot de passe expirent après 1 heure pour des raisons de sécurité."
+        },
+        {
+          "category": "Après suppression de compte",
+          "duration": "Suppression immédiate",
+          "details": "Lorsque vous supprimez votre compte, toutes vos données personnelles sont immédiatement et définitivement supprimées de nos serveurs (hard delete). Aucune copie n'est conservée."
+        }
+      ],
+      "note": "Les données anonymisées et agrégées (statistiques sans identification personnelle) peuvent être conservées indéfiniment à des fins d'analyse."
+    },
+
+    "droits": {
+      "title": "6. Vos droits RGPD",
+      "intro": "Conformément aux articles 15 à 22 du RGPD, vous disposez des droits suivants concernant vos données personnelles :",
+      "rights": [
+        {
+          "name": "Droit d'accès (Art. 15)",
+          "description": "Vous avez le droit d'obtenir la confirmation que des données vous concernant sont traitées et d'accéder à ces données.",
+          "howTo": "Accédez à votre page Profil dans l'application pour consulter toutes vos données."
+        },
+        {
+          "name": "Droit de rectification (Art. 16)",
+          "description": "Vous pouvez demander la correction de vos données inexactes ou incomplètes.",
+          "howTo": "Modifiez directement vos informations depuis votre page Profil > Mon Profil ou Profil Athlète."
+        },
+        {
+          "name": "Droit à l'effacement / Droit à l'oubli (Art. 17)",
+          "description": "Vous pouvez demander la suppression de vos données personnelles.",
+          "howTo": "Utilisez le bouton 'Supprimer mon compte' dans Profil > Danger Zone. Vous devrez confirmer avec votre email, mot de passe et la mention 'DELETE'."
+        },
+        {
+          "name": "Droit à la portabilité (Art. 20)",
+          "description": "Vous avez le droit de recevoir vos données dans un format structuré et couramment utilisé (JSON).",
+          "howTo": "Utilisez le bouton 'Télécharger mes données' dans votre page Profil (fonctionnalité à venir)."
+        },
+        {
+          "name": "Droit d'opposition (Art. 21)",
+          "description": "Vous pouvez vous opposer au traitement de vos données pour des raisons tenant à votre situation particulière.",
+          "howTo": "Contactez-nous à Levasseur.sten@gmail.com en expliquant votre situation."
+        },
+        {
+          "name": "Droit à la limitation du traitement (Art. 18)",
+          "description": "Vous pouvez demander la limitation du traitement de vos données dans certaines circonstances.",
+          "howTo": "Contactez-nous à Levasseur.sten@gmail.com pour formuler votre demande."
+        },
+        {
+          "name": "Droit de retirer votre consentement",
+          "description": "Vous pouvez retirer votre consentement à tout moment pour les traitements basés sur celui-ci.",
+          "howTo": "Supprimez votre compte via Profil > Danger Zone."
+        }
+      ],
+      "exercice": {
+        "title": "Comment exercer vos droits ?",
+        "methods": [
+          "Directement depuis votre page Profil (/profile) pour la consultation, modification et suppression",
+          "Par email à Levasseur.sten@gmail.com pour toute autre demande",
+          "Nous nous engageons à répondre à toute demande dans un délai maximum d'1 mois"
+        ]
+      }
+    },
+
+    "localisation": {
+      "title": "7. Localisation et hébergement des données",
+      "intro": "Vos données personnelles sont hébergées et traitées dans l'Union Européenne :",
+      "infrastructure": [
+        {
+          "service": "Serveurs et base de données",
+          "provider": "Infomaniak",
+          "location": "Suisse / France (Union Européenne)",
+          "details": "VPS hébergé par Infomaniak avec PostgreSQL pour le stockage des données"
+        },
+        {
+          "service": "Orchestration et déploiement",
+          "provider": "Dokploy",
+          "location": "Sur le VPS Infomaniak",
+          "details": "Plateforme d'orchestration pour la gestion des conteneurs Docker"
+        },
+        {
+          "service": "Envoi d'emails transactionnels",
+          "provider": "Brevo (anciennement Sendinblue)",
+          "location": "Union Européenne",
+          "details": "Service d'envoi d'emails pour les notifications, vérifications et réinitialisations de mot de passe"
+        }
+      ],
+      "transfert": "Aucun transfert de données personnelles n'est effectué en dehors de l'Union Européenne. Toutes vos données restent hébergées en Europe et sont protégées par le RGPD.",
+      "soustraitants": {
+        "title": "Sous-traitants et partenaires",
+        "intro": "Nous travaillons avec les sous-traitants suivants, tous conformes au RGPD :",
+        "list": [
+          "Infomaniak : Hébergement du serveur et de la base de données PostgreSQL",
+          "Brevo : Envoi d'emails transactionnels (vérification email, réinitialisation mot de passe)"
+        ],
+        "engagement": "Nous nous engageons à ne jamais vendre, louer ou partager vos données personnelles à des fins commerciales ou publicitaires.",
+        "partage": "Vos données ne sont partagées qu'avec :",
+        "conditions": [
+          "Les sous-traitants mentionnés ci-dessus, dans le cadre strict de la fourniture du service",
+          "Les administrateurs de votre organisation (coach, admin de club) si vous faites partie d'un club",
+          "Les autorités compétentes en cas d'obligation légale ou de demande judiciaire",
+          "Avec votre consentement explicite pour tout autre partage"
+        ]
+      }
+    },
+
+    "cookies": {
+      "title": "8. Cookies et technologies similaires",
+      "intro": "Nous utilisons des cookies strictement nécessaires au fonctionnement du service. Aucun cookie publicitaire ou de tracking n'est utilisé.",
+      "types": [
+        {
+          "name": "Cookie de session d'authentification",
+          "cookie": "better-auth.session_token",
+          "purpose": "Maintenir votre session active après connexion",
+          "duration": "7 jours",
+          "type": "Cookie strictement nécessaire (pas de consentement requis selon le RGPD)",
+          "security": "HttpOnly (inaccessible via JavaScript), Secure (HTTPS uniquement), SameSite=Lax (protection CSRF)"
+        }
+      ],
+      "analytics": "Nous n'utilisons actuellement aucun cookie analytique, publicitaire ou de tracking tiers (Google Analytics, Facebook Pixel, etc.).",
+      "gestion": "Vous pouvez gérer ou supprimer les cookies via les paramètres de votre navigateur. Attention : la suppression du cookie de session vous déconnectera de l'application."
+    },
+
+    "securite": {
+      "title": "9. Sécurité des données",
+      "intro": "Nous mettons en œuvre des mesures techniques et organisationnelles appropriées pour protéger vos données personnelles contre la perte, l'utilisation abusive, l'accès non autorisé, la divulgation, l'altération ou la destruction.",
+      "mesures": [
+        {
+          "category": "Chiffrement",
+          "measures": [
+            "Mots de passe chiffrés avec bcrypt (jamais stockés en clair)",
+            "Connexions HTTPS avec TLS 1.3",
+            "Communications chiffrées entre le serveur et la base de données"
+          ]
+        },
+        {
+          "category": "Protection des sessions",
+          "measures": [
+            "Cookies sécurisés (HttpOnly, Secure, SameSite)",
+            "Expiration automatique des sessions inactives",
+            "Jetons CSRF pour prévenir les attaques"
+          ]
+        },
+        {
+          "category": "Accès aux données",
+          "measures": [
+            "Authentification stricte pour accéder à la base de données",
+            "Principe du moindre privilège (accès limité au strict nécessaire)",
+            "Logs d'accès et d'audit"
+          ]
+        },
+        {
+          "category": "Sauvegarde et continuité",
+          "measures": [
+            "Sauvegardes régulières et automatiques",
+            "Plan de reprise d'activité en cas d'incident",
+            "Tests de restauration périodiques"
+          ]
+        },
+        {
+          "category": "Mises à jour",
+          "measures": [
+            "Patches de sécurité appliqués régulièrement",
+            "Dépendances logicielles maintenues à jour",
+            "Surveillance des vulnérabilités connues"
+          ]
+        }
+      ],
+      "incident": "En cas de violation de données personnelles susceptible d'engendrer un risque pour vos droits et libertés, nous vous en informerons dans les 72 heures conformément à l'article 33 du RGPD."
+    },
+
+    "mineur": {
+      "title": "10. Données des mineurs",
+      "content": "Notre service s'adresse à des utilisateurs de tous âges, y compris les mineurs pratiquant l'haltérophilie.",
+      "consentement": "Pour les mineurs de moins de 15 ans, le consentement au traitement des données doit être donné ou autorisé par le titulaire de l'autorité parentale.",
+      "responsabilite": "Nous demandons aux parents ou tuteurs légaux de superviser l'utilisation du service par leurs enfants mineurs.",
+      "verification": "Si vous pensez qu'un mineur a fourni des données sans le consentement parental requis, contactez-nous à Levasseur.sten@gmail.com pour que nous puissions prendre les mesures appropriées."
+    },
+
+    "reclamation": {
+      "title": "11. Droit de réclamation auprès de la CNIL",
+      "intro": "Si vous estimez que le traitement de vos données personnelles constitue une violation du RGPD, vous avez le droit de déposer une plainte auprès de l'autorité de contrôle compétente :",
+      "cnil": {
+        "name": "CNIL (Commission Nationale de l'Informatique et des Libertés)",
+        "address": "3 Place de Fontenoy, TSA 80715, 75334 PARIS CEDEX 07, France",
+        "phone": "01 53 73 22 22",
+        "website": "https://www.cnil.fr/",
+        "plainte": "Formulaire de plainte en ligne : https://www.cnil.fr/fr/plaintes"
+      },
+      "autre": "Si vous résidez dans un autre pays de l'Union Européenne, vous pouvez également contacter l'autorité de protection des données de votre pays de résidence.",
+      "avant": "Avant de déposer une réclamation, nous vous encourageons à nous contacter directement à Levasseur.sten@gmail.com afin que nous puissions résoudre votre préoccupation à l'amiable."
+    },
+
+    "modifications": {
+      "title": "12. Modifications de la politique de confidentialité",
+      "content": "Nous nous réservons le droit de modifier cette politique de confidentialité à tout moment pour refléter les changements dans nos pratiques, notre service, ou les obligations légales.",
+      "notification": "En cas de modification substantielle, nous vous en informerons par :",
+      "moyens": [
+        "Un avis visible sur la page d'accueil de l'application",
+        "Un email à l'adresse associée à votre compte",
+        "Une notification dans l'application"
+      ],
+      "date": "La date de dernière mise à jour est indiquée en haut de ce document.",
+      "acceptation": "En continuant à utiliser notre service après la publication des modifications, vous acceptez la politique de confidentialité révisée."
+    }
+  },
+
+  "contact": {
+    "title": "Contact",
+    "description": "Pour toute question concernant cette politique de confidentialité ou le traitement de vos données personnelles, vous pouvez nous contacter à :",
+    "email": "Levasseur.sten@gmail.com",
+    "delai": "Nous nous engageons à répondre à toute demande dans un délai maximum d'un mois."
+  }
+}

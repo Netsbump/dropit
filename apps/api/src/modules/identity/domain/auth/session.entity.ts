@@ -40,6 +40,6 @@ export class Session {
   @Property({ fieldName: 'athleteId', nullable: true })
   athleteId?: string
 
-  @ManyToOne(() => User, { fieldName: 'userId' })
+  @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: User
 }

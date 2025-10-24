@@ -12,6 +12,7 @@ import { USER_REPO, IUserRepository } from './application/ports/user.repository.
 import { USER_USE_CASES } from './application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
+import { UserController } from './interface/controllers/user.controller';
 
 
 // Entities
@@ -40,6 +41,7 @@ import { MEMBER_REPO, IMemberRepository } from './application/ports/member.repos
     AuthModule,
     MikroOrmModule.forFeature([Organization, Member, Invitation, User])
   ],
+  controllers: [UserController],
   providers: [
     // implémentations MikroORM
     MikroUserRepository,

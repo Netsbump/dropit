@@ -10,7 +10,7 @@ export class Member {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
-  @ManyToOne(() => User, { fieldName: 'userId' })
+  @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: User;
 
   @ManyToOne(() => Organization, { fieldName: 'organizationId' })

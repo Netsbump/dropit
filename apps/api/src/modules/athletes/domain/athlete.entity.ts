@@ -35,7 +35,7 @@ export class Athlete {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @OneToOne(() => User, { owner: true })
+  @OneToOne(() => User, { owner: true, deleteRule: 'cascade' })
   user!: User;
 
   @OneToMany(

@@ -20,7 +20,7 @@ export class Account {
   @Property({ fieldName: 'providerId' })
   providerId!: string
 
-  @ManyToOne(() => User, { fieldName: 'userId' })
+  @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: User
 
   @Property({ fieldName: 'accessToken', nullable: true })
