@@ -27,17 +27,17 @@ git checkout develop
 git pull origin develop
 git checkout -b feature/nouvelle-fonctionnalite
 
-# Développement local
-pnpm dev  # Lance tous les services (API + Frontend + Mobile)
+# Développement local... puis
+git push origin feature/nouvelle-fonctionnalite 
 ```
 
-### 2. Pull Request vers `develop`
+### 2. Ouverture d'une Pull Request vers `develop` sur GitHub
 
 **Déclenchement automatique de la CI :**
 
 ```mermaid
 graph TD
-    A[Push vers develop] --> B[GitHub Actions CI]
+    A[Creation PR vers develop] --> B[GitHub Actions CI]
     B --> C[Job: Lint]
     C --> D[Job: Build]
     D --> E[Job: Tests]
@@ -111,47 +111,6 @@ graph TD
 5. **Health checks** automatiques
 6. **Routage Traefik** vers la nouvelle version
 
-## Architecture de Déploiement
-
-```
-Internet
-    ↓
-dropit-app.fr (DNS Infomaniak)
-    ↓
-VPS Infomaniak (Debian Bookworm)
-    ↓
-┌─────────────────────────────────────┐
-│           TRAEFIK                   │
-│        (Reverse Proxy)             │
-│         Ports 80/443                │
-└─────────┬───────────┬───────────────┘
-          │           │
-┌─────────▼─┐  ┌──────▼──────────┐
-│DOKPLOY   │  │  DOCKER SWARM   │
-│Dashboard │  │ (Orchestrateur) │
-│:3000     │  │                 │
-└──────────┘  └─────┬───────────┘
-                    │
-            ┌───────▼──────────┐
-            │   PROJET DROPIT  │
-            │                  │
-            │ ┌──────────────┐ │
-            │ │  Frontend    │ │
-            │ │  (Nginx)     │ │
-            │ │  :80         │ │
-            │ └──────────────┘ │
-            │ ┌──────────────┐ │
-            │ │     API      │ │
-            │ │  (NestJS)    │ │
-            │ │  :3000       │ │
-            │ └──────────────┘ │
-            │ ┌──────────────┐ │
-            │ │ PostgreSQL   │ │
-            │ │  :5432       │ │
-            │ └──────────────┘ │
-            └──────────────────┘
-```
-
 ## Routes Traefik
 
 - **`dropit-app.fr`** → Frontend (Nginx + React)
@@ -175,39 +134,6 @@ VPS Infomaniak (Debian Bookworm)
 - **Let's Encrypt** via Traefik
 - **Renouvellement automatique**
 - **HTTPS** forcé sur tous les domaines
-
-## Commandes Utiles
-
-### Développement Local
-```bash
-# Démarrer tous les services
-pnpm dev
-
-# Build complet
-pnpm build
-
-# Tests
-pnpm test
-
-# Lint
-pnpm lint
-```
-
-### Déploiement Manuel (si nécessaire)
-```bash
-# Via Dokploy Dashboard
-# → Trigger manual build depuis l'interface web
-```
-
-### Monitoring
-```bash
-# Logs des services
-docker service logs dropit-api
-docker service logs dropit-frontend
-
-# Status des services
-docker service ls
-```
 
 ## Points Critiques
 
