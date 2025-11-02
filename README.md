@@ -4,23 +4,21 @@
 <br />
 <div align="center">
   <a href="https://github.com/Netsbump/Dropit">
-    <img src="chemin-vers-votre-logo-si-disponible" alt="Logo" width="80" height="80">
+    <img src="apps/web/src/assets/images/hero-pages/logo-dropit.png" alt="Logo DropIt" width="200" height="200">
   </a>
 <h3 align="center">DropIt : Application de Club d'Haltérophilie</h3>
   <p align="center">
-    Une application pour optimiser le suivi et la gestion de l'entraînement en haltérophilie.
+    Une application web et mobile pour optimiser le suivi et la gestion de l'entraînement en haltérophilie.
     <br />
     <br />
-    Pour plus de détails, vous pouvez 
-    <br />
-    <a href="https://docs-dropit.pages.dev/"><strong>Explorer la documentation »</strong></a>
+    <a href="https://docs-dropit.pages.dev/"><strong>Découvrir le projet »</strong></a>
     <br />
     <br />
-    <a href="https://dropit-app.fr">Voir l'Application en Production</a>
+    <a href="https://dropit-app.fr">Accéder à la version Alpha</a>
+    ·
+    <a href="https://docs-dropit.pages.dev/introduction/presentation/">Documentation Technique</a>
     ·
     <a href="https://github.com/Netsbump/Dropit/issues">Signaler un Bug</a>
-    ·
-    <a href="https://github.com/Netsbump/Dropit/pulls">Demander une Fonctionnalité</a>
   </p>
 </div>
 
@@ -30,13 +28,12 @@
 <details>
   <summary>Table des Matières</summary>
   <ol>
-    <li><a href="#description-du-projet">A propos du projet</a></li>
-    <li><a href="#fonctionnalites">Fonctionnalités</a></li>
+    <li><a href="#description-du-projet">À propos du projet</a></li>
     <li><a href="#technologies-utilisees">Technologies Utilisées</a></li>
-    <li><a href="#prerequis">Pré-requis</a></li>
+    <li><a href="#prerequis">Pré-requis et Installation</a></li>
+    <li><a href="#documentation-complementaire">Documentation Complémentaire</a></li>
     <li><a href="#licence">Licence</a></li>
     <li><a href="#contact">Contact</a></li>
-    <!-- Ajoutez d'autres sections selon vos besoins -->
   </ol>
 </details>
 
@@ -45,30 +42,11 @@
 
 # À propos du Projet
 
-DropIt est une application web conçue pour optimiser le suivi et la gestion de l'entraînement en haltérophilie. Ce projet vise à fournir une solution intuitive pour les athlètes et entraîneurs, tout en consolidant mes compétences en développement logiciel.
+DropIt est une application web et mobile conçue pour optimiser le suivi et la gestion de l'entraînement en haltérophilie. Ce projet de fin d'études vise à fournir une solution intuitive pour les coachs et athlètes, tout en démontrant la maîtrise du cycle complet de développement logiciel.
 
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+**Fonctionnalités principales** : Gestion des athlètes, création de programmes d'entraînement personnalisés, bibliothèque d'exercices, planification des séances, et application mobile pour le suivi des performances.
 
-***
-
-<!-- FONCTIONNALITES -->
-<p id="fonctionnalites"></p>
-
-## Fonctionnalités
-
-- Gestion du profil : Les utilisateurs créent et mettent à jour leur profil, y compris les informations de base et les statistiques de performance telles que le poids et la taille.
-- Gestion des athlètes : Les coachs ont accès à une interface de gestion pour accéder aux profils des athlètes
-- Gestion des entrainements : Les coachs ont accès à une interface de gestion pour créer et consulter une bibliothèque d'exercices, de blocs d'exercices et d'entrainements.
-- Calendrier d'entraînement personnalisé : Les athlètes peuvent visualiser la programmation quotidienne avec des détails sur les exercices, les pourcentages de travail et les répétitions.
-- Gestion des performances : Une page dédiée permet aux athlètes de saisir et de visualiser leurs maxima pour chaque exercice.
-
-## Fonctionnalités à Venir
-
-- Suivi de la Progression : Des graphiques et des visualisations pour un suivi détaillé des progrès.
-- Mode Hors Ligne : Permettant l'accès aux fonctionnalités essentielles même sans connexion internet.
-- Personnalisation de l'Interface : Introduction d'un mode clair/sombre et options de choix de langue.
-- Notifications et Annonces : Un système de notifications informe les utilisateurs des mises à jour importantes, avec des annonces et des messages de la part des coachs.
-- Réglages et Support : Les utilisateurs peuvent accéder aux réglages de l'application, y compris la gestion du compte, le changement de mot de passe, la FAQ et l'aide.
+Pour découvrir l'ensemble des fonctionnalités en détail, consultez la [landing page](https://docs-dropit.pages.dev/) et la [documentation technique](https://docs-dropit.pages.dev/introduction/presentation/).
 
 <p align="right">(<a href="#readme-top">retour en haut</a>)</p>
 
