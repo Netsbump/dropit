@@ -2,45 +2,46 @@
 
 ## Vue d'ensemble du Flow
 
-Ce document décrit le flow CI/CD complet de l'application DropIt, de la branche de développement jusqu'au déploiement en production via Dokploy.
+Ce document décrit le flow CI/CD complet de l'application DropIt, de la branche de développement jusqu'au déploiement en production.
 
 ## Architecture des Branches
 
 ```
-main (staging) ←─── develop (dev)
+main (production) ←─── develop (dev)
     ↑                    ↑
   PROTÉGÉE           PROTÉGÉE
 (commits directs interdits)
 ```
 
 - **`develop`** : Branche de développement principal
-- **`main`** : Branche de staging/production
+- **`main`** : Branche de production
 - **Protection** : Les deux branches sont protégées contre les commits directs
 - **Workflow** : Une PR = une feature
 
 ## Flow de Développement d'une Feature
 
 ### 1. Développement Local
+
 ```bash
 # Créer une branche feature depuis develop
 git checkout develop
 git pull origin develop
 git checkout -b feature/nouvelle-fonctionnalite
 
-# Développement local
-pnpm dev  # Lance tous les services (API + Frontend + Mobile)
+# Développement local... puis
+git push origin feature/nouvelle-fonctionnalite
 ```
 
-### 2. Pull Request vers `develop`
+### 2. Ouverture d'une Pull Request vers `develop`
 
-**Déclenchement automatique de la CI :**
+**Déclenchement automatique de la CI GitHub Actions :**
 
 ```mermaid
 graph TD
-    A[Push vers develop] --> B[GitHub Actions CI]
-    B --> C[Job: Lint]
-    C --> D[Job: Build]
-    D --> E[Job: Tests]
+    A[Création PR vers develop] --> B[GitHub Actions CI]
+    B --> C[Job: Lint - Vérification Biome]
+    C --> D[Job: Build - Compilation TypeScript]
+    D --> E[Job: Tests - Unit + Integration]
     E --> F{Tous les jobs OK?}
     F -->|Oui| G[PR peut être mergée]
     F -->|Non| H[PR bloquée - Fix requis]
@@ -52,168 +53,131 @@ graph TD
 - **Tests** : Tests unitaires + intégration avec PostgreSQL de test
 
 ### 3. Merge vers `develop`
+
 - ✅ CI passe avec succès
 - ✅ Review code (optionnel)
 - ✅ Merge de la PR
 
-## Déploiement Staging (Dokploy)
+## Déploiement Production
 
 ### Configuration Dokploy
-```
-Provider: GitHub
+
+```yaml
+Provider: GitHub (OAuth)
 Repository: dropit
-Branch: develop
-Build Path: apps/web (pour le frontend)
+Branch: main
+Build Path: /
 Trigger Type: On Push
 Build Type: Dockerfile
 ```
 
-### Processus de Build Automatique
+### Processus de Déploiement Complet
 
 ```mermaid
-graph TD
-    A[Merge vers develop] --> B[Webhook GitHub → Dokploy]
-    B --> C[Dokploy détecte le push]
-    C --> D[Build Docker Frontend]
-    D --> E[Build Docker API]
-    E --> F[Déploiement sur Docker Swarm]
-    F --> G[Traefik route le trafic]
-    G --> H[Staging accessible sur dropit-app.fr]
+sequenceDiagram
+    participant Dev as Développeur
+    participant GH as GitHub
+    participant Dok as Dokploy Admin
+    participant Swarm as Docker Swarm
+    participant Old as Ancien conteneur
+    participant New as Nouveau conteneur
+    participant Traefik as Traefik
+
+    Dev->>GH: git push origin main
+    Note over Dok: Dokploy poll GitHub API
+    Dok->>GH: Détecte nouveau commit sur main
+    Dok->>Dok: git pull origin main
+    Dok->>Dok: docker build -t dropit-api:v124
+    Dok->>Dok: docker build -t dropit-web:v124
+    Dok->>Swarm: docker service update --image dropit-api:v124
+
+    Note over Swarm: Rolling Update (Zero Downtime)
+    Swarm->>New: Démarre nouveau conteneur
+    New->>New: Health check /health → 200 OK
+    Swarm->>Swarm: Enregistre nouveau conteneur dans le réseau
+
+    Note over Traefik: Poll Docker API toutes les 2s
+    Traefik->>Swarm: Détecte nouveau conteneur
+    Traefik->>Traefik: Met à jour table de routage
+    Traefik->>New: Route le trafic vers v124
+
+    Swarm->>Old: Arrête ancien conteneur (v123)
+    Swarm->>Old: Supprime ancien conteneur
+
+    Note over Dev: Production mise à jour sans downtime
 ```
 
-**Services déployés automatiquement :**
+### Détail du Rolling Update (Zero Downtime)
+
+Quand Dokploy exécute `docker service update`, Docker Swarm fait un **rolling update** :
+
+1. **Démarre un nouveau conteneur** avec la nouvelle image (ex: v124)
+2. **Vérifie le health check** : `GET /health` doit retourner `200 OK`
+3. **Enregistre le nouveau conteneur** dans le réseau overlay Swarm
+4. **Traefik détecte le changement** via polling de l'API Docker (toutes les 2s)
+5. **Bascule le trafic** du vieux conteneur vers le nouveau
+6. **Supprime l'ancien conteneur** une fois le trafic basculé
+
+**Résultat** : Aucune interruption de service pour l'utilisateur.
+
+### Services Déployés
+
 - **Frontend** : `dropit-app.fr` (Nginx + React build)
-- **API** : `api.dropit-app.fr` (NestJS + PostgreSQL)
+- **API** : `api.dropit-app.fr` (NestJS)
 - **Database** : PostgreSQL 16 (persistance locale)
 
-## Déploiement Production
+### Déploiement Sélectif
 
-### Déclenchement
-**Production = Merge `develop` → `main`**
+Dokploy est intelligent : **il ne rebuild QUE les services dont le code a changé**.
 
-```mermaid
-graph TD
-    A[Développement terminé] --> B[PR develop → main]
-    B --> C[CI s'exécute sur main]
-    C --> D{Tests OK?}
-    D -->|Oui| E[Merge vers main]
-    D -->|Non| F[Fix requis]
-    E --> G[Webhook → Dokploy Production]
-    G --> H[Déploiement Production]
+**Exemple** : Si tu modifies uniquement `apps/api/src/...`
+- ✅ Rebuild `dropit-api` → Rolling update du conteneur API
+- ❌ Ne rebuild PAS `dropit-web` → Frontend inchangé
+- ❌ Ne rebuild PAS la Database → Inchangée
+
+## Architecture Serveur
+
+### Rôles des Composants
+
+#### Dokploy Admin
+- **Rôle** : Détecte les changements sur GitHub et orchestre les déploiements
+- **Actions** :
+  - Poll l'API GitHub pour détecter les nouveaux commits sur `main`
+  - Exécute `git pull origin main`
+  - Build les images Docker (`docker build`)
+  - Commande à Docker Swarm de mettre à jour les services
+
+#### Docker Swarm
+- **Rôle** : Orchestrateur de conteneurs (pas un conteneur lui-même)
+- **Actions** :
+  - Démarre/arrête les conteneurs
+  - Surveille leur état (auto-restart si crash)
+  - Gère le networking overlay entre conteneurs
+  - Exécute les rolling updates (zero downtime)
+  - Expose les métadonnées (labels) aux services
+
+#### Traefik
+- **Rôle** : Reverse proxy et load balancer
+- **Actions** :
+  - Reçoit le trafic HTTP/HTTPS entrant
+  - Poll l'API Docker Swarm pour détecter les services
+  - Lit les labels Docker pour configurer les routes automatiquement
+  - Route le trafic vers les bons conteneurs
+
+### Communication entre Composants
+
+```
+Dokploy → Docker Swarm : Commandes docker service update
+Traefik → Docker Swarm : Polling API Docker (lecture des services)
 ```
 
-### Processus de Déploiement Production
-
-1. **Merge `develop` → `main`**
-2. **Webhook GitHub → Dokploy** (configuration production)
-3. **Build des images Docker** (API + Frontend)
-4. **Déploiement sur Docker Swarm**
-5. **Health checks** automatiques
-6. **Routage Traefik** vers la nouvelle version
-
-## Architecture de Déploiement
-
-```
-Internet
-    ↓
-dropit-app.fr (DNS Infomaniak)
-    ↓
-VPS Infomaniak (Debian Bookworm)
-    ↓
-┌─────────────────────────────────────┐
-│           TRAEFIK                   │
-│        (Reverse Proxy)             │
-│         Ports 80/443                │
-└─────────┬───────────┬───────────────┘
-          │           │
-┌─────────▼─┐  ┌──────▼──────────┐
-│DOKPLOY   │  │  DOCKER SWARM   │
-│Dashboard │  │ (Orchestrateur) │
-│:3000     │  │                 │
-└──────────┘  └─────┬───────────┘
-                    │
-            ┌───────▼──────────┐
-            │   PROJET DROPIT  │
-            │                  │
-            │ ┌──────────────┐ │
-            │ │  Frontend    │ │
-            │ │  (Nginx)     │ │
-            │ │  :80         │ │
-            │ └──────────────┘ │
-            │ ┌──────────────┐ │
-            │ │     API      │ │
-            │ │  (NestJS)    │ │
-            │ │  :3000       │ │
-            │ └──────────────┘ │
-            │ ┌──────────────┐ │
-            │ │ PostgreSQL   │ │
-            │ │  :5432       │ │
-            │ └──────────────┘ │
-            └──────────────────┘
-```
+**Important** :
+- Dokploy **commande** Swarm (docker service update)
+- Traefik **interroge** Swarm (lecture de l'état des services)
+- Swarm **orchestre** les conteneurs (cycle de vie, networking)
 
 ## Routes Traefik
 
 - **`dropit-app.fr`** → Frontend (Nginx + React)
 - **`api.dropit-app.fr`** → API NestJS
 - **`traefik.dropit-app.fr`** → Dashboard Traefik (avec auth)
-- **`[IP]:3000`** → Dashboard Dokploy
-
-## Sécurité et Monitoring
-
-### Protection des Branches
-- **Commits directs interdits** sur `main` et `develop`
-- **CI obligatoire** avant merge
-- **Review code** recommandée
-
-### Backups Automatiques
-- **Backups quotidiens** PostgreSQL
-- **Backup pré-déploiement** automatique
-- **Rollback** possible via Dokploy UI
-
-### SSL Automatique
-- **Let's Encrypt** via Traefik
-- **Renouvellement automatique**
-- **HTTPS** forcé sur tous les domaines
-
-## Commandes Utiles
-
-### Développement Local
-```bash
-# Démarrer tous les services
-pnpm dev
-
-# Build complet
-pnpm build
-
-# Tests
-pnpm test
-
-# Lint
-pnpm lint
-```
-
-### Déploiement Manuel (si nécessaire)
-```bash
-# Via Dokploy Dashboard
-# → Trigger manual build depuis l'interface web
-```
-
-### Monitoring
-```bash
-# Logs des services
-docker service logs dropit-api
-docker service logs dropit-frontend
-
-# Status des services
-docker service ls
-```
-
-## Points Critiques
-
-1. **Docker Context Path = `.`** : Essentiel pour accéder aux fichiers du monorepo
-2. **Build Path = `apps/web`** : Limite les triggers aux modifications frontend
-3. **Variables d'environnement** : Configuration via Dokploy UI
-4. **Migrations DB** : Exécution automatique au démarrage API
-5. **Health Checks** : Vérification automatique avant routage du trafic
-
