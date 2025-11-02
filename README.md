@@ -119,6 +119,13 @@ cp apps/api/.env.example apps/api/.env
 
 # Fichier .env pour le frontend web (configuration de l'URL API)
 cp apps/web/.env.example apps/web/.env
+
+# Fichier .env pour l'application mobile (configuration de l'URL API)
+cp apps/mobile/.env.example apps/mobile/.env
+
+# Pour builder l'app mobile en production, créer également :
+cp apps/mobile/.env.example apps/mobile/.env.production
+# Puis éditer .env.production avec l'URL publique de votre API
 ```
 
 ### Lancer le projet (développement)

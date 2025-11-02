@@ -5,7 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuration du client d'authentification pour React Native
 export const authClient = createAuthClient({
-  baseURL: 'http://192.168.1.147:3000', // IP locale pour mobile
+  baseURL: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.147:3000',
   plugins: [
     organizationClient({
       // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
