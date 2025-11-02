@@ -9,7 +9,8 @@
     "android": "npx expo start --android",
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "postinstall": "cd ../../packages/schemas && pnpm build && cd ../contract && pnpm build && cd ../permissions && pnpm build"
   },
   "dependencies": {
     "@dropit/contract": "workspace:*",
@@ -33,6 +34,7 @@
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@types/react": "~19.1.10",
+    "tsup": "^8.3.5",
     "typescript": "~5.9.2"
   }
 }
