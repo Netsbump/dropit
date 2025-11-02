@@ -219,14 +219,180 @@ export class WorkoutController {
 - ✅ **Parameter Tampering** : Paramètres critiques injectés par les decorators
 - ✅ **Session Fixation** : better-auth gère la rotation des sessions
 
+### 4.1. Mapper & Presenter - Transformation & Présentation
+
+#### Mapper - Transformation Entité → DTO
+
+```typescript
+// apps/api/src/modules/training/interface/mappers/workout.mapper.ts
+import { WorkoutDto } from '@dropit/schemas';  // Type de retour partagé
+import { Workout } from '../../domain/workout.entity';
+
+export const WorkoutMapper = {
+  toDto(workout: Workout): WorkoutDto {
+    // 🛡️ PROTECTION DATA EXPOSURE:
+    // Le Mapper transforme l'entité de domaine en DTO (Data Transfer Object)
+    // Seuls les champs nécessaires au frontend sont exposés
+    // Exemple: on n'expose PAS le createdBy.password ni les relations sensibles
+
+    return {
+      id: workout.id,
+      title: workout.title,
+      workoutCategory: workout.category.name,  // Seulement le nom, pas toute l'entité
+      description: workout.description,
+      elements: workout.elements.getItems().map(element => {
+        const baseElement = {
+          id: element.id,
+          order: element.order,
+          reps: element.reps,
+          sets: element.sets,
+          rest: element.rest,
+          startWeight_percent: element.startWeight_percent,
+        };
+
+        // Gestion polymorphique (exercise OU complex)
+        if (element.type === 'exercise') {
+          return {
+            ...baseElement,
+            type: 'exercise' as const,
+            exercise: {
+              id: element.exercise.id,
+              name: element.exercise.name,
+              // ... seulement les champs nécessaires
+            },
+          };
+        }
+
+        if (element.type === 'complex') {
+          return {
+            ...baseElement,
+            type: 'complex' as const,
+            complex: {
+              id: element.complex.id,
+              description: element.complex.description,
+              exercises: element.complex.exercises.getItems().map(ex => ({
+                id: ex.exercise.id,
+                name: ex.exercise.name,
+                order: ex.order,
+                reps: ex.reps,
+              })),
+            },
+          };
+        }
+
+        throw new Error(`Invalid element type: ${element.type}`);
+      }),
+    };
+  },
+
+  toDtoList(workouts: Workout[]): WorkoutDto[] {
+    return workouts.map(this.toDto);
+  },
+};
+```
+
+**Principe** : Le Mapper sépare le **modèle de domaine** (entité riche avec relations) du **modèle de présentation** (DTO plat pour le frontend).
+
+**Avantages** :
+- ✅ **Protection Data Exposure** : Contrôle précis des champs exposés
+- ✅ **Évolutivité** : Changer l'entité sans impacter le frontend
+- ✅ **Type-safety** : WorkoutDto garantit la conformité avec le contract
+- ✅ **Performance** : DTO plus léger que l'entité complète
+
+#### Presenter - Formatage des Réponses HTTP
+
+```typescript
+// apps/api/src/modules/training/interface/presenters/workout.presenter.ts
+import { WorkoutDto } from '@dropit/schemas';
+import { WorkoutException } from '../../application/exceptions/workout.exceptions';
+
+export const WorkoutPresenter = {
+  presentOne(workout: WorkoutDto) {
+    // 🛡️ TYPE-SAFETY:
+    // Le status code est typé avec "as const" pour être littéral
+    // ts-rest vérifie que 200 est bien dans les responses du contract
+    return {
+      status: 200 as const,
+      body: workout,
+    };
+  },
+
+  presentCreationSuccess(message: string) {
+    // 🛡️ HTTP SEMANTICS:
+    // 201 Created indique qu'une ressource a été créée avec succès
+    // Respecte les standards HTTP pour les clients REST
+    return {
+      status: 201 as const,
+      body: { message },
+    };
+  },
+
+  presentError(error: Error) {
+    // 🛡️ ERROR HANDLING:
+    // Conversion des exceptions métier en codes HTTP appropriés
+    // Évite d'exposer les stack traces en production
+
+    if (error instanceof WorkoutException) {
+      // Exception métier → code HTTP adapté
+      return {
+        status: error.statusCode as 400 | 403 | 404 | 500,
+        body: { message: error.message }
+      };
+    }
+
+    // 🛡️ INFORMATION DISCLOSURE:
+    // Erreur inattendue → message générique au client
+    // Détails loggés côté serveur uniquement
+    console.error('Workout unexpected error:', error);
+    return {
+      status: 500 as const,
+      body: { message: 'An error occurred while processing the request' }
+    };
+  }
+};
+```
+
+**Principe** : Le Presenter formate les réponses HTTP avec les bons status codes et structure de body.
+
+**Avantages** :
+- ✅ **Centralisation** : Tous les formats de réponse au même endroit
+- ✅ **Cohérence** : Même structure pour tous les endpoints
+- ✅ **Sécurité** : Contrôle des messages d'erreur exposés
+- ✅ **HTTP Semantics** : Status codes appropriés (200, 201, 400, 404, 500)
+
+**Flux complet dans le Controller** :
+```typescript
+// Dans WorkoutController.createWorkout()
+const workout = await this.workoutUseCases.createWorkout(body, orgId, userId);
+                ↓ (Entité de domaine)
+const workoutDto = WorkoutMapper.toDto(workout);
+                ↓ (DTO typé)
+return WorkoutPresenter.presentOne(workoutDto);
+                ↓ (Réponse HTTP { status: 200, body: WorkoutDto })
+```
+
+**Failles de sécurité contrées** :
+- ✅ **Information Disclosure** : Pas d'exposition de stack traces ou données sensibles
+- ✅ **Data Exposure** : Contrôle précis des champs exposés via le DTO
+- ✅ **Type Safety** : Status codes validés par ts-rest contract
+- ✅ **Error Handling** : Messages d'erreur sécurisés et cohérents
+
 ### 5. Use Case - Logique Métier
 
 ```typescript
 // apps/api/src/modules/training/application/use-cases/workout.use-cases.ts
 export class WorkoutUseCases implements IWorkoutUseCases {
   constructor(
-    private readonly em: EntityManager,  // Injecté pour Unit of Work
-    // ... autres dépendances
+    private readonly em: EntityManager,
+    private readonly workoutRepository: IWorkoutRepository,
+    private readonly workoutCategoryRepository: IWorkoutCategoryRepository,
+    private readonly exerciseRepository: IExerciseRepository,
+    private readonly complexRepository: IComplexRepository,
+    private readonly workoutElementRepository: IWorkoutElementRepository,
+    private readonly athleteRepository: IAthleteRepository,
+    private readonly trainingSessionRepository: ITrainingSessionRepository,
+    private readonly memberUseCases: IMemberUseCases,
+    private readonly userUseCases: IUserUseCases,
   ) {}
 
   async createWorkout(
@@ -320,8 +486,9 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       }
     }
 
-    // 🛡️ TRANSACTION ATOMIQUE:
-    // flush() exécute TOUTES les requêtes SQL en une seule transaction:
+    // 🛡️ TRANSACTION ATOMIQUE (Unit of Work):
+    // Toutes les entités ont été enregistrées en mémoire via persist()
+    // save() appelle flush() qui exécute TOUTES les requêtes SQL en 1 transaction:
     // BEGIN;
     //   INSERT INTO workout VALUES (...);           -- Génère UUID
     //   INSERT INTO workout_element VALUES (...);   -- Utilise l'UUID
@@ -332,12 +499,12 @@ export class WorkoutUseCases implements IWorkoutUseCases {
     //
     // Si UNE SEULE requête échoue → ROLLBACK de TOUT
     // Garantit l'intégrité: soit tout est créé, soit rien
-    await this.em.flush();
+    const createdWorkout = await this.workoutRepository.save(workoutToCreate);
 
     // Récupération du workout avec toutes ses relations
     // (pour envoyer les données complètes au frontend)
     return await this.workoutRepository.getOneWithDetails(
-      workoutToCreate.id,
+      createdWorkout.id,
       coachFilterConditions
     );
   }
@@ -350,6 +517,69 @@ export class WorkoutUseCases implements IWorkoutUseCases {
 - ✅ **Business Logic Bypass** : Validations métier strictes
 - ✅ **Data Integrity** : Transaction atomique via Unit of Work (rollback automatique si erreur)
 - ✅ **Partial Updates** : Impossible d'avoir un workout avec seulement 3/10 éléments
+
+### 5.1. Ports (Interfaces) - Inversion de Dépendance
+
+#### Port Use Case (Interface métier)
+
+```typescript
+// apps/api/src/modules/training/application/ports/workout-use-cases.port.ts
+
+// Définit le CONTRAT des opérations métier
+// Le Controller dépend de cette interface, pas de l'implémentation
+export interface IWorkoutUseCases {
+  getWorkouts(organizationId: string, userId: string): Promise<Workout[]>;
+  getWorkout(workoutId: string, organizationId: string, userId: string): Promise<Workout>;
+  createWorkout(workout: CreateWorkout, organizationId: string, userId: string): Promise<Workout>;
+  updateWorkout(id: string, workout: UpdateWorkout, organizationId: string, userId: string): Promise<Workout>;
+  deleteWorkout(workoutId: string, organizationId: string, userId: string): Promise<void>;
+}
+
+// Token d'injection pour NestJS
+export const WORKOUT_USE_CASES = Symbol('WORKOUT_USE_CASES');
+```
+
+**Principe** : Le Controller injecte `IWorkoutUseCases`, pas `WorkoutUseCases`. Cela permet de :
+- ✅ Tester le Controller avec un mock sans dépendre de l'implémentation réelle
+- ✅ Changer l'implémentation sans toucher au Controller
+- ✅ Respecter le principe d'inversion de dépendance (SOLID)
+
+#### Port Repository (Interface persistance)
+
+```typescript
+// apps/api/src/modules/training/application/ports/workout.repository.port.ts
+
+// Définit le CONTRAT d'accès aux données
+// Le Use Case dépend de cette interface, pas de MikroORM
+export interface IWorkoutRepository {
+  getAll(coachFilterConditions: CoachFilterConditions): Promise<Workout[]>;
+  getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null>;
+  getOneWithDetails(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null>;
+  save(workout: Workout): Promise<Workout>;
+  remove(id: string, coachFilterConditions: CoachFilterConditions): Promise<void>;
+}
+
+// Token d'injection
+export const WORKOUT_REPO = 'WORKOUT_REPO';
+```
+
+**Principe** : Le Use Case injecte `IWorkoutRepository`, pas `MikroWorkoutRepository`. Cela permet de :
+- ✅ Tester le Use Case avec un mock sans base de données
+- ✅ Changer d'ORM (passer de MikroORM à Prisma) sans toucher au Use Case
+- ✅ Le Use Case reste agnostique de l'infrastructure (framework-agnostic)
+
+**Architecture en couches** :
+```
+Controller (interface)
+    ↓ dépend de
+IWorkoutUseCases (port)
+    ↓ implémenté par
+WorkoutUseCases (application)
+    ↓ dépend de
+IWorkoutRepository (port)
+    ↓ implémenté par
+MikroWorkoutRepository (infrastructure)
+```
 
 ### 6. Repository - Accès aux Données
 
@@ -365,7 +595,10 @@ export class MikroWorkoutRepository implements IWorkoutRepository {
     //                 VALUES ($1, $2, $3)
     // Les valeurs sont passées séparément, jamais concaténées dans la requête
 
-    await this.em.persistAndFlush(workout);
+    // 🛡️ UNIT OF WORK PATTERN:
+    // flush() commit TOUTES les entités déjà enregistrées avec persist()
+    // (workout + elements + trainingSession + athleteSession)
+    await this.em.flush();
     return workout;
   }
 
@@ -704,11 +937,4 @@ Vérifier à nouveau `isUserCoachInOrganization` dans le use case serait :
 - Repository implémente l'interface définie dans la couche application
 - Framework (NestJS) injecte les dépendances concrètes
 
-## Technologies Utilisées
 
-- **Frontend** : React, TanStack Router, TanStack Query
-- **API Contract** : ts-rest, Zod
-- **Backend** : NestJS, TypeScript
-- **ORM** : MikroORM
-- **Database** : PostgreSQL
-- **Architecture** : Clean Architecture + DDD
