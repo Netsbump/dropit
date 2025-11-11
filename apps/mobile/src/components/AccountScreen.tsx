@@ -8,7 +8,7 @@ import {
   Alert,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { authClient } from '../lib/auth-client';
+import { useAuth } from './AuthProvider';
 import BottomNavigation from './BottomNavigation';
 
 interface AccountScreenProps {
@@ -16,6 +16,8 @@ interface AccountScreenProps {
 }
 
 export default function AccountScreen({ onTabPress }: AccountScreenProps) {
+  const { logout } = useAuth();
+
   const handleLogout = async () => {
     Alert.alert(
       'Déconnexion',
@@ -27,8 +29,7 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
           style: 'destructive',
           onPress: async () => {
             try {
-              await authClient.signOut();
-              // L'AuthProvider détectera automatiquement la déconnexion
+              await logout();
             } catch (error) {
               console.error('Logout error:', error);
               Alert.alert('Erreur', 'Erreur lors de la déconnexion');
