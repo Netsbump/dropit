@@ -3,7 +3,7 @@ import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "@dropit/i18n";
 import { Button } from "@/shared/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
-import { Smartphone, Download, Apple, Chrome, ArrowRight, CheckCircle, Star } from "lucide-react";
+import { Smartphone, Download, Apple, ArrowRight, CheckCircle, Star } from "lucide-react";
 import { Badge } from "@/shared/components/ui/badge";
 import { useState, useEffect } from "react";
 
@@ -12,17 +12,6 @@ export const Route = createFileRoute('/download-app')({
     const session = await authClient.getSession();
     if (!session) {
       throw redirect({ to: '/login' });
-    }
-    
-    try {
-      // Vérifier si l'utilisateur a un membre actif dans une organisation
-      const activeMember = await authClient.organization.getActiveMember();
-      if (!activeMember?.data) {
-        throw redirect({ to: '/onboarding' });
-      }
-    } catch (error) {
-      // Si erreur lors de la récupération du membre actif, rediriger vers onboarding
-      throw redirect({ to: '/onboarding' });
     }
   },
   component: DownloadAppPage,
@@ -53,7 +42,7 @@ function DownloadAppPage() {
   // Vérifier si l'utilisateur est un membre (athlète)
   const isAthlete = activeMember?.role === 'member';
 
-  const handleDownload = (platform: 'ios' | 'android' | 'web') => {
+  const handleDownload = (platform: 'ios' | 'android') => {
     // TODO: Implémenter les liens de téléchargement
     switch (platform) {
       case 'ios':
@@ -62,15 +51,11 @@ function DownloadAppPage() {
       case 'android':
         window.open('https://play.google.com/store/apps/details?id=com.dropit', '_blank');
         break;
-      case 'web':
-        // Rediriger vers la version web mobile
-        window.location.href = '/mobile';
-        break;
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-indigo-100 flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4">
       <div className="w-full max-w-4xl mx-auto">
         <div className="text-center mb-8">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-purple-100">
@@ -81,30 +66,22 @@ function DownloadAppPage() {
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             {isAthlete 
-              ? 'En tant qu\'athlète, votre expérience optimale se trouve sur notre application mobile. Téléchargez l\'app pour accéder à tous vos entraînements, performances et communications avec votre coach.'
+              ? 'L\'interface web est réservée aux coachs pour la gestion des programmes d\'entraînement. Votre espace athlète vous attend sur mobile !'
               : t('download_app.description')
             }
           </p>
-          {isAthlete && (
-            <div className="mt-4 p-4 bg-purple-50 rounded-lg max-w-2xl mx-auto">
-              <p className="text-sm text-purple-700">
-                💡 L'interface web est réservée aux coachs pour la gestion des programmes d'entraînement. 
-                Votre espace athlète vous attend sur mobile !
-              </p>
-            </div>
-          )}
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 items-start">
+        <div className="grid md:grid-cols-2 gap-8 items-stretch">
           {/* Carte principale */}
-          <Card className="w-full">
+          <Card className="w-full h-full flex flex-col shadow-none">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">{t('download_app.download_section.title')}</CardTitle>
               <CardDescription>
                 {t('download_app.download_section.subtitle')}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-4 flex-1 flex flex-col justify-center">
               {/* App Store */}
               <Button
                 onClick={() => handleDownload('ios')}
@@ -132,26 +109,11 @@ function DownloadAppPage() {
                 </div>
                 <ArrowRight className="h-5 w-5 ml-auto" />
               </Button>
-
-              {/* Version Web */}
-              <Button
-                onClick={() => handleDownload('web')}
-                variant="outline"
-                className="w-full h-16 text-lg"
-                size="lg"
-              >
-                <Chrome className="h-6 w-6 mr-3" />
-                <div className="text-left">
-                  <div className="text-xs">{t('download_app.platforms.web.label')}</div>
-                  <div className="font-semibold">{t('download_app.platforms.web.store')}</div>
-                </div>
-                <ArrowRight className="h-5 w-5 ml-auto" />
-              </Button>
             </CardContent>
           </Card>
 
           {/* Carte des fonctionnalités */}
-          <Card className="w-full">
+          <Card className="w-full h-full flex flex-col shadow-none">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Star className="h-5 w-5 text-yellow-500" />
@@ -161,7 +123,7 @@ function DownloadAppPage() {
                 {t('download_app.features.subtitle')}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="flex-1 flex flex-col">
               <div className="space-y-3">
                 {features.map((feature) => (
                   <div key={feature} className="flex items-start gap-3">
