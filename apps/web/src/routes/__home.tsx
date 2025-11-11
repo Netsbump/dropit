@@ -12,28 +12,23 @@ export const Route = createFileRoute('/__home')({
       throw redirect({ to: '/login' });
     }
 
-    try {
-      // Vérifier si l'utilisateur a un membre actif dans une organisation
-      const activeMember = await authClient.organization.getActiveMember();
-      if (!activeMember?.data) {
-        throw redirect({ to: '/onboarding' });
-      }
-
-      // Vérifier le rôle de l'utilisateur - seuls les coachs peuvent accéder au dashboard
-      const userRole = activeMember.data.role;
-
-      // Si c'est un membre (athlète), rediriger vers download-app
-      if (userRole === 'member') {
-        throw redirect({ to: '/download-app' });
-      }
-
-      // Les owner et admin peuvent continuer
-      if (userRole !== 'owner' && userRole !== 'admin') {
-        throw redirect({ to: '/download-app' });
-      }
-    } catch (error) {
-      // Si erreur lors de la récupération du membre actif, rediriger vers onboarding
+    // Vérifier si l'utilisateur a un membre actif dans une organisation
+    const activeMember = await authClient.organization.getActiveMember();
+    if (!activeMember?.data) {
       throw redirect({ to: '/onboarding' });
+    }
+
+    // Vérifier le rôle de l'utilisateur - seuls les coachs peuvent accéder au dashboard
+    const userRole = activeMember.data.role;
+
+    // Si c'est un membre (athlète), rediriger vers download-app
+    if (userRole === 'member') {
+      throw redirect({ to: '/download-app' });
+    }
+
+    // Les owner et admin peuvent continuer
+    if (userRole !== 'owner' && userRole !== 'admin') {
+      throw redirect({ to: '/download-app' });
     }
   },
   component: HomeLayout,
