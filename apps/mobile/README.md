@@ -73,6 +73,8 @@ export const api = initClient(apiContract, {
 
 ## 🔐 Flux d'authentification
 
+L'authentification utilise un **Context React** pour gérer l'état global de la session.
+
 ### 1. Connexion
 ```typescript
 const { data, error } = await authClient.signIn.email({
@@ -90,11 +92,23 @@ if (sessionData.data) {
 }
 ```
 
-### 3. Déconnexion
+### 3. Déconnexion (via Context)
 ```typescript
-await authClient.signOut();
-setSession(null);
+import { useAuth } from './components/AuthProvider';
+
+export default function AccountScreen() {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout(); // Déconnexion + redirection automatique vers LoginScreen
+  };
+}
 ```
+
+Le pattern avec `useAuth()` permet :
+- ✅ Accès global à la fonction de déconnexion
+- ✅ Redirection automatique vers le LoginScreen
+- ✅ Pas de prop drilling
 
 ## 🧩 Intégration des packages partagés
 
@@ -158,6 +172,104 @@ pnpm --filter api dev
 1. Installer **Expo Go** sur votre smartphone
 2. Scanner le QR code affiché dans le terminal
 3. L'app se charge avec l'écran de connexion
+
+## 📦 Build et déploiement de l'APK
+
+### Prérequis
+- Compte Expo créé et authentifié : `npx eas login`
+- Projet EAS configuré
+
+### Profils de build disponibles
+
+Le projet utilise **EAS Build** avec 3 profils configurés dans `eas.json` :
+
+| Profil | Usage | API URL |
+|--------|-------|---------|
+| `development` | Dev avec hot reload | Variable d'env locale |
+| `preview` | Test en prod (APK) | `https://api.dropit-app.fr` |
+| `production` | Publication Play Store | Variable d'env prod |
+
+### Build d'un APK pour tester (Preview)
+
+```bash
+# Se placer dans le dossier mobile
+cd apps/mobile
+
+# Build APK avec le profil preview (connecté à l'API de prod)
+npx eas build --platform android --profile preview
+
+# Le build se fait dans le cloud Expo
+# Temps estimé : 5-10 minutes
+# Vous recevrez un lien pour télécharger l'APK
+```
+
+### Build local (plus rapide)
+
+```bash
+# Build local sans utiliser les serveurs Expo
+npx eas build --platform android --profile preview --local
+
+# Nécessite Android SDK installé localement
+```
+
+### Installation de l'APK sur votre téléphone
+
+1. Une fois le build terminé, EAS vous donne un **lien de téléchargement**
+2. Téléchargez l'APK sur votre téléphone
+3. Activez "Sources inconnues" dans les paramètres Android
+4. Installez l'APK
+
+### Variables d'environnement
+
+Le profil **preview** utilise automatiquement :
+```bash
+EXPO_PUBLIC_API_URL=https://api.dropit-app.fr
+```
+
+Pour changer l'URL de l'API, modifiez `eas.json` :
+```json
+{
+  "build": {
+    "preview": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://votre-api.com"
+      }
+    }
+  }
+}
+```
+
+### Commandes utiles EAS
+
+```bash
+# Lister les builds précédents
+npx eas build:list
+
+# Voir les détails d'un build
+npx eas build:view [BUILD_ID]
+
+# Build iOS (nécessite compte Apple Developer)
+npx eas build --platform ios --profile preview
+
+# Soumettre à Google Play Store (production)
+npx eas submit --platform android
+```
+
+### Troubleshooting builds
+
+**Erreur "Not logged in"**
+```bash
+npx eas login
+```
+
+**Build qui échoue**
+```bash
+# Vérifier les logs détaillés sur :
+# https://expo.dev/accounts/[votre-compte]/projects/dropit-mobile/builds
+```
+
+**APK trop gros**
+- Utilisez le profil `production` qui active Hermes et optimise automatiquement
 
 ## 🔧 Configuration réseau
 
