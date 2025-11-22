@@ -48,7 +48,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   // Basé sur la séance du Lundi 17 Novembre
   const workout1 = new Workout();
   workout1.description = 'Séance technique avec variations d\'intensité';
-  workout1.category = workoutCategoriesMap['Saison'];
+  workout1.category = workoutCategoriesMap.Saison;
   workout1.createdBy = null;
 
   await em.persistAndFlush(workout1);
@@ -63,9 +63,14 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
     {
       order: 1,
       numberOfSets: 2,
+      intensity: {
+        percentageOfMax: 30,
+        referenceExerciseId: exercisesMap.Passage.id,
+        type: 'percentage' as const
+      },
       exercises: [
-        { exerciseId: exercisesMap['Passage'].id, reps: 2, order: 1 },
-        { exerciseId: exercisesMap['Chute'].id, reps: 2, order: 2 },
+        { exerciseId: exercisesMap.Passage.id, reps: 2, order: 1 },
+        { exerciseId: exercisesMap.Chute.id, reps: 2, order: 2 },
         { exerciseId: exercisesMap['Flexion d\'Arraché'].id, reps: 2, order: 3 }
       ]
     }
@@ -164,7 +169,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   // Workout 2 - Basé sur Mercredi 19 Novembre
   const workout2 = new Workout();
   workout2.description = 'Focus montée en charge progressive';
-  workout2.category = workoutCategoriesMap['Saison'];
+  workout2.category = workoutCategoriesMap.Saison;
   workout2.createdBy = null;
 
   await em.persistAndFlush(workout2);
@@ -216,6 +221,34 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         { exerciseId: exercisesMap['Epaulé Flexion'].id, reps: 1, order: 1 },
         { exerciseId: exercisesMap['Jeté Fente'].id, reps: 1, order: 2 }
       ]
+    },
+    {
+      order: 4,
+      numberOfSets: 1,
+      rest: 180,
+      intensity: {
+        percentageOfMax: 90,
+        referenceExerciseId: exercisesMap['Epaulé Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Epaulé Flexion'].id, reps: 1, order: 1 },
+        { exerciseId: exercisesMap['Jeté Fente'].id, reps: 1, order: 2 }
+      ]
+    },
+    {
+      order: 5,
+      numberOfSets: 1,
+      rest: 180,
+      intensity: {
+        percentageOfMax: 93,
+        referenceExerciseId: exercisesMap['Epaulé Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Epaulé Flexion'].id, reps: 1, order: 1 },
+        { exerciseId: exercisesMap['Jeté Fente'].id, reps: 1, order: 2 }
+      ]
     }
   ];
   workout2Element1.workout = workout2;
@@ -250,7 +283,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   // Workout 3 - Simple pour la décharge
   const workout3 = new Workout();
   workout3.description = 'Séance technique avec charges légères';
-  workout3.category = workoutCategoriesMap['Décharge'];
+  workout3.category = workoutCategoriesMap.Décharge;
   workout3.createdBy = null;
 
   await em.persistAndFlush(workout3);
@@ -280,5 +313,176 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   await em.persistAndFlush(workout3Element1);
 
   console.log('Workout 3 created:', workout3);
+
+  // Workout 4 - Exemple 2 : Arraché Flexion avec montée progressive
+  const workout4 = new Workout();
+  workout4.description = 'Montée progressive en intensité - Arraché Flexion';
+  workout4.category = workoutCategoriesMap.Saison;
+  workout4.createdBy = null;
+
+  await em.persistAndFlush(workout4);
+
+  // Element 1: Arraché Flexion avec montée progressive (78%, 82%, 85%, 90%)
+  const workout4Element1 = new WorkoutElement();
+  workout4Element1.type = WORKOUT_ELEMENT_TYPES.EXERCISE;
+  workout4Element1.exercise = exercisesMap['Arraché Flexion'];
+  workout4Element1.order = 0;
+  workout4Element1.commentary = 'Doublé Jusqu\'a 75%';
+  workout4Element1.blocks = [
+    {
+      order: 1,
+      numberOfSets: 1,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 78,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 1 }
+      ]
+    },
+    {
+      order: 2,
+      numberOfSets: 1,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 82,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 1 }
+      ]
+    },
+    {
+      order: 3,
+      numberOfSets: 1,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 85,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 1 }
+      ]
+    },
+    {
+      order: 4,
+      numberOfSets: 1,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 90,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 1 }
+      ]
+    }
+  ];
+  workout4Element1.workout = workout4;
+  await em.persistAndFlush(workout4Element1);
+
+  console.log('Workout 4 created:', workout4);
+
+  // Workout 5 - Exemple 4 : Tirage Lourd d'Arraché + Arraché Flexion
+  const workout5 = new Workout();
+  workout5.description = 'Variations de volume - Tirage Lourd d\'Arraché';
+  workout5.category = workoutCategoriesMap.Saison;
+  workout5.createdBy = null;
+
+  await em.persistAndFlush(workout5);
+
+  // Element 1: Complex Tirage Lourd d'Arraché + Arraché Flexion
+  const workout5Element1 = new WorkoutElement();
+  workout5Element1.type = WORKOUT_ELEMENT_TYPES.COMPLEX;
+  workout5Element1.complex = complexes[5]; // Tirage Lourd d'Arraché + Arraché Flexion
+  workout5Element1.order = 0;
+  workout5Element1.blocks = [
+    {
+      order: 1,
+      numberOfSets: 4,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 60,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 3, order: 1 },
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 }
+      ]
+    },
+    {
+      order: 2,
+      numberOfSets: 2,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 70,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 2, order: 1 },
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 }
+      ]
+    },
+    {
+      order: 3,
+      numberOfSets: 1,
+      rest: 120,
+      intensity: {
+        percentageOfMax: 80,
+        referenceExerciseId: exercisesMap['Arraché Flexion'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 1, order: 1 },
+        { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 }
+      ]
+    }
+  ];
+  workout5Element1.workout = workout5;
+  await em.persistAndFlush(workout5Element1);
+
+  console.log('Workout 5 created:', workout5);
+
+  // Workout 6 - Exemple 6 : Complex large avec multiples exercices
+  const workout6 = new Workout();
+  workout6.description = 'Complex complet Epaulé Debout + Squat (drop) + Epaulé Flexion + Jeté Fente';
+  workout6.category = workoutCategoriesMap.Saison;
+  workout6.createdBy = null;
+
+  await em.persistAndFlush(workout6);
+
+  // Element 1: Complex Epaulé Debout + Squat (drop) + Epaulé Flexion + Jeté Fente
+  const workout6Element1 = new WorkoutElement();
+  workout6Element1.type = WORKOUT_ELEMENT_TYPES.COMPLEX;
+  workout6Element1.complex = complexes[4]; // Epaulé Debout + Squat (drop) + Epaulé Flexion + Jeté Fente
+  workout6Element1.order = 0;
+  workout6Element1.blocks = [
+    {
+      order: 1,
+      numberOfSets: 4,
+      rest: 240,
+      intensity: {
+        percentageOfMax: 80,
+        referenceExerciseId: exercisesMap['Epaulé Debout'].id,
+        type: 'percentage' as const
+      },
+      exercises: [
+        { exerciseId: exercisesMap['Epaulé Debout'].id, reps: 1, order: 1 },
+        { exerciseId: exercisesMap['Squat (drop)'].id, reps: 1, order: 2 },
+        { exerciseId: exercisesMap['Epaulé Flexion'].id, reps: 1, order: 3 },
+        { exerciseId: exercisesMap['Jeté Fente'].id, reps: 1, order: 4 }
+      ]
+    }
+  ];
+  workout6Element1.workout = workout6;
+  await em.persistAndFlush(workout6Element1);
+
+  console.log('Workout 6 created:', workout6);
   console.log('All workouts seeded successfully!');
 }

@@ -13,26 +13,26 @@ export type WorkoutElementType =
 // Block configuration schemas
 export const exerciseConfigSchema = z.object({
   exerciseId: z.string().uuid(),
-  reps: z.number().int().positive(),
-  order: z.number().int().positive()
+  reps: z.number().int().min(1), // Au moins 1 rep
+  order: z.number().int().min(1)  // Commence à 1
 })
 
 export type ExerciseConfigDto = z.infer<typeof exerciseConfigSchema>;
 
 export const intensityConfigSchema = z.object({
-  percentageOfMax: z.number().min(0).max(200).optional(),
+  percentageOfMax: z.number().min(0).max(200),
   referenceExerciseId: z.string().uuid().optional(),
-  type: z.enum(['percentage', 'rpe']).optional()
+  type: z.enum(['percentage', 'rpe']).default('percentage')
 })
 
 export type IntensityConfigDto = z.infer<typeof intensityConfigSchema>;
 
 export const blockConfigSchema = z.object({
-  order: z.number().int().positive(),
-  numberOfSets: z.number().int().positive(),
+  order: z.number().int().min(1),        // Commence à 1
+  numberOfSets: z.number().int().min(1), // Au moins 1 série
   rest: z.number().int().positive().optional(),
-  intensity: intensityConfigSchema.optional(),
-  exercises: z.array(exerciseConfigSchema).min(1)
+  intensity: intensityConfigSchema,      // Toujours requis
+  exercises: z.array(exerciseConfigSchema).min(1) // Au moins 1 exercice
 })
 
 export type BlockConfigDto = z.infer<typeof blockConfigSchema>;
@@ -44,7 +44,7 @@ const createWorkoutExerciseElement = z.object({
   order: z.number().min(0),
   tempo: z.string().optional(),
   commentary: z.string().optional(),
-  blocks: z.array(blockConfigSchema),
+  blocks: z.array(blockConfigSchema).min(1), // Au moins 1 block
 });
 
 const createWorkoutComplexElement = z.object({
@@ -53,7 +53,7 @@ const createWorkoutComplexElement = z.object({
   order: z.number().min(0),
   tempo: z.string().optional(),
   commentary: z.string().optional(),
-  blocks: z.array(blockConfigSchema),
+  blocks: z.array(blockConfigSchema).min(1), // Au moins 1 block
 });
 
 const createWorkoutElementSchema = z.discriminatedUnion('type', [

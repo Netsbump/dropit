@@ -191,8 +191,8 @@ export function TrainingSessionDetail({
                     )}
 
                     <div className="flex flex-wrap gap-1 mt-1">
-                      {element.blocks.map((block, idx) => (
-                        <Badge key={idx} variant="outline" className="text-xs px-1">
+                      {element.blocks.map((block) => (
+                        <Badge key={block.order} variant="outline" className="text-xs px-1">
                           {block.numberOfSets}x{element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? block.exercises[0].reps : block.exercises.map(e => e.reps).join('+')}
                           {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
                           {block.rest && ` - ${block.rest}s`}

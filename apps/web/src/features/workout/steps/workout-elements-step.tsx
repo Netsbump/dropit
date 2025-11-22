@@ -102,18 +102,62 @@ export function WorkoutElementsStep({
   };
 
   const handleAddElement = (type: 'exercise' | 'complex', itemId?: string) => {
-    append({
-      type:
-        type === 'exercise'
-          ? WORKOUT_ELEMENT_TYPES.EXERCISE
-          : WORKOUT_ELEMENT_TYPES.COMPLEX,
-      id: itemId || '',
-      order: fields.length,
-      sets: 1,
-      reps: 1,
-      rest: 60,
-      startWeight_percent: 70,
-    });
+    // Pour un exercice simple
+    if (type === 'exercise' && itemId) {
+      const defaultBlock = {
+        order: 1,
+        numberOfSets: 1,
+        rest: undefined,
+        intensity: {
+          percentageOfMax: 0,
+          type: 'percentage' as const,
+          referenceExerciseId: itemId,
+        },
+        exercises: [
+          {
+            exerciseId: itemId,
+            reps: 1,
+            order: 1,
+          },
+        ],
+      };
+
+      append({
+        type: WORKOUT_ELEMENT_TYPES.EXERCISE,
+        exerciseId: itemId,
+        order: fields.length,
+        blocks: [defaultBlock],
+      });
+    }
+
+    // Pour un complex
+    if (type === 'complex' && itemId) {
+      const complex = complexes?.find(c => c.id === itemId);
+      if (complex) {
+        const defaultBlock = {
+          order: 1,
+          numberOfSets: 1,
+          rest: undefined,
+          intensity: {
+            percentageOfMax: 0,
+            type: 'percentage' as const,
+            referenceExerciseId: complex.exercises[0]?.id,
+          },
+          exercises: complex.exercises.map((ex, idx) => ({
+            exerciseId: ex.id,
+            reps: 1,
+            order: idx + 1,
+          })),
+        };
+
+        append({
+          type: WORKOUT_ELEMENT_TYPES.COMPLEX,
+          complexId: itemId,
+          order: fields.length,
+          blocks: [defaultBlock],
+        });
+      }
+    }
   };
 
   const handleExerciseCreationSuccess = async () => {

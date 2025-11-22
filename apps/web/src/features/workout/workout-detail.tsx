@@ -86,8 +86,8 @@ export function WorkoutDetail({
                             </span>
                           </div>
                           <div className="space-y-1">
-                            {element.blocks.map((block, idx) => (
-                              <p key={idx} className="text-xs text-muted-foreground">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
                                 {block.numberOfSets}x{block.exercises[0].reps}
                                 {block.rest && ` - ${block.rest}s repos`}
                                 {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
@@ -116,8 +116,8 @@ export function WorkoutDetail({
                             ))}
                           </div>
                           <div className="space-y-1">
-                            {element.blocks.map((block, idx) => (
-                              <p key={idx} className="text-xs text-muted-foreground">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
                                 {block.numberOfSets} séries
                                 {block.rest && ` - ${block.rest}s repos`}
                                 {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}

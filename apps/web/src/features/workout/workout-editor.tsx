@@ -56,16 +56,15 @@ export function WorkoutEditor({
               blocks: element.blocks,
               exerciseId: element.exercise.id,
             };
-          } else {
-            return {
-              type: element.type as 'complex',
-              order: element.order,
-              tempo: element.tempo,
-              commentary: element.commentary,
-              blocks: element.blocks,
-              complexId: element.complex.id,
-            };
           }
+          return {
+            type: element.type as 'complex',
+            order: element.order,
+            tempo: element.tempo,
+            commentary: element.commentary,
+            blocks: element.blocks,
+            complexId: element.complex.id,
+          };
         }),
       };
 
@@ -131,6 +130,11 @@ export function WorkoutEditor({
             order: 1,
             numberOfSets: 3,
             rest: 90,
+            intensity: {
+              percentageOfMax: 70,
+              type: 'percentage' as const,
+              referenceExerciseId: exercise.id,
+            },
             exercises: [
               {
                 exerciseId: exercise.id,
@@ -160,6 +164,11 @@ export function WorkoutEditor({
             order: 1,
             numberOfSets: 3,
             rest: 120,
+            intensity: {
+              percentageOfMax: 70,
+              type: 'percentage' as const,
+              referenceExerciseId: complex.exercises[0]?.id,
+            },
             exercises: complex.exercises.map((ex, idx) => ({
               exerciseId: ex.id,
               reps: 3,
@@ -333,8 +342,8 @@ export function WorkoutEditor({
                             </span>
                           </div>
                           <div className="space-y-1">
-                            {element.blocks.map((block, idx) => (
-                              <p key={idx} className="text-xs text-muted-foreground">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
                                 {block.numberOfSets}x{block.exercises[0].reps}
                                 {block.rest && ` - ${block.rest}s repos`}
                                 {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
@@ -363,8 +372,8 @@ export function WorkoutEditor({
                             ))}
                           </div>
                           <div className="space-y-1">
-                            {element.blocks.map((block, idx) => (
-                              <p key={idx} className="text-xs text-muted-foreground">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
                                 {block.numberOfSets} séries
                                 {block.rest && ` - ${block.rest}s repos`}
                                 {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
