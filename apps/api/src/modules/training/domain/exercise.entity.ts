@@ -21,9 +21,6 @@ export class Exercise {
   name!: string;
 
   @Property({ nullable: true })
-  description?: string;
-
-  @Property({ nullable: true })
   englishName?: string;
 
   @Property({ nullable: true })

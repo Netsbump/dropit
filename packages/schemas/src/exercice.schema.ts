@@ -2,7 +2,6 @@ import { z } from 'zod';
 
 export const createExerciseSchema = z.object({
   name: z.string(),
-  description: z.string().optional(),
   exerciseCategory: z.string(),
   video: z.string().optional(),
   englishName: z.string().optional(),
@@ -23,7 +22,6 @@ export const exerciseSchema = z.object({
     name: z.string(),
   }),
   video: z.string().optional(),
-  description: z.string().optional(),
   englishName: z.string().optional(),
   shortName: z.string().optional(),
 });

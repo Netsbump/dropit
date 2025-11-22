@@ -53,7 +53,6 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     try {
       exercise1 = await exerciseUseCase.create({
         name: 'Squat',
-        description: 'Basic squat exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
     } catch (error: unknown) {
@@ -68,7 +67,6 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     try {
       exercise2 = await exerciseUseCase.create({
         name: 'Push-up',
-        description: 'Basic push-up',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
     } catch (error: unknown) {
@@ -81,7 +79,6 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     try {
       exercise3 = await exerciseUseCase.create({
         name: 'Squat Clavicule',
-        description: 'Squat avec barre en position clavicule',
         exerciseCategory: exerciseCategory.id,
         englishName: 'Front Squat',
         shortName: 'FS',
@@ -123,7 +120,6 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
         exercise1.id,
         {
           name: 'Squat Modifié',
-          description: 'Description modifiée',
         },
         testData.organization.id,
         testData.adminUser.id
@@ -132,7 +128,6 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
       throw new Error(`Failed to update exercise: ${(error as Error).message}`);
     }
     expect(updatedExercise.name).toBe('Squat Modifié');
-    expect(updatedExercise.description).toBe('Description modifiée');
 
     // Test 5: Rechercher des exercices via use case
     console.log('🧪 Testing exercise search via use case...');

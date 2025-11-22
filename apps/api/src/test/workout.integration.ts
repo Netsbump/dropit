@@ -89,13 +89,11 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     try {
       exercise1 = await exerciseUseCase.create({
         name: 'Squat',
-        description: 'Basic squat exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
       exercise2 = await exerciseUseCase.create({
         name: 'Deadlift',
-        description: 'Basic deadlift exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
@@ -105,12 +103,10 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
           {
             exerciseId: exercise1.id,
             order: 1,
-            reps: 10,
           },
           {
             exerciseId: exercise2.id,
             order: 2,
-            reps: 10,
           },
         ],
       }, testData.organization.id, testData.adminUser.id);
@@ -127,27 +123,59 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     let workout1: Workout;
     try {
       workout1 = await workoutUseCase.createWorkout({
-        title: 'Test Workout',
         workoutCategory: workoutCategory.id,
         description: 'Test workout description',
         elements: [
           {
             type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-            id: complex.id,
+            complexId: complex.id,
             order: 0,
-            reps: 1,
-            sets: 1,
-            rest: 120,
-            startWeight_percent: 75,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 1,
+                rest: 120,
+                intensity: {
+                  percentageOfMax: 75,
+                  type: 'percentage' as const,
+                },
+                exercises: [
+                  {
+                    exerciseId: exercise1.id,
+                    reps: 10,
+                    order: 1,
+                  },
+                  {
+                    exerciseId: exercise2.id,
+                    reps: 10,
+                    order: 2,
+                  },
+                ],
+              },
+            ],
           },
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
-            id: exercise2.id,
+            exerciseId: exercise2.id,
             order: 1,
-            reps: 8,
-            sets: 3,
-            rest: 90,
-            startWeight_percent: 70,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                rest: 90,
+                intensity: {
+                  percentageOfMax: 70,
+                  type: 'percentage' as const,
+                },
+                exercises: [
+                  {
+                    exerciseId: exercise2.id,
+                    reps: 8,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       }, testData.organization.id, testData.adminUser.id);
@@ -156,7 +184,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     }
     expect(workout1).toBeDefined();
     expect(workout1.id).toBeDefined();
-    expect(workout1.title).toBe('Test Workout');
     expect(workout1.elements.length).toBe(2);
 
     // Vérification du complex
@@ -166,32 +193,46 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(complexElement.complex).toBeDefined();
     expect(complexElement.complex?.exercises).toBeDefined();
     expect(complexElement.complex?.exercises.length).toBeGreaterThan(0);
+    expect(complexElement.blocks).toBeDefined();
+    expect(complexElement.blocks.length).toBe(1);
+    expect(complexElement.blocks[0].numberOfSets).toBe(1);
 
     // Vérification de l'exercice simple
     const exerciseElement = elements[1];
     expect(exerciseElement.type).toBe('exercise');
     expect(exerciseElement.exercise).toBeDefined();
-    expect(exerciseElement.reps).toBe(8);
-    expect(exerciseElement.sets).toBe(3);
-    expect(exerciseElement.rest).toBe(90);
-    expect(exerciseElement.startWeight_percent).toBe(70);
+    expect(exerciseElement.blocks).toBeDefined();
+    expect(exerciseElement.blocks.length).toBe(1);
+    expect(exerciseElement.blocks[0].exercises[0].reps).toBe(8);
+    expect(exerciseElement.blocks[0].numberOfSets).toBe(3);
+    expect(exerciseElement.blocks[0].rest).toBe(90);
 
     // Test 3: Créer un autre workout
     console.log('🧪 Testing second workout creation via use case...');
     let workout2: Workout;
     try {
       workout2 = await workoutUseCase.createWorkout({
-        title: 'Second Workout',
         workoutCategory: workoutCategory.id,
         description: 'Second workout description',
         elements: [
           {
             type: WORKOUT_ELEMENT_TYPES.EXERCISE,
-            id: exercise1.id,
+            exerciseId: exercise1.id,
             order: 0,
-            reps: 5,
-            sets: 3,
-            rest: 60,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                rest: 60,
+                exercises: [
+                  {
+                    exerciseId: exercise1.id,
+                    reps: 5,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       }, testData.organization.id, testData.adminUser.id);
@@ -199,7 +240,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
       throw new Error(`Failed to create workout2: ${(error as Error).message}`);
     }
     expect(workout2).toBeDefined();
-    expect(workout2.title).toBe('Second Workout');
     expect(workout2.elements.length).toBe(1);
 
     // Test 4: Récupérer tous les workouts via use case
@@ -221,7 +261,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
       throw new Error(`Failed to get single workout: ${(error as Error).message}`);
     }
     expect(singleWorkout.id).toBe(workout1.id);
-    expect(singleWorkout.title).toBe('Test Workout');
 
     // Test 6: Mettre à jour un workout via use case
     console.log('🧪 Testing workout update via use case...');
@@ -230,7 +269,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
       updatedWorkout = await workoutUseCase.updateWorkout(
         workout1.id,
         {
-          title: 'Test Workout Modifié',
           description: 'Description modifiée',
         },
         testData.organization.id,
@@ -239,7 +277,6 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     } catch (error: unknown) {
       throw new Error(`Failed to update workout: ${(error as Error).message}`);
     }
-    expect(updatedWorkout.title).toBe('Test Workout Modifié');
     expect(updatedWorkout.description).toBe('Description modifiée');
 
     // Test 7: Supprimer un workout via use case

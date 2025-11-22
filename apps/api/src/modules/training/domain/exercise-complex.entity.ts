@@ -13,9 +13,6 @@ export class ExerciseComplex {
   @Property()
   order!: number;
 
-  @Property({ default: 1 })
-  reps!: number;
-
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
 

@@ -70,23 +70,60 @@ export function WorkoutInfoStep({
   });
 
   const handleUseTemplate = (templateWorkout: WorkoutDto) => {
-    form.setValue('title', `${templateWorkout.title} (copie)`);
     form.setValue('description', templateWorkout.description || '');
-    
+
     // Trouver la catégorie correspondante par son nom pour obtenir l'ID
     const category = categories?.find(cat => cat.name === templateWorkout.workoutCategory);
     if (category) {
       form.setValue('workoutCategory', category.id);
     }
-    
+
+    // Transformer les éléments du template pour correspondre au schéma de création
     if (templateWorkout.elements) {
-      form.setValue('elements', templateWorkout.elements);
+      const transformedElements = templateWorkout.elements.map(element => {
+        // Transformer les blocks pour s'assurer que intensity est toujours définie
+        const transformedBlocks = element.blocks.map(block => ({
+          order: block.order,
+          numberOfSets: block.numberOfSets,
+          rest: block.rest,
+          intensity: {
+            percentageOfMax: block.intensity?.percentageOfMax ?? 0,
+            type: (block.intensity?.type as 'percentage' | 'rpe') ?? 'percentage',
+            referenceExerciseId: block.intensity?.referenceExerciseId,
+          },
+          exercises: block.exercises,
+        }));
+
+        if (element.type === 'exercise') {
+          return {
+            type: 'exercise' as const,
+            exerciseId: element.exercise.id,
+            order: element.order,
+            blocks: transformedBlocks,
+            tempo: element.tempo,
+            commentary: element.commentary,
+          };
+        }
+        return {
+          type: 'complex' as const,
+          complexId: element.complex.id,
+          order: element.order,
+          blocks: transformedBlocks,
+          tempo: element.tempo,
+          commentary: element.commentary,
+        };
+      });
+      form.setValue('elements', transformedElements);
     }
   };
 
-  const filteredWorkouts = workouts?.filter(workout =>
-    workout.title.toLowerCase().includes(templateSearch.toLowerCase())
-  ) || [];
+  const filteredWorkouts = workouts?.filter(workout => {
+    const searchTerm = templateSearch.toLowerCase();
+    // Recherche dans la catégorie ou la description
+    const categoryMatch = workout.workoutCategory.toLowerCase().includes(searchTerm);
+    const descriptionMatch = workout.description?.toLowerCase().includes(searchTerm);
+    return categoryMatch || descriptionMatch;
+  }) || [];
 
   return (
     <div className="h-full flex flex-col">
@@ -104,20 +141,6 @@ export function WorkoutInfoStep({
 
           <Card className="flex-1 shadow-none">
             <CardContent className="p-6 space-y-6">
-              <FormField
-                control={form.control}
-                name="title"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Nom</FormLabel>
-                    <FormControl>
-                      <Input placeholder="Nom de l'entraînement" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="description"
@@ -205,13 +228,15 @@ export function WorkoutInfoStep({
                   </div>
                 ) : (
                   filteredWorkouts.map((workout) => (
-                    <div 
-                      key={workout.id} 
+                    <div
+                      key={workout.id}
                       className="border rounded-lg p-3 cursor-pointer hover:bg-muted/50 transition-colors bg-background"
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
-                          <h5 className="font-medium text-sm truncate">{workout.title}</h5>
+                          <h5 className="font-medium text-sm truncate">
+                            {workout.elements.length} {workout.elements.length > 1 ? 'éléments' : 'élément'}
+                          </h5>
                           <p className="text-xs text-muted-foreground truncate">
                             {typeof workout.workoutCategory === 'string' ? workout.workoutCategory : '-'}
                           </p>

@@ -17,7 +17,7 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   }
 
   const firstWorkout = workouts[0];
-  console.log('Using workout:', firstWorkout.title);
+  console.log('Using workout:', firstWorkout.id);
 
   // 2. Récupérer l'organisation
   const organizations = await em.find(Organization, {}, { limit: 1 });

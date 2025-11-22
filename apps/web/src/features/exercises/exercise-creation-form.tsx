@@ -17,7 +17,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
 import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -88,7 +87,6 @@ export function ExerciseCreationForm({
     defaultValues: {
       name: '',
       exerciseCategory: undefined,
-      description: '',
       englishName: '',
       shortName: '',
       video: undefined,
@@ -141,19 +139,6 @@ export function ExerciseCreationForm({
                   )}
                 </SelectContent>
               </Select>
-            </FormItem>
-          )}
-        />
-
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Description de l'exercice" {...field} />
-              </FormControl>
             </FormItem>
           )}
         />

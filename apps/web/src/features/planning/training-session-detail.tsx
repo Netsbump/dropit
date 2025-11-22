@@ -191,27 +191,13 @@ export function TrainingSessionDetail({
                     )}
 
                     <div className="flex flex-wrap gap-1 mt-1">
-                      <Badge variant="outline" className="text-xs px-1">
-                        {element.sets}x{element.reps}
-                      </Badge>
-
-                      {element.startWeight_percent && (
-                        <Badge variant="outline" className="text-xs px-1">
-                          {element.startWeight_percent}%
+                      {element.blocks.map((block) => (
+                        <Badge key={block.order} variant="outline" className="text-xs px-1">
+                          {block.numberOfSets}x{element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? block.exercises[0].reps : block.exercises.map(e => e.reps).join('+')}
+                          {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                          {block.rest && ` - ${block.rest}s`}
                         </Badge>
-                      )}
-
-                      {element.rest && (
-                        <Badge variant="outline" className="text-xs px-1">
-                          {t('rest')}: {element.rest}s
-                        </Badge>
-                      )}
-
-                      {element.duration && (
-                        <Badge variant="outline" className="text-xs px-1">
-                          {element.duration}min
-                        </Badge>
-                      )}
+                      ))}
                     </div>
                   </div>
 
@@ -239,7 +225,7 @@ export function TrainingSessionDetail({
                           key={`${element.id}-${index}`}
                           className="text-xs mt-1"
                         >
-                          {ex.name} {ex.reps && `(${ex.reps} reps)`}
+                          {ex.name}
                         </div>
                       ))}
                     </div>
