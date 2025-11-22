@@ -76,7 +76,26 @@
     "creation": {
       "title": "Créer un entraînement",
       "description": "Ajoutez un nouvel entraînement à votre catalogue."
-    }
+    },
+    "sets_of": "de",
+    "block": "Bloc",
+    "series": "série(s)",
+    "reps": "rep(s)",
+    "add_rest": "Ajouter un repos",
+    "seconds": "s",
+    "add_block": "Ajouter un bloc",
+    "add_commentary": "Ajouter un commentaire",
+    "add_tempo": "Ajouter un tempo",
+    "commentary_optional": "Commentaire (optionnel)",
+    "commentary_placeholder": "Commentaire du coach...",
+    "tempo_optional": "Tempo (optionnel)",
+    "tempo_placeholder": "ex: 3010",
+    "max_reference": "Référence max",
+    "select_placeholder": "Sélectionner...",
+    "exercise_label": "EXERCISE",
+    "complex_label": "COMPLEX",
+    "exercise_not_found": "Exercice non trouvé",
+    "complex_not_found": "Complex non trouvé"
   },
   "complex": {
     "hero": {

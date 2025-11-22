@@ -212,10 +212,10 @@ export function WorkoutElementsStep({
                   <button
                     type="button"
                     onClick={() => setActiveTab('exercise')}
-                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors bg-muted ${
                       activeTab === 'exercise'
-                        ? 'bg-secondary text-secondary-foreground'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        ? 'text-tertiary-foreground border-2 border-tertiary-foreground'
+                        : 'text-muted-foreground hover:bg-muted/80 border-2 border-transparent'
                     }`}
                   >
                     Exercices
@@ -223,10 +223,10 @@ export function WorkoutElementsStep({
                   <button
                     type="button"
                     onClick={() => setActiveTab('complex')}
-                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors ${
+                    className={`px-4 py-2 text-sm font-medium rounded-sm transition-colors bg-muted ${
                       activeTab === 'complex'
-                        ? 'bg-secondary text-secondary-foreground'
-                        : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        ? 'text-secondary-foreground border-2 border-secondary-foreground'
+                        : 'text-muted-foreground hover:bg-muted/80 border-2 border-transparent'
                     }`}
                   >
                     Complexes
@@ -392,7 +392,7 @@ export function WorkoutElementsStep({
                   </div>
                 </div>
               ) : (
-                <div className="flex-1 overflow-x-auto min-h-0">
+                <div className="flex-1 overflow-y-auto min-h-0">
                   <DndContext
                     sensors={sensors}
                     collisionDetection={closestCenter}
@@ -402,23 +402,17 @@ export function WorkoutElementsStep({
                       items={fields.map((field) => field.id)}
                       strategy={verticalListSortingStrategy}
                     >
-                      <div
-                        className="flex flex-col flex-wrap gap-4 h-full"
-                      >
+                      <div className="flex flex-col gap-4">
                         {fields.map((field, index) => (
-                          <div
-                          key={field.id}
-                          className="w-[49%]"
-                        >
-                            <SortableWorkoutElement
-                              id={field.id}
-                              index={index}
-                              control={form.control}
-                              onRemove={remove}
-                              exercises={exercises}
-                              complexes={complexes}
-                            />
-                          </div>
+                          <SortableWorkoutElement
+                            key={field.id}
+                            id={field.id}
+                            index={index}
+                            control={form.control}
+                            onRemove={remove}
+                            exercises={exercises}
+                            complexes={complexes}
+                          />
                         ))}
                       </div>
                     </SortableContext>

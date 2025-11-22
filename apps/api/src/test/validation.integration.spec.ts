@@ -379,6 +379,10 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
               {
                 order: 1,
                 numberOfSets: 5,
+                intensity: {
+                  percentageOfMax: 80,
+                  type: 'percentage',
+                },
                 exercises: [
                   {
                     exerciseId: '550e8400-e29b-41d4-a716-446655440000',
