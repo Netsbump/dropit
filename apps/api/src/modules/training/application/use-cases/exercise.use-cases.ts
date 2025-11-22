@@ -126,9 +126,6 @@ export class ExerciseUseCase implements IExerciseUseCases {
     //5. Create exercise
     const exercise = new Exercise();
     exercise.name = data.name;
-    if (data.description) {
-      exercise.description = data.description;
-    }
     exercise.exerciseCategory = exerciseCategory;
     if (data.englishName) {
       exercise.englishName = data.englishName;
@@ -176,9 +173,6 @@ export class ExerciseUseCase implements IExerciseUseCases {
     //4. Update exercise
     if (data.name) {
       exerciseToUpdate.name = data.name;
-    }
-    if (data.description !== undefined) {
-      exerciseToUpdate.description = data.description;
     }
     if (data.englishName !== undefined) {
       exerciseToUpdate.englishName = data.englishName;

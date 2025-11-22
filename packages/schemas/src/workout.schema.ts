@@ -10,30 +10,50 @@ export const WORKOUT_ELEMENT_TYPES = {
 export type WorkoutElementType =
   (typeof WORKOUT_ELEMENT_TYPES)[keyof typeof WORKOUT_ELEMENT_TYPES];
 
+// Block configuration schemas
+export const exerciseConfigSchema = z.object({
+  exerciseId: z.string().uuid(),
+  reps: z.number().int().positive(),
+  order: z.number().int().positive()
+})
+
+export type ExerciseConfigDto = z.infer<typeof exerciseConfigSchema>;
+
+export const intensityConfigSchema = z.object({
+  percentageOfMax: z.number().min(0).max(200).optional(),
+  referenceExerciseId: z.string().uuid().optional(),
+  type: z.enum(['percentage', 'rpe']).optional()
+})
+
+export type IntensityConfigDto = z.infer<typeof intensityConfigSchema>;
+
+export const blockConfigSchema = z.object({
+  order: z.number().int().positive(),
+  numberOfSets: z.number().int().positive(),
+  rest: z.number().int().positive().optional(),
+  intensity: intensityConfigSchema.optional(),
+  exercises: z.array(exerciseConfigSchema).min(1)
+})
+
+export type BlockConfigDto = z.infer<typeof blockConfigSchema>;
+
+// Workout element schemas
 const createWorkoutExerciseElement = z.object({
   type: z.literal('exercise'),
-  id: z.string(),
+  exerciseId: z.string().uuid(),
   order: z.number().min(0),
-  sets: z.number().min(1),
-  reps: z.number().min(1),
-  rest: z.number().optional(),
-  duration: z.number().optional(),
-  description: z.string().optional(),
-  startWeight_percent: z.number().optional(),
-  endWeight_percent: z.number().optional(),
+  tempo: z.string().optional(),
+  commentary: z.string().optional(),
+  blocks: z.array(blockConfigSchema),
 });
 
 const createWorkoutComplexElement = z.object({
   type: z.literal('complex'),
-  id: z.string(),
+  complexId: z.string().uuid(),
   order: z.number().min(0),
-  sets: z.number().min(1),
-  reps: z.number().min(1),
-  rest: z.number().optional(),
-  duration: z.number().optional(),
-  description: z.string().optional(),
-  startWeight_percent: z.number().optional(),
-  endWeight_percent: z.number().optional(),
+  tempo: z.string().optional(),
+  commentary: z.string().optional(),
+  blocks: z.array(blockConfigSchema),
 });
 
 const createWorkoutElementSchema = z.discriminatedUnion('type', [
@@ -48,7 +68,6 @@ const createTrainingSessionWithWorkoutSchema = z.object({
 });
 
 export const createWorkoutSchema = z.object({
-  title: z.string(),
   workoutCategory: z.string(),
   description: z.string().optional(),
   elements: z.array(createWorkoutElementSchema),
@@ -61,11 +80,23 @@ export const updateWorkoutSchema = createWorkoutSchema.partial();
 
 export type UpdateWorkout = z.infer<typeof updateWorkoutSchema>;
 
-const workoutExerciseElement = createWorkoutExerciseElement.extend({
+const workoutExerciseElement = z.object({
+  id: z.string(),
+  type: z.literal('exercise'),
+  order: z.number(),
+  tempo: z.string().optional(),
+  commentary: z.string().optional(),
+  blocks: z.array(blockConfigSchema),
   exercise: exerciseSchema,
 });
 
-const workoutComplexElement = createWorkoutComplexElement.extend({
+const workoutComplexElement = z.object({
+  id: z.string(),
+  type: z.literal('complex'),
+  order: z.number(),
+  tempo: z.string().optional(),
+  commentary: z.string().optional(),
+  blocks: z.array(blockConfigSchema),
   complex: complexSchema,
 });
 
@@ -76,7 +107,6 @@ const workoutElementSchema = z.discriminatedUnion('type', [
 
 export const workoutSchema = z.object({
   id: z.string(),
-  title: z.string(),
   workoutCategory: z.string(),
   description: z.string().optional(),
   elements: z.array(workoutElementSchema),

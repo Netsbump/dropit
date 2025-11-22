@@ -9,6 +9,7 @@ import {
 import { Complex } from './complex.entity';
 import { Exercise } from './exercise.entity';
 import { Workout } from './workout.entity';
+import { BlockConfigDto } from '@dropit/schemas';
 
 export const WORKOUT_ELEMENT_TYPES = {
   EXERCISE: 'exercise',
@@ -42,29 +43,17 @@ export class WorkoutElement {
   @ManyToOne(() => Complex, { nullable: true, deleteRule: 'cascade' })
   complex?: Complex;
 
+  @Property({ type: 'jsonb' })
+  blocks: BlockConfigDto[] = [];
+
   @Property()
   order!: number;
 
-  @Property({ default: 1 })
-  sets!: number;
-
-  @Property({ default: 1 })
-  reps!: number;
+  @Property({ nullable: true })
+  tempo?: string;
 
   @Property({ nullable: true })
-  rest?: number;
-
-  @Property({ nullable: true })
-  duration?: number;
-
-  @Property({ nullable: true })
-  description?: string;
-
-  @Property({ nullable: true })
-  startWeight_percent?: number;
-
-  @Property({ nullable: true })
-  endWeight_percent?: number;
+  commentary?: string;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

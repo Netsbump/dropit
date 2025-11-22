@@ -72,19 +72,16 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     try {
       exercise1 = await exerciseUseCase.create({
         name: 'Squat',
-        description: 'Basic squat exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
       exercise2 = await exerciseUseCase.create({
         name: 'Deadlift',
-        description: 'Basic deadlift exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
       exercise3 = await exerciseUseCase.create({
         name: 'Bench Press',
-        description: 'Basic bench press exercise',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
     } catch (error: unknown) {
@@ -105,20 +102,16 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
           {
             exerciseId: exercise1.id,
             order: 1,
-            reps: 10,
           },
           {
             exerciseId: exercise2.id,
             order: 2,
-            reps: 10,
           },
           {
             exerciseId: exercise3.id,
             order: 3,
-            reps: 10,
           },
         ],
-        description: 'Pour monter en gamme tranquillement',
       }, testData.organization.id, testData.adminUser.id);
     } catch (error: unknown) {
       throw new Error(`Failed to create complex: ${(error as Error).message}`);
@@ -136,22 +129,19 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     try {
       exercise4 = await exerciseUseCase.create({
         name: 'Push-up',
-        description: 'Basic push-up',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
       exercise5 = await exerciseUseCase.create({
         name: 'Pull-up',
-        description: 'Basic pull-up',
         exerciseCategory: exerciseCategory.id,
       }, testData.organization.id, testData.adminUser.id);
 
       complex2 = await complexUseCase.create({
-        description: 'Complexe push-pull',
         complexCategory: complexCategory.id,
         exercises: [
-          { exerciseId: exercise4.id, order: 1, reps: 10 },
-          { exerciseId: exercise5.id, order: 2, reps: 8 },
+          { exerciseId: exercise4.id, order: 1 },
+          { exerciseId: exercise5.id, order: 2 },
         ],
       }, testData.organization.id, testData.adminUser.id);
     } catch (error: unknown) {
@@ -188,7 +178,16 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       updatedComplex = await complexUseCase.update(
         complex1.id,
         {
-          description: 'Description modifiée',
+          exercises: [
+            {
+              exerciseId: exercise1.id,
+              order: 1,
+            },
+            {
+              exerciseId: exercise2.id,
+              order: 2,
+            },
+          ],
         },
         testData.organization.id,
         testData.adminUser.id
@@ -196,7 +195,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     } catch (error: unknown) {
       throw new Error(`Failed to update complex: ${(error as Error).message}`);
     }
-    expect(updatedComplex.description).toBe('Description modifiée');
+    expect(updatedComplex.exercises).toHaveLength(2);
 
     // Test 7: Supprimer un complex via use case
     console.log('🧪 Testing complex deletion via use case...');

@@ -18,15 +18,12 @@ export const ComplexMapper = {
             id: exercise.exerciseCategory.id,
             name: exercise.exerciseCategory.name,
           },
-          description: exercise.description,
           video: exercise.video?.id,
           englishName: exercise.englishName,
           shortName: exercise.shortName,
           order: exerciseComplex.order,
-          reps: exerciseComplex.reps,
         };
       }),
-      description: complex.description,
     };
   },
 

@@ -16,7 +16,7 @@ export async function seedComplexes(
       description: "Exercices focalisés sur la technique de l'arraché",
     },
     {
-      name: 'Épaulé',
+      name: 'Épaulé-Jeté',
       description: "Exercices focalisés sur la technique de l'épaulé-jeté",
     },
     {
@@ -35,124 +35,76 @@ export async function seedComplexes(
     console.log('Complex category created:', categoryToCreate);
   }
 
-  const ARRACHE_CATEGORY_INDEX = 0;
-  const EPAULE_CATEGORY_INDEX = 1;
-  const RENFORCEMENT_CATEGORY_INDEX = 2;
-
+  // Complexes basés sur les vrais entraînements
   const complexesToCreate = [
     {
-      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
-      description: "Focus sur la technique de l'arraché",
+      category: 'Arraché',
       exercises: [
-        {
-          name: 'Arraché Debout',
-          reps: 3,
-        },
-        {
-          name: 'Tirage Nuque',
-          reps: 5,
-        },
-        {
-          name: 'Squat Clavicule',
-          reps: 2,
-        },
-      ],
+        { name: 'Passage', order: 0 },
+        { name: 'Chute', order: 1 },
+        { name: 'Flexion d\'Arraché', order: 2 }
+      ]
     },
     {
-      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
-      description: "EMOM",
+      category: 'Arraché',
       exercises: [
-        {
-          name: 'Épaulé Debout',
-          reps: 3,
-        },
-        {
-          name: 'Jeté Fente',
-          reps: 2,
-        },
-        {
-          name: 'Squat Clavicule',
-          reps: 3,
-        },
-        {
-          name: 'Développé Militaire',
-          reps: 8,
-        },
-      ],
+        { name: 'Arraché Flexion', order: 0 },
+        { name: 'Flexion d\'Arraché', order: 1 }
+      ]
     },
     {
-      category: complexCategories[RENFORCEMENT_CATEGORY_INDEX].name,
-      description: 'On le fait en TABATA',
+      category: 'Épaulé-Jeté',
       exercises: [
-        {
-          name: 'Squat Nuque',
-          reps: 6,
-        },
-        {
-          name: 'Développé Militaire',
-          reps: 8,
-        },
-        {
-          name: 'Soulevé de Terre',
-          reps: 4,
-        },
-      ],
+        { name: 'Passage Epaulé', order: 0 },
+        { name: 'Squat Devant', order: 1 }
+      ]
     },
     {
-      category: complexCategories[ARRACHE_CATEGORY_INDEX].name,
-      description: "Focus sur la technique de l'arraché, EMOM",
+      category: 'Épaulé-Jeté',
       exercises: [
-        {
-          name: 'Arraché Debout',
-          reps: 2,
-        },
-        {
-          name: 'Tirage Nuque',
-          reps: 4,
-        },
-        {
-          name: 'Squat Nuque',
-          reps: 5,
-        },
-      ],
+        { name: 'Epaulé Flexion', order: 0 },
+        { name: 'Jeté Fente', order: 1 }
+      ]
     },
     {
-      category: complexCategories[EPAULE_CATEGORY_INDEX].name,
-      description: "On se concentre sur la technique",
+      category: 'Épaulé-Jeté',
       exercises: [
-        {
-          name: 'Épaulé Debout',
-          reps: 2,
-        },
-        {
-          name: 'Squat Clavicule',
-          reps: 3,
-        },
-        {
-          name: 'Développé Militaire',
-          reps: 5,
-        },
-      ],
+        { name: 'Epaulé Debout', order: 0 },
+        { name: 'Squat (drop)', order: 1 },
+        { name: 'Epaulé Flexion', order: 2 },
+        { name: 'Jeté Fente', order: 3 }
+      ]
     },
+    {
+      category: 'Arraché',
+      exercises: [
+        { name: 'Tirage Lourd d\'Arraché', order: 0 },
+        { name: 'Arraché Flexion', order: 1 }
+      ]
+    },
+    {
+      category: 'Épaulé-Jeté',
+      exercises: [
+        { name: 'Epaulé Flexion', order: 0 },
+        { name: 'Squat Nuque', order: 1 },
+        { name: 'Jeté Fente', order: 2 }
+      ]
+    }
   ];
 
   const complexesCreated: Complex[] = [];
   for (const complexData of complexesToCreate) {
     const complex = new Complex();
-    complex.description = complexData.description;
     complex.complexCategory = complexCategoriesMap[complexData.category];
     complex.createdBy = null;
 
     await em.persistAndFlush(complex);
 
-    for (let i = 0; i < complexData.exercises.length; i++) {
-      const exerciseData = complexData.exercises[i];
-
+    for (const exerciseData of complexData.exercises) {
       const exerciseComplex = new ExerciseComplex();
       exerciseComplex.complex = complex;
       exerciseComplex.exercise = exercisesMap[exerciseData.name];
-      exerciseComplex.order = i;
-      exerciseComplex.reps = exerciseData.reps;
+      exerciseComplex.order = exerciseData.order;
 
       await em.persistAndFlush(exerciseComplex);
     }

@@ -14,28 +14,9 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
   describe('createWorkoutSchema - used by POST /api/workout', () => {
 
-    it('should reject when title is missing (required field)', () => {
-      const invalidPayload = {
-        workoutCategory: 'strength',
-        elements: [],
-        // title manquant - devrait échouer
-      };
-
-      const result = createWorkoutSchema.safeParse(invalidPayload);
-
-      expect(result.success).toBe(false);
-      if (!result.success) {
-        const titleError = result.error.issues.find(
-          issue => issue.path.includes('title')
-        );
-        expect(titleError).toBeDefined();
-        expect(titleError?.code).toBe('invalid_type');
-      }
-    });
 
     it('should reject when workoutCategory is missing (required field)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         elements: [],
         // workoutCategory manquant
       };
@@ -51,17 +32,27 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
       }
     });
 
-    it('should reject when sets is negative (min validation)', () => {
+    it('should reject when numberOfSets is negative (min validation)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'exercise',
-            id: 'some-id',
+            exerciseId: 'some-id',
             order: 0,
-            sets: -1, // Invalide ! Doit être >= 1
-            reps: 10,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: -1, // Invalide ! Doit être >= 1
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -71,7 +62,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         const setsError = result.error.issues.find(
-          issue => issue.path.includes('sets')
+          issue => issue.path.includes('numberOfSets')
         );
         expect(setsError).toBeDefined();
         expect(setsError?.code).toBe('too_small');
@@ -80,15 +71,25 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should reject when reps is negative (min validation)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'exercise',
-            id: 'some-id',
+            exerciseId: 'some-id',
             order: 0,
-            sets: 3,
-            reps: -5, // Invalide ! Doit être >= 1
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: -5, // Invalide ! Doit être >= 1
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -107,15 +108,25 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should reject when order is negative (min validation)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'exercise',
-            id: 'some-id',
+            exerciseId: 'some-id',
             order: -1, // Invalide ! Doit être >= 0
-            sets: 3,
-            reps: 10,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -134,15 +145,25 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should reject when element type is invalid (discriminated union)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'invalid-type', // Doit être 'exercise' ou 'complex'
-            id: 'some-id',
+            exerciseId: 'some-id',
             order: 0,
-            sets: 3,
-            reps: 10,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -156,17 +177,27 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
       }
     });
 
-    it('should reject when element id is missing (required field)', () => {
+    it('should reject when element exerciseId is missing (required field)', () => {
       const invalidPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'exercise',
-            // id manquant
+            // exerciseId manquant
             order: 0,
-            sets: 3,
-            reps: 10,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -176,7 +207,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         const idError = result.error.issues.find(
-          issue => issue.path.includes('id')
+          issue => issue.path.includes('exerciseId')
         );
         expect(idError).toBeDefined();
       }
@@ -184,18 +215,31 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should accept valid workout data', () => {
       const validPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         description: 'A valid workout',
         elements: [
           {
             type: 'exercise',
-            id: 'some-exercise-id',
+            exerciseId: 'some-exercise-id',
             order: 0,
-            sets: 3,
-            reps: 10,
-            rest: 90,
-            startWeight_percent: 75,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                rest: 90,
+                intensity: {
+                  percentageOfMax: 75,
+                  type: 'percentage',
+                },
+                exercises: [
+                  {
+                    exerciseId: 'some-exercise-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -204,25 +248,42 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.title).toBe('Test Workout');
         expect(result.data.elements.length).toBe(1);
-        expect(result.data.elements[0].sets).toBe(3);
+        expect(result.data.elements[0].blocks[0].numberOfSets).toBe(3);
       }
     });
 
     it('should accept valid workout with complex element', () => {
       const validPayload = {
-        title: 'Test Workout',
         workoutCategory: 'strength',
         elements: [
           {
             type: 'complex',
-            id: 'some-complex-id',
+            complexId: 'some-complex-id',
             order: 0,
-            sets: 3,
-            reps: 1,
-            rest: 120,
-            startWeight_percent: 80,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 3,
+                rest: 120,
+                intensity: {
+                  percentageOfMax: 80,
+                  type: 'percentage',
+                },
+                exercises: [
+                  {
+                    exerciseId: 'some-exercise-id-1',
+                    reps: 5,
+                    order: 1,
+                  },
+                  {
+                    exerciseId: 'some-exercise-id-2',
+                    reps: 5,
+                    order: 2,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -237,7 +298,6 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should accept optional fields as undefined', () => {
       const validPayload = {
-        title: 'Minimal Workout',
         workoutCategory: 'cardio',
         elements: [],
         // description est optionnel
@@ -253,26 +313,37 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('should accept partial data (all fields optional)', () => {
       const validPayload = {
-        title: 'Updated Title',
+        description: 'Updated Description',
       };
 
       const result = updateWorkoutSchema.safeParse(validPayload);
 
       expect(result.success).toBe(true);
       if (result.success) {
-        expect(result.data.title).toBe('Updated Title');
+        expect(result.data.description).toBe('Updated Description');
       }
     });
 
-    it('should reject when sets is negative in elements', () => {
+    it('should reject when numberOfSets is negative in elements', () => {
       const invalidPayload = {
         elements: [
           {
             type: 'exercise',
-            id: 'some-id',
+            exerciseId: 'some-id',
             order: 0,
-            sets: -1, // Invalide
-            reps: 10,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: -1, // Invalide
+                exercises: [
+                  {
+                    exerciseId: 'some-id',
+                    reps: 10,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };
@@ -282,7 +353,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
       expect(result.success).toBe(false);
       if (!result.success) {
         const setsError = result.error.issues.find(
-          issue => issue.path.includes('sets')
+          issue => issue.path.includes('numberOfSets')
         );
         expect(setsError).toBeDefined();
       }
@@ -302,10 +373,21 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
         elements: [
           {
             type: 'exercise',
-            id: 'ex-1',
+            exerciseId: 'ex-1',
             order: 0,
-            sets: 5,
-            reps: 5,
+            blocks: [
+              {
+                order: 1,
+                numberOfSets: 5,
+                exercises: [
+                  {
+                    exerciseId: 'ex-1',
+                    reps: 5,
+                    order: 1,
+                  },
+                ],
+              },
+            ],
           },
         ],
       };

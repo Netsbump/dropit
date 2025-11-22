@@ -17,9 +17,6 @@ export class Workout {
   id!: string;
 
   @Property()
-  title!: string;
-
-  @Property()
   description!: string;
 
   @ManyToOne(() => WorkoutCategory)
@@ -27,7 +24,6 @@ export class Workout {
 
   @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
   createdBy!: User | null;
-
 
   @OneToMany(
     () => WorkoutElement,
