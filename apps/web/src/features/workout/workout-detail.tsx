@@ -79,43 +79,49 @@ export function WorkoutDetail({
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.sets} séries
+                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
                             </Badge>
                             <span className="font-medium">
                               {element.exercise.name}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Poids initial: {element.startWeight_percent}%
-                          </p>
+                          <div className="space-y-1">
+                            {element.blocks.map((block, idx) => (
+                              <p key={idx} className="text-xs text-muted-foreground">
+                                {block.numberOfSets}x{block.exercises[0].reps}
+                                {block.rest && ` - ${block.rest}s repos`}
+                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                              </p>
+                            ))}
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.sets} séries
+                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
                             </Badge>
                             <span className="font-medium">
                               {element.complex.complexCategory?.name || 'Complex'}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Poids initial: {element.startWeight_percent}%
-                          </p>
                           <div className="space-y-2 ml-6">
                             {element.complex.exercises.map((ex) => (
                               <div
                                 key={ex.id}
                                 className="flex items-center gap-2 bg-muted/50 rounded-md p-2"
                               >
-                                <Badge
-                                  variant="outline"
-                                  className="bg-background"
-                                >
-                                  {ex.reps} reps
-                                </Badge>
                                 <span className="text-sm">{ex.name}</span>
                               </div>
+                            ))}
+                          </div>
+                          <div className="space-y-1">
+                            {element.blocks.map((block, idx) => (
+                              <p key={idx} className="text-xs text-muted-foreground">
+                                {block.numberOfSets} séries
+                                {block.rest && ` - ${block.rest}s repos`}
+                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                              </p>
                             ))}
                           </div>
                         </div>

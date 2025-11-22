@@ -65,10 +65,6 @@ export function SortableWorkoutElement({
   const [editingWeight, setEditingWeight] = useState(false);
   const [editingRest, setEditingRest] = useState(false);
   const [editingElement, setEditingElement] = useState(false);
-  const [editingDescription, setEditingDescription] = useState(false);
-  const [editingExerciseDescription, setEditingExerciseDescription] = useState(false);
-  const [localDescription, setLocalDescription] = useState<string>('');
-  const [localExerciseDescription, setLocalExerciseDescription] = useState<string>('');
   const selectRef = useRef<HTMLButtonElement>(null);
 
   const {
@@ -96,34 +92,19 @@ export function SortableWorkoutElement({
   // Trouver l'exercice sélectionné
   const selectedExercise = exercises.find((e) => e.id === control._formValues.elements[index].id);
 
-  // Mettre à jour selectedComplexId et exercice quand l'ID change dans le form
+  // Mettre à jour selectedComplexId quand l'ID change dans le form
   useEffect(() => {
     const currentId = control._formValues.elements[index].id;
     const currentType = control._formValues.elements[index].type;
-    
+
     if (currentId && currentType === WORKOUT_ELEMENT_TYPES.COMPLEX) {
       setSelectedComplexId(currentId);
-      // Initialiser la description locale avec celle du complexe
-      const complex = complexes.find(c => c.id === currentId);
-      if (complex?.description && !localDescription) {
-        setLocalDescription(complex.description);
-      }
-    }
-    
-    if (currentId && currentType === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-      // Initialiser la description locale avec celle de l'exercice
-      const exercise = exercises.find(e => e.id === currentId);
-      if (exercise?.description && !localExerciseDescription) {
-        setLocalExerciseDescription(exercise.description);
-      }
     }
   }, [
     control._formValues.elements[index].id,
     control._formValues.elements[index].type,
     complexes,
     exercises,
-    localDescription,
-    localExerciseDescription,
   ]);
 
   const renderEditableBadge = (
@@ -351,42 +332,6 @@ export function SortableWorkoutElement({
                   )}
                   {renderElementSelect(WORKOUT_ELEMENT_TYPES.EXERCISE)}
                 </div>
-                <div className="text-sm text-muted-foreground ml-2">
-                  {editingExerciseDescription ? (
-                    <Textarea
-                      value={localExerciseDescription || selectedExercise?.description || ''}
-                      onChange={(e) => setLocalExerciseDescription(e.target.value)}
-                      onBlur={() => setEditingExerciseDescription(false)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setEditingExerciseDescription(false);
-                          setLocalExerciseDescription(selectedExercise?.description || '');
-                        }
-                        if (e.key === 'Enter' && e.ctrlKey) {
-                          setEditingExerciseDescription(false);
-                        }
-                      }}
-                      autoFocus
-                      className="text-sm resize-none min-h-[60px]"
-                      placeholder="Description personnalisée pour cet exercice..."
-                    />
-                  ) : (
-                    <div 
-                      className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
-                      onClick={() => setEditingExerciseDescription(true)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setEditingExerciseDescription(true);
-                        }
-                      }}
-                      tabIndex={0}
-                      role="button"
-                      aria-label="Ajouter une description personnalisée pour cet exercice"
-                    >
-                      {localExerciseDescription || selectedExercise?.description || 'Cliquez pour ajouter une description personnalisée...'}
-                    </div>
-                  )}
-                </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(
                     control._formValues.elements[index].sets,
@@ -426,42 +371,6 @@ export function SortableWorkoutElement({
               <div className="flex-1 ml-2 flex flex-col gap-2">
                 <div className="flex flex-1 gap-2">
                   {renderElementSelect(WORKOUT_ELEMENT_TYPES.COMPLEX)}
-                </div>
-                <div className="text-sm text-muted-foreground ml-2">
-                    {editingDescription ? (
-                      <Textarea
-                        value={localDescription || selectedComplex?.description || ''}
-                        onChange={(e) => setLocalDescription(e.target.value)}
-                        onBlur={() => setEditingDescription(false)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') {
-                            setEditingDescription(false);
-                            setLocalDescription(selectedComplex?.description || '');
-                          }
-                          if (e.key === 'Enter' && e.ctrlKey) {
-                            setEditingDescription(false);
-                          }
-                        }}
-                        autoFocus
-                        className="text-sm resize-none min-h-[60px]"
-                        placeholder="Description personnalisée pour ce workout..."
-                      />
-                    ) : (
-                      <div 
-                        className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
-                        onClick={() => setEditingDescription(true)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setEditingDescription(true);
-                          }
-                        }}
-                        tabIndex={0}
-                        role="button"
-                        aria-label="Ajouter une description personnalisée pour ce complex"
-                      >
-                        {localDescription || selectedComplex?.description || 'Cliquez pour ajouter une description personnalisée...'}
-                      </div>
-                    )}
                 </div>
                 <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
                   {renderEditableText(

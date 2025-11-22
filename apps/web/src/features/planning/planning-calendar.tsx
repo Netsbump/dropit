@@ -213,7 +213,7 @@ export function PlanningCalendar({
           weekends={true}
           events={events.map((event) => ({
             id: event.id,
-            title: event.workout.title,
+            title: event.workout.workoutCategory,
             start: event.scheduledDate,
             end: event.scheduledDate,
             extendedProps: {

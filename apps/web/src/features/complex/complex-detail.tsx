@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
 import { Separator } from '@/shared/components/ui/separator';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
@@ -176,12 +175,10 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   const form = useForm<z.infer<typeof updateComplexSchema>>({
     resolver: zodResolver(updateComplexSchema),
     defaultValues: {
-      description: complex.description ?? '',
       complexCategory: complex.complexCategory.id,
       exercises: complex.exercises.map((e, index) => ({
         exerciseId: e.id,
         order: index,
-        reps: e.reps,
       })),
     },
     mode: 'onSubmit',
@@ -280,24 +277,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           )}
           className="space-y-6"
         >
-          {/* Informations principales */}
-          <CardContent className="space-y-4 p-0">
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className='text-gray-500'>Description</FormLabel>
-                  <FormControl className="bg-white">
-                    <Textarea {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-
-          <Separator />
           {/* Catégorie dans une Card séparée */}
           <CardContent className="p-0">
             <FormField
@@ -349,7 +328,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                 append({
                   exerciseId: '',
                   order: fields.length,
-                  reps: 1,
                 })
               }
               disabled={!exercises?.length}
@@ -482,15 +460,6 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
 
   return (
     <div className="space-y-6">
-      {/* Informations principales */}
-      <CardContent className="space-y-4 p-0">
-        <div className="space-y-2">
-            <Label className='text-gray-500'>Description</Label>
-            <p className="text-sm font-semibold text-gray-600">{complex.description || '-'}</p>
-        </div>
-      </CardContent>
-
-      <Separator />
       {/* Catégorie dans une Card séparée */}
       <CardContent className="p-0">
         <div className="space-y-2">
