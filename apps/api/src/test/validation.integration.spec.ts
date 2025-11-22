@@ -220,7 +220,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
         elements: [
           {
             type: 'exercise',
-            exerciseId: 'some-exercise-id',
+            exerciseId: '550e8400-e29b-41d4-a716-446655440000',
             order: 0,
             blocks: [
               {
@@ -233,7 +233,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
                 },
                 exercises: [
                   {
-                    exerciseId: 'some-exercise-id',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440000',
                     reps: 10,
                     order: 1,
                   },
@@ -259,7 +259,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
         elements: [
           {
             type: 'complex',
-            complexId: 'some-complex-id',
+            complexId: '550e8400-e29b-41d4-a716-446655440001',
             order: 0,
             blocks: [
               {
@@ -272,12 +272,12 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
                 },
                 exercises: [
                   {
-                    exerciseId: 'some-exercise-id-1',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440000',
                     reps: 5,
                     order: 1,
                   },
                   {
-                    exerciseId: 'some-exercise-id-2',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440002',
                     reps: 5,
                     order: 2,
                   },
@@ -373,7 +373,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
         elements: [
           {
             type: 'exercise',
-            exerciseId: 'ex-1',
+            exerciseId: '550e8400-e29b-41d4-a716-446655440000',
             order: 0,
             blocks: [
               {
@@ -381,7 +381,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
                 numberOfSets: 5,
                 exercises: [
                   {
-                    exerciseId: 'ex-1',
+                    exerciseId: '550e8400-e29b-41d4-a716-446655440000',
                     reps: 5,
                     order: 1,
                   },
