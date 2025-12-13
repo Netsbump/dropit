@@ -10,14 +10,14 @@ import { config } from '../../../config/env.config';
     {
       provide: EMAIL_SERVICE,
       useFactory: () => {
-        const isDevelopment = config.env === 'development';
+        const isProduction = config.env === 'production';
 
-        if (isDevelopment) {
-          console.log('📧 [EmailModule] Using DevMailService (Maildev)');
-          return new DevMailService();
+        if (isProduction) {
+          console.log('📧 [EmailModule] Using BrevoService (Production)');
+          return new BrevoService();
         }
-        console.log('📧 [EmailModule] Using BrevoService (Production)');
-        return new BrevoService();
+        console.log('📧 [EmailModule] Using DevMailService (Development/Test)');
+        return new DevMailService();
       },
     },
     EmailService,
