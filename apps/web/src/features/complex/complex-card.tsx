@@ -49,9 +49,6 @@ export function ComplexCard({ complex, onClick }: ComplexCardProps) {
         </DropdownMenu>
       </CardHeader>
       <CardContent>
-        <div className="text-sm text-muted-foreground">
-          {complex.description || 'Pas de description'}
-        </div>
         <div className="mt-4 flex items-center justify-between">
           <Badge 
             className={`text-xs border-0 ${getCategoryBadgeVariant(complex.complexCategory?.name || '')}`}

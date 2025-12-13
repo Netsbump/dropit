@@ -58,9 +58,9 @@ function WorkoutPage() {
   });
 
   const filteredWorkouts = workouts?.filter((workout) => {
-    const matchesSearch = workout.title
-      .toLowerCase()
-      .includes(filter.toLowerCase());
+    const matchesSearch = workout.description
+      ?.toLowerCase()
+      .includes(filter.toLowerCase()) ?? true;
     const matchesCategory =
       categoryFilter === 'all' || workout.workoutCategory === categoryFilter;
     return matchesSearch && matchesCategory;

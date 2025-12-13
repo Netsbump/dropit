@@ -11,7 +11,6 @@ export const ExerciseMapper = {
         name: exercise.exerciseCategory.name,
       },
       video: exercise.video?.id,
-      description: exercise.description,
       englishName: exercise.englishName,
       shortName: exercise.shortName,
     };

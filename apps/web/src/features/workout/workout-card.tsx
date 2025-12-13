@@ -21,9 +21,6 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
     >
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="text-base font-semibold text-gray-900 line-clamp-2 flex-1">
-            {workout.title}
-          </h3>
           {workout.workoutCategory && (
             <Badge
               variant="outline"
@@ -39,13 +36,19 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
         <div className="grid grid-cols-2 gap-3">
           {workout.elements.map((element) => {
             const isExercise = element.type === WORKOUT_ELEMENT_TYPES.EXERCISE;
+            // Calculer un résumé des blocks
+            const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
+            const blocksSummary = element.blocks.map(block => {
+              const repsInfo = block.exercises.map(ex => ex.reps).join('-');
+              return `${block.numberOfSets}x${repsInfo}`;
+            }).join(', ');
 
             return (
               <div
                 key={element.id}
                 className="p-3 rounded-lg border bg-gray-50"
               >
-                {/* Header avec type et sets/reps */}
+                {/* Header avec type et résumé des sets */}
                 <div className="flex items-center justify-between mb-2">
                   <Badge
                     variant="secondary"
@@ -58,14 +61,19 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                     {isExercise ? 'exercise' : 'complex'}
                   </Badge>
                   <span className="text-xs font-semibold text-gray-700">
-                    {element.sets}x{element.reps}  {('intensity' in element && element.intensity) ? `${element.intensity}%` : ''}
+                    {totalSets} sets
                   </span>
                 </div>
 
                 {/* Contenu */}
                 {isExercise ? (
-                  <div className="text-xs text-gray-600">
-                    {element.exercise.name}
+                  <div className="space-y-1">
+                    <div className="text-xs text-gray-600">
+                      {element.exercise.name}
+                    </div>
+                    <div className="text-[10px] text-gray-500">
+                      {blocksSummary}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-1.5">
@@ -78,6 +86,9 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                         ))}
                       </div>
                     )}
+                    <div className="text-[10px] text-gray-500">
+                      {blocksSummary}
+                    </div>
                   </div>
                 )}
               </div>

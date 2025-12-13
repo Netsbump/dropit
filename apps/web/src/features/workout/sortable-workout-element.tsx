@@ -5,7 +5,7 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
+  FormLabel,
 } from '@/shared/components/ui/form';
 import { Input } from '@/shared/components/ui/input';
 import { Textarea } from '@/shared/components/ui/textarea';
@@ -21,13 +21,14 @@ import { CSS } from '@dnd-kit/utilities';
 import {
   ComplexDto,
   ExerciseDto,
-  WORKOUT_ELEMENT_TYPES,
   createWorkoutSchema,
+  BlockConfigDto,
 } from '@dropit/schemas';
-import { GripVertical, Trash2 } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
-import { Control } from 'react-hook-form';
+import { GripVertical, Trash2, Plus, X } from 'lucide-react';
+import { Control, useFormContext } from 'react-hook-form';
+import { useState, useEffect } from 'react';
 import { z } from 'zod';
+import { useTranslation } from '@dropit/i18n';
 
 // Définir le schéma étendu pour le formulaire qui inclut le champ session d'entrainement
 const extendedWorkoutSchema = createWorkoutSchema.extend({
@@ -50,8 +51,6 @@ interface SortableWorkoutElementProps {
   complexes?: ComplexDto[];
 }
 
-type TrainingParamField = 'sets' | 'reps' | 'rest' | 'startWeight_percent';
-
 export function SortableWorkoutElement({
   id,
   index,
@@ -60,16 +59,39 @@ export function SortableWorkoutElement({
   exercises = [],
   complexes = [],
 }: SortableWorkoutElementProps) {
-  const [editingSets, setEditingSets] = useState(false);
-  const [editingReps, setEditingReps] = useState(false);
-  const [editingWeight, setEditingWeight] = useState(false);
-  const [editingRest, setEditingRest] = useState(false);
-  const [editingElement, setEditingElement] = useState(false);
-  const [editingDescription, setEditingDescription] = useState(false);
-  const [editingExerciseDescription, setEditingExerciseDescription] = useState(false);
-  const [localDescription, setLocalDescription] = useState<string>('');
-  const [localExerciseDescription, setLocalExerciseDescription] = useState<string>('');
-  const selectRef = useRef<HTMLButtonElement>(null);
+  const { t } = useTranslation();
+  const { setValue, watch } = useFormContext<ExtendedWorkoutSchema>();
+  const element = watch(`elements.${index}`);
+  const [showCommentary, setShowCommentary] = useState(!!element?.commentary);
+  const [showTempo, setShowTempo] = useState(!!element?.tempo);
+  const [showRest, setShowRest] = useState<Record<number, boolean>>(() => {
+    // Initialiser l'état pour chaque block qui a déjà un rest
+    const initialState: Record<number, boolean> = {};
+    element?.blocks?.forEach((block, idx) => {
+      if (block.rest !== undefined && block.rest !== null) {
+        initialState[idx] = true;
+      }
+    });
+    return initialState;
+  });
+
+  // Synchroniser l'état avec les valeurs du formulaire
+  useEffect(() => {
+    if (element?.commentary) {
+      setShowCommentary(true);
+    }
+    if (element?.tempo) {
+      setShowTempo(true);
+    }
+    // Synchroniser showRest avec les valeurs existantes
+    const newShowRest: Record<number, boolean> = {};
+    element?.blocks?.forEach((block, idx) => {
+      if (block.rest !== undefined && block.rest !== null) {
+        newShowRest[idx] = true;
+      }
+    });
+    setShowRest(newShowRest);
+  }, [element?.commentary, element?.tempo, element?.blocks]);
 
   const {
     attributes,
@@ -85,246 +107,376 @@ export function SortableWorkoutElement({
     transition,
   };
 
-  // State pour forcer le re-render
-  const [selectedComplexId, setSelectedComplexId] = useState<string | null>(
-    null
-  );
+  // Récupérer l'exercice ou le complex associé
+  const selectedExercise = element?.type === 'exercise'
+    ? exercises.find((e) => e.id === element.exerciseId)
+    : undefined;
 
-  // Trouver le complex sélectionné
-  const selectedComplex = complexes.find((c) => c.id === selectedComplexId);
-  
-  // Trouver l'exercice sélectionné
-  const selectedExercise = exercises.find((e) => e.id === control._formValues.elements[index].id);
+  const selectedComplex = element?.type === 'complex'
+    ? complexes.find((c) => c.id === element.complexId)
+    : undefined;
 
-  // Mettre à jour selectedComplexId et exercice quand l'ID change dans le form
-  useEffect(() => {
-    const currentId = control._formValues.elements[index].id;
-    const currentType = control._formValues.elements[index].type;
-    
-    if (currentId && currentType === WORKOUT_ELEMENT_TYPES.COMPLEX) {
-      setSelectedComplexId(currentId);
-      // Initialiser la description locale avec celle du complexe
-      const complex = complexes.find(c => c.id === currentId);
-      if (complex?.description && !localDescription) {
-        setLocalDescription(complex.description);
-      }
+  // Fonction pour ajouter un block (copie du dernier)
+  const handleAddBlock = () => {
+    if (!element?.blocks) return;
+
+    const lastBlock = element.blocks[element.blocks.length - 1];
+    const newBlock: BlockConfigDto = {
+      ...lastBlock,
+      order: element.blocks.length + 1,
+    };
+
+    setValue(`elements.${index}.blocks`, [...element.blocks, newBlock]);
+  };
+
+  // Fonction pour supprimer un block
+  const handleRemoveBlock = (blockIndex: number) => {
+    if (!element?.blocks || element.blocks.length <= 1) return;
+
+    const newBlocks = element.blocks.filter((_, idx) => idx !== blockIndex);
+    // Réorganiser les order
+    const reorderedBlocks = newBlocks.map((block, idx) => ({
+      ...block,
+      order: idx + 1,
+    }));
+
+    setValue(`elements.${index}.blocks`, reorderedBlocks);
+  };
+
+  // Fonction pour toggle l'affichage du rest
+  const toggleRest = (blockIndex: number) => {
+    setShowRest(prev => ({
+      ...prev,
+      [blockIndex]: !prev[blockIndex]
+    }));
+    // Si on masque, réinitialiser la valeur
+    if (showRest[blockIndex]) {
+      setValue(`elements.${index}.blocks.${blockIndex}.rest`, undefined);
     }
-    
-    if (currentId && currentType === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-      // Initialiser la description locale avec celle de l'exercice
-      const exercise = exercises.find(e => e.id === currentId);
-      if (exercise?.description && !localExerciseDescription) {
-        setLocalExerciseDescription(exercise.description);
-      }
-    }
-  }, [
-    control._formValues.elements[index].id,
-    control._formValues.elements[index].type,
-    complexes,
-    exercises,
-    localDescription,
-    localExerciseDescription,
-  ]);
+  };
 
-  const renderEditableBadge = (
-    value: number,
-    isEditing: boolean,
-    setIsEditing: (value: boolean) => void,
-    fieldName: TrainingParamField,
-    min = 0,
-    max?: number
-  ) => {
-    if (isEditing) {
-      return (
+  // Rendu d'un block pour un exercice simple
+  const renderExerciseBlock = (blockIndex: number, block: BlockConfigDto) => {
+    return (
+      <div key={blockIndex} className="flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">{t('workout.block')} {block.order}:</span>
+
+        {/* Nombre de séries */}
         <FormField
           control={control}
-          name={`elements.${index}.${fieldName}` as const}
+          name={`elements.${index}.blocks.${blockIndex}.numberOfSets`}
           render={({ field }) => (
-            <FormItem className="m-0 p-0">
+            <FormItem className="m-0">
               <FormControl>
                 <Input
                   type="number"
-                  className="w-16 h-7 px-1 py-0"
-                  min={min}
-                  max={max}
-                  value={field.value || ''}
-                  autoFocus
-                  onBlur={() => setIsEditing(false)}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === '' ? '' : parseInt(e.target.value);
-                    field.onChange(value);
-                  }}
+                  min={1}
+                  className="w-16 h-8 px-2 bg-white"
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-      );
-    }
+        <span className="text-muted-foreground">{t('workout.series')} {t('workout.sets_of')}</span>
 
-    return (
-      <Badge
-        variant="outline"
-        className="cursor-pointer hover:bg-muted"
-        onClick={() => setIsEditing(true)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            setIsEditing(true);
-          }
-        }}
-      >
-        {value}
-      </Badge>
-    );
-  };
-
-  const renderEditableText = (
-    value: number,
-    isEditing: boolean,
-    setIsEditing: (value: boolean) => void,
-    fieldName: TrainingParamField,
-    suffix: string,
-    min = 0,
-    max?: number
-  ) => {
-    if (isEditing) {
-      return (
+        {/* Reps */}
         <FormField
           control={control}
-          name={`elements.${index}.${fieldName}` as const}
+          name={`elements.${index}.blocks.${blockIndex}.exercises.0.reps`}
           render={({ field }) => (
-            <FormItem className="m-0 p-0">
+            <FormItem className="m-0">
               <FormControl>
                 <Input
                   type="number"
-                  className="w-16 h-6 px-1 py-0"
-                  min={min}
-                  max={max}
-                  value={field.value || ''}
-                  autoFocus
-                  onBlur={() => setIsEditing(false)}
-                  onChange={(e) => {
-                    const value =
-                      e.target.value === '' ? '' : parseInt(e.target.value);
-                    field.onChange(value);
-                  }}
+                  min={1}
+                  className="w-16 h-8 px-2 bg-white"
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
                 />
               </FormControl>
             </FormItem>
           )}
         />
-      );
-    }
+        <span className="text-muted-foreground">{t('workout.reps')} @</span>
 
-    return (
-      <button
-        type="button"
-        className="cursor-pointer hover:underline"
-        onClick={() => setIsEditing(true)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            setIsEditing(true);
-          }
-        }}
-      >
-        {value} {suffix}
-      </button>
-    );
-  };
+        {/* Intensité */}
+        <FormField
+          control={control}
+          name={`elements.${index}.blocks.${blockIndex}.intensity.percentageOfMax`}
+          render={({ field }) => (
+            <FormItem className="m-0">
+              <FormControl>
+                <Input
+                  type="number"
+                  min={0}
+                  max={200}
+                  className="w-16 h-8 px-2 bg-white"
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
 
-  const renderElementSelect = (
-    type:
-      | typeof WORKOUT_ELEMENT_TYPES.EXERCISE
-      | typeof WORKOUT_ELEMENT_TYPES.COMPLEX
-  ) => {
-    return (
-      <FormField
-        control={control}
-        name={`elements.${index}.id`}
-        render={({ field }) => (
-          <FormItem className="flex-1">
-            {editingElement || !field.value ? (
-              <Select
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  if (type === WORKOUT_ELEMENT_TYPES.COMPLEX) {
-                    setSelectedComplexId(value);
-                  }
-                  setEditingElement(false);
-                }}
-                onOpenChange={(open) => {
-                  if (!open) {
-                    setEditingElement(false);
-                  }
-                }}
-                value={field.value}
-              >
+        {/* Type d'intensité */}
+        <FormField
+          control={control}
+          name={`elements.${index}.blocks.${blockIndex}.intensity.type`}
+          render={({ field }) => (
+            <FormItem className="m-0">
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                  <SelectTrigger ref={selectRef}>
-                    <SelectValue
-                      placeholder={`Choisir un ${
-                        type === WORKOUT_ELEMENT_TYPES.EXERCISE
-                          ? 'exercice'
-                          : 'complex'
-                      }`}
-                    />
+                  <SelectTrigger className="w-20 h-8 bg-white">
+                    <SelectValue />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {type === WORKOUT_ELEMENT_TYPES.EXERCISE
-                    ? exercises.map((exercise) => (
-                        <SelectItem key={exercise.id} value={exercise.id}>
-                          {exercise.name}
-                        </SelectItem>
-                      ))
-                    : complexes.map((complex) => (
-                        <SelectItem key={complex.id} value={complex.id}>
-                          <div className="flex flex-col">
-                            <span className="font-medium">
-                              {complex.exercises.map(ex => ex.name).join(', ')}
-                            </span>
-                            <span className="text-xs text-muted-foreground">
-                              {complex.complexCategory?.name}
-                            </span>
-                          </div>
-                        </SelectItem>
-                      ))}
+                  <SelectItem value="percentage">%</SelectItem>
+                  <SelectItem value="rpe">RPE</SelectItem>
                 </SelectContent>
               </Select>
-            ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setEditingElement(true);
-                  // Forcer l'ouverture du Select après un court délai
-                  setTimeout(() => {
-                    selectRef.current?.click();
-                  }, 0);
-                }}
-                className="font-medium hover:underline text-left w-full"
-              >
-                {type === WORKOUT_ELEMENT_TYPES.EXERCISE
-                  ? exercises.find((e) => e.id === field.value)?.name
-                  : complexes.find((c) => c.id === field.value)?.exercises.map(ex => ex.name).join(', ') || 'Complex'}
-              </button>
-            )}
-            <FormMessage />
-          </FormItem>
+            </FormItem>
+          )}
+        />
+
+        {/* Bouton pour ajouter repos */}
+        {!showRest[blockIndex] && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => toggleRest(blockIndex)}
+            className="h-8 text-xs rounded-full"
+          >
+            {t('workout.add_rest')}
+          </Button>
         )}
-      />
+
+        {/* Repos */}
+        {showRest[blockIndex] && (
+          <>
+            <span className="text-muted-foreground">-</span>
+            <FormField
+              control={control}
+              name={`elements.${index}.blocks.${blockIndex}.rest`}
+              render={({ field }) => (
+                <FormItem className="m-0">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      className="w-16 h-8 px-2 bg-white"
+                      placeholder="0"
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <span className="text-muted-foreground">{t('workout.seconds')}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleRest(blockIndex)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </>
+        )}
+
+        {/* Bouton supprimer block */}
+        {element?.blocks && element.blocks.length > 1 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
+            onClick={() => handleRemoveBlock(blockIndex)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
     );
   };
 
+  // Rendu d'un block pour un complex
+  const renderComplexBlock = (blockIndex: number, block: BlockConfigDto) => {
+    return (
+      <div key={blockIndex} className="flex items-center gap-2 text-sm">
+        <span className="text-muted-foreground">{t('workout.block')} {block.order}:</span>
+
+        {/* Nombre de séries */}
+        <FormField
+          control={control}
+          name={`elements.${index}.blocks.${blockIndex}.numberOfSets`}
+          render={({ field }) => (
+            <FormItem className="m-0">
+              <FormControl>
+                <Input
+                  type="number"
+                  min={1}
+                  className="w-16 h-8 px-2 bg-white"
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+        <span className="text-muted-foreground">{t('workout.series')} {t('workout.sets_of')}</span>
+
+        {/* Reps pour chaque exercice du complex */}
+        {block.exercises.map((exConfig, exIdx) => {
+          const exercise = exercises.find(e => e.id === exConfig.exerciseId);
+          return (
+            <div key={`${block.order}-${exConfig.exerciseId}-${exConfig.order}`} className="flex items-center gap-1">
+              {exIdx > 0 && <Plus className="h-4 w-4 text-muted-foreground" />}
+              <FormField
+                control={control}
+                name={`elements.${index}.blocks.${blockIndex}.exercises.${exIdx}.reps`}
+                render={({ field }) => (
+                  <FormItem className="m-0">
+                    <FormControl>
+                      <Input
+                        type="number"
+                        min={1}
+                        className="w-16 h-8 px-2 bg-white"
+                        value={field.value}
+                        onChange={(e) => field.onChange(parseInt(e.target.value) || 1)}
+                        title={exercise?.name}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            </div>
+          );
+        })}
+        <span className="text-muted-foreground">{t('workout.reps')} @</span>
+
+        {/* Intensité */}
+        <FormField
+          control={control}
+          name={`elements.${index}.blocks.${blockIndex}.intensity.percentageOfMax`}
+          render={({ field }) => (
+            <FormItem className="m-0">
+              <FormControl>
+                <Input
+                  type="number"
+                  min={0}
+                  max={200}
+                  className="w-16 h-8 px-2 bg-white"
+                  value={field.value}
+                  onChange={(e) => field.onChange(parseInt(e.target.value) || 0)}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        {/* Type d'intensité */}
+        <FormField
+          control={control}
+          name={`elements.${index}.blocks.${blockIndex}.intensity.type`}
+          render={({ field }) => (
+            <FormItem className="m-0">
+              <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="w-20 h-8 bg-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="percentage">%</SelectItem>
+                  <SelectItem value="rpe">RPE</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+
+        {/* Bouton pour ajouter repos */}
+        {!showRest[blockIndex] && (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => toggleRest(blockIndex)}
+            className="h-8 text-xs rounded-full"
+          >
+            {t('workout.add_rest')}
+          </Button>
+        )}
+
+        {/* Repos */}
+        {showRest[blockIndex] && (
+          <>
+            <span className="text-muted-foreground">-</span>
+            <FormField
+              control={control}
+              name={`elements.${index}.blocks.${blockIndex}.rest`}
+              render={({ field }) => (
+                <FormItem className="m-0">
+                  <FormControl>
+                    <Input
+                      type="number"
+                      min={0}
+                      className="w-16 h-8 px-2 bg-white"
+                      placeholder="0"
+                      value={field.value || ''}
+                      onChange={(e) => field.onChange(e.target.value ? parseInt(e.target.value) : undefined)}
+                    />
+                  </FormControl>
+                </FormItem>
+              )}
+            />
+            <span className="text-muted-foreground">{t('workout.seconds')}</span>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => toggleRest(blockIndex)}
+              className="h-8 w-8 p-0"
+            >
+              <X className="h-3 w-3" />
+            </Button>
+          </>
+        )}
+
+        {/* Bouton supprimer block */}
+        {element?.blocks && element.blocks.length > 1 && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8 text-destructive"
+            onClick={() => handleRemoveBlock(blockIndex)}
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        )}
+      </div>
+    );
+  };
+
+  const isExercise = element?.type === 'exercise';
+  
   return (
     <Card
       ref={setNodeRef}
       style={style}
-      className={`relative bg-muted/30 ${isDragging ? 'z-50' : ''} ${
-        control._formValues.elements[index].type === WORKOUT_ELEMENT_TYPES.COMPLEX
-          ? 'min-h-[200px]'
-          : 'min-h-[100px]'
-      }`}
+      className={`relative shadow-none ${
+        isExercise
+          ? 'bg-tertiary/30 border-tertiary'
+          : 'bg-secondary/30 border-secondary'
+      } ${isDragging ? 'z-50' : ''}`}
     >
       <CardContent className="p-4 flex gap-4">
         <div
@@ -335,193 +487,188 @@ export function SortableWorkoutElement({
           <GripVertical className="h-5 w-5 text-muted-foreground" />
         </div>
 
-        <div className="flex-1 space-y-4">
-          {/* Pour les exercices simples */}
-          {control._formValues.elements[index].type ===
-            WORKOUT_ELEMENT_TYPES.EXERCISE && (
-            <div className="flex items-center gap-4 rounded-md p-3">
-              <div className="flex-1 ml-2 flex flex-col gap-2">
-                <div className="flex flex-1 gap-2">
-                  {renderEditableBadge(
-                    control._formValues.elements[index].reps,
-                    editingReps,
-                    setEditingReps,
-                    'reps',
-                    1
-                  )}
-                  {renderElementSelect(WORKOUT_ELEMENT_TYPES.EXERCISE)}
-                </div>
-                <div className="text-sm text-muted-foreground ml-2">
-                  {editingExerciseDescription ? (
-                    <Textarea
-                      value={localExerciseDescription || selectedExercise?.description || ''}
-                      onChange={(e) => setLocalExerciseDescription(e.target.value)}
-                      onBlur={() => setEditingExerciseDescription(false)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Escape') {
-                          setEditingExerciseDescription(false);
-                          setLocalExerciseDescription(selectedExercise?.description || '');
-                        }
-                        if (e.key === 'Enter' && e.ctrlKey) {
-                          setEditingExerciseDescription(false);
-                        }
-                      }}
-                      autoFocus
-                      className="text-sm resize-none min-h-[60px]"
-                      placeholder="Description personnalisée pour cet exercice..."
-                    />
-                  ) : (
-                    <div 
-                      className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
-                      onClick={() => setEditingExerciseDescription(true)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          setEditingExerciseDescription(true);
-                        }
-                      }}
-                      tabIndex={0}
-                      role="button"
-                      aria-label="Ajouter une description personnalisée pour cet exercice"
-                    >
-                      {localExerciseDescription || selectedExercise?.description || 'Cliquez pour ajouter une description personnalisée...'}
-                    </div>
-                  )}
-                </div>
-                <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
-                  {renderEditableText(
-                    control._formValues.elements[index].sets,
-                    editingSets,
-                    setEditingSets,
-                    'sets',
-                    'série(s)',
-                    1
-                  )}
-                  <span>à</span>
-                  {renderEditableText(
-                    control._formValues.elements[index].startWeight_percent,
-                    editingWeight,
-                    setEditingWeight,
-                    'startWeight_percent',
-                    '%',
-                    0,
-                    100
-                  )}
-                  <span>•</span>
-                  {renderEditableText(
-                    control._formValues.elements[index].rest || 0,
-                    editingRest,
-                    setEditingRest,
-                    'rest',
-                    's de repos'
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
+        <div className="flex-1 space-y-3">
+          {/* En-tête : nom de l'exercice/complex */}
+          <div className="flex items-center gap-2">
+            {element?.type === 'exercise' ? (
+              <>
+                <Badge
+                  variant="secondary"
+                  className="bg-muted text-tertiary-foreground hover:bg-muted"
+                >
+                  {t('workout.exercise_label')}
+                </Badge>
+                <span className="font-medium">{selectedExercise?.name || t('workout.exercise_not_found')}</span>
+              </>
+            ) : (
+              <>
+                <Badge
+                  variant="secondary"
+                  className="bg-muted text-secondary-foreground hover:bg-muted"
+                >
+                  {t('workout.complex_label')}
+                </Badge>
+                <span className="font-medium">
+                  {selectedComplex?.exercises.map(ex => ex.name).join(' + ') || t('workout.complex_not_found')}
+                </span>
+              </>
+            )}
+          </div>
 
-          {/* Pour les complexes */}
-          {control._formValues.elements[index].type ===
-            WORKOUT_ELEMENT_TYPES.COMPLEX && (
-            <div className="flex items-center gap-4 rounded-md p-3">
-              <div className="flex-1 ml-2 flex flex-col gap-2">
-                <div className="flex flex-1 gap-2">
-                  {renderElementSelect(WORKOUT_ELEMENT_TYPES.COMPLEX)}
-                </div>
-                <div className="text-sm text-muted-foreground ml-2">
-                    {editingDescription ? (
-                      <Textarea
-                        value={localDescription || selectedComplex?.description || ''}
-                        onChange={(e) => setLocalDescription(e.target.value)}
-                        onBlur={() => setEditingDescription(false)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Escape') {
-                            setEditingDescription(false);
-                            setLocalDescription(selectedComplex?.description || '');
-                          }
-                          if (e.key === 'Enter' && e.ctrlKey) {
-                            setEditingDescription(false);
-                          }
+          {/* Blocks */}
+          <div className="space-y-2 ml-4">
+            {element?.blocks?.map((block, blockIndex) => (
+              element.type === 'exercise'
+                ? renderExerciseBlock(blockIndex, block)
+                : renderComplexBlock(blockIndex, block)
+            ))}
+
+            {/* Bouton ajouter un block */}
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleAddBlock}
+              className="mt-2 rounded-full"
+            >
+              {t('workout.add_block')}
+            </Button>
+          </div>
+
+          {/* Configuration finale : commentary, tempo, référence */}
+          <div className="space-y-2 ml-4 pt-2 border-t">
+            {/* Boutons pour ajouter commentaire et tempo */}
+            <div className="flex gap-2">
+              {!showCommentary && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowCommentary(true)}
+                  className="h-8 text-xs rounded-full"
+                >
+                  {t('workout.add_commentary')}
+                </Button>
+              )}
+              {!showTempo && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowTempo(true)}
+                  className="h-8 text-xs rounded-full"
+                >
+                  {t('workout.add_tempo')}
+                </Button>
+              )}
+            </div>
+
+            {/* Commentaire */}
+            {showCommentary && (
+              <FormField
+                control={control}
+                name={`elements.${index}.commentary`}
+                render={({ field }) => (
+                  <FormItem>
+                    <div className="flex items-center justify-between">
+                      <FormLabel className="text-xs text-muted-foreground">{t('workout.commentary_optional')}</FormLabel>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          setShowCommentary(false);
+                          setValue(`elements.${index}.commentary`, undefined);
                         }}
-                        autoFocus
-                        className="text-sm resize-none min-h-[60px]"
-                        placeholder="Description personnalisée pour ce workout..."
-                      />
-                    ) : (
-                      <div 
-                        className="cursor-pointer hover:bg-muted/30 p-2 rounded min-h-[60px] border-2 border-dashed border-transparent hover:border-muted"
-                        onClick={() => setEditingDescription(true)}
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            setEditingDescription(true);
-                          }
-                        }}
-                        tabIndex={0}
-                        role="button"
-                        aria-label="Ajouter une description personnalisée pour ce complex"
+                        className="h-6 w-6 p-0"
                       >
-                        {localDescription || selectedComplex?.description || 'Cliquez pour ajouter une description personnalisée...'}
-                      </div>
-                    )}
-                </div>
-                <div className="text-sm text-muted-foreground ml-2 flex items-center gap-1">
-                  {renderEditableText(
-                    control._formValues.elements[index].sets,
-                    editingSets,
-                    setEditingSets,
-                    'sets',
-                    'série(s)',
-                    1
-                  )}
-                  <span>à</span>
-                  {renderEditableText(
-                    control._formValues.elements[index].startWeight_percent,
-                    editingWeight,
-                    setEditingWeight,
-                    'startWeight_percent',
-                    '%',
-                    0,
-                    100
-                  )}
-                  <span>•</span>
-                  {renderEditableText(
-                    control._formValues.elements[index].rest || 0,
-                    editingRest,
-                    setEditingRest,
-                    'rest',
-                    's de repos'
-                  )}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Affichage des exercices du complex */}
-          {control._formValues.elements[index].type ===
-            WORKOUT_ELEMENT_TYPES.COMPLEX &&
-            selectedComplex && (
-              <div className="ml-6 border-l-2 border-muted pl-4 space-y-2">
-                {selectedComplex.exercises.map((exercise) => (
-                  <div
-                    key={exercise.id}
-                    className="flex items-center gap-4 bg-muted/30 rounded-md p-3"
-                  >
-                    <div className="flex-1 ml-2 flex flex-col gap-2">
-                      <div className="flex flex-1 gap-2">
-                        <Badge variant="outline">{exercise.reps}</Badge>
-                        <div className="font-medium">{exercise.name}</div>
-                      </div>
+                        <X className="h-3 w-3" />
+                      </Button>
                     </div>
-                  </div>
-                ))}
+                    <FormControl>
+                      <Textarea
+                        placeholder={t('workout.commentary_placeholder')}
+                        className="min-h-[60px] text-sm"
+                        {...field}
+                      />
+                    </FormControl>
+                  </FormItem>
+                )}
+              />
+            )}
+
+            {(showTempo || (element?.type === 'complex' && selectedComplex)) && (
+              <div className={`grid gap-4 ${showTempo && element?.type === 'complex' && selectedComplex ? 'grid-cols-2' : 'grid-cols-1'}`}>
+                {/* Tempo */}
+                {showTempo && (
+                  <FormField
+                    control={control}
+                    name={`elements.${index}.tempo`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <div className="flex items-center justify-between">
+                          <FormLabel className="text-xs text-muted-foreground">{t('workout.tempo_optional')}</FormLabel>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => {
+                              setShowTempo(false);
+                              setValue(`elements.${index}.tempo`, undefined);
+                            }}
+                            className="h-6 w-6 p-0"
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                        <FormControl>
+                          <Input
+                            placeholder={t('workout.tempo_placeholder')}
+                            className="h-8 text-sm bg-white"
+                            {...field}
+                          />
+                        </FormControl>
+                      </FormItem>
+                    )}
+                  />
+                )}
+
+                {/* Référence max (pour complex uniquement) */}
+                {element?.type === 'complex' && selectedComplex && (
+                  <FormField
+                    control={control}
+                    name={`elements.${index}.blocks.0.intensity.referenceExerciseId`}
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-xs text-muted-foreground">{t('workout.max_reference')}</FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-8 text-sm bg-white">
+                              <SelectValue placeholder={t('workout.select_placeholder')} />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {selectedComplex.exercises.map((ex) => (
+                              <SelectItem key={ex.id} value={ex.id}>
+                                {ex.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </FormItem>
+                    )}
+                  />
+                )}
               </div>
             )}
+          </div>
         </div>
 
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           size="icon"
-          className="text-destructive"
+          className="text-destructive rounded-full"
           onClick={() => onRemove(index)}
         >
           <Trash2 className="h-4 w-4" />

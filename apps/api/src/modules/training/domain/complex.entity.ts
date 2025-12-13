@@ -24,9 +24,6 @@ export class Complex {
   )
   exercises = new Collection<ExerciseComplex>(this);
 
-  @Property({ nullable: true })
-  description?: string;
-
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
 

@@ -15,7 +15,7 @@ export function TrainingSessionWeekView({ trainingSession }: TrainingSessionWeek
     <div className="p-2 text-xs space-y-2 h-full overflow-hidden">
       {/* Titre */}
       <div className="font-semibold text-sm line-clamp-1">
-        {trainingSession.workout.title}
+        {trainingSession.workout.workoutCategory}
       </div>
 
       {/* Athlètes */}
@@ -50,7 +50,7 @@ export function TrainingSessionWeekView({ trainingSession }: TrainingSessionWeek
                     : 'bg-secondary text-secondary-foreground'
                 )}
               >
-                {element.sets}x{element.reps}
+                {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} sets
               </Badge>
             </div>
           </div>

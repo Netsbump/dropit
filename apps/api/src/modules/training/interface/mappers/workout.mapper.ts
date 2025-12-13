@@ -20,10 +20,9 @@ export const WorkoutMapper = {
       const baseElement = {
         id: element.id,
         order: element.order,
-        reps: element.reps,
-        sets: element.sets,
-        rest: element.rest,
-        startWeight_percent: element.startWeight_percent,
+        tempo: element.tempo,
+        commentary: element.commentary,
+        blocks: element.blocks,
       };
 
       if (isExerciseElement(element)) {
@@ -33,7 +32,6 @@ export const WorkoutMapper = {
           exercise: {
             id: element.exercise.id,
             name: element.exercise.name,
-            description: element.exercise.description,
             exerciseCategory: {
               id: element.exercise.exerciseCategory.id,
               name: element.exercise.exerciseCategory.name,
@@ -51,7 +49,6 @@ export const WorkoutMapper = {
           type: 'complex' as const,
           complex: {
             id: element.complex.id,
-            description: element.complex.description,
             complexCategory: {
               id: element.complex.complexCategory.id,
               name: element.complex.complexCategory.name,
@@ -59,7 +56,6 @@ export const WorkoutMapper = {
             exercises: element.complex.exercises.getItems().map((ex: ExerciseComplex) => ({
               id: ex.exercise.id,
               name: ex.exercise.name,
-              description: ex.exercise.description,
               exerciseCategory: {
                 id: ex.exercise.exerciseCategory.id,
                 name: ex.exercise.exerciseCategory.name,
@@ -68,7 +64,6 @@ export const WorkoutMapper = {
               englishName: ex.exercise.englishName,
               shortName: ex.exercise.shortName,
               order: ex.order,
-              reps: ex.reps,
             })),
           },
         };
@@ -80,7 +75,6 @@ export const WorkoutMapper = {
 
     return {
       id: workout.id,
-      title: workout.title,
       workoutCategory: workout.category.name,
       description: workout.description,
       elements,

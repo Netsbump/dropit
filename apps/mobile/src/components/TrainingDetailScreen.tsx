@@ -29,15 +29,23 @@ export default function TrainingDetailScreen({
   const name = element.type === 'exercise'
     ? element.exercise.name
     : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
-  const sets = `${element.sets} sets`;
-  const reps = `${element.reps} reps`
-  const weight = element.startWeight_percent ? `${element.startWeight_percent}%` : '-';
-  const recovery = element.rest ? `${element.rest}sec` : '90sec';
-  const instructions = element.description || `Instructions pour ${name}.`;
+
+  // Calculate totals from blocks
+  const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
+  const firstBlock = element.blocks[0];
+  const firstReps = firstBlock?.exercises[0]?.reps ?? 0;
+  const firstRest = firstBlock?.rest ?? 90;
+  const firstIntensity = firstBlock?.intensity?.percentageOfMax;
+
+  const sets = `${totalSets} sets`;
+  const reps = `${firstReps} reps`;
+  const weight = firstIntensity ? `${firstIntensity}%` : '-';
+  const recovery = `${firstRest}sec`;
+  const instructions = element.commentary || `Instructions pour ${name}.`;
   const videoUrl = element.type === 'exercise' ? element.exercise.video : undefined;
 
-  // Get default rest time in seconds (from element.rest or 90s default)
-  const defaultRestTime = element.rest || 90;
+  // Get default rest time in seconds (from first block rest or 90s default)
+  const defaultRestTime = firstRest;
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
     if (isTimerActive && timeLeft > 0) {

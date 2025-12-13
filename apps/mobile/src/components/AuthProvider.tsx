@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, createContext, useContext } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { authClient } from '../lib/auth-client';
 import LoginScreen from './LoginScreen';
@@ -23,6 +23,20 @@ interface Session {
     athleteId?: string | null;
   };
 }
+
+interface AuthContextType {
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};
 
 export default function AuthProvider({ children }: AuthProviderProps) {
   const [session, setSession] = useState<Session | null>(null);
@@ -64,13 +78,14 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     await initializeAuth();
   };
 
-  const handleLogout = async () => {
+  const logout = async () => {
     try {
       await authClient.signOut();
       setSession(null);
       console.log('Logged out successfully');
     } catch (error) {
       console.error('Logout error:', error);
+      throw error;
     }
   };
 
@@ -91,10 +106,11 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   // Session active, afficher l'app
   return (
-    <View style={styles.container}>
-      {children}
-      {/* Vous pouvez ajouter un bouton de déconnexion ici pour les tests */}
-    </View>
+    <AuthContext.Provider value={{ logout }}>
+      <View style={styles.container}>
+        {children}
+      </View>
+    </AuthContext.Provider>
   );
 }
 

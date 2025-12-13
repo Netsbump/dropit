@@ -9,7 +9,6 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/shared/components/ui/dialog';
-import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -43,9 +42,35 @@ export function WorkoutEditor({
 
   const { mutate: updateWorkout, isPending } = useMutation({
     mutationFn: async () => {
+      // Transform WorkoutDto to UpdateWorkout format
+      const updatePayload = {
+        workoutCategory: workout.workoutCategory,
+        description: workout.description,
+        elements: workout.elements.map((element) => {
+          if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
+            return {
+              type: element.type as 'exercise',
+              order: element.order,
+              tempo: element.tempo,
+              commentary: element.commentary,
+              blocks: element.blocks,
+              exerciseId: element.exercise.id,
+            };
+          }
+          return {
+            type: element.type as 'complex',
+            order: element.order,
+            tempo: element.tempo,
+            commentary: element.commentary,
+            blocks: element.blocks,
+            complexId: element.complex.id,
+          };
+        }),
+      };
+
       const response = await api.workout.updateWorkout({
         params: { id: workout.id },
-        body: workout,
+        body: updatePayload,
       });
       if (response.status !== 200) throw new Error('Failed to update workout');
       return response.body;
@@ -91,23 +116,34 @@ export function WorkoutEditor({
   };
 
   const handleAddElement = (type: 'exercise' | 'complex', itemId: string) => {
-    const baseElement = {
-      id: crypto.randomUUID(),
-      order: workout.elements.length,
-      sets: 1,
-      reps: 1,
-      rest: 60,
-      startWeight_percent: 70,
-    };
-
     if (type === 'exercise') {
       const exercise = exercises?.find((e) => e.id === itemId);
       if (!exercise) return;
 
       const newElement = {
-        ...baseElement,
+        id: crypto.randomUUID(),
         type: WORKOUT_ELEMENT_TYPES.EXERCISE,
+        order: workout.elements.length,
         exercise,
+        blocks: [
+          {
+            order: 1,
+            numberOfSets: 3,
+            rest: 90,
+            intensity: {
+              percentageOfMax: 70,
+              type: 'percentage' as const,
+              referenceExerciseId: exercise.id,
+            },
+            exercises: [
+              {
+                exerciseId: exercise.id,
+                reps: 5,
+                order: 1,
+              },
+            ],
+          },
+        ],
       };
 
       setWorkout({
@@ -119,9 +155,27 @@ export function WorkoutEditor({
       if (!complex) return;
 
       const newElement = {
-        ...baseElement,
+        id: crypto.randomUUID(),
         type: WORKOUT_ELEMENT_TYPES.COMPLEX,
+        order: workout.elements.length,
         complex,
+        blocks: [
+          {
+            order: 1,
+            numberOfSets: 3,
+            rest: 120,
+            intensity: {
+              percentageOfMax: 70,
+              type: 'percentage' as const,
+              referenceExerciseId: complex.exercises[0]?.id,
+            },
+            exercises: complex.exercises.map((ex, idx) => ({
+              exerciseId: ex.id,
+              reps: 3,
+              order: idx + 1,
+            })),
+          },
+        ],
       };
 
       setWorkout({
@@ -140,13 +194,7 @@ export function WorkoutEditor({
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div className="flex-1">
-            <Input
-              value={workout.title}
-              onChange={(e) =>
-                setWorkout({ ...workout, title: e.target.value })
-              }
-              className="h-9 font-semibold"
-            />
+            <h1 className="text-lg font-semibold">Édition de l'entraînement</h1>
           </div>
           <div className="flex gap-2">
             <Button>Programmer</Button>
@@ -287,43 +335,49 @@ export function WorkoutEditor({
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.sets} séries
+                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
                             </Badge>
                             <span className="font-medium">
                               {element.exercise.name}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Poids initial: {element.startWeight_percent}%
-                          </p>
+                          <div className="space-y-1">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
+                                {block.numberOfSets}x{block.exercises[0].reps}
+                                {block.rest && ` - ${block.rest}s repos`}
+                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                              </p>
+                            ))}
+                          </div>
                         </div>
                       ) : (
                         <div className="space-y-3">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.sets} séries
+                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
                             </Badge>
                             <span className="font-medium">
                               {element.complex.complexCategory?.name || 'Complex'}
                             </span>
                           </div>
-                          <p className="text-sm text-muted-foreground">
-                            Poids initial: {element.startWeight_percent}%
-                          </p>
                           <div className="space-y-2 ml-6">
                             {element.complex.exercises.map((ex) => (
                               <div
                                 key={ex.id}
                                 className="flex items-center gap-2 bg-muted/50 rounded-md p-2"
                               >
-                                <Badge
-                                  variant="outline"
-                                  className="bg-background"
-                                >
-                                  {ex.reps}
-                                </Badge>
                                 <span className="text-sm">{ex.name}</span>
                               </div>
+                            ))}
+                          </div>
+                          <div className="space-y-1">
+                            {element.blocks.map((block) => (
+                              <p key={block.order} className="text-xs text-muted-foreground">
+                                {block.numberOfSets} séries
+                                {block.rest && ` - ${block.rest}s repos`}
+                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                              </p>
                             ))}
                           </div>
                         </div>

@@ -15,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
 import { useToast } from '@/shared/hooks/use-toast';
 import {
   DndContext,
@@ -141,18 +140,15 @@ export function ComplexCreationForm({
   const form = useForm<z.infer<typeof formComplexSchema>>({
     resolver: zodResolver(formComplexSchema),
     defaultValues: {
-      description: '',
       complexCategory: '',
       exercises: [
         {
           exerciseId: '',
           order: 0,
-          reps: 1,
         },
         {
           exerciseId: '',
           order: 1,
-          reps: 1,
         },
       ],
     },
@@ -191,7 +187,6 @@ export function ComplexCreationForm({
     append({
       exerciseId: '',
       order: fields.length,
-      reps: 1,
     });
   };
 
@@ -231,20 +226,6 @@ export function ComplexCreationForm({
         )}
         className="grid gap-4 py-4"
       >
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Description</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Description du complex" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-
         <FormField
           control={form.control}
           name="complexCategory"

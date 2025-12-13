@@ -107,7 +107,6 @@ export class ComplexUseCase implements IComplexUseCases {
     // 5. Create the complex
     const complex = new Complex();
     complex.complexCategory = complexCategory;
-    complex.description = data.description || '';
 
     // 6. Assign the creator user
     const user = await this.userUseCases.getOne(userId);
@@ -124,7 +123,6 @@ export class ComplexUseCase implements IComplexUseCases {
 
       const exerciseComplex = new ExerciseComplex();
       exerciseComplex.order = exerciseData.order;
-      exerciseComplex.reps = exerciseData.reps;
       exerciseComplex.exercise = exercise;
       exerciseComplex.complex = complex;
 
@@ -160,10 +158,6 @@ export class ComplexUseCase implements IComplexUseCases {
     }
 
     // 4. Update the complex properties
-    if (data.description !== undefined) {
-      complexToUpdate.description = data.description;
-    }
-
     if (data.complexCategory) {
       const complexCategory = await this.complexCategoryRepository.getOne(data.complexCategory, coachFilterConditions);
       if (!complexCategory) {
@@ -194,7 +188,6 @@ export class ComplexUseCase implements IComplexUseCases {
         exerciseComplex.exercise = exercise;
         exerciseComplex.complex = complexToUpdate;
         exerciseComplex.order = exerciseData.order;
-        exerciseComplex.reps = exerciseData.reps;
 
         complexToUpdate.exercises.add(exerciseComplex);
       }

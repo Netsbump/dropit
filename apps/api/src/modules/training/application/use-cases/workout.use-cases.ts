@@ -145,7 +145,6 @@ export class WorkoutUseCases implements IWorkoutUseCases {
 
     //5. Create workout
     const workoutToCreate = new Workout();
-    workoutToCreate.title = workout.title;
     workoutToCreate.description = workout.description || '';
     workoutToCreate.category = category;
 
@@ -158,26 +157,23 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       const workoutElement = new WorkoutElement();
       workoutElement.type = element.type;
       workoutElement.order = element.order;
-      workoutElement.sets = element.sets;
-      workoutElement.reps = element.reps;
-      workoutElement.rest = element.rest;
-      workoutElement.duration = element.duration;
-      workoutElement.startWeight_percent = element.startWeight_percent;
-      workoutElement.endWeight_percent = element.endWeight_percent;
+      workoutElement.blocks = element.blocks;
+      workoutElement.tempo = element.tempo;
+      workoutElement.commentary = element.commentary;
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-        const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
+        const exercise = await this.exerciseRepository.getOne(element.exerciseId, coachFilterConditions);
         if (!exercise) {
           throw new ExerciseNotFoundException(
-            `Exercise with ID ${element.id} not found or access denied`
+            `Exercise with ID ${element.exerciseId} not found or access denied`
           );
         }
         workoutElement.exercise = exercise;
       } else {
-        const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
+        const complex = await this.complexRepository.getOne(element.complexId, coachFilterConditions);
         if (!complex) {
           throw new ComplexNotFoundException(
-            `Complex with ID ${element.id} not found or access denied`
+            `Complex with ID ${element.complexId} not found or access denied`
           );
         }
         workoutElement.complex = complex;
@@ -253,10 +249,6 @@ export class WorkoutUseCases implements IWorkoutUseCases {
     }
 
     //4. Update workout
-    if (workout.title) {
-      workoutToUpdate.title = workout.title;
-    }
-
     if (workout.description !== undefined) {
       workoutToUpdate.description = workout.description;
     }
@@ -288,27 +280,24 @@ export class WorkoutUseCases implements IWorkoutUseCases {
         const workoutElement = new WorkoutElement();
         workoutElement.type = element.type;
         workoutElement.order = element.order;
-        workoutElement.sets = element.sets;
-        workoutElement.reps = element.reps;
-        workoutElement.rest = element.rest;
-        workoutElement.duration = element.duration;
-        workoutElement.startWeight_percent = element.startWeight_percent;
-        workoutElement.endWeight_percent = element.endWeight_percent;
+        workoutElement.blocks = element.blocks;
+        workoutElement.tempo = element.tempo;
+        workoutElement.commentary = element.commentary;
         workoutElement.workout = workoutToUpdate;
 
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
-          const exercise = await this.exerciseRepository.getOne(element.id, coachFilterConditions);
+          const exercise = await this.exerciseRepository.getOne(element.exerciseId, coachFilterConditions);
           if (!exercise) {
             throw new ExerciseNotFoundException(
-              `Exercise with ID ${element.id} not found or access denied`
+              `Exercise with ID ${element.exerciseId} not found or access denied`
             );
           }
           workoutElement.exercise = exercise;
         } else {
-          const complex = await this.complexRepository.getOne(element.id, coachFilterConditions);
+          const complex = await this.complexRepository.getOne(element.complexId, coachFilterConditions);
           if (!complex) {
             throw new ComplexNotFoundException(
-              `Complex with ID ${element.id} not found or access denied`
+              `Complex with ID ${element.complexId} not found or access denied`
             );
           }
           workoutElement.complex = complex;

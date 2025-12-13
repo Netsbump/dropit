@@ -260,12 +260,19 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
                   ? element.exercise.name
                   : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
 
+                // Calculate from blocks
+                const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
+                const firstBlock = element.blocks[0];
+                const firstReps = firstBlock?.exercises[0]?.reps ?? 0;
+                const firstRest = firstBlock?.rest;
+                const firstIntensity = firstBlock?.intensity?.percentageOfMax;
+
                 return renderExerciseBlock(element, {
                   id,
                   name,
-                  sets: `${element.sets} x ${element.reps}`,
-                  weight: element.startWeight_percent ? `${element.startWeight_percent}%` : '-',
-                  rest: element.rest ? `${element.rest}sec` : '-',
+                  sets: `${totalSets} x ${firstReps}`,
+                  weight: firstIntensity ? `${firstIntensity}%` : '-',
+                  rest: firstRest ? `${firstRest}sec` : '-',
                 });
               })}
             </View>

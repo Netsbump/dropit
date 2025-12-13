@@ -57,8 +57,8 @@ export default function BottomNavigation({ activeTab, onTabPress }: BottomNaviga
 
 const styles = StyleSheet.create({
   container: {
-    paddingBottom: 40, // Safe area for iPhone
-    paddingTop: 20,
+    paddingBottom: 50,
+    paddingTop: 10,
     backgroundColor: '#191d26',
   },
   navigationBar: {

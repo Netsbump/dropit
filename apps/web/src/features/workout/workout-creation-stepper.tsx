@@ -50,7 +50,6 @@ export function WorkoutCreationStepper({
   const form = useForm<ExtendedWorkoutSchema>({
     resolver: zodResolver(extendedWorkoutSchema),
     defaultValues: {
-      title: '',
       description: '',
       workoutCategory: '',
       elements: [],

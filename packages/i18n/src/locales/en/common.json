@@ -77,7 +77,26 @@
     "creation": {
       "title": "Create workout",
       "description": "Add a new workout to your catalog."
-    }
+    },
+    "sets_of": "of",
+    "block": "Block",
+    "series": "set(s)",
+    "reps": "rep(s)",
+    "add_rest": "Add rest",
+    "seconds": "s",
+    "add_block": "Add block",
+    "add_commentary": "Add commentary",
+    "add_tempo": "Add tempo",
+    "commentary_optional": "Commentary (optional)",
+    "commentary_placeholder": "Coach's commentary...",
+    "tempo_optional": "Tempo (optional)",
+    "tempo_placeholder": "e.g.: 3010",
+    "max_reference": "Max reference",
+    "select_placeholder": "Select...",
+    "exercise_label": "EXERCISE",
+    "complex_label": "COMPLEX",
+    "exercise_not_found": "Exercise not found",
+    "complex_not_found": "Complex not found"
   },
   "complex": {
     "hero": {

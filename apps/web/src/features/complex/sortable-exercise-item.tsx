@@ -3,10 +3,8 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -123,31 +121,6 @@ export function SortableExerciseItem({
             </FormItem>
           )}
         />
-
-        {/* Paramètres d'entraînement en ligne */}
-        <div className="grid grid-cols-4 gap-3">
-          {/* Répétitions */}
-          <FormField
-            control={control}
-            name={`exercises.${index}.reps`}
-            render={({ field }) => (
-              <FormItem className="space-y-1.5">
-                <FormLabel className="text-xs text-muted-foreground">
-                  Répétitions
-                </FormLabel>
-                <FormControl>
-                  <Input
-                    type="number"
-                    {...field}
-                    min={1}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
-                    className="h-8 text-sm"
-                  />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-        </div>
       </div>
 
       {/* Bouton de suppression */}

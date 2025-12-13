@@ -18,7 +18,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
 import { toast } from '@/shared/hooks/use-toast';
 import { UpdateExercise, updateExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -105,7 +104,6 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
     resolver: zodResolver(formExerciseSchema),
     defaultValues: {
       name: exercise.name,
-      description: exercise.description ?? '',
       exerciseCategory: exercise.exerciseCategory.id,
       video: exercise.video ?? undefined,
       englishName: exercise.englishName ?? '',
@@ -141,21 +139,6 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                     {fieldState.error && (
                       <FormMessage>{fieldState.error.message}</FormMessage>
                     )}
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="description"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className='text-gray-500' >Description</FormLabel>
-                    <FormControl className="bg-white">
-                      <Textarea
-                        placeholder="Description de l'exercice"
-                        {...field}
-                      />
-                    </FormControl>
                   </FormItem>
                 )}
               />

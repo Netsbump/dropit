@@ -15,12 +15,18 @@ services:
     environment:
       PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
       PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    ports: 
+    ports:
       - "${PGADMIN_PORT:-5050}:80"
     volumes:
       - pgadmin_data:/var/lib/pgadmin
     depends_on:
       - db
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - "${MAILDEV_SMTP_PORT:-1025}:1025"  # SMTP port
+      - "${MAILDEV_WEB_PORT:-1080}:1080"   # Web UI port
 
 volumes:
   postgres_data:
