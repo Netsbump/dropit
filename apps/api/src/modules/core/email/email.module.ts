@@ -15,10 +15,9 @@ import { config } from '../../../config/env.config';
         if (isDevelopment) {
           console.log('📧 [EmailModule] Using DevMailService (Maildev)');
           return new DevMailService();
-        } else {
-          console.log('📧 [EmailModule] Using BrevoService (Production)');
-          return new BrevoService();
         }
+        console.log('📧 [EmailModule] Using BrevoService (Production)');
+        return new BrevoService();
       },
     },
     EmailService,
