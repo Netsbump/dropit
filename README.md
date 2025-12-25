@@ -1,238 +1,308 @@
 <a name="readme-top"></a>
 
-<!-- LOGO DU PROJET -->
+<!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/Netsbump/Dropit">
-    <img src="apps/web/src/assets/images/hero-pages/logo-dropit.png" alt="Logo DropIt" width="200" height="200">
+    <img src="apps/web/src/assets/images/hero-pages/logo-dropit.png" alt="DropIt Logo" width="200" height="200">
   </a>
-<h3 align="center">DropIt : Application de Club d'Haltérophilie</h3>
+<h3 align="center">DropIt: Weightlifting Club Management Application</h3>
   <p align="center">
-    Une application web et mobile pour optimiser le suivi et la gestion de l'entraînement en haltérophilie.
+    A web and mobile application to optimize training tracking and management for weightlifting.
     <br />
     <br />
-    <a href="https://docs-dropit.pages.dev/"><strong>Découvrir le projet »</strong></a>
+    <a href="https://docs-dropit.pages.dev/"><strong>Explore the project »</strong></a>
     <br />
     <br />
-    <a href="https://dropit-app.fr">Accéder à la version Alpha</a>
+    <a href="https://dropit-app.fr">Access Alpha Version</a>
     ·
-    <a href="https://docs-dropit.pages.dev/introduction/presentation/">Documentation Technique</a>
+    <a href="https://docs-dropit.pages.dev/introduction/presentation/">Technical Documentation</a>
     ·
-    <a href="https://github.com/Netsbump/Dropit/issues">Signaler un Bug</a>
+    <a href="https://github.com/Netsbump/Dropit/issues">Report Bug</a>
   </p>
 </div>
 
 ***
 
-<!-- TABLE DES MATIÈRES -->
+<!-- TABLE OF CONTENTS -->
 <details>
-  <summary>Table des Matières</summary>
+  <summary>📋 Table of Contents</summary>
   <ol>
-    <li><a href="#description-du-projet">À propos du projet</a></li>
-    <li><a href="#technologies-utilisees">Technologies Utilisées</a></li>
-    <li><a href="#prerequis">Pré-requis et Installation</a></li>
-    <li><a href="#documentation-complementaire">Documentation Complémentaire</a></li>
-    <li><a href="#licence">Licence</a></li>
-    <li><a href="#contact">Contact</a></li>
+    <li><a href="#-about-the-project">About The Project</a></li>
+    <li><a href="#️-tech-stack">Tech Stack</a></li>
+    <li><a href="#-prerequisites">Prerequisites</a></li>
+    <li><a href="#-installation">Installation</a></li>
+    <li><a href="#-docker-services">Docker Services</a></li>
+    <li><a href="#️-useful-commands">Useful Commands</a></li>
+    <li><a href="#-development">Development</a></li>
+    <li><a href="#-additional-documentation">Additional Documentation</a></li>
+    <li><a href="#-license">License</a></li>
+    <li><a href="#-contact">Contact</a></li>
   </ol>
 </details>
 
-<!-- A PROPOS DU PROJET -->
-<p id="description-du-projet"></p>
+***
 
-# À propos du Projet
+## 🔍 About The Project
 
-DropIt est une application web et mobile conçue pour optimiser le suivi et la gestion de l'entraînement en haltérophilie. Ce projet de fin d'études vise à fournir une solution intuitive pour les coachs et athlètes, tout en démontrant la maîtrise du cycle complet de développement logiciel.
+DropIt is a web and mobile application designed to optimize training tracking and management for weightlifting.
 
-**Fonctionnalités principales** : Gestion des athlètes, création de programmes d'entraînement personnalisés, bibliothèque d'exercices, planification des séances, et application mobile pour le suivi des performances.
+**Main Features**: Athlete management, personalized training program creation, exercise library, session planning, and mobile app for performance tracking.
 
-Pour découvrir l'ensemble des fonctionnalités en détail, consultez la [landing page](https://docs-dropit.pages.dev/) et la [documentation technique](https://docs-dropit.pages.dev/introduction/presentation/).
+To discover all features in detail, check out the [landing page](https://docs-dropit.pages.dev/) and the [technical documentation](https://docs-dropit.pages.dev/introduction/presentation/). (Documentation is in French, as this project started as a school study project)
 
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ***
 
-<!-- TECHNOLOGIES UTILISEES -->
-<p id="technologies-utilisees"></p>
+## 🛠️ Tech Stack
 
-## Technologies Utilisées
+- **Frontend**: React, TypeScript, TanStack (Query + Router), Shadcn/ui + Tailwind CSS
+- **Backend**: NestJS + MikroORM
+- **Database**: PostgreSQL
+- **Authentication**: Better-auth with organization plugin
+- **CI/CD**: Docker, Docker Compose, GitHub Actions
+- **Code Quality**: Biome
+- **Monorepo**: pnpm workspaces
 
-- Front-End : React, TypeScript, TanStack (Query + Router), Shadcn + Tailwind
-- Back-End : Nest.js + MikroORM 
-- Base de Données : PostgreSQL
-- Recherche: Typesense (à venir)
-- Cache: Redis (à venir)
-- CI/CD : Docker, Docker Compose, GitHub Actions
-- Qualité du Code : Biome
-- Monorepo: Pnpm workspaces
-
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ***
 
-<!-- PRE-REQUIS -->
-<p id="prerequis"></p>
+## 📋 Prerequisites
 
-## Pré-requis et Installation
+- **Node.js**: Version 22 or higher (required for better-auth and ESM support)
+- **pnpm**: Package manager version 9.7.1+ (install with `npm install -g pnpm@latest`)
+- **Docker** and **Docker Compose**: For running services (PostgreSQL, PgAdmin, MailDev)
+  - **Windows/macOS**: Docker Desktop must be installed and **running** before executing Docker commands
+  - **Linux**: Docker Engine and Docker Compose are sufficient
 
-### Prérequis
+## 🚀 Installation
 
-Assurez-vous d'avoir installé les éléments suivants avant de commencer :
-
-- **Node.js** : Version 22 ou supérieure (requis pour better-auth et support ESM).
-- **pnpm** : Gestionnaire de paquets version 9.7.1+ (installer avec `npm install -g pnpm@latest`).
-- **Docker** et **Docker Compose** : Pour l'exécution des services (Redis, PostgreSQL, PgAdmin).
-  - **Windows/macOS** : Docker Desktop doit être installé et **lancé** avant d'exécuter les commandes Docker.
-  - **Linux** : Docker Engine et Docker Compose suffisent.
-
-### Cloner le projet
+### 1. Clone the project
 
 ```bash
 git clone https://github.com/Netsbump/dropit.git
 cd dropit
 ```
 
-### Installer les dépendances
+### 2. Install dependencies
 
 ```bash
 pnpm install
 ```
 
-### Build initial
+### 3. Initial build
 
-Pour permettre aux packages dans packages/ d'être utilisés dans les différents services, vous devez effectuer un build initial :
+To allow packages in `packages/` to be used by the different services, you need to perform an initial build:
 
 ```bash
 pnpm build
 ```
 
-### Configuration des variables d'environnements
+### 4. Environment Setup
 
-Créer les fichiers de configuration :
+#### Automated Setup (Recommended)
+
+The project includes an automated setup script that will:
+- Detect and copy `.env.example` files to `.env` (if they don't exist)
+- Check for existing `.env` files and only prompt for missing variables
+- Prompt you for database configuration (user, password, name, host, port)
+- Prompt you for application ports (API, MailDev, PgAdmin)
+- Detect your local IP address for the mobile app
+- Generate a secure `BETTER_AUTH_SECRET` automatically
+- Configure all `.env` files with the correct values
+- Optionally start Docker services (PostgreSQL, MailDev, PgAdmin)
+- Optionally run database migrations or set up a fresh database with seed data
 
 ```bash
-# Fichier .env à la racine (pour le monorepo)
+pnpm rock
+```
+
+The script will guide you through the configuration process interactively. After completion, you'll see a summary of all configured services and their URLs.
+
+#### Manual Setup (Alternative)
+
+If you prefer to configure everything manually:
+
+1. **Copy environment files:**
+
+```bash
+# Root .env file (for Docker Compose)
 cp .env.example .env
 
-# Fichier .env pour l'API
+# API .env file
 cp apps/api/.env.example apps/api/.env
 
-# Fichier .env pour le frontend web (configuration de l'URL API)
+# Web frontend .env file (API URL configuration)
 cp apps/web/.env.example apps/web/.env
 
-# Fichier .env pour l'application mobile (configuration de l'URL API)
+# Mobile app .env file (API URL configuration with local IP)
 cp apps/mobile/.env.example apps/mobile/.env
 
-# Pour builder l'app mobile en production, créer également :
+# For production mobile build, also create:
 cp apps/mobile/.env.example apps/mobile/.env.production
-# Puis éditer .env.production avec l'URL publique de votre API
+# Then edit .env.production with your public API URL
 ```
 
-### Lancer le projet (développement)
+2. **Configure environment variables:**
 
-Démarrer les services via Docker Compose (PostgreSQL, PgAdmin):
+Edit each `.env` file and update the values according to your environment. Key variables to configure:
+
+- **Database**: `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`, `DB_HOST`
+- **API**: `API_PORT`, `BETTER_AUTH_SECRET`, `TRUSTED_ORIGINS`
+- **Mobile**: `EXPO_PUBLIC_API_URL` (use your local IP, e.g., `http://192.168.1.XXX:3000`)
+
+⚠️ Make sure to update the API URL and port in all `.env` files to match your configuration.
+
+3. **Start Docker services:**
 
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
-Vérifier que les services sont bien démarrés :
+4. **Set up the database:**
+
+Wait a few seconds for PostgreSQL to fully start, then run migrations or create a fresh database:
 
 ```bash
-docker-compose ps
+# Option 1: Run migrations
+pnpm --filter api db:migration:up
+
+# Option 2: Fresh database with seed data
+pnpm db:fresh
 ```
 
-Attendre quelques secondes que PostgreSQL soit complètement démarré, puis lancer le monorepo (backend + frontends) en mode développement:
+### 5. Start development
 
 ```bash
 pnpm dev
 ```
 
-Les services seront accessibles aux URLs suivantes :
-- **Frontend Web** : http://localhost:5173
-- **API** : http://localhost:3000
-- **Documentation API (Swagger)** : http://localhost:3000/api
-- **PgAdmin** : http://localhost:5050
-- **Application Mobile** : Un QR code s'affichera dans le terminal pour Expo Go
+The services will be available at the following URLs:
+- **Web Frontend**: http://localhost:5173
+- **API**: http://localhost:3000
+- **API Documentation (Swagger)**: http://localhost:3000/api
+- **PgAdmin**: http://localhost:5050
+- **MailDev**: http://localhost:1080
+- **Mobile App**: A QR code will appear in the terminal for Expo Go
 
-### Migrations de base de données
+## 🐳 Docker Services
 
-Les migrations sont appliquées automatiquement au démarrage de l'API. Pour plus de détails sur la gestion des migrations (création, application manuelle, etc.), consultez le [README de l'API](apps/api/README.md#database-migrations).
+The project uses Docker Compose to provide the following services:
 
-### Données de test (Seeds)
+- **PostgreSQL**: Database server
+- **PgAdmin**: PostgreSQL administration tool
+- **MailDev**: SMTP server for development (not for production use!)
 
-Lors du premier lancement de l'application, des données de test sont automatiquement créées dans la base de données, incluant :
-- Un super admin (Super Admin - super.admin@gmail.com)
-- Un coach pour tester l'interface web (Jean Dupont - coach@example.com)
-- Un club par défaut
-- Des utilisateurs/athlètes générés avec Faker (15-25 athlètes)
+## ⌨️ Useful Commands
 
-### Connexion à l'interface Web
+### Setup
 
-Pour tester l'interface web, vous pouvez vous connecter avec le coach :
-- **Email** : `coach@example.com`
-- **Mot de passe** : `Password123!`
+- **Automated setup**: `pnpm rock`
 
-### Application Mobile (React Native)
+### Docker
 
-Une application mobile est disponible dans `apps/mobile/`. Elle se lance automatiquement avec `pnpm dev` (qui lance toutes les apps en parallèle). Pour la tester :
+- **Start Docker services**: `docker compose up -d`
+- **Stop Docker services**: `docker compose down`
+- **View Docker logs**: `docker compose logs -f`
 
-1. Installez Expo Go sur votre téléphone
-2. Scannez le QR code affiché dans le terminal (l'app mobile démarre avec `pnpm dev`, si le QR code ne s'affiche pas en `pnpm dev` global, lancer la commande au niveau dossier `apps/mobile/`)
+### Development
 
-Pour vous connecter, utilisez l'un des utilisateurs générés par les seeds. Les noms et emails étant générés par Faker, consultez directement la base de données via PgAdmin pour récupérer les identifiants.
+- **Start all apps**: `pnpm dev`
+- **Start web + API only**: `pnpm dev:web-api`
+- **Start mobile app only**: `pnpm dev:mobile`
+- **Build applications**: `pnpm build`
+- **Type checking**: `pnpm typecheck`
+- **Lint code**: `pnpm lint`
+- **Fix linting issues**: `pnpm lint:fix`
+- **Format code**: `pnpm format`
 
-**Accès PgAdmin** :
-- URL : http://localhost:5050
-- Email : `admin@admin.com`
-- Mot de passe : `admin`
-- Mot de passe universel pour tous les utilisateurs seeds : `Password123!`
+### Database (API)
 
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+- **Fresh database with seeds**: `pnpm db:fresh`
+- **Run seeds only**: `pnpm db:seed`
+- **Create migration**: `pnpm --filter api db:migration:create`
+- **Run migrations**: `pnpm --filter api db:migration:up`
+- **Rollback last migration**: `pnpm --filter api db:migration:down`
+- **Check pending migrations**: `pnpm --filter api db:migration:check`
+
+### Tests
+
+- **Run API unit tests**: `pnpm test:api:unit`
+- **Run API integration tests**: `pnpm test:api:integration`
+
+## 💻 Development
+
+### Database Migrations
+
+Migrations are automatically applied when the API starts. For more details on migration management (creation, manual application, etc.), see the [API README](apps/api/README.md#database-migrations).
+
+### Test Data (Seeds)
+
+On first launch, test data is automatically created in the database, including:
+- A super admin (Super Admin - super.admin@gmail.com)
+- A coach to test the web interface (Jean Dupont - coach@example.com)
+- A default club
+- Generated users/athletes with Faker (15-25 athletes)
+
+### Web Interface Login
+
+To test the web interface, you can log in with the coach account:
+- **Email**: `coach@example.com`
+- **Password**: `Password123!`
+
+### Mobile Application (React Native)
+
+A mobile application is available in `apps/mobile/`. It starts automatically with `pnpm dev` (which launches all apps in parallel). To test it:
+
+1. Install Expo Go on your phone
+2. Scan the QR code displayed in the terminal (the mobile app starts with `pnpm dev`; if the QR code doesn't appear, run the command from the `apps/mobile/` folder)
+
+To log in, use one of the users generated by the seeds. Since names and emails are generated by Faker, check the database directly via PgAdmin to retrieve credentials.
+
+**PgAdmin Access**:
+- URL: http://localhost:5050
+- Email: `admin@admin.com`
+- Password: `admin`
+- Universal password for all seeded users: `Password123!`
+
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ***
 
-<!-- DOCUMENTATION COMPLEMENTAIRE -->
-<p id="documentation-complementaire"></p>
+## 📚 Additional Documentation
 
-## Documentation Complémentaire
+For deeper technical aspects of the project, check out the following guides:
 
-Pour approfondir certains aspects techniques du projet, consultez les guides suivants :
+### Deployment and Infrastructure
+- **[Deployment Guide](docs/deployment.md)**: Complete production infrastructure configuration (VPS, Dokploy, Traefik, Docker Swarm) *(in French)*
+- **[Emergency Recovery Plan](docs/emergency-recovery.md)**: Recovery procedures in case of major failure *(in French)*
 
-### Déploiement et Infrastructure
-- **[Guide de Déploiement](docs/deployment.md)** : Configuration complète de l'infrastructure de production (VPS, Dokploy, Traefik, Docker Swarm)
-- **[Plan de Récupération d'Urgence](docs/emergency-recovery.md)** : Procédures de restauration en cas de défaillance majeure
+### Database Management
+- **[Production Migration Guide](docs/migrations-production.md)**: Strategies and best practices for managing migrations with real user data *(in French)*
 
-### Gestion de Base de Données
-- **[Guide des Migrations en Production](docs/migrations-production.md)** : Stratégies et bonnes pratiques pour gérer les migrations avec de vraies données utilisateur
-
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ***
 
-<!-- LICENCE -->
-<p id="licence"></p>
+## 📄 License
 
-## Licence
+Distributed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
-Distribué sous la GNU Affero General Public License v3.0 (AGPL-3.0).
+**This software is free and open source**, but with strong protection against commercial appropriation:
+- ✅ You can freely use, modify, and redistribute this software
+- ✅ Any fork must remain open source under AGPL-3.0
+- ✅ Modifications on a web server must be shared publicly
 
-**Ce logiciel est libre et open source**, mais avec une protection forte contre l'appropriation commerciale :
-- ✅ Vous pouvez librement utiliser, modifier et redistribuer ce logiciel
-- ✅ Tout fork doit rester open source sous AGPL-3.0
-- ✅ Les modifications sur un serveur web doivent être partagées publiquement
+See the [LICENSE.md](LICENSE.md) file for the full license text.
 
-Voir le fichier [LICENSE.md](LICENSE.md) pour le texte complet de la licence.
-
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 ***
 
-<!-- CONTACT -->
-<p id="contact"></p>
+## 📧 Contact
 
-## Contact
+**LinkedIn**: [Sten Levasseur](https://www.linkedin.com/in/sten-levasseur/)
 
-**LinkedIn** : [Sten Levasseur](https://www.linkedin.com/in/sten-levasseur/)
-
-<p align="right">(<a href="#readme-top">retour en haut</a>)</p>
+<p align="right">(<a href="#readme-top">back to top</a>)</p>
