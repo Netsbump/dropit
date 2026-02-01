@@ -1,5 +1,3 @@
-import { EmailTemplate } from '../../../domain/notification-transport';
-
 export const KIND = {
   OTP: 'otp',
   ORGANIZATION_INVITATION: 'organization-invitation',
@@ -17,6 +15,13 @@ export const RECIPIENT_TYPE = {
 
 export type RecipientType = (typeof RECIPIENT_TYPE)[keyof typeof RECIPIENT_TYPE];
 
+export const PLATFORM = {
+  MOBILE: 'mobile',
+  WEB: 'web'
+} as const;
+
+export type Platform = (typeof PLATFORM)[keyof typeof PLATFORM];
+
 export type NotificationRequest =
   | {
     kind: typeof KIND.ORGANIZATION_INVITATION;
@@ -30,28 +35,10 @@ export type NotificationRequest =
   }
   | {
     kind: typeof KIND.OTP;
-    userId: string;
-    platform: 'mobile' | 'web';
-    // + otp, type si besoin (ou dans un sous-objet)
-  }
-  | {
-    kind: typeof KIND.WORKOUT_REMINDER;
-    userId: string;
-    workoutName: string;
-    scheduledAt: Date;
-  }
-  | {
-    kind: typeof KIND.PR_ACHIEVED;
-    userId: string;
-    exerciseName: string;
-    weight: number;
-  }
-  | {
-    kind: typeof KIND.PASSWORD_RESET;
     email: string;
-    resetToken: string;
-  };
-
+    otp: string;
+    platform: Platform;
+  }
 /**
  * Notification Port (Port OUT)
  *

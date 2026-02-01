@@ -1,3 +1,17 @@
+import { PLATFORM } from '../outbound/notification.port'
+
+export type SendInvitationParams = {
+  organizationId: string;
+  organizationName: string;
+  email: string;
+  invitedBy: string;
+  invitationToken: string;
+}
+
+export type SendOtpParams =
+  | { origin: typeof PLATFORM.WEB, otp: string, email: string, type: 'sign-in' | 'email-verification' }
+  | { origin: typeof PLATFORM.MOBILE, otp: string, phoneNumber: string };
+
 /**
  * Notification Use Cases Port (Port IN)
  *
@@ -20,61 +34,16 @@ export interface INotificationUseCases {
    * - If user exists: sends email + push notification
    * - If user doesn't exist: sends email only with signup link
    */
-  sendInvitation(params: {
-    organizationId: string;
-    organizationName: string;
-    email: string;
-    invitedBy: string;
-    invitationToken: string;
-  }): Promise<void>;
+  sendInvitation(params: SendInvitationParams
+  ): Promise<void>;
 
-  /**
+  /** 
    * Send a one-time password (OTP) code
    *
    * @description
-   * Business logic:
-   * - Mobile platform: sends SMS
-   * - Web platform: sends email
    */
-  sendOtp(params: {
-    userId: string;
-    platform: 'mobile' | 'web';
-  }): Promise<void>;
-
-  /**
-   * Send a workout reminder notification
-   *
-   * @description
-   * Sends both email and push notification for reminders
-   */
-  sendWorkoutReminder(params: {
-    userId: string;
-    workoutName: string;
-    scheduledAt: Date;
-  }): Promise<void>;
-
-  /**
-   * Send a notification when a personal record is achieved
-   *
-   * @description
-   * Sends push notification only (immediate feedback)
-   */
-  sendPrAchieved(params: {
-    userId: string;
-    exerciseName: string;
-    weight: number;
-  }): Promise<void>;
-
-  /**
-   * Send a password reset email
-   *
-   * @description
-   * Sends an email with a password reset link
-   */
-  sendPasswordReset(params: {
-    email: string;
-    resetToken: string;
-  }): Promise<void>;
+  sendOtp(params: SendOtpParams
+  ): Promise<void>;
 }
 
 /**

@@ -1,6 +1,14 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { INotificationUseCases } from '../ports/inbound/notification-use-cases.port';
-import { INotificationPort, KIND, NOTIFICATION_PORT, NotificationRequest, RECIPIENT_TYPE } from '../ports/outbound/notification.port';
+import { INotificationUseCases, SendOtpParams } from '../ports/inbound/notification-use-cases.port';
+import {
+  INotificationPort,
+  KIND,
+  NOTIFICATION_PORT,
+  PLATFORM,
+  type NotificationRequest,
+  type Platform,
+  RECIPIENT_TYPE,
+} from '../ports/outbound/notification.port';
 import { IUserRepository, USER_REPO } from '../../../../identity/application/ports/user.repository.port';
 import {
   UserNotFoundException,
@@ -59,125 +67,42 @@ export class NotificationUseCase implements INotificationUseCases {
     }
   }
 
-  async sendOtp(params: {
-    userId: string;
-    platform: 'mobile' | 'web';
-  }): Promise<void> {
-    // Get user
-    const user = await this.userRepository.getOne(params.userId);
-    if (!user) {
-      throw new UserNotFoundException(`User with ID ${params.userId} not found`);
-    }
+  async sendOtp(params: SendOtpParams
+  ): Promise<void> {
+    if (params.origin === PLATFORM.WEB) {
 
-    // TODO: Generate OTP code (should be done by an OTP service)
-    const otpCode = '123456'; // Placeholder
+      // Get user
+      const user = await this.userRepository.getByEmail(params.email)
+      if (!user) {
+        throw new UserNotFoundException(`User with ID ${params.email} not found`);
+      }
 
-    // Business logic: Choose transport based on platform
-    if (params.platform === 'mobile') {
-      // Mobile: SMS
-      // TODO: Add phone field to User entity
-      // For now, throw an error
-      throw new UserPhoneNotFoundException(
-        'SMS notifications are not yet implemented. User phone field is required.'
-      );
+      // TODO implement function deternmineTransport
+      // then call the notification adapters with the good kind
+      // We need to check if user have mobile number or email
+      // then both are present we need to check if user have sending preferences
+      // otherwise we sending by mobile in first choice
+      // otherwise we sending by email if no mobile number are provided
+      // for exemple :
+      const determinedPlatform = 'mobile'
 
+      const notificationRequest: NotificationRequest = {
+        kind: KIND.OTP,
+        email: params.email,
+        otp: params.otp,
+        platform: determinedPlatform,
+      }
+
+      await this.notificationPort.send(notificationRequest);
+    } else {
       // When implemented:
       // if (!user.phone) {
       //   throw new UserPhoneNotFoundException(`User ${user.id} has no phone number`);
       // }
-      // await this.notificationPort.sendSms({
-      //   to: user.phone,
-      //   message: `Your DropIt verification code is: ${otpCode}`,
-      // });
-    } else {
-      // Web: Email
-      if (!user.email) {
-        throw new UserEmailNotFoundException(`User ${user.id} has no email address`);
-      }
-
-      await this.notificationPort.sendEmail({
-        to: user.email,
-        subject: 'Votre code de vérification',
-        template: 'otp-code',
-        data: {
-          otp: otpCode,
-          expiresIn: '10 minutes',
-        },
-      });
+      // For now, throw an error
+      throw new UserPhoneNotFoundException(
+        'SMS notifications are not yet implemented. User phone field is required.'
+      );
     }
-  }
-
-  async sendWorkoutReminder(params: {
-    userId: string;
-    workoutName: string;
-    scheduledAt: Date;
-  }): Promise<void> {
-    // Get user
-    const user = await this.userRepository.getOne(params.userId);
-    if (!user) {
-      throw new UserNotFoundException(`User with ID ${params.userId} not found`);
-    }
-
-    if (!user.email) {
-      throw new UserEmailNotFoundException(`User ${user.id} has no email address`);
-    }
-
-    // Business logic: Send both email and push for reminders
-    await Promise.all([
-      this.notificationPort.sendEmail({
-        to: user.email,
-        subject: `Rappel: ${params.workoutName}`,
-        template: 'workout-reminder',
-        data: {
-          workoutName: params.workoutName,
-          scheduledAt: params.scheduledAt.toISOString(),
-          userName: user.name,
-        },
-      }),
-      // TODO: Implement push notification when push service is available
-      // this.notificationPort.sendPush({
-      //   userId: user.id,
-      //   title: 'Rappel d\'entraînement',
-      //   body: `${params.workoutName} prévu à ${params.scheduledAt.toLocaleTimeString()}`,
-      // }),
-    ]);
-  }
-
-  async sendPrAchieved(params: {
-    userId: string;
-    exerciseName: string;
-    weight: number;
-  }): Promise<void> {
-    // Get user
-    const user = await this.userRepository.getOne(params.userId);
-    if (!user) {
-      throw new UserNotFoundException(`User with ID ${params.userId} not found`);
-    }
-
-    // Business logic: Push notification only (immediate feedback)
-    // TODO: Implement push notification when push service is available
-    throw new Error('Push notifications are not yet implemented');
-
-    // When implemented:
-    // await this.notificationPort.sendPush({
-    //   userId: user.id,
-    //   title: '🎉 Nouveau Record Personnel!',
-    //   body: `${params.exerciseName}: ${params.weight}kg`,
-    // });
-  }
-
-  async sendPasswordReset(params: {
-    email: string;
-    resetToken: string;
-  }): Promise<void> {
-    // Business logic: Send password reset email (user may not exist yet)
-    await this.notificationPort.sendEmail({
-      to: params.email,
-      subject: 'Réinitialisation de votre mot de passe',
-      template: 'password-reset',
-      data: {
-        resetToken: params.resetToken,
-      },
-    });
   }
 }
