@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IEmailPort, IEmailSendParams } from '../../application/ports/out/email.port';
+import { IEmailPort, IEmailSendParams } from '../../application/ports/outbound/email.port';
 import * as SibApiV3Sdk from '@getbrevo/brevo';
 import { config } from '../../../../../config/env.config';
 import { EmailTemplate } from '../../domain/notification-transport';

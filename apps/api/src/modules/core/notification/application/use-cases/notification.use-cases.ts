@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { INotificationUseCases } from '../ports/in/notification-use-cases.port';
-import { INotificationPort, NOTIFICATION_PORT } from '../ports/out/notification.port';
+import { INotificationUseCases } from '../ports/inbound/notification-use-cases.port';
+import { INotificationPort, KIND, NOTIFICATION_PORT, NotificationRequest, RECIPIENT_TYPE } from '../ports/outbound/notification.port';
 import { IUserRepository, USER_REPO } from '../../../../identity/application/ports/user.repository.port';
 import {
   UserNotFoundException,
@@ -26,7 +26,8 @@ export class NotificationUseCase implements INotificationUseCases {
     private readonly notificationPort: INotificationPort,
     @Inject(USER_REPO)
     private readonly userRepository: IUserRepository,
-  ) {}
+  ) { }
+
 
   async sendInvitation(params: {
     organizationId: string;
@@ -35,43 +36,26 @@ export class NotificationUseCase implements INotificationUseCases {
     invitedBy: string;
     invitationToken: string;
   }): Promise<void> {
-    // Business logic: Check if user already exists
     const existingUser = await this.userRepository.getByEmail(params.email);
 
     if (existingUser) {
-      // User exists: Send email + push notification
-      await Promise.all([
-        this.notificationPort.sendEmail({
-          to: params.email,
-          subject: `Invitation à rejoindre ${params.organizationName}`,
-          template: 'organization-invitation',
-          data: {
-            organizationId: params.organizationId,
-            organizationName: params.organizationName,
-            invitedBy: params.invitedBy,
-            token: params.invitationToken,
-          },
-        }),
-        // TODO: Implement push notification when push service is available
-        // this.notificationPort.sendPush({
-        //   userId: existingUser.id,
-        //   title: 'Nouvelle invitation',
-        //   body: `${params.invitedBy} vous invite à rejoindre ${params.organizationName}`,
-        // }),
-      ]);
+      const notificationRequest: NotificationRequest = {
+        kind: KIND.ORGANIZATION_INVITATION,
+        recipientType: RECIPIENT_TYPE.EXISTING_USER,
+        userId: existingUser.id,
+        ...params
+      }
+
+      await this.notificationPort.send(notificationRequest)
     } else {
-      // User doesn't exist: Send email only with signup link
-      await this.notificationPort.sendEmail({
-        to: params.email,
-        subject: `Vous êtes invité à rejoindre DropIt`,
-        template: 'organization-invitation-new-user',
-        data: {
-          organizationId: params.organizationId,
-          organizationName: params.organizationName,
-          invitedBy: params.invitedBy,
-          token: params.invitationToken,
-        },
-      });
+
+      const notificationRequest: NotificationRequest = {
+        kind: KIND.ORGANIZATION_INVITATION,
+        recipientType: RECIPIENT_TYPE.NEW_USER,
+        ...params
+      }
+
+      await this.notificationPort.send(notificationRequest)
     }
   }
 

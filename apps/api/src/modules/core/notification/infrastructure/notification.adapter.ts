@@ -4,8 +4,8 @@ import {
   IEmailParams,
   ISmsParams,
   IPushParams,
-} from '../application/ports/out/notification.port';
-import { IEmailPort, EMAIL_PORT } from '../application/ports/out/email.port';
+} from '../application/ports/outbound/notification.port';
+import { IEmailPort, EMAIL_PORT } from '../application/ports/outbound/email.port';
 import {
   NotificationServiceNotConfiguredException,
   EmailSendFailedException,

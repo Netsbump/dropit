@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { NotificationUseCase } from './application/use-cases/notification.use-cases';
-import { NOTIFICATION_USE_CASES } from './application/ports/in/notification-use-cases.port';
-import { NOTIFICATION_PORT } from './application/ports/out/notification.port';
-import { EMAIL_PORT } from './application/ports/out/email.port';
+import { NOTIFICATION_USE_CASES } from './application/ports/inbound/notification-use-cases.port';
+import { NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
+import { EMAIL_PORT } from './application/ports/outbound/email.port';
 import { NotificationAdapter } from './infrastructure/notification.adapter';
 import { BrevoAdapter } from './infrastructure/email/brevo.adapter';
 import { MaildevAdapter } from './infrastructure/email/maildev.adapter';

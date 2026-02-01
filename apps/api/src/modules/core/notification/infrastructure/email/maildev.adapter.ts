@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { IEmailPort, IEmailSendParams } from '../../application/ports/out/email.port';
+import { IEmailPort, IEmailSendParams } from '../../application/ports/outbound/email.port';
 import * as nodemailer from 'nodemailer';
 import { EmailTemplate } from '../../domain/notification-transport';
 import { config } from '../../../../../config/env.config';
