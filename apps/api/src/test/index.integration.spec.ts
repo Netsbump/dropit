@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../app.module';
-import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
+import { createTestMikroOrmOptions } from '../modules/database/mikro-orm.config';
 import { setupOrganization } from './organization.integration';
 import { runExerciseTests } from './exercise.integration';
 import { runComplexTests } from './complex.integration';

@@ -43,7 +43,7 @@ export class EmailAdapter implements IEmailChannel {
 
       default: {
         const _exhaustive: never = request;
-        throw new Error(`Unhandled notification kind`);
+        throw new Error('Unhandled notification kind');
       }
     }
   }

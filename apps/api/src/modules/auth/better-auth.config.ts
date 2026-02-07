@@ -13,7 +13,7 @@ interface BetterAuthDeps {
   afterCreateInvitation: (
     data: {
       invitation: Invitation
-      inviter: User & Record<string, any>
+      inviter: User & Record<string, unknown>
       organization: Organization
     }
   ) => Promise<void>;

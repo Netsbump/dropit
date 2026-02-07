@@ -2,13 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { AuthGuard } from '../guards/auth.guard';
-import { AuthService } from '../../../core/auth/auth.service';
+import { BetterAuthAdapter } from '../better-auth.adapter';
 
 describe('AuthGuard', () => {
   let guard: AuthGuard;
   let reflector: Reflector;
-  let authService: AuthService;
-
+  let betterAuthAdapter: BetterAuthAdapter;
+  
   // Mock data pour l'authentification uniquement
   const mockAdminUser = {
     id: 'admin-user-id',
@@ -79,7 +79,7 @@ describe('AuthGuard', () => {
           },
         },
         {
-          provide: AuthService,
+          provide: BetterAuthAdapter,
           useValue: {
             api: {
               getSession: jest.fn(),
@@ -91,7 +91,7 @@ describe('AuthGuard', () => {
 
     guard = module.get<AuthGuard>(AuthGuard);
     reflector = module.get<Reflector>(Reflector);
-    authService = module.get<AuthService>(AuthService);
+    betterAuthAdapter = module.get<BetterAuthAdapter>(BetterAuthAdapter);
   });
 
   it('should be defined', () => {
@@ -100,16 +100,16 @@ describe('AuthGuard', () => {
 
   describe('Authentication Logic', () => {
     it('should use Better Auth API in production environment', async () => {
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(mockAdminSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(mockAdminSession);
       
       const result = await guard.canActivate(mockContext);
       
       expect(result).toBe(true);
-      expect(authService.api.getSession).toHaveBeenCalled();
+      expect(betterAuthAdapter.api.getSession).toHaveBeenCalled();
     });
 
     it('should deny access when no session is found', async () => {
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(null);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(null);
       
       await expect(guard.canActivate(mockContext)).rejects.toThrow(UnauthorizedException);
     });
@@ -123,7 +123,7 @@ describe('AuthGuard', () => {
 
     it('should allow access to optional routes without session', async () => {
       jest.spyOn(reflector, 'get').mockReturnValue('OPTIONAL');
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(null);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(null);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -132,7 +132,7 @@ describe('AuthGuard', () => {
 
   describe('Session Injection Tests', () => {
     it('should inject session and user into request', async () => {
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(mockAdminSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(mockAdminSession);
       
       await guard.canActivate(mockContext);
       
@@ -143,7 +143,7 @@ describe('AuthGuard', () => {
 
   describe('Error Handling', () => {
     it('should handle Better Auth API errors gracefully', async () => {
-      jest.spyOn(authService.api, 'getSession').mockRejectedValue(new Error('API Error'));
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockRejectedValue(new Error('API Error'));
       
       await expect(guard.canActivate(mockContext)).rejects.toThrow(UnauthorizedException);
     });
@@ -151,7 +151,7 @@ describe('AuthGuard', () => {
 
   describe('User Authentication Tests', () => {
     it('should handle regular admin user correctly', async () => {
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(mockAdminSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(mockAdminSession);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -159,7 +159,7 @@ describe('AuthGuard', () => {
     });
 
     it('should handle super admin user correctly', async () => {
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(mockSuperAdminSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(mockSuperAdminSession);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -170,7 +170,7 @@ describe('AuthGuard', () => {
       const unverifiedUser = { ...mockAdminUser, emailVerified: false };
       const unverifiedSession = { ...mockAdminSession, user: unverifiedUser };
       
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(unverifiedSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(unverifiedSession);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -185,7 +185,7 @@ describe('AuthGuard', () => {
         session: { ...mockAdminSession.session, expiresAt: new Date(Date.now() - 1000) }
       };
       
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(expiredSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(expiredSession);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true); // Better Auth gère l'expiration automatiquement
@@ -197,7 +197,7 @@ describe('AuthGuard', () => {
         session: { ...mockAdminSession.session, expiresAt: new Date(Date.now() + 1000) }
       };
       
-      jest.spyOn(authService.api, 'getSession').mockResolvedValue(validSession);
+      jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(validSession);
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);

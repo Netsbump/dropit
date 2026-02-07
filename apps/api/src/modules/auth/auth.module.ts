@@ -1,5 +1,5 @@
 import type { MiddlewareConsumer, NestModule } from '@nestjs/common';
-import { Global, Module, OnModuleInit, RequestMethod, forwardRef } from '@nestjs/common';
+import { Global, Module, RequestMethod, forwardRef } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { toNodeHandler } from 'better-auth/node';
@@ -119,22 +119,14 @@ import { NotificationModule } from '../notification/notification.module';
     MikroOrmModule.forFeature([Organization, Member, User]),
   ],
 })
-export class AuthModule implements NestModule, OnModuleInit {
+export class AuthModule implements NestModule {
   constructor(private readonly betterAuthAdapter: BetterAuthAdapter) {}
 
   /**
-   * Initialize better-auth when the module starts
-   */
-  async onModuleInit(): Promise<void> {
-    await this.betterAuthAdapter.onModuleInit();
-  }
-
-  /**
-   * Configure the better-auth HTTP middleware
+   * Configure the better-auth HTTP middleware.
    *
-   * Nest calls configure() before onModuleInit(), so we cannot use
-   * betterAuthAdapter.auth here. We register a wrapper that waits for
-   * init on first request, then delegates to better-auth.
+   * Forces better-auth initialization before registering the handler,
+   * so the handler is bound once to the real auth instance at startup.
    *
    * Better-auth handles: POST /auth/sign-up, POST /auth/sign-in,
    * GET /auth/session, POST /auth/sign-out, etc.
@@ -142,18 +134,13 @@ export class AuthModule implements NestModule, OnModuleInit {
    * Note: The body parser is skipped for these routes in main.ts
    * because better-auth needs to parse the raw body itself.
    */
-  configure(consumer: MiddlewareConsumer) {
-    const authModule = this;
+  async configure(consumer: MiddlewareConsumer) {
+    await this.betterAuthAdapter.onModuleInit();
+
+    const handler = toNodeHandler(this.betterAuthAdapter.auth);
+
     consumer
-      .apply(async (req: unknown, res: unknown, next: (err?: unknown) => void) => {
-        try {
-          await authModule.betterAuthAdapter.waitForInit();
-          const handler = toNodeHandler(authModule.betterAuthAdapter.auth);
-          await handler(req as Parameters<typeof handler>[0], res as Parameters<typeof handler>[1]);
-        } catch (err) {
-          next(err);
-        }
-      })
+      .apply(handler)
       .forRoutes({
         path: '/auth/*',
         method: RequestMethod.ALL,

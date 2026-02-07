@@ -49,14 +49,7 @@ export class BetterAuthAdapter implements OnModuleInit {
     await BetterAuthAdapter.initPromise;
   }
 
-  /**
-   * Wait for better-auth to be initialized. Safe to call from middleware
-   * that runs before onModuleInit (e.g. configure()); the first request
-   * will trigger init and subsequent requests will reuse the same promise.
-   */
-  async waitForInit(): Promise<void> {
-    await this.onModuleInit();
-  }
+
 
   /**
    * Creates and configures the better-auth instance.
