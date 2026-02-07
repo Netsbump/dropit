@@ -2,8 +2,8 @@ import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
 import { CreateExercise, UpdateExercise } from '@dropit/schemas';
 import { Exercise } from '../../domain/exercise.entity';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
 import { IExerciseUseCases } from '../ports/exercise-use-cases.port';
 import {
   ExerciseNotFoundException,

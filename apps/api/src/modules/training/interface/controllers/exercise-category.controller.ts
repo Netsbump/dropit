@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { IExerciseCategoryUseCases, EXERCISE_CATEGORY_USE_CASES } from '../../application/ports/exercise-category-use-cases.port';
-import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ExerciseCategoryMapper } from '../mappers/exercise-category.mapper';
 import { ExerciseCategoryPresenter } from '../presenters/exercise-category.presenter';
 

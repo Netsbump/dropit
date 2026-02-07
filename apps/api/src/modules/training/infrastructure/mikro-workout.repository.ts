@@ -2,7 +2,7 @@ import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Workout } from '../domain/workout.entity';
 import { IWorkoutRepository } from '../application/ports/workout.repository.port';
-import { CoachFilterConditions } from '../../identity/application/ports/member.repository.port';
+import { CoachFilterConditions } from '../../auth/application/ports/member.repository.port';
 
 @Injectable()
 export class MikroWorkoutRepository extends EntityRepository<Workout> implements IWorkoutRepository {
@@ -85,7 +85,7 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
       return;
     }
 
-    // Supprimer d'abord les éléments
+    // Remove elements first
     const elements = workoutToDelete.elements.getItems();
     for (const element of elements) {
       this.em.remove(element);
