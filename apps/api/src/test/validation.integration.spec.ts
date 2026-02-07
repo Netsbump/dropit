@@ -1,14 +1,14 @@
 import { createWorkoutSchema, updateWorkoutSchema } from '@dropit/schemas';
 
 /**
- * Tests de validation Zod automatique avec ts-rest
+ * Automatic Zod validation tests with ts-rest
  *
- * Ces tests vérifient que les schémas Zod définis dans @dropit/schemas
- * valident correctement les données. Ces mêmes schémas sont utilisés
- * par ts-rest via tsRestHandler pour valider automatiquement les requêtes HTTP.
+ * These tests verify that the Zod schemas defined in @dropit/schemas
+ * correctly validate data. The same schemas are used by ts-rest via
+ * tsRestHandler to automatically validate HTTP requests.
  *
- * Note: ts-rest applique automatiquement la validation Zod sur les endpoints
- * et retourne une erreur 400 avec les détails de validation en cas d'échec.
+ * Note: ts-rest automatically applies Zod validation on endpoints
+ * and returns a 400 error with validation details on failure.
  */
 describe('Zod Validation - Automatic validation with ts-rest', () => {
 
@@ -43,7 +43,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
             blocks: [
               {
                 order: 1,
-                numberOfSets: -1, // Invalide ! Doit être >= 1
+                numberOfSets: -1, // Invalid: must be >= 1
                 exercises: [
                   {
                     exerciseId: 'some-id',
@@ -84,7 +84,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
                 exercises: [
                   {
                     exerciseId: 'some-id',
-                    reps: -5, // Invalide ! Doit être >= 1
+                    reps: -5, // Invalid: must be >= 1
                     order: 1,
                   },
                 ],
@@ -113,7 +113,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
           {
             type: 'exercise',
             exerciseId: 'some-id',
-            order: -1, // Invalide ! Doit être >= 0
+            order: -1, // Invalid: must be >= 0
             blocks: [
               {
                 order: 1,
@@ -148,7 +148,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
         workoutCategory: 'strength',
         elements: [
           {
-            type: 'invalid-type', // Doit être 'exercise' ou 'complex'
+            type: 'invalid-type', // Must be 'exercise' or 'complex'
             exerciseId: 'some-id',
             order: 0,
             blocks: [
@@ -334,7 +334,7 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
             blocks: [
               {
                 order: 1,
-                numberOfSets: -1, // Invalide
+                numberOfSets: -1, // Invalid
                 exercises: [
                   {
                     exerciseId: 'some-id',
@@ -406,26 +406,26 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
     it('documents that tsRestHandler automatically validates body', () => {
       /**
-       * Dans le controller workout.controller.ts, tsRestHandler applique
-       * automatiquement la validation Zod définie dans le contrat:
+       * In workout.controller.ts, tsRestHandler automatically applies
+       * the Zod validation defined in the contract:
        *
        * @TsRestHandler(c.createWorkout)
        * createWorkout(): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
        *   return tsRestHandler(c.createWorkout, async ({ body }) => {
-       *     // body est DÉJÀ validé par createWorkoutSchema ici !
-       *     // Si la validation échoue, ts-rest retourne automatiquement 400
+       *     // body is ALREADY validated by createWorkoutSchema here!
+       *     // If validation fails, ts-rest automatically returns 400
        *     const workout = await this.workoutUseCases.createWorkout(body, ...);
        *     return { status: 201, body: workout };
        *   });
        * }
        *
-       * Le contrat (workoutContract.ts) spécifie le schéma:
+       * The contract (workoutContract.ts) specifies the schema:
        * createWorkout: {
-       *   body: createWorkoutSchema, // ← Ce schéma est utilisé pour validation
+       *   body: createWorkoutSchema, // This schema is used for validation
        *   ...
        * }
        *
-       * Comportement en cas d'erreur de validation:
+       * Behavior on validation error:
        * - Status: 400 Bad Request
        * - Body: { bodyResult: { success: false, error: { issues: [...] } } }
        */

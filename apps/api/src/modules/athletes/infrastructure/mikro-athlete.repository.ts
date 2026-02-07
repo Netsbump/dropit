@@ -33,7 +33,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
       'cs.weightCategory',
     ]);
 
-    // Filtrage par organisation (toujours appliqué)
+    // Filter by organization (always applied)
     if (athleteUserIds) {
       qb.where({ 'u.id': { $in: athleteUserIds } });
     }
@@ -44,10 +44,10 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
 
     qb.leftJoin('a.user', 'u');
 
-    // récupère la date la plus récente
+    // Get the most recent date
     const today = new Date().toISOString();
 
-    // Sous-requête pour récupérer la métrique physique la plus proche de aujourd'hui
+    // Subquery to get the physical metric closest to today
     qb.addSelect(
       this.sql
         .createQueryBuilder('PhysicalMetric', 'pm')
@@ -60,7 +60,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
         .as('pm_weight')
     );
 
-    // Sous-requête pour le dernier PR de Snatch
+    // Subquery for the latest Snatch PR
     qb.addSelect(
       this.sql
         .createQueryBuilder(PersonalRecord, 'pr_snatch')
@@ -75,7 +75,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
         .as('pr_snatch')
     );
 
-    // Sous-requête pour le dernier PR de Clean & Jerk
+    // Subquery for the latest Clean & Jerk PR
     qb.addSelect(
       this.sql
         .createQueryBuilder(PersonalRecord, 'pr_cj')
@@ -96,7 +96,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
   }
 
   async findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]> {
-    // Récupère les résultats bruts (format "table", non-hydratés) via execute('all'). durée 4ms.
+    // Get raw results (table format, non-hydrated) via execute('all')
     const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute('all');
     return athletes as AthleteDetails[];
   }

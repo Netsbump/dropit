@@ -85,7 +85,7 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
       return;
     }
 
-    // Supprimer d'abord les éléments
+    // Remove elements first
     const elements = workoutToDelete.elements.getItems();
     for (const element of elements) {
       this.em.remove(element);

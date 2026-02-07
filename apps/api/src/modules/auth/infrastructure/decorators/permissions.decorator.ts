@@ -1,8 +1,8 @@
 import { SetMetadata } from "@nestjs/common";
 
 /**
- * Décorateur pour spécifier les permissions requises pour une route
- * @param permissions - Liste des permissions requises (mode OR)
+ * Decorator to specify the permissions required for a route
+ * @param permissions - List of required permissions (OR mode)
  * @example
  * @RequirePermissions('read')
  * @RequirePermissions('read', 'create')

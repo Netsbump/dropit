@@ -22,25 +22,25 @@ export class AuthGuard implements CanActivate {
         headers: fromNodeHeaders(request.headers),
       });
 
-      // Injecter la session et l'utilisateur dans la requête
+      // Inject session and user into the request
       request.session = session;
-      request.user = session?.user ?? null; // Utile pour les outils d'observabilité comme Sentry
+      request.user = session?.user ?? null; // Useful for observability tools like Sentry
 
-      // Vérifier si la route est marquée comme publique
+      // Check if the route is marked as public
       const isPublic = this.reflector.get('PUBLIC', context.getHandler());
       if (isPublic) {
         console.log('✅ [AuthGuard] Public route, no authentication required');
         return true;
       }
 
-      // Vérifier si la route est marquée comme optionnelle
+      // Check if the route is marked as optional
       const isOptional = this.reflector.get('OPTIONAL', context.getHandler());
       if (isOptional && !session) {
         console.log('⚠️ [AuthGuard] Optional route, no session found but access granted');
         return true;
       }
 
-      // Si nous arrivons ici et qu'il n'y a pas de session, l'accès est refusé
+      // If we reach here with no session, access is denied
       if (!session) {
         console.log('❌ [AuthGuard] No session found, access denied');
         throw new UnauthorizedException(

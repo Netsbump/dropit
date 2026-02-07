@@ -14,12 +14,12 @@ import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
 import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
 import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
 
-// implémentations MikroORM
+// MikroORM implementations
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
 import { MikroCompetitorStatusRepository } from './infrastructure/mikro-competitor-status.repository';
 import { MikroPersonalRecordRepository } from './infrastructure/mikro-personal-record.repository';
 
-// contrôleur & use-cases
+// Controllers & use-cases
 import { AthleteController } from './interface/controllers/athlete.controller';
 import { CompetitorStatusController } from './interface/controllers/competitor-status.controller';
 import { PersonalRecordController } from './interface/controllers/personal-record.controller';
@@ -34,7 +34,7 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
 
 @Module({
   imports: [
-    // on déclare aussi les custom-repositories ici
+    // Custom repositories are also declared here
     MikroOrmModule.forFeature({
       entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
     }),
@@ -45,12 +45,12 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
   controllers: [AthleteController, CompetitorStatusController, PersonalRecordController],
 
   providers: [
-    // implémentations MikroORM
+    // MikroORM implementations
     MikroAthleteRepository,
     MikroCompetitorStatusRepository,
     MikroPersonalRecordRepository,
 
-    // liaisons port -> implémentation (repositories)
+    // Port to implementation bindings (repositories)
     { provide: ATHLETE_REPO, useClass: MikroAthleteRepository },
     { provide: COMPETITOR_STATUS_REPO, useClass: MikroCompetitorStatusRepository },
     { provide: PERSONAL_RECORD_REPO, useClass: MikroPersonalRecordRepository },
@@ -60,7 +60,7 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
     CompetitorStatusUseCases,
     PersonalRecordUseCases,
 
-    // liaisons port -> implémentation (use-cases)
+    // Port to implementation bindings (use-cases)
     {
       provide: ATHLETE_USE_CASES,
       useFactory: (athleteRepo: IAthleteRepository, userUseCases: IUserUseCases, memberUseCases: IMemberUseCases) => {
@@ -84,7 +84,7 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
     },
   ],
 
-  // ce que d’autres modules pourront injecter
+  // What other modules can inject
   exports: [ATHLETE_REPO, COMPETITOR_STATUS_REPO, PERSONAL_RECORD_REPO],
 })
 export class AthletesModule {}

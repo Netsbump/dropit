@@ -10,15 +10,15 @@ export async function seedAthletes(
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
   console.log('Seeding one super admin...');
   
-  // Créer un super admin
+  // Create a super admin
   const superAdmin = new User();
   superAdmin.name = 'Super Admin';
   superAdmin.email = 'super.admin@gmail.com';
   superAdmin.emailVerified = true;
-  //Le champs isSuperAdmin est créé automatiquement par la config de better-auth
+  // The isSuperAdmin field is created automatically by better-auth config
   await em.persistAndFlush(superAdmin);
 
-  // Mettre à jour le champs isSuperAdmin manuellement via SQL
+  // Update the isSuperAdmin field manually via SQL
   await em.getConnection().execute(
     'UPDATE "user" SET is_super_admin = true WHERE id = ?',
     [superAdmin.id]
@@ -38,7 +38,7 @@ export async function seedAthletes(
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
-  // Créer un coach
+  // Create a coach
   const coachUser = new User();
   coachUser.name = 'Jean Dupont';
   coachUser.email = 'coach@example.com';
@@ -62,7 +62,7 @@ export async function seedAthletes(
   await em.persistAndFlush(coach);
   athletes.push(coach);
 
-  // Créer des athlètes avec faker
+  // Create athletes with faker
   const numberOfAthletes = faker.number.int({ min: 15, max: 25 });
   
   for (let i = 0; i < numberOfAthletes; i++) {
@@ -76,7 +76,7 @@ export async function seedAthletes(
     user.emailVerified = true;
     await em.persistAndFlush(user);
 
-    // Créer un compte avec mot de passe pour chaque athlète
+    // Create an account with password for each athlete
     const account = new Account();
     account.user = user;
     account.providerId = 'credential';

@@ -11,7 +11,7 @@ export async function seedExerciseCategories(
   const categories: Record<string, ExerciseCategory> = {};
 
   for (const exerciseCategory of types) {
-    // Vérifier si la catégorie existe déjà
+    // Check if the category already exists
     const existingCategory = await em.findOne(ExerciseCategory, {
       name: exerciseCategory,
     });
@@ -50,7 +50,7 @@ export async function seedExercises(
 
   const exercisesMap: Record<string, Exercise> = {};
   const exercises = [
-    // Arraché (Snatch) family
+    // Snatch family
     { name: 'Arraché Flexion', category: 'Technique', englishName: 'Snatch Pull', shortName: 'Arr Flex' },
     { name: 'Flexion d\'Arraché', category: 'Technique', englishName: 'Snatch Pull Hang', shortName: 'Flex Arr' },
     { name: 'Arraché', category: 'Technique', englishName: 'Snatch', shortName: 'Arr' },
@@ -58,14 +58,14 @@ export async function seedExercises(
     { name: 'Chute', category: 'Technique', englishName: 'Drop Snatch', shortName: 'Chute' },
     { name: 'Arraché Debout', category: 'Technique', englishName: 'Power Snatch', shortName: 'Arr Deb' },
 
-    // Epaulé (Clean) family
+    // Clean family
     { name: 'Epaulé Flexion', category: 'Technique', englishName: 'Clean Pull', shortName: 'Ep Flex' },
     { name: 'Epaulé Debout', category: 'Technique', englishName: 'Power Clean', shortName: 'Ep Deb' },
     { name: 'Epaulé', category: 'Technique', englishName: 'Clean', shortName: 'Ep' },
     { name: 'Passage Epaulé', category: 'Technique', englishName: 'Muscle Clean', shortName: 'Pass Ep' },
     { name: 'Épaulé-Jeté', category: 'Technique', englishName: 'Clean & Jerk', shortName: 'Ep-Jeté' },
 
-    // Jeté (Jerk) family
+    // Jerk family
     { name: 'Jeté Fente', category: 'Technique', englishName: 'Split Jerk', shortName: 'Jeté Fente' },
     { name: 'Jeté Nuque', category: 'Technique', englishName: 'Jerk Behind Neck', shortName: 'Jeté Nuque' },
 
@@ -82,7 +82,7 @@ export async function seedExercises(
     { name: 'Tirage Planche', category: 'Renforcement', englishName: 'Bent Over Row', shortName: 'Tir Plan' },
     { name: 'Tirage Menton', category: 'Renforcement', englishName: 'Upright Row', shortName: 'Tir Ment' },
 
-    // Développés et renforcement
+    // Presses and strengthening
     { name: 'Développé Militaire', category: 'Renforcement', englishName: 'Military Press', shortName: 'Dév Mil' },
     { name: 'Développé Couché', category: 'Renforcement', englishName: 'Bench Press', shortName: 'Dév Cou' },
     { name: 'Soulevé de Terre', category: 'Renforcement', englishName: 'Deadlift', shortName: 'SDT' },

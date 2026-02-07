@@ -9,7 +9,7 @@ describe('AuthGuard', () => {
   let reflector: Reflector;
   let betterAuthAdapter: BetterAuthAdapter;
   
-  // Mock data pour l'authentification uniquement
+  // Mock data for authentication only
   const mockAdminUser = {
     id: 'admin-user-id',
     email: 'admin@test.com',
@@ -188,7 +188,7 @@ describe('AuthGuard', () => {
       jest.spyOn(betterAuthAdapter.api, 'getSession').mockResolvedValue(expiredSession);
       
       const result = await guard.canActivate(mockContext);
-      expect(result).toBe(true); // Better Auth gère l'expiration automatiquement
+      expect(result).toBe(true); // Better Auth handles expiration automatically
     });
 
     it('should handle valid session', async () => {

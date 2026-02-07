@@ -25,14 +25,14 @@ import { MikroUserRepository } from '../../modules/auth/infrastructure/orm/mikro
 import { MikroMemberRepository } from '../../modules/auth/infrastructure/orm/mikro-member.repository';
 
 /**
- * Factory pour créer les use cases avec les repositories MikroORM
- * Utilisé dans les tests d'intégration pour éviter la complexité de l'injection de dépendances NestJS
+ * Factory to create use cases with MikroORM repositories.
+ * Used in integration tests to avoid NestJS dependency injection complexity.
  */
 export class TestUseCaseFactory {
   constructor(private readonly orm: MikroORM) {}
 
   /**
-   * Crée les use cases communs
+   * Create common use cases
    */
   private createCommonUseCases() {
     const userRepository = new MikroUserRepository(this.orm.em);
@@ -43,7 +43,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée l'OrganizationUseCases
+   * Create OrganizationUseCases
    */
   createOrganizationUseCases(): OrganizationUseCases {
     const organizationRepository = new MikroOrganizationRepository(this.orm.em);
@@ -51,7 +51,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée l'ExerciseCategoryUseCase
+   * Create ExerciseCategoryUseCase
    */
   createExerciseCategoryUseCase(): ExerciseCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -60,7 +60,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée l'ExerciseUseCase
+   * Create ExerciseUseCase
    */
   createExerciseUseCase(): ExerciseUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -70,7 +70,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée le ComplexCategoryUseCase
+   * Create ComplexCategoryUseCase
    */
   createComplexCategoryUseCase(): ComplexCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -79,7 +79,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée le ComplexUseCase
+   * Create ComplexUseCase
    */
   createComplexUseCase(): ComplexUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -91,7 +91,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée le WorkoutCategoryUseCase
+   * Create WorkoutCategoryUseCase
    */
   createWorkoutCategoryUseCase(): WorkoutCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -100,7 +100,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée le WorkoutUseCases
+   * Create WorkoutUseCases
    */
   createWorkoutUseCases(): WorkoutUseCases {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
@@ -130,7 +130,7 @@ export class TestUseCaseFactory {
   }
 
   /**
-   * Crée le TrainingSessionUseCase
+   * Create TrainingSessionUseCase
    */
   createTrainingSessionUseCase(): TrainingSessionUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();

@@ -118,8 +118,8 @@ describe('PermissionsGuard', () => {
       } as unknown as ExecutionContext;
 
       jest.spyOn(reflector, 'get')
-        .mockReturnValueOnce(['read']) // REQUIRED_PERMISSIONS (vérifié en premier)
-        .mockReturnValueOnce(false); // NO_ORGANIZATION (vérifié en second)
+        .mockReturnValueOnce(['read']) // REQUIRED_PERMISSIONS (checked first)
+        .mockReturnValueOnce(false); // NO_ORGANIZATION (checked second)
       jest.spyOn(entityManager, 'findOne').mockResolvedValue(mockMember);
 
       const result = await guard.canActivate(athleteContext);
@@ -531,7 +531,7 @@ describe('PermissionsGuard', () => {
       const resources = ['workout', 'exercise', 'complex', 'athlete', 'session', 'personalRecord'] as const;
       
       for (const resource of resources) {
-        // Member n'a pas accès à workout, exercise, complex (seulement admin/owner)
+        // Member has no access to workout, exercise, complex (only admin/owner)
         if (resource === 'workout' || resource === 'exercise' || resource === 'complex') {
           expect((member.statements as Record<string, string[]>)[resource]).toBeUndefined();
         } else {

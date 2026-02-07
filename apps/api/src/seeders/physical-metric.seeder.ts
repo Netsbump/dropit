@@ -5,20 +5,20 @@ import { PhysicalMetric } from '../modules/athletes/domain/physical-metric.entit
 export async function seedPhysicalMetrics(em: EntityManager): Promise<void> {
   console.log('Seeding physical metrics...');
 
-  // Récupérer les mêmes 5 athlètes
+  // Get the same 5 athletes
   const athletes = await em.find(Athlete, {}, { limit: 5 });
 
   for (const athlete of athletes) {
-    // Créer 3 mesures physiques par athlète sur les 6 derniers mois
+    // Create 3 physical metrics per athlete over the last 6 months
     for (let i = 0; i < 3; i++) {
       const metric = new PhysicalMetric();
       metric.athlete = athlete;
 
-      // Poids entre 50 et 100kg
+      // Weight between 50 and 100kg
       metric.weight = Math.floor(Math.random() * (100 - 50) + 50);
-      // Taille entre 1.60m et 1.90m
+      // Height between 1.60m and 1.90m
       metric.height = Number((Math.random() * (1.9 - 1.6) + 1.6).toFixed(2));
-      // Date lors de l'enregistrement
+      // Date at time of recording
       metric.date = new Date();
 
       em.persist(metric);

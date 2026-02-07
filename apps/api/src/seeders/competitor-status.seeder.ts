@@ -6,7 +6,7 @@ import { CompetitorStatus } from '../modules/athletes/domain/competitor-status.e
 export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
   console.log('Seeding competitor statuses...');
 
-  // Récupérer 5 athlètes aléatoires
+  // Get 5 random athletes
   const athletes = await em.find(Athlete, {}, { limit: 5 });
 
   const competitorData = [

@@ -8,7 +8,7 @@ import { Athlete } from '../modules/athletes/domain/athlete.entity';
 export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   console.log('Seeding training sessions...');
 
-  // 1. Récupérer le premier workout créé
+  // 1. Get the first created workout
   const workouts = await em.find(Workout, {}, { orderBy: { createdAt: 'ASC' }, limit: 1 });
 
   if (workouts.length === 0) {
@@ -19,7 +19,7 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   const firstWorkout = workouts[0];
   console.log('Using workout:', firstWorkout.id);
 
-  // 2. Récupérer l'organisation
+  // 2. Get the organization
   const organizations = await em.find(Organization, {}, { limit: 1 });
 
   if (organizations.length === 0) {
@@ -31,7 +31,7 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
 
   console.log('Using organization:', organization.name);
 
-  // 3. Récupérer tous les athlètes
+  // 3. Get all athletes
   const athletes = await em.find(Athlete, {});
 
   if (athletes.length === 0) {
@@ -41,16 +41,16 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
 
   console.log(`Found ${athletes.length} athletes`);
 
-  // 4. Créer une TrainingSession planifiée pour dans 3 jours
+  // 4. Create a TrainingSession scheduled for 3 days from now
   const trainingSession = new TrainingSession();
   trainingSession.workout = firstWorkout;
   trainingSession.organization = organization;
-  trainingSession.scheduledDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // Dans 3 jours
+  trainingSession.scheduledDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // In 3 days
 
   await em.persistAndFlush(trainingSession);
   console.log('Training session created for:', trainingSession.scheduledDate);
 
-  // 5. Créer des AthleteTrainingSession pour chaque athlète
+  // 5. Create AthleteTrainingSession for each athlete
   for (const athlete of athletes) {
     const athleteTrainingSession = new AthleteTrainingSession();
     athleteTrainingSession.athlete = athlete;

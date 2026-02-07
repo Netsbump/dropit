@@ -18,7 +18,7 @@ import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**
- * Exécute les tests d'intégration pour les workouts
+ * Run integration tests for workouts
  */
 export async function runWorkoutTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running workout integration tests...');
@@ -36,13 +36,13 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
   let workoutCategory: WorkoutCategory;
 
   try {
-    // Nettoyer la base de données
+    // Clean the database
     await cleanDatabase(orm);
     
-    // Setup l'organisation (dépendance)
+    // Setup organization (dependency)
     testData = await setupOrganization(orm);
     
-    // Utiliser la factory pour créer les use cases
+    // Use the factory to create use cases
     const factory = new TestUseCaseFactory(orm);
     organizationUseCases = factory.createOrganizationUseCases();
     exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
@@ -52,7 +52,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     workoutCategoryUseCase = factory.createWorkoutCategoryUseCase();
     workoutUseCase = factory.createWorkoutUseCases();
 
-    // Créer les catégories via use cases
+    // Create categories via use cases
     try {
       exerciseCategory = await exerciseCategoryUseCase.create({ 
         name: 'Haltérophilie' 
@@ -81,7 +81,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(workoutCategory.id).toBeDefined();
     expect(workoutCategory.name).toBe('Workouts Haltérophilie');
 
-    // Test 1: Créer des exercices et un complex
+    // Test 1: Create exercises and a complex
     console.log('🧪 Testing exercise and complex creation for workouts...');
     let exercise1: Exercise;
     let exercise2: Exercise;
@@ -118,7 +118,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(exercise2).toBeDefined();
     expect(complex).toBeDefined();
 
-    // Test 2: Créer un workout via use case
+    // Test 2: Create a workout via use case
     console.log('🧪 Testing workout creation via use case...');
     let workout1: Workout;
     try {
@@ -186,7 +186,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(workout1.id).toBeDefined();
     expect(workout1.elements.length).toBe(2);
 
-    // Vérification du complex
+    // Verify the complex
     const elements = workout1.elements.toArray();
     const complexElement = elements[0];
     expect(complexElement.type).toBe('complex');
@@ -197,7 +197,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(complexElement.blocks.length).toBe(1);
     expect(complexElement.blocks[0].numberOfSets).toBe(1);
 
-    // Vérification de l'exercice simple
+    // Verify the simple exercise
     const exerciseElement = elements[1];
     expect(exerciseElement.type).toBe('exercise');
     expect(exerciseElement.exercise).toBeDefined();
@@ -207,7 +207,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(exerciseElement.blocks[0].numberOfSets).toBe(3);
     expect(exerciseElement.blocks[0].rest).toBe(90);
 
-    // Test 3: Créer un autre workout
+    // Test 3: Create another workout
     console.log('🧪 Testing second workout creation via use case...');
     let workout2: Workout;
     try {
@@ -242,7 +242,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     expect(workout2).toBeDefined();
     expect(workout2.elements.length).toBe(1);
 
-    // Test 4: Récupérer tous les workouts via use case
+    // Test 4: Get all workouts via use case
     console.log('🧪 Testing workout retrieval via use case...');
     let workouts: Workout[];
     try {
@@ -252,7 +252,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     }
     expect(workouts.length).toBeGreaterThanOrEqual(2);
 
-    // Test 5: Récupérer un workout spécifique
+    // Test 5: Get a specific workout
     console.log('🧪 Testing single workout retrieval via use case...');
     let singleWorkout: Workout;
     try {
@@ -262,7 +262,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     }
     expect(singleWorkout.id).toBe(workout1.id);
 
-    // Test 6: Mettre à jour un workout via use case
+    // Test 6: Update a workout via use case
     console.log('🧪 Testing workout update via use case...');
     let updatedWorkout: Workout;
     try {
@@ -279,7 +279,7 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     }
     expect(updatedWorkout.description).toBe('Description modifiée');
 
-    // Test 7: Supprimer un workout via use case
+    // Test 7: Delete a workout via use case
     console.log('🧪 Testing workout deletion via use case...');
     try {
       await workoutUseCase.deleteWorkout(workout2.id, testData.organization.id, testData.adminUser.id);

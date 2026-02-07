@@ -101,7 +101,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/applicati
     WorkoutCategoryController,
   ],
   providers: [
-    // implémentations MikroORM
+    // MikroORM implementations
     MikroTrainingSessionRepository,
     MikroAthleteTrainingSessionRepository,
     MikroComplexRepository,
@@ -113,7 +113,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/applicati
     MikroWorkoutCategoryRepository,
     MikroWorkoutElementRepository,
 
-    // liaisons port -> implémentation (repositories)
+    // Port to implementation bindings (repositories)
     { provide: TRAINING_SESSION_REPO, useClass: MikroTrainingSessionRepository },
     { provide: ATHLETE_TRAINING_SESSION_REPO, useClass: MikroAthleteTrainingSessionRepository },
     { provide: COMPLEX_REPO, useClass: MikroComplexRepository },
@@ -134,7 +134,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/applicati
     WorkoutCategoryUseCase,
     WorkoutUseCases,
 
-    // liaisons port -> implémentation (use-cases)
+    // Port to implementation bindings (use-cases)
     {
       provide: TRAINING_SESSION_USE_CASES,
       useFactory: (
@@ -260,7 +260,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/applicati
     WORKOUT_REPO,
     WORKOUT_ELEMENT_REPO,
     
-    // Ports pour les use-cases
+    // Ports for use-cases
     TRAINING_SESSION_USE_CASES,
     WORKOUT_USE_CASES,
     EXERCISE_USE_CASES,

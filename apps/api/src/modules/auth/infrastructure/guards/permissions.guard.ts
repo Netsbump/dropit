@@ -18,42 +18,42 @@ export class PermissionsGuard implements CanActivate {
       const session = request.session;
       const user = session?.user;
 
-      // 1. Vérifier que l'utilisateur existe
+      // 1. Verify that the user exists
       if (!user) {
         throw new ForbiddenException('User not found in session');
       }
       
-      // 2. Récupérer les permissions requises depuis le décorateur
+      // 2. Get required permissions from the decorator
       const requiredPermissions = this.reflector.get<string[]>('REQUIRED_PERMISSIONS', context.getHandler());
 
-      // Si pas de permissions requises, accès autorisé
+      // If no permissions required, access granted
       if (!requiredPermissions || requiredPermissions.length === 0) {
         return true;
       }
 
-      // 3. Vérifier si c'est une action sans organisation
+      // 3. Check if this is a no-organization action
       const noOrganization = this.reflector.get<boolean>(NO_ORGANIZATION, context.getHandler());
   
       if (noOrganization) {
-        // ✅ Action sans organisation - vérifier seulement l'authentification
+        // No-organization action: only verify authentication
         console.log('✅ [PermissionsGuard] No-org action granted');
         return true;
       }
 
-      // 4. Déterminer la ressource depuis le nom du controller
+      // 4. Determine resource from controller name
       const controllerName = context.getClass().name;
       const resource = controllerName
       .replace('Controller', '')
-      .replace(/^([A-Z])/, (match) => match.toLowerCase()) // Première lettre en minuscule
-      .replace(/([A-Z])/g, (match) => match); // Garde les autres majuscules
+      .replace(/^([A-Z])/, (match) => match.toLowerCase()) // First letter to lowercase
+      .replace(/([A-Z])/g, (match) => match); // Keep other capitals
        
-      // 5. Vérifier que l'utilisateur appartient bien à une organisation
+      // 5. Verify that the user belongs to an organization
       const organizationId = session?.session?.activeOrganizationId;
       if (!organizationId) {
         throw new ForbiddenException('User does not belong to an organization');
       }
 
-      // 6. Récupérer le rôle de l'utilisateur dans l'organisation
+      // 6. Get the user's role in the organization
       const memberRecord = await this.em.findOne(Member, {
         user: { id: user.id },
         organization: { id: organizationId },
@@ -65,7 +65,7 @@ export class PermissionsGuard implements CanActivate {
 
       const organizationRole = memberRecord.role;
 
-      // 7. Vérification basée sur le rôle d'organisation en utilisant les permissions définies
+      // 7. Check permissions based on organization role using defined permissions
       const hasPermission = this.checkUserRolePermissions(organizationRole, resource, requiredPermissions);
 
       if (hasPermission) {
@@ -73,7 +73,7 @@ export class PermissionsGuard implements CanActivate {
         return true;
       }
 
-      // 7. Si aucune permission n'est accordée
+      // 7. If no permission is granted
       console.log('❌ [PermissionsGuard] Access denied for organization role:', organizationRole);
       throw new ForbiddenException(
         `Access denied. Required permissions: ${requiredPermissions.join(', ')} for resource: ${resource}`
@@ -86,24 +86,24 @@ export class PermissionsGuard implements CanActivate {
         timestamp: new Date().toISOString(),
       });
       
-      // Sinon, lancer une ForbiddenException générique
+      // Otherwise, throw a generic ForbiddenException
       throw new ForbiddenException('Permission check failed');
     }
   }
 
   /**
-   * Vérification des permissions basée sur le rôle d'organisation en utilisant les permissions définies
-   * dans le package @dropit/permissions
+   * Check permissions based on organization role using the permissions defined
+   * in the @dropit/permissions package
    */
   private checkUserRolePermissions(organizationRole: string, resource: string, requiredActions: string[]): boolean {
-    // Mapping des rôles vers les objets de permissions définis
+    // Map roles to the defined permission objects
     const rolePermissionsMap = {
       member: member.statements,
       admin: admin.statements,
       owner: owner.statements,
     };
 
-    // Récupérer les permissions du rôle de l'utilisateur
+    // Get permissions for the user's role
     const userRolePermissions = rolePermissionsMap[organizationRole as keyof typeof rolePermissionsMap];
     
     if (!userRolePermissions) {
@@ -111,7 +111,7 @@ export class PermissionsGuard implements CanActivate {
       return false;
     }
 
-    // Récupérer les permissions pour la ressource spécifique
+    // Get permissions for the specific resource
     const userResourcePermissions = userRolePermissions[resource as keyof typeof userRolePermissions] as string[] || [];
     
     console.log('🔍 [PermissionsGuard] Permission check details:', {
@@ -121,7 +121,7 @@ export class PermissionsGuard implements CanActivate {
       requiredActions,
     });
     
-    // Vérifier si l'utilisateur a au moins une des permissions requises (mode OR)
+    // Check if the user has at least one of the required permissions (OR mode)
     return requiredActions.some(action => userResourcePermissions.includes(action));
   }
 }   
