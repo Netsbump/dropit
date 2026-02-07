@@ -3,13 +3,10 @@ import {
   INotificationPort,
   NotificationRequest,
 } from '../application/ports/outbound/notification.port';
-import {
-  NotificationServiceNotConfiguredException,
-  EmailSendFailedException,
-} from '../application/exceptions/notification.exceptions';
 import { EMAIL_CHANNEL_PORT, IEmailChannel } from './channels/email/email-channel.port';
 import { PUSH_CHANNEL_PORT, IPushChannel } from './channels/push/push-channel.port';
 import { SMS_CHANNEL_PORT, ISmsChannel } from './channels/sms/sms-channel.port';
+import { Transport, TRANSPORT } from './notification.types';
 
 /**
  * Notification Adapter
@@ -36,19 +33,25 @@ export class NotificationAdapter implements INotificationPort {
   ) { }
 
   async send(request: NotificationRequest): Promise<void> {
-    //TODO Switch and call the right adapters depends on Kind of NotificationRequest ?
     const channel = this.resolveChannel(request)
 
     switch (channel) {
-      case 'email': return this.emailChannel.send(request);
-      case 'sms': return this.smsChannel.send(request);
-      case 'push': return this.pushChannel.send(request);
+      case TRANSPORT.EMAIL: return this.emailChannel.send(request);
+      case TRANSPORT.SMS: return this.smsChannel.send(request);
+      case TRANSPORT.PUSH: return this.pushChannel.send(request);
     }
   }
 
-  private resolveChannel(request: NotificationRequest): 'email' | 'sms' | 'push' {
-    //TODO determine logic based on user preferences, if user is new, where request comes from (eg: mobile or web app)
-    return 'email';
+  /**
+   * Determines which transport to use for a given notification.
+   * Resolution order:
+   * 1. Notification kind (e.g. OTP on mobile → SMS)
+   * 2. Request origin (web vs mobile app)
+   * 3. User preferences if applicable
+   */
+  private resolveChannel(request: NotificationRequest): Transport {
+    //TODO
+    return TRANSPORT.EMAIL;
   }
-  
+
 }

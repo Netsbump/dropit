@@ -10,16 +10,6 @@ interface BetterAuthDeps {
     data: { user: User; url: string; token: string },
     request: Request | undefined
   ) => Promise<void>;
-  sendInvitationEmail?: (
-    data: {
-      id: string;
-      email: string;
-      inviter: { user: { name: string; email: string } };
-      organization: { name: string };
-      inviteLink?: string;
-    },
-    request: Request | undefined
-  ) => Promise<void>;
   afterCreateInvitation: (
     data: {
       invitation: Invitation

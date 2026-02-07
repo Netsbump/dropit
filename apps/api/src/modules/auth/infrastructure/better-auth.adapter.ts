@@ -68,18 +68,8 @@ export class BetterAuthAdapter implements OnModuleInit {
       return;
     }
 
-    // Use centralized config and inject dependencies (email service for now)
+    // Use centralized config and inject dependencies
     this._auth = createAuthConfig({
-      sendInvitationEmail: async (data) => {
-        console.log('📧 [BetterAuthAdapter] Sending invitation email via EmailService');
-        // return this.emailService.sendInvitationEmail({
-        //   to: data.email,
-        //   inviterName: data.inviter.user.name,
-        //   inviterEmail: data.inviter.user.email,
-        //   organizationName: data.organization.name,
-        //   inviteLink: data.inviteLink || '',
-        // });
-      },
 
       afterCreateInvitation: async (data) => {
         return this.notificationUseCase.sendInvitation({

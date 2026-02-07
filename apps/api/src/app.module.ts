@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { DbModule } from './modules/database/database.module';
-import { EmailModule } from './modules/email/email.module';
+import { NotificationModule } from './modules/notification/notification.module';
 import { AthletesModule } from './modules/athletes/athletes.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TrainingModule } from './modules/training/training.module';
@@ -11,7 +11,7 @@ import { TrainingModule } from './modules/training/training.module';
     DbModule,
     AuthModule,
     AthletesModule,
-    EmailModule,
+    NotificationModule,
     TrainingModule,
   ],
   controllers: [AppController],

@@ -1,12 +1,15 @@
 import { Module, forwardRef } from '@nestjs/common';
 import { NotificationUseCase } from './application/use-cases/notification.use-cases';
 import { NOTIFICATION_USE_CASES } from './application/ports/inbound/notification-use-cases.port';
-import { NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
+import { type INotificationPort, NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
+import { type IUserRepository, USER_REPO } from '../auth/application/ports/user.repository.port';
 import { NotificationAdapter } from './infrastructure/notification.adapter';
 
 // Email channel
 import { EMAIL_CHANNEL_PORT } from './infrastructure/channels/email/email-channel.port';
+import { BrevoAdapter } from './infrastructure/channels/email/brevo.adapter';
 import { EmailAdapter } from './infrastructure/channels/email/email.adapter';
+import { MaildevAdapter } from './infrastructure/channels/email/maildev.adapter';
 
 // SMS channel
 import { SMS_CHANNEL_PORT } from './infrastructure/channels/sms/sms-channel.port';
@@ -41,10 +44,12 @@ import { AuthModule } from '../auth/auth.module';
     forwardRef(() => AuthModule),
   ],
   providers: [
-    // Use Case (Port IN implementation)
+    // Use Case (Port IN — plain class, no NestJS decorators)
     {
       provide: NOTIFICATION_USE_CASES,
-      useClass: NotificationUseCase,
+      useFactory: (notificationPort: INotificationPort, userRepository: IUserRepository) =>
+        new NotificationUseCase(notificationPort, userRepository),
+      inject: [NOTIFICATION_PORT, USER_REPO],
     },
 
     // Notification Adapter (Port OUT - routes to channels)
@@ -54,6 +59,8 @@ import { AuthModule } from '../auth/auth.module';
     },
 
     // Email Channel (switch based on environment)
+    BrevoAdapter,
+    MaildevAdapter,
     {
       provide: EMAIL_CHANNEL_PORT,
       useClass: EmailAdapter,

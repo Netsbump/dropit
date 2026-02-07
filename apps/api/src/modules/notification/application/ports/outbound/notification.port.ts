@@ -39,6 +39,7 @@ export type NotificationRequest =
     otp: string;
     platform: Platform;
   }
+
 /**
  * Notification Port (Port OUT)
  *

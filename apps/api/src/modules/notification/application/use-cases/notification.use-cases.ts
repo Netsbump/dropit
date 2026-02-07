@@ -1,37 +1,27 @@
-import { Inject, Injectable } from '@nestjs/common';
 import { INotificationUseCases, SendOtpParams } from '../ports/inbound/notification-use-cases.port';
 import {
   INotificationPort,
   KIND,
-  NOTIFICATION_PORT,
   PLATFORM,
   type NotificationRequest,
   RECIPIENT_TYPE,
 } from '../ports/outbound/notification.port';
-import { IUserRepository, USER_REPO } from '../../../auth/application/ports/user.repository.port';
+import { IUserRepository } from '../../../auth/application/ports/user.repository.port';
 import {
   UserNotFoundException,
-  UserEmailNotFoundException,
   UserPhoneNotFoundException,
 } from '../exceptions/notification.exceptions';
 
 /**
  * Notification Use Cases Implementation
  *
- * @description
  * Framework-agnostic implementation of notification business logic.
  * Contains all the business rules for sending notifications through various channels.
- *
- * @remarks
- * Dependencies are injected via constructor following dependency inversion principle.
- * All dependencies are interfaces (ports), not concrete implementations.
+ * Dependencies are plain interfaces (ports) — wired by the module via useFactory.
  */
-@Injectable()
 export class NotificationUseCase implements INotificationUseCases {
   constructor(
-    @Inject(NOTIFICATION_PORT)
     private readonly notificationPort: INotificationPort,
-    @Inject(USER_REPO)
     private readonly userRepository: IUserRepository,
   ) { }
 
