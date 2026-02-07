@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { TrainingSession } from '../modules/training/domain/training-session.entity';
 import { AthleteTrainingSession } from '../modules/training/domain/athlete-training-session.entity';
 import { Workout } from '../modules/training/domain/workout.entity';
-import { Organization } from '../modules/identity/domain/organization/organization.entity';
+import { Organization } from '../modules/auth/domain/organization/organization.entity';
 import { Athlete } from '../modules/athletes/domain/athlete.entity';
 
 export async function seedTrainingSessions(em: EntityManager): Promise<void> {

@@ -5,10 +5,10 @@ import {
   Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
-import { NoOrganization, RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { NoOrganization, RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { IAthleteUseCases, ATHLETE_USE_CASES } from '../../application/ports/athlete-use-cases.port';
 import { AthleteMapper } from '../mappers/athlete.mapper';
 import { AthletePresenter } from '../presenter/athlete.presenter';

@@ -1,6 +1,6 @@
 import { IComplexCategoryRepository } from '../ports/complex-category.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
 import { CreateComplexCategory, UpdateComplexCategory } from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 import { IComplexCategoryUseCases } from '../ports/complex-category-use-cases.port';

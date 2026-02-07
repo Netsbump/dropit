@@ -6,9 +6,9 @@ import { ExerciseUseCase } from '../../modules/training/application/use-cases/ex
 import { WorkoutCategoryUseCase } from '../../modules/training/application/use-cases/workout-category.use-cases';
 import { WorkoutUseCases } from '../../modules/training/application/use-cases/workout.use-cases';
 import { TrainingSessionUseCase } from '../../modules/training/application/use-cases/training-session.use-cases';
-import { OrganizationUseCases } from '../../modules/identity/application/organization.use-cases';
-import { UserUseCases } from '../../modules/identity/application/user.use-cases';
-import { MemberUseCases } from '../../modules/identity/application/member.use-cases';
+import { OrganizationUseCases } from '../../modules/auth/application/organization.use-cases';
+import { UserUseCases } from '../../modules/auth/application/user.use-cases';
+import { MemberUseCases } from '../../modules/auth/application/member.use-cases';
 import { MikroExerciseCategoryRepository } from '../../modules/training/infrastructure/mikro-exercise-category.repository';
 import { MikroExerciseRepository } from '../../modules/training/infrastructure/mikro-exercise.repository';
 import { MikroComplexCategoryRepository } from '../../modules/training/infrastructure/mikro-complex-category.repository';
@@ -20,9 +20,9 @@ import { MikroWorkoutElementRepository } from '../../modules/training/infrastruc
 import { MikroTrainingSessionRepository } from '../../modules/training/infrastructure/mikro-training-session.repository';
 import { MikroAthleteTrainingSessionRepository } from '../../modules/training/infrastructure/mikro-athlete-training-session.repository';
 import { MikroAthleteRepository } from '../../modules/athletes/infrastructure/mikro-athlete.repository';
-import { MikroOrganizationRepository } from '../../modules/identity/infrastructure/orm/mikro-organization.repository';
-import { MikroUserRepository } from '../../modules/identity/infrastructure/orm/mikro-user.repository';
-import { MikroMemberRepository } from '../../modules/identity/infrastructure/orm/mikro-member.repository';
+import { MikroOrganizationRepository } from '../../modules/auth/infrastructure/orm/mikro-organization.repository';
+import { MikroUserRepository } from '../../modules/auth/infrastructure/orm/mikro-user.repository';
+import { MikroMemberRepository } from '../../modules/auth/infrastructure/orm/mikro-member.repository';
 
 /**
  * Factory pour créer les use cases avec les repositories MikroORM

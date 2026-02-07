@@ -2,7 +2,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
 
 import { AthletesModule } from '../athletes/athletes.module';
-import { IdentityModule } from '../identity/identity.module';
+import { AuthModule } from '../auth/auth.module';
 
 import { Athlete } from '../athletes/domain/athlete.entity';
 import { Workout } from './domain/workout.entity';
@@ -66,9 +66,9 @@ import { COMPLEX_CATEGORY_USE_CASES } from './application/ports/complex-category
 
 // External dependencies
 import { ATHLETE_REPO, IAthleteRepository } from '../athletes/application/ports/athlete.repository.port';
-import { USER_USE_CASES, IUserUseCases } from '../identity/application/ports/user-use-cases.port';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports/member-use-cases.port';
-import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/application/ports/organization-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../auth/application/ports/user-use-cases.port';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../auth/application/ports/member-use-cases.port';
+import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/application/ports/organization-use-cases.port';
 
 @Module({
   imports: [
@@ -88,7 +88,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
       ],
     }),
     forwardRef(() => AthletesModule),
-    forwardRef(() => IdentityModule),
+    forwardRef(() => AuthModule),
   ],
   controllers: [
     TrainingSessionController,

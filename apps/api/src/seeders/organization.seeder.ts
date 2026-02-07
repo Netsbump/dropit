@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Organization } from '../modules/identity/domain/organization/organization.entity';
-import { Member } from '../modules/identity/domain/organization/member.entity';
-import { User } from '../modules/identity/domain/auth/user.entity';
+import { Organization } from '../modules/auth/domain/organization/organization.entity';
+import { Member } from '../modules/auth/domain/organization/member.entity';
+import { User } from '../modules/auth/domain/auth/user.entity';
 
 export async function seedOrganizations(
   em: EntityManager

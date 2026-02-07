@@ -8,9 +8,9 @@ import {
 } from '../../domain/workout-element.entity';
 import { Workout } from '../../domain/workout.entity';
 import { IWorkoutRepository } from '../ports/workout.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
-import { IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
+import { IOrganizationUseCases } from '../../../auth/application/ports/organization-use-cases.port';
 import { IWorkoutCategoryRepository } from '../ports/workout-category.repository.port';
 import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IComplexRepository } from '../ports/complex.repository.port';

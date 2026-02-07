@@ -5,7 +5,7 @@ import { ExerciseCategoryUseCase } from '../modules/training/application/use-cas
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
 import { WorkoutCategoryUseCase } from '../modules/training/application/use-cases/workout-category.use-cases';
 import { WorkoutUseCases } from '../modules/training/application/use-cases/workout.use-cases';
-import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { WORKOUT_ELEMENT_TYPES } from '../modules/training/domain/workout-element.entity';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';

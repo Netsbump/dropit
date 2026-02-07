@@ -1,6 +1,6 @@
 import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
 import { CreateExerciseCategory, UpdateExerciseCategory } from '@dropit/schemas';
 import { ExerciseCategory } from '../../domain/exercise-category.entity';
 import { IExerciseCategoryUseCases } from '../ports/exercise-category-use-cases.port';

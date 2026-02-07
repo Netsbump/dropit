@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
-import { DbModule } from './modules/core/db/db.module';
-import { EmailModule } from './modules/core/email/email.module';
+import { DbModule } from './modules/database/database.module';
+import { EmailModule } from './modules/email/email.module';
 import { AthletesModule } from './modules/athletes/athletes.module';
-import { IdentityModule } from './modules/identity/identity.module';
+import { AuthModule } from './modules/auth/auth.module';
 import { TrainingModule } from './modules/training/training.module';
 
 @Module({
   imports: [
     DbModule,
-    IdentityModule,
+    AuthModule,
     AthletesModule,
     EmailModule,
     TrainingModule,

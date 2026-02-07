@@ -26,10 +26,10 @@ import { PersonalRecordController } from './interface/controllers/personal-recor
 import { CompetitorStatusUseCases } from './application/use-cases/competitor-status.use-cases';
 import { AthleteUseCases } from './application/use-cases/athlete-use-cases';
 import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
-import { IdentityModule } from '../identity/identity.module';
+import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
-import { USER_USE_CASES, IUserUseCases } from '../identity/application/ports/user-use-cases.port';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports/member-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../auth/application/ports/user-use-cases.port';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../auth/application/ports/member-use-cases.port';
 import { EXERCISE_REPO, IExerciseRepository } from '../training/application/ports/exercise.repository.port';
 
 @Module({
@@ -38,7 +38,7 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
     MikroOrmModule.forFeature({
       entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
     }),
-    forwardRef(() => IdentityModule),
+    forwardRef(() => AuthModule),
     forwardRef(() => TrainingModule),
   ],
 

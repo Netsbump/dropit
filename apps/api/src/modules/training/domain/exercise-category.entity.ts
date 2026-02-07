@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Exercise } from './exercise.entity';
-import { User } from '../../identity/domain/auth/user.entity';
+import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity()
 export class ExerciseCategory {

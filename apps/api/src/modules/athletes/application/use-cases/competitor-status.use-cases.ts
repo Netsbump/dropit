@@ -6,7 +6,7 @@ import { CompetitorStatus } from '../../domain/competitor-status.entity';
 import { ICompetitorStatusUseCases } from '../ports/competitor-status-use-cases.port';
 import { ICompetitorStatusRepository } from '../ports/competitor-status.repository.port';
 import { IAthleteRepository } from '../ports/athlete.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,

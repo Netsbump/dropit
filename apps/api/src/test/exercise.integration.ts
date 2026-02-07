@@ -2,7 +2,7 @@ import { CreateExercise, ExerciseCategoryDto, ExerciseDto } from '@dropit/schema
 import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
 import { setupOrganization } from './organization.integration';
