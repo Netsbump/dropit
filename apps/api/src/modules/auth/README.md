@@ -24,8 +24,8 @@ auth/
 │       └── user.exceptions.ts
 ├── domain/
 │   ├── auth/
-│   │   ├── user.entity.ts                 # Better-auth user (+ isSuperAdmin)
-│   │   ├── session.entity.ts              # Better-auth session (+ athleteId)
+│   │   ├── user.entity.ts                 # Better-auth user (+ admin plugin: role, banned, etc.)
+│   │   ├── session.entity.ts              # Better-auth session (+ impersonatedBy, admin plugin)
 │   │   ├── account.entity.ts              # OAuth accounts
 │   │   └── verification.entity.ts         # Email verification tokens
 │   └── organization/
@@ -83,7 +83,8 @@ Note: the body parser is skipped for `/auth/*` routes in `main.ts` because bette
 
 **PermissionsGuard** (per-route, used with `@UseGuards`):
 - Checks the user's organization role against `@RequirePermissions()`
-- Uses the `@dropit/permissions` package for role definitions (owner, admin, member)
+- Uses `permissions.config.ts` for role definitions (2 org roles: member/admin)
+- Super admin (`user.role === 'admin'`) bypasses all permission checks
 - Derives the resource name from the controller name
 
 ### Decorators
@@ -103,10 +104,12 @@ Note: the body parser is skipped for `/auth/*` routes in `main.ts` because bette
 `BetterAuthAdapter` registers two database hooks via `createAuthConfig()`:
 
 1. **`user.create.after`**: Creates an Athlete profile automatically when a new user signs up
-2. **`session.create.before`**: Enriches the session with `activeOrganizationId` and `athleteId` so the frontend can redirect correctly after login
+2. **`session.create.before`**: Sets `activeOrganizationId` on the session so the frontend can redirect correctly after login
+
+Note: `athleteId` is enriched at read-time via the `customSession` plugin, not stored in the session table.
 
 ## Dependencies
 
 - **NotificationModule**: Sending invitation emails (via `INotificationUseCases`)
-- **`@dropit/permissions`**: Shared role and permission definitions (owner, admin, member)
+- **`permissions.config.ts`**: Local permission definitions (2 org roles: member, admin)
 - **MikroORM**: Entity persistence (User, Organization, Member, etc.)

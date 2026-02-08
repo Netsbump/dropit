@@ -25,6 +25,8 @@ export const Route = createFileRoute('/onboarding')({
 function OnboardingChoice() {
   const { t } = useTranslation('onboarding');
   const navigate = useNavigate();
+  const { data: sessionData } = authClient.useSession();
+  const isSuperAdmin = sessionData?.user?.role === 'admin';
 
   const handleChoice = (choice: 'coach' | 'athlete') => {
     if (choice === 'coach') {
@@ -55,9 +57,9 @@ function OnboardingChoice() {
         </div>
 
         {/* Cartes de choix */}
-        <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-          {/* Option Coach */}
-          <Card
+        <div className={cn("grid gap-6 max-w-4xl mx-auto", isSuperAdmin ? "md:grid-cols-2" : "md:grid-cols-1 max-w-lg")}>
+          {/* Option Coach — super admin only */}
+          {isSuperAdmin && <Card
             className={cn(
               "relative overflow-visible cursor-pointer group transition-all duration-200",
               "bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm",
@@ -124,7 +126,7 @@ function OnboardingChoice() {
                 </Button>
               </CardContent>
             </div>
-          </Card>
+          </Card>}
 
           {/* Option Athlète */}
           <Card

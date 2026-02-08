@@ -1,21 +1,13 @@
 import { createAuthClient } from 'better-auth/react';
-import { organizationClient, inferAdditionalFields } from 'better-auth/client/plugins';
-import { ac, owner, admin, member } from '@dropit/permissions';
+import { organizationClient, adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Configuration du client d'authentification pour React Native
 export const authClient = createAuthClient({
   baseURL: process.env.EXPO_PUBLIC_API_URL || 'http://192.168.1.147:3000',
   plugins: [
-    organizationClient({
-      // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
-      ac: ac as any,
-      roles: {
-        owner,
-        admin,
-        member,
-      },
-    }),
+    organizationClient(),
+    adminClient(),
     inferAdditionalFields({
       session: {
         athleteId: {

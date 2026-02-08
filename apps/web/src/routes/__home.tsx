@@ -8,26 +8,20 @@ import { PageMetaProvider } from '../shared/hooks/use-page-meta';
 export const Route = createFileRoute('/__home')({
   beforeLoad: async () => {
     const session = await authClient.getSession();
-    if (!session) {
+    if (!session?.data) {
       throw redirect({ to: '/login' });
     }
 
-    // Vérifier si l'utilisateur a un membre actif dans une organisation
     const activeMember = await authClient.organization.getActiveMember();
     if (!activeMember?.data) {
       throw redirect({ to: '/onboarding' });
     }
 
-    // Vérifier le rôle de l'utilisateur - seuls les coachs peuvent accéder au dashboard
-    const userRole = activeMember.data.role;
+    const orgRole = activeMember.data.role;
+    const isSuperAdmin = session.data.user?.role === 'admin';
 
-    // Si c'est un membre (athlète), rediriger vers download-app
-    if (userRole === 'member') {
-      throw redirect({ to: '/download-app' });
-    }
-
-    // Les owner et admin peuvent continuer
-    if (userRole !== 'owner' && userRole !== 'admin') {
+    // Only coaches (org admin) and super admins can access the dashboard
+    if (orgRole !== 'admin' && !isSuperAdmin) {
       throw redirect({ to: '/download-app' });
     }
   },

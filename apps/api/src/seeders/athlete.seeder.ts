@@ -9,20 +9,14 @@ export async function seedAthletes(
   em: EntityManager
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
   console.log('Seeding one super admin...');
-  
-  // Create a super admin
+
+  // Create a super admin (admin plugin role = app-level super admin)
   const superAdmin = new User();
   superAdmin.name = 'Super Admin';
   superAdmin.email = 'super.admin@gmail.com';
   superAdmin.emailVerified = true;
-  // The isSuperAdmin field is created automatically by better-auth config
+  superAdmin.role = 'admin';
   await em.persistAndFlush(superAdmin);
-
-  // Update the isSuperAdmin field manually via SQL
-  await em.getConnection().execute(
-    'UPDATE "user" SET is_super_admin = true WHERE id = ?',
-    [superAdmin.id]
-  );
 
   const superAdminAccount = new Account();
   superAdminAccount.user = superAdmin;
@@ -38,11 +32,12 @@ export async function seedAthletes(
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
-  // Create a coach
+  // Create a coach (app-level role = user)
   const coachUser = new User();
   coachUser.name = 'Jean Dupont';
   coachUser.email = 'coach@example.com';
   coachUser.emailVerified = true;
+  coachUser.role = 'user';
   await em.persistAndFlush(coachUser);
 
   const coachAccount = new Account();
@@ -74,6 +69,7 @@ export async function seedAthletes(
     user.email = email.toLowerCase();
     user.name = `${firstName} ${lastName}`;
     user.emailVerified = true;
+    user.role = 'user';
     await em.persistAndFlush(user);
 
     // Create an account with password for each athlete

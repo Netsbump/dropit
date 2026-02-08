@@ -35,18 +35,18 @@ export async function createTestOrganization(orm: MikroORM): Promise<TestData> {
   });
   await orm.em.persistAndFlush(organization);
 
-  // Create the admin user
+  // Create the admin user (org role = admin; app role = user)
   const adminUser = new User();
   adminUser.email = 'admin@test.com';
   adminUser.name = 'Admin User';
-  adminUser.isSuperAdmin = false;
+  adminUser.role = 'user';
   await orm.em.persistAndFlush(adminUser);
 
   // Create the member user
   const memberUser = new User();
   memberUser.email = 'member@test.com';
   memberUser.name = 'Member User';
-  memberUser.isSuperAdmin = false;
+  memberUser.role = 'user';
   await orm.em.persistAndFlush(memberUser);
 
   // Create Member relations

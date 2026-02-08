@@ -95,16 +95,16 @@ pnpm typecheck                 # Type checking
 ### Shared Packages
 - `@dropit/contract` - API contracts using ts-rest
 - `@dropit/schemas` - Zod validation schemas
-- `@dropit/permissions` - Better-auth access control and roles
 - `@dropit/i18n` - Internationalization with French and English
 
 ## Authentication & Authorization
 
-Uses better-auth with organization-based permissions:
-- **Roles**: owner, admin, member
-- **Permissions**: Managed client-side by better-auth
-- **Backend**: Only verifies authentication (AuthGuard)
-- **Frontend**: Handles permission-based UI rendering
+Uses better-auth with admin plugin and organization plugin:
+- **Org roles**: admin (coach), member (athlete) — defined in `permissions.config.ts`
+- **Super admin**: `user.role === 'admin'` (app-level, via better-auth admin plugin) — bypasses all permission checks
+- **Backend**: AuthGuard validates sessions; PermissionsGuard checks org role via `permissions.config.ts`
+- **Session enrichment**: `customSession` plugin adds `organizationRole` and `athleteId` at read-time
+- **Frontend**: Uses org role and super admin status for routing and UI rendering
 
 ## Environment Setup
 

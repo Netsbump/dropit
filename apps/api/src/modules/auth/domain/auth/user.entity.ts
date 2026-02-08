@@ -32,6 +32,16 @@ export class User {
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
   updatedAt: Date = new Date()
 
-  @Property()
-  isSuperAdmin = false;
+  // Admin plugin fields (app-level: admin = super admin, user = all others)
+  @Property({ nullable: true })
+  role?: string
+
+  @Property({ nullable: true })
+  banned?: boolean
+
+  @Property({ fieldName: 'banReason', nullable: true })
+  banReason?: string
+
+  @Property({ fieldName: 'banExpires', nullable: true })
+  banExpires?: Date
 }

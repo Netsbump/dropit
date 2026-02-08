@@ -1,13 +1,14 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Auth } from 'better-auth';
 import { createAuthConfig } from '../better-auth.config';
-import { EntityManager } from '@mikro-orm/core';
+import type { CustomSessionContext, EnrichedSessionResult } from '../better-auth.config';
 import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
 } from '../../notification/application/ports/inbound/notification-use-cases.port';
-import { Athlete } from '../../../modules/athletes/domain/athlete.entity';
+import { Athlete } from '../../athletes/domain/athlete.entity';
 import { Member } from '../domain/organization/member.entity';
+import { EntityManager } from '@mikro-orm/core';
 
 
 /**
@@ -52,6 +53,36 @@ export class BetterAuthAdapter implements OnModuleInit {
 
 
   /**
+   * Enriches the session returned by getSession with organizationRole and athleteId.
+   * Called by customSession plugin on each getSession(); no extra DB columns.
+   */
+  private async enrichSession(ctx: CustomSessionContext): Promise<EnrichedSessionResult> {
+    const { user, session } = ctx;
+    const activeOrgId = session.activeOrganizationId as string | undefined;
+    let organizationRole: string | null = null;
+    let athleteId: string | null = null;
+    if (user?.id) {
+      if (activeOrgId) {
+        const memberRecord = await this.em.findOne(Member, {
+          user: { id: user.id },
+          organization: { id: activeOrgId },
+        });
+        organizationRole = memberRecord?.role ?? null;
+      }
+      const athlete = await this.em.findOne(Athlete, { user: { id: user.id } });
+      athleteId = athlete?.id ?? null;
+    }
+    return {
+      user: { ...user },
+      session: {
+        ...session,
+        organizationRole,
+        athleteId,
+      },
+    };
+  }
+
+  /**
    * Creates and configures the better-auth instance.
    * Injects NestJS dependencies (em, notificationUseCase) into the config
    * so that better-auth hooks can use them.
@@ -63,17 +94,16 @@ export class BetterAuthAdapter implements OnModuleInit {
 
     // Use centralized config and inject dependencies
     this._auth = createAuthConfig({
-
       afterCreateInvitation: async (data) => {
         return this.notificationUseCase.sendInvitation({
           organizationId: data.organization.id,
           organizationName: data.organization.name,
           invitedBy: data.inviter.id,
           invitationToken: data.invitation.id,
-          email: data.invitation.email
-        })
+          email: data.invitation.email,
+        });
       },
-
+      enrichSession: (ctx) => this.enrichSession(ctx),
       databaseHooks: {
         user: {
           create: {
@@ -114,19 +144,15 @@ export class BetterAuthAdapter implements OnModuleInit {
               try {
                 const emFork = this.em.fork();
                 const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
-                const athlete = await emFork.findOne(Athlete, { user: { id: session.userId } });
-
-                console.log('🔧 [BetterAuth Hook] Setting session data:', {
+                const activeOrganizationId = memberRecord?.organization.id ?? null;
+                console.log('🔧 [BetterAuth Hook] Setting session activeOrganizationId:', {
                   userId: session.userId,
-                  organizationId: memberRecord?.organization.id || null,
-                  athleteId: athlete?.id || null
+                  activeOrganizationId,
                 });
-
                 return {
                   data: {
                     ...session,
-                    activeOrganizationId: memberRecord?.organization.id ?? null,
-                    athleteId: athlete?.id ?? null,
+                    activeOrganizationId,
                   },
                 };
               } catch (error) {

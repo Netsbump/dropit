@@ -870,26 +870,23 @@ Appliqué sur les **controllers spécifiques** avec `@UseGuards(PermissionsGuard
 - ✅ Vérifie la **permission requise** sur la **ressource**
 - ✅ Rejette si l'utilisateur n'a pas la permission (403 Forbidden)
 
-**Définition des Permissions** (`@dropit/permissions`) :
+**Définition des Permissions** (`permissions.config.ts`) :
 ```typescript
-// Seuls admin et owner ont accès à "workout"
-export const admin = ac.newRole({
+// Coach (DB role: admin) a accès à "workout"
+const COACH_PERMISSIONS = {
   workout: ["read", "create", "update", "delete"],
   exercise: ["read", "create", "update", "delete"],
   // ...
-});
+};
 
-export const owner = ac.newRole({
-  workout: ["read", "create", "update", "delete"],
-  // ... (toutes les permissions)
-});
-
-// member (athlète) n'a PAS accès à "workout"
-export const member = ac.newRole({
+// Athlete (DB role: member) n'a PAS accès à "workout"
+const ATHLETE_PERMISSIONS = {
   athlete: ["read", "create", "update", "delete"],
   session: ["read"],
   // PAS de permissions sur "workout"
-});
+};
+
+// Super admin (user.role === 'admin') bypasse toutes les permissions
 ```
 
 **Exemple d'utilisation** :

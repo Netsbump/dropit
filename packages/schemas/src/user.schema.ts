@@ -14,7 +14,7 @@ export const userSchema = z.object({
   email: z.string().email(),
   emailVerified: z.boolean(),
   image: z.string().optional(),
-  isSuperAdmin: z.boolean(),
+  role: z.string().default('user'),
   createdAt: z.date(),
   updatedAt: z.date(),
 });

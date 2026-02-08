@@ -14,7 +14,7 @@ describe('AuthGuard', () => {
     id: 'admin-user-id',
     email: 'admin@test.com',
     name: 'Admin User',
-    isSuperAdmin: false,
+    role: 'user',
     emailVerified: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -24,7 +24,7 @@ describe('AuthGuard', () => {
     id: 'super-admin-user-id',
     email: 'superadmin@test.com',
     name: 'Super Admin User',
-    isSuperAdmin: true,
+    role: 'admin',
     emailVerified: true,
     createdAt: new Date(),
     updatedAt: new Date(),
@@ -155,7 +155,7 @@ describe('AuthGuard', () => {
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
-      expect(mockRequest.user.isSuperAdmin).toBe(false);
+      expect(mockRequest.user.role).toBe('user');
     });
 
     it('should handle super admin user correctly', async () => {
@@ -163,7 +163,7 @@ describe('AuthGuard', () => {
       
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
-      expect(mockRequest.user.isSuperAdmin).toBe(true);
+      expect(mockRequest.user.role).toBe('admin');
     });
 
     it('should handle unverified email user', async () => {

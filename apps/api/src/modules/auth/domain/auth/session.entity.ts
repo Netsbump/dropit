@@ -37,8 +37,8 @@ export class Session {
   @Property({ fieldName: 'activeOrganizationId', nullable: true })
   activeOrganizationId?: string
 
-  @Property({ fieldName: 'athleteId', nullable: true })
-  athleteId?: string
+  @Property({ fieldName: 'impersonatedBy', nullable: true })
+  impersonatedBy?: string
 
   @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: User
