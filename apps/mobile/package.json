@@ -10,16 +10,15 @@
     "ios": "npx expo start --ios",
     "web": "npx expo start --web",
     "typecheck": "tsc --noEmit",
-    "postinstall": "cd ../../packages/schemas && pnpm build && cd ../contract && pnpm build && cd ../permissions && pnpm build"
+    "postinstall": "cd ../../packages/schemas && pnpm build && cd ../contract && pnpm build"
   },
   "dependencies": {
     "@dropit/contract": "workspace:*",
     "@dropit/i18n": "workspace:*",
-    "@dropit/permissions": "workspace:*",
     "@dropit/schemas": "workspace:*",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@ts-rest/core": "^3.51.0",
-    "better-auth": "^1.2.7",
+    "better-auth": "^1.4",
     "expo": "~54.0.10",
     "expo-linear-gradient": "~15.0.7",
     "expo-status-bar": "~3.0.8",

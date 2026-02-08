@@ -17,8 +17,11 @@ import { BicepsFlexed } from 'lucide-react';
 export const Route = createFileRoute('/create-organization')({
   beforeLoad: async () => {
     const session = await authClient.getSession();
-    if (!session) {
+    if (!session?.data) {
       throw redirect({ to: '/login' });
+    }
+    if (session.data.user?.role !== 'admin') {
+      throw redirect({ to: '/onboarding' });
     }
   },
   component: CreateOrganizationPage,

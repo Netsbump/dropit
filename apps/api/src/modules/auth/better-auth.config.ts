@@ -1,23 +1,33 @@
 import { BetterAuthOptions, User, betterAuth } from "better-auth";
-import { openAPI } from "better-auth/plugins";
+import { openAPI, admin, customSession } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "../../config/env.config";
 import { organization, Organization, Invitation } from "better-auth/plugins/organization";
-import { ac, owner, admin, member } from "@dropit/permissions";
+
+/** Context passed by customSession plugin (user + session from DB) */
+export interface CustomSessionContext {
+  user: User;
+  session: Record<string, unknown>;
+}
+
+/** Return shape: session can be extended with organizationRole, athleteId, etc. */
+export interface EnrichedSessionResult {
+  user: Record<string, unknown>;
+  session: Record<string, unknown>;
+}
 
 interface BetterAuthDeps {
   sendVerificationEmail?: (
     data: { user: User; url: string; token: string },
     request: Request | undefined
   ) => Promise<void>;
-  afterCreateInvitation: (
-    data: {
-      invitation: Invitation
-      inviter: User
-      organization: Organization
-    }
-  ) => Promise<void>;
-  databaseHooks?: BetterAuthOptions['databaseHooks'];
+  afterCreateInvitation: (data: {
+    invitation: Invitation;
+    inviter: User;
+    organization: Organization;
+  }) => Promise<void>;
+  enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
+  databaseHooks?: BetterAuthOptions["databaseHooks"];
 }
 
 export function createAuthConfig(
@@ -51,25 +61,6 @@ export function createAuthConfig(
       window: 50,
       max: 100,
     },
-    user: {
-      additionalFields: {
-        isSuperAdmin: {
-          type: "boolean",
-          required: false,
-          defaultValue: false,
-          input: false, // don't allow user to set isSuperAdmin
-        },
-      },
-    },
-    session: {
-      additionalFields: {
-        athleteId: {
-          type: "string",
-          required: false, // null for super admins users
-          input: false, // don't allow user to set athleteId
-        },
-      },
-    },
 
     // === CALLBACKS (delegate to better-auth.adapter) ===
     emailAndPassword: {
@@ -90,20 +81,18 @@ export function createAuthConfig(
     // === PLUGINS ===
     plugins: [
       openAPI(),
+      admin(),
       organization({
-        // biome-ignore lint/suspicious/noExplicitAny: Better Auth type compatibility
-        ac: ac as any,
-        roles: {
-          owner,
-          admin,
-          member,
+        allowUserToCreateOrganization: async (user) => {
+          return user.role === 'admin';
         },
-
         organizationHooks: {
           afterCreateInvitation: async (data) => {
             await deps.afterCreateInvitation(data);
-          }
-        }
-      })],
+          },
+        },
+      }),
+      customSession(async (ctx) => deps.enrichSession(ctx)),
+    ],
   })
 }

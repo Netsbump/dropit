@@ -3,7 +3,8 @@ import { SetMetadata, createParamDecorator } from '@nestjs/common';
 import { User } from 'better-auth';
 
 export interface AuthenticatedUser extends User {
-  isSuperAdmin: boolean;
+  /** App-level role from admin plugin: 'admin' = super admin, 'user' = default */
+  role?: string;
 }
 
 export const Public = () => SetMetadata('PUBLIC', true);

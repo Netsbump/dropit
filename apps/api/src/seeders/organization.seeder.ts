@@ -35,10 +35,10 @@ export async function seedOrganizations(
     const coachMember = new Member();
     coachMember.user = coachUser;
     coachMember.organization = existingOrganization;
-    coachMember.role = 'owner'; // Coach becomes owner of the organization
+    coachMember.role = 'admin';
 
     await em.persistAndFlush(coachMember);
-    console.log('Coach added as owner to existing organization');
+    console.log('Coach added as admin to existing organization');
 
     return { organization: existingOrganization, coachMember };
   }
@@ -56,25 +56,37 @@ export async function seedOrganizations(
   await em.persistAndFlush(organization);
   console.log('Created new organization:', organization.name);
 
-  // Get the existing coach
+  // Owner = creator of the organization and admin (app-level admin)
+  const superAdmin = await em.findOne(User, { email: 'super.admin@gmail.com' });
+  if (!superAdmin) {
+    throw new Error('Super admin user not found. Please run seedAthletes first.');
+  }
+  const ownerMember = new Member();
+  ownerMember.user = superAdmin;
+  ownerMember.organization = organization;
+  ownerMember.role = 'owner';
+  await em.persistAndFlush(ownerMember);
+  console.log('Super admin added as owner (creator) of organization');
+
+  // Coach = admin of the organization, remains "user" in the app
   const coachUser = await em.findOne(User, { email: 'coach@example.com' });
   if (!coachUser) {
     throw new Error('Coach user not found. Please run seedAthletes first.');
   }
-
-  // Add the coach as a member of the organization (owner)
   const coachMember = new Member();
   coachMember.user = coachUser;
   coachMember.organization = organization;
-  coachMember.role = 'owner'; 
-
+  coachMember.role = 'admin';
   await em.persistAndFlush(coachMember);
-  console.log('Coach added as owner to organization');
+  console.log('Coach added as admin to organization');
   console.log('Coach user ID:', coachUser.id);
   console.log('Coach member role:', coachMember.role);
 
   // Add athletes as members of the organization
-  const athletes = await em.find(User, { isSuperAdmin: false, email: { $ne: 'coach@example.com' } });
+  const athletes = await em.find(User, {
+    $or: [{ role: { $ne: 'admin' } }, { role: null }],
+    email: { $ne: 'coach@example.com' },
+  });
   for (const athlete of athletes) {
     const athleteMember = new Member();
     athleteMember.user = athlete;

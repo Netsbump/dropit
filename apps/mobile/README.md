@@ -116,7 +116,6 @@ L'app mobile utilise tous les packages partagés du monorepo :
 
 - **@dropit/contract** - Contrats API typés
 - **@dropit/schemas** - Validation Zod
-- **@dropit/permissions** - Système de rôles et permissions
 - **@dropit/i18n** - Internationalisation
 
 ### Exemple d'utilisation des schémas :

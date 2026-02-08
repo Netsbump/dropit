@@ -3,7 +3,7 @@ import { ExecutionContext, ForbiddenException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { EntityManager } from '@mikro-orm/core';
 import { PermissionsGuard } from '../guards/permissions.guard';
-import { member, admin, owner } from '@dropit/permissions';
+import { hasPermission } from '../../permissions.config';
 import { Member } from '../../domain/organization/member.entity';
 import { Organization } from '../../domain/organization/organization.entity';
 import { Invitation } from '../../domain/organization/invitation.entity';
@@ -15,12 +15,12 @@ describe('PermissionsGuard', () => {
   let entityManager: EntityManager;
 
   // Mock data
-  const mockUser = { 
-    id: 'user-123', 
+  const mockUser = {
+    id: 'user-123',
     email: 'test@example.com',
     name: 'Test User',
     emailVerified: false,
-    isSuperAdmin: false,
+    role: 'user',
     createdAt: new Date(),
     updatedAt: new Date(),
   };
@@ -142,12 +142,12 @@ describe('PermissionsGuard', () => {
       expect(result).toBe(true);
     });
 
-    it('should correctly map owner permissions for workout resource', async () => {
+    it('should correctly map coach (admin) permissions for workout resource', async () => {
       jest.spyOn(reflector, 'get')
         .mockReturnValueOnce(['delete']) // REQUIRED_PERMISSIONS
         .mockReturnValueOnce(false); // NO_ORGANIZATION
-      const ownerMember = { ...mockMember, role: 'owner' };
-      jest.spyOn(entityManager, 'findOne').mockResolvedValue(ownerMember);
+      const adminMember = { ...mockMember, role: 'admin' };
+      jest.spyOn(entityManager, 'findOne').mockResolvedValue(adminMember);
 
       const result = await guard.canActivate(mockContext);
       expect(result).toBe(true);
@@ -354,44 +354,44 @@ describe('PermissionsGuard', () => {
       });
     });
 
-    describe('Owner Role Tests', () => {
-      const ownerMember = { ...mockMember, role: 'owner' };
+    describe('Coach (admin) role tests', () => {
+      const adminMember = { ...mockMember, role: 'admin' };
 
-      it('should allow owner to read workouts', async () => {
+      it('should allow coach to read workouts', async () => {
         jest.spyOn(reflector, 'get')
           .mockReturnValueOnce(['read']) // REQUIRED_PERMISSIONS
           .mockReturnValueOnce(false); // NO_ORGANIZATION
-        jest.spyOn(entityManager, 'findOne').mockResolvedValue(ownerMember);
+        jest.spyOn(entityManager, 'findOne').mockResolvedValue(adminMember);
 
         const result = await guard.canActivate(mockContext);
         expect(result).toBe(true);
       });
 
-      it('should allow owner to create workouts', async () => {
+      it('should allow coach to create workouts', async () => {
         jest.spyOn(reflector, 'get')
           .mockReturnValueOnce(['create']) // REQUIRED_PERMISSIONS
           .mockReturnValueOnce(false); // NO_ORGANIZATION
-        jest.spyOn(entityManager, 'findOne').mockResolvedValue(ownerMember);
+        jest.spyOn(entityManager, 'findOne').mockResolvedValue(adminMember);
 
         const result = await guard.canActivate(mockContext);
         expect(result).toBe(true);
       });
 
-      it('should allow owner to update workouts', async () => {
+      it('should allow coach to update workouts', async () => {
         jest.spyOn(reflector, 'get')
           .mockReturnValueOnce(['update']) // REQUIRED_PERMISSIONS
           .mockReturnValueOnce(false); // NO_ORGANIZATION
-        jest.spyOn(entityManager, 'findOne').mockResolvedValue(ownerMember);
+        jest.spyOn(entityManager, 'findOne').mockResolvedValue(adminMember);
 
         const result = await guard.canActivate(mockContext);
         expect(result).toBe(true);
       });
 
-      it('should allow owner to delete workouts', async () => {
+      it('should allow coach to delete workouts', async () => {
         jest.spyOn(reflector, 'get')
           .mockReturnValueOnce(['delete']) // REQUIRED_PERMISSIONS
           .mockReturnValueOnce(false); // NO_ORGANIZATION
-        jest.spyOn(entityManager, 'findOne').mockResolvedValue(ownerMember);
+        jest.spyOn(entityManager, 'findOne').mockResolvedValue(adminMember);
 
         const result = await guard.canActivate(mockContext);
         expect(result).toBe(true);
@@ -520,26 +520,46 @@ describe('PermissionsGuard', () => {
     });
   });
 
-  describe('Permission Package Integration Tests', () => {
-    it('should use correct permission mappings from @dropit/permissions package', () => {
-      expect((member.statements as Record<string, string[]>).athlete).toEqual(['read', 'create', 'update', 'delete']);
-      expect((admin.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
-      expect((owner.statements as Record<string, string[]>).workout).toEqual(['read', 'create', 'update', 'delete']);
+  describe('permissions.config integration', () => {
+    it('should allow athlete (member) read on athlete resource', () => {
+      expect(hasPermission('member', 'athlete', ['read'])).toBe(true);
     });
 
-    it('should handle all supported resources', () => {
-      const resources = ['workout', 'exercise', 'complex', 'athlete', 'session', 'personalRecord'] as const;
-      
-      for (const resource of resources) {
-        // Member has no access to workout, exercise, complex (only admin/owner)
-        if (resource === 'workout' || resource === 'exercise' || resource === 'complex') {
-          expect((member.statements as Record<string, string[]>)[resource]).toBeUndefined();
-        } else {
-          expect((member.statements as Record<string, string[]>)[resource]).toBeDefined();
-        }
-        expect((admin.statements as Record<string, string[]>)[resource]).toBeDefined();
-        expect((owner.statements as Record<string, string[]>)[resource]).toBeDefined();
-      }
+    it('should allow coach (admin) full access on workout', () => {
+      expect(hasPermission('admin', 'workout', ['delete'])).toBe(true);
+    });
+
+    it('should deny athlete (member) on workout', () => {
+      expect(hasPermission('member', 'workout', ['read'])).toBe(false);
+    });
+
+    it('should deny unknown role', () => {
+      expect(hasPermission('owner', 'workout', ['read'])).toBe(false);
+    });
+  });
+
+  describe('Super admin bypass', () => {
+    it('should allow app-level admin without organization check', async () => {
+      const superAdminUser = { ...mockUser, role: 'admin' };
+      const requestSuperAdmin = {
+        ...mockRequest,
+        session: {
+          ...mockRequest.session,
+          user: superAdminUser,
+        },
+      };
+      const contextSuperAdmin = {
+        ...mockContext,
+        switchToHttp: () => ({ getRequest: () => requestSuperAdmin }),
+      } as unknown as ExecutionContext;
+
+      jest.spyOn(reflector, 'get')
+        .mockReturnValueOnce(['delete']) // REQUIRED_PERMISSIONS
+        .mockReturnValueOnce(false); // NO_ORGANIZATION
+
+      const result = await guard.canActivate(contextSuperAdmin);
+      expect(result).toBe(true);
+      expect(entityManager.findOne).not.toHaveBeenCalled();
     });
   });
 }); 

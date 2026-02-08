@@ -14,6 +14,7 @@ export class MikroMemberRepository extends EntityRepository<Member> implements I
         organization: {
           id: organizationId,
         },
+        // 'owner' covers the org creator (super admin) — they need coach-level access in use-case logic
         role: { $in: ['admin', 'owner'] }
       });
   }
@@ -29,6 +30,7 @@ export class MikroMemberRepository extends EntityRepository<Member> implements I
       const member = await this.em.findOne(Member, {
       user: userId,
       organization: organizationId,
+      // 'owner' covers the org creator (super admin) — they need coach-level access in use-case logic
       role: { $in: ['admin', 'owner'] }
       });
       

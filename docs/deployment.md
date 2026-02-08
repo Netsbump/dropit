@@ -353,7 +353,7 @@ volumes:
 
 **Solution retenue :** Dockerfile multi-stage avec configuration Nginx externalisée
 
-La première étape configure l'environnement Node.js 20 avec pnpm activé via corepack. La deuxième étape reproduit fidèlement la structure du monorepo en copiant sélectivement les packages nécessaires (@dropit/contract, @dropit/schemas, @dropit/permissions, @dropit/i18n) puis exécute un build récursif avec mise en cache pnpm pour optimiser les temps de reconstruction. La troisième étape utilise une image Nginx alpine minimaliste qui copie uniquement les assets buildés et applique une configuration personnalisée pour gérer le routage côté client des applications Single Page.
+La première étape configure l'environnement Node.js 20 avec pnpm activé via corepack. La deuxième étape reproduit fidèlement la structure du monorepo en copiant sélectivement les packages nécessaires (@dropit/contract, @dropit/schemas, @dropit/i18n) puis exécute un build récursif avec mise en cache pnpm pour optimiser les temps de reconstruction. La troisième étape utilise une image Nginx alpine minimaliste qui copie uniquement les assets buildés et applique une configuration personnalisée pour gérer le routage côté client des applications Single Page.
 
 **Architecture des fichiers :**
 

@@ -1,13 +1,24 @@
 # Permissions
 
-Role-based access control using the shared `@dropit/permissions` package. Permissions are checked server-side by `PermissionsGuard` based on the user's organization role.
+Role-based access control defined in `permissions.config.ts` (local to the auth module). Permissions are checked server-side by `PermissionsGuard` based on the user's organization role.
 
 ## How it works
 
 1. **AuthGuard** (global) validates the session and injects `user` + `session` into the request
-2. **PermissionsGuard** (per-route) reads the `@RequirePermissions()` decorator, looks up the user's `Member.role` in the active organization, and checks against the permission definitions from `@dropit/permissions`
+2. **PermissionsGuard** (per-route) reads the `@RequirePermissions()` decorator, looks up the user's `Member.role` in the active organization, and checks against `hasPermission()` from `permissions.config.ts`
+3. **Super admin bypass**: if `user.role === 'admin'` (app-level, from the better-auth admin plugin), all permission checks are skipped
 
 The resource name is derived automatically from the controller name (`WorkoutController` -> `workout`).
+
+## Roles
+
+| Level | Role | Meaning |
+|-------|------|---------|
+| Organization | `member` | Athlete — limited access |
+| Organization | `admin` | Coach — full resource access |
+| App-level | `admin` (`user.role`) | Super admin — bypasses all checks |
+
+Note: `owner` still exists in the database for org creators (super admins). It is treated as coach-level in use-case queries (`mikro-member.repository.ts`).
 
 ## Decorators
 
@@ -40,23 +51,23 @@ export class WorkoutController {
 
 ## Roles and permissions
 
-Defined in `@dropit/permissions` and shared between backend and frontend.
+Defined in `permissions.config.ts`.
 
-| Resource | member | admin | owner |
-|----------|--------|-------|-------|
-| workout | — | read, create, update, delete | read, create, update, delete |
-| workoutCategory | — | read, create, update, delete | read, create, update, delete |
-| exercise | — | read, create, update, delete | read, create, update, delete |
-| exerciseCategory | — | read, create, update, delete | read, create, update, delete |
-| complex | — | read, create, update, delete | read, create, update, delete |
-| complexCategory | — | read, create, update, delete | read, create, update, delete |
-| athlete | read, create, update, delete | read, create, update, delete | read, create, update, delete |
-| session | read | read, create, update, delete | read, create, update, delete |
-| personalRecord | read, create | read, create, update, delete | read, create, update, delete |
-| trainingSession | read | read, create, update, delete | read, create, update, delete |
-| athleteTrainingSession | read, update | read, update | read, update |
-| competitorStatus | read | read, create, update | read, create, update |
-| invitation | read | read, create, update, delete | read, create, update, delete |
+| Resource | member (athlete) | admin (coach) |
+|----------|-----------------|---------------|
+| workout | — | read, create, update, delete |
+| workoutCategory | — | read, create, update, delete |
+| exercise | — | read, create, update, delete |
+| exerciseCategory | — | read, create, update, delete |
+| complex | — | read, create, update, delete |
+| complexCategory | — | read, create, update, delete |
+| athlete | read, create, update, delete | read, create, update, delete |
+| session | read | read, create, update, delete |
+| personalRecord | read, create | read, create, update, delete |
+| trainingSession | read | read, create, update, delete |
+| athleteTrainingSession | read, update | read, update |
+| competitorStatus | read | read, create, update |
+| invitation | read | read, create, update, delete |
 
 ## Error responses
 

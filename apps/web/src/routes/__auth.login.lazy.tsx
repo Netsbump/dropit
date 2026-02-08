@@ -24,14 +24,14 @@ function Login() {
   const redirectBasedOnRole = async () => {
     try {
       const activeMember = await authClient.organization.getActiveMember();
-      if (activeMember?.data) {
-        const userRole = activeMember.data.role;
+      const isSuperAdmin = sessionData?.user?.role === 'admin';
 
-        console.log(userRole);
-        if (userRole === 'member') {
-          navigate({ to: '/download-app', replace: true });
-        } else if (userRole === 'owner' || userRole === 'admin') {
+      if (activeMember?.data) {
+        const orgRole = activeMember.data.role;
+        if (orgRole === 'admin' || isSuperAdmin) {
           navigate({ to: '/dashboard', replace: true });
+        } else if (orgRole === 'member') {
+          navigate({ to: '/download-app', replace: true });
         } else {
           navigate({ to: '/onboarding', replace: true });
         }
