@@ -1,641 +1,197 @@
-# Guide Migration OTP + Amélioration Notifications
+# Plan Migration Auth OTP (emailOTP + phoneNumber)
 
-## Vue d'ensemble
+## Contexte
 
-**Objectif**: Migrer de password auth vers OTP-only avec better-auth, et améliorer le système de notifications.
+Actuellement : authentification **email + password** pour tous, avec **emailVerification** par lien.
 
-**Décisions clés**:
-- ✅ Better-auth avec plugins `emailOTP` + `phoneNumber`
-- ✅ Supprimer password auth complètement
-- ✅ Email OTP pour web, SMS OTP pour mobile
-- ✅ Migrer `email` module → `notification` module
-- ✅ Invitations: Email + Push si user existe, Email seul sinon
+Cible :
+
+- **Super admin** : garder email + password (plus sécurisé)
+- **Coachs (backoffice)** : email OTP
+- **Athlètes (app mobile)** : au choix, email OTP **ou** phone OTP (SMS)
+
+## Architecture cible
+
+```mermaid
+flowchart TB
+    subgraph Clients
+        Web[Backoffice Web]
+        Mobile[App Mobile]
+    end
+
+    subgraph Auth[better-auth]
+        EmailPassword[emailAndPassword]
+        EmailOTP[emailOTP]
+        PhoneNumber[phoneNumber]
+    end
+
+    subgraph Notification[NotificationModule]
+        NotificationAdapter[NotificationAdapter]
+        EmailChannel[EmailAdapter]
+        SmsChannel[SmsAdapter]
+    end
+
+    Web -->|Super admin| EmailPassword
+    Web -->|Coach| EmailOTP
+    Mobile -->|Choix email| EmailOTP
+    Mobile -->|Choix téléphone| PhoneNumber
+
+    EmailOTP --> NotificationAdapter
+    PhoneNumber --> NotificationAdapter
+    NotificationAdapter --> EmailChannel
+    NotificationAdapter --> SmsChannel
+```
+
+## Fichiers clés
+
+| Fichier | Rôle |
+|---------|------|
+| `apps/api/src/modules/auth/better-auth.config.ts` | Config better-auth (ajouter plugins) |
+| `apps/api/src/modules/auth/infrastructure/better-auth.adapter.ts` | Injection des callbacks OTP |
+| `apps/api/src/modules/auth/domain/auth/user.entity.ts` | Entity User (ajouter `phoneNumber`, `phoneNumberVerified`) |
+| `apps/api/src/modules/notification/application/use-cases/notification.use-cases.ts` | sendOtp déjà prêt (WEB/MOBILE) |
+| `apps/api/src/modules/notification/infrastructure/channels/sms/sms.adapter.ts` | À implémenter (Twilio) |
+| `apps/web/src/lib/auth-client.ts` | Client auth web (ajouter emailOTPClient) |
+| `apps/web/src/shared/components/auth/login-form.tsx` | Remplacer par flow OTP pour coachs |
+| `apps/mobile/src/lib/auth-client.ts` | Client auth mobile (ajouter emailOTPClient + phoneNumberClient) |
 
 ---
 
-## Architecture actuelle vs cible
+## Phase 1 : Base de données
 
-### Actuel
-```
-better-auth (emailAndPassword)
-    ↓
-EmailService → Brevo/Maildev
-```
-
-### Cible
-```
-better-auth (emailOTP + phoneNumber)
-    ↓
-NotificationUseCase → NotificationAdapter
-    ↓
-Email/SMS/Push providers
-```
+- [ ] Ajouter à `User` entity :
+  - `phoneNumber?: string` (nullable, unique, format E.164)
+  - `phoneNumberVerified?: boolean`
+- [ ] Le plugin `phoneNumber` de better-auth requiert ces champs. Créer une migration MikroORM.
+- [ ] Exécuter les migrations better-auth pour les tables OTP (`npx @better-auth/cli migrate` ou `generate`).
 
 ---
 
-## TODO List
+## Phase 2 : Backend - better-auth
 
-### ✅ Fait
-- [x] Structure NotificationModule créée
-- [x] Ports IN/OUT définis
-- [x] Email adapters (Brevo/Maildev) créés
-- [x] Templates email de base
+### 2.1 Config better-auth
 
-### 📝 À faire
+Dans `better-auth.config.ts` :
 
-#### Phase 1: Base de données
-- [ ] Ajouter champ `phone` à User entity (nullable, unique, E.164 format)
-- [ ] Ajouter champ `phoneVerified` à User entity
-- [ ] Ajouter champ `otpMigratedAt` à User entity
-- [ ] Créer migration MikroORM pour ces champs
-- [ ] Créer entity `DeviceToken` pour push notifications
-- [ ] Créer migration pour table `device_token`
+- [ ] **Garder** `emailAndPassword: { enabled: true }` (super admin)
+- [ ] **Garder** `emailVerification` (ou optionnellement `overrideDefaultEmailVerification: true` dans emailOTP pour tout passer en OTP)
+- [ ] **Ajouter** plugin `emailOTP` avec :
+  - `sendVerificationOTP` → délègue à `BetterAuthDeps.sendVerificationOTP`
+  - `otpLength: 6`, `expiresIn: 300`, `allowedAttempts: 3`
+- [ ] **Ajouter** plugin `phoneNumber` avec :
+  - `sendOTP` → délègue à `BetterAuthDeps.sendPhoneOTP`
+  - `signUpOnVerification: { getTempEmail: (phone) => \`${phone}@dropit.temp\` }` pour inscription par téléphone
+  - `otpLength: 6`, `expiresIn: 300`
 
-#### Phase 2: Better-auth OTP
-- [ ] Installer dépendances: `libphonenumber-js`, `twilio`, `firebase-admin`
-- [ ] Ajouter variables env (Twilio, Firebase)
-- [ ] Dans `better-auth.config.ts`: supprimer `emailAndPassword` plugin
-- [ ] Dans `better-auth.config.ts`: supprimer `emailVerification` plugin
-- [ ] Dans `better-auth.config.ts`: ajouter `emailOTP` plugin avec config
-- [ ] Dans `better-auth.config.ts`: ajouter `phoneNumber` plugin avec config
-- [ ] Mettre à jour interface `BetterAuthOptionsDynamic` avec callback `sendOTP`
+### 2.2 Interface BetterAuthDeps
 
-#### Phase 3: NotificationModule
-- [ ] Créer port OUT `sms.port.ts` (ISmsPort, ISmsParams)
-- [ ] Créer port OUT `push.port.ts` (IPushPort, IPushParams)
-- [ ] Créer adapter `twilio.adapter.ts` (implémente ISmsPort)
-- [ ] Créer adapter `fcm.adapter.ts` (implémente IPushPort)
-- [ ] Dans `notification.use-cases.ts`: ajouter méthode `sendOtpEmail()`
-- [ ] Dans `notification.use-cases.ts`: ajouter méthode `sendOtpSms()`
-- [ ] Dans `notification.use-cases.ts`: mettre à jour `sendInvitation()` pour push
-- [ ] Dans `notification.adapter.ts`: injecter SMS_PORT et PUSH_PORT
-- [ ] Dans `notification.adapter.ts`: implémenter `sendSms()` (enlever throw)
-- [ ] Dans `notification.adapter.ts`: implémenter `sendPush()` (enlever throw)
-- [ ] Dans `notification.module.ts`: ajouter providers SMS et Push
-- [ ] Créer template email OTP dans adapters (déjà existant, vérifier)
+- [ ] Étendre l'interface dans `better-auth.config.ts` :
 
-#### Phase 4: Connecter better-auth → NotificationModule
-- [ ] Dans `auth.service.ts`: remplacer injection `EmailService` par `NotificationUseCase`
-- [ ] Dans `auth.service.ts`: implémenter callback `sendOTP` qui appelle notification use case
-- [ ] Dans `auth.service.ts`: mettre à jour callback `sendInvitationEmail` (utilise déjà notification)
-- [ ] Tester avec Maildev: signup → OTP envoyé → vérifier email reçu
-
-#### Phase 5: Supprimer EmailModule
-- [ ] Identifier tous les imports de `EmailService` ou `EmailModule`
-- [ ] Remplacer par imports de `NotificationModule`
-- [ ] Supprimer dossier `apps/api/src/modules/core/email/`
-- [ ] Vérifier compilation sans erreurs
-
-#### Phase 6: Frontend Web - Composants OTP
-- [ ] Créer composant `OTPInput.tsx` (6 digits, auto-focus, paste support)
-- [ ] Créer composant `LoginFormOTP.tsx` (étape 1: email, étape 2: OTP)
-- [ ] Créer composant `SignupFormOTP.tsx` (name/email → OTP auto-envoyé)
-- [ ] Ajouter countdown timer pour resend OTP
-- [ ] Remplacer `login-form.tsx` par `LoginFormOTP`
-- [ ] Remplacer signup form par `SignupFormOTP`
-- [ ] Mettre à jour route invitation acceptance avec OTP
-
-#### Phase 7: Tests
-- [ ] Test unitaire: `sendOtpEmail()` use case
-- [ ] Test unitaire: `sendOtpSms()` use case
-- [ ] Test intégration: flow signup OTP complet
-- [ ] Test intégration: flow login OTP complet
-- [ ] Test intégration: invitation existing user (email + push)
-- [ ] Test intégration: invitation new user (email seul)
-- [ ] Test E2E: signup → login → invitation
-- [ ] Test manuel: OTP expiration (5 min)
-- [ ] Test manuel: OTP max attempts (3 échecs)
-- [ ] Test manuel: resend OTP
-
-#### Phase 8: Documentation
-- [ ] Créer README dans `notification/` module
-- [ ] Documenter flow OTP pour équipe
-- [ ] Documenter configuration Twilio
-- [ ] Documenter configuration Firebase
-- [ ] Préparer FAQ support utilisateurs
-
-#### Phase 9: Déploiement
-- [ ] Tester migration sur staging
-- [ ] Backup base de données prod
-- [ ] Deploy backend avec OTP
-- [ ] Deploy frontend avec OTP
-- [ ] Monitor logs 48h
-- [ ] Collecter feedback utilisateurs
-
----
-
-## Détails par phase
-
-### Phase 1: Base de données
-
-#### User Entity
 ```typescript
-// apps/api/src/modules/identity/domain/auth/user.entity.ts
-
-@Property({ nullable: true })
-@Unique()
-phone?: string; // Format: +33612345678
-
-@Property({ nullable: true })
-phoneVerified?: boolean;
-
-@Property({ nullable: true })
-otpMigratedAt?: Date;
-```
-
-#### DeviceToken Entity (nouveau fichier)
-```typescript
-// apps/api/src/modules/identity/domain/auth/device-token.entity.ts
-
-@Entity({ tableName: 'device_token' })
-export class DeviceToken {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string;
-
-  @ManyToOne(() => User, { deleteRule: 'cascade' })
-  user!: User;
-
-  @Property()
-  token!: string; // FCM token
-
-  @Property()
-  platform!: 'ios' | 'android';
-
-  @Property()
-  lastUsedAt!: Date;
-
-  @Property()
-  createdAt: Date = new Date();
-}
-```
-
-#### Migration SQL
-```sql
-ALTER TABLE "user" ADD COLUMN "phone" VARCHAR(20) NULL;
-ALTER TABLE "user" ADD COLUMN "phoneVerified" BOOLEAN DEFAULT false;
-ALTER TABLE "user" ADD COLUMN "otpMigratedAt" TIMESTAMP NULL;
-CREATE UNIQUE INDEX "user_phone_unique" ON "user"("phone") WHERE "phone" IS NOT NULL;
-
-CREATE TABLE "device_token" (
-  "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  "user_id" UUID NOT NULL REFERENCES "user"("id") ON DELETE CASCADE,
-  "token" TEXT NOT NULL,
-  "platform" VARCHAR(10) NOT NULL,
-  "lastUsedAt" TIMESTAMP NOT NULL,
-  "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
-);
-```
-
----
-
-### Phase 2: Better-auth OTP
-
-#### Dépendances
-```bash
-pnpm add libphonenumber-js twilio firebase-admin
-```
-
-#### Variables environnement
-```bash
-# .env
-TWILIO_ACCOUNT_SID=ACxxxxx
-TWILIO_AUTH_TOKEN=xxxxx
-TWILIO_PHONE_NUMBER=+33xxxxxxxxx
-
-FIREBASE_PROJECT_ID=dropit-prod
-FIREBASE_SERVICE_ACCOUNT_KEY=/path/to/firebase-key.json
-```
-
-#### Configuration better-auth
-```typescript
-// apps/api/src/config/better-auth.config.ts
-
-import { emailOTP, phoneNumber } from "better-auth/plugins";
-
-// SUPPRIMER ces lignes:
-// emailAndPassword: { ... }
-// emailVerification: { ... }
-
-// AJOUTER:
-emailOTP({
-  async sendVerificationOTP({ email, otp, type }) {
-    await options?.sendOTP?.({
-      email,
-      otp,
-      type,
-      transport: 'email'
-    });
-  },
-  otpLength: 6,
-  expiresIn: 300, // 5 minutes
-  sendOnSignUp: true,
-  allowedAttempts: 3,
-  storeOTP: "hashed",
-}),
-
-phoneNumber({
-  async sendOTP({ phoneNumber, otp }) {
-    await options?.sendOTP?.({
-      phoneNumber,
-      otp,
-      transport: 'sms'
-    });
-  },
-  otpLength: 6,
-  expiresIn: 300,
-}),
-```
-
-#### Interface mise à jour
-```typescript
-interface BetterAuthOptionsDynamic {
-  sendOTP?: (data: {
-    email?: string;
-    phoneNumber?: string;
-    otp: string;
-    type?: 'sign-in' | 'email-verification' | 'forget-password';
-    transport: 'email' | 'sms';
-  }) => Promise<void>;
-
-  sendInvitationEmail?: (...) => Promise<void>;
-}
-```
-
----
-
-### Phase 3: NotificationModule
-
-#### Port SMS
-```typescript
-// apps/api/src/modules/core/notification/application/ports/out/sms.port.ts
-
-export interface ISmsParams {
-  to: string;
-  message: string;
-}
-
-export interface ISmsPort {
-  send(params: ISmsParams): Promise<void>;
-}
-
-export const SMS_PORT = Symbol('SMS_PORT');
-```
-
-#### Adapter Twilio
-```typescript
-// apps/api/src/modules/core/notification/infrastructure/sms/twilio.adapter.ts
-
-import Twilio from 'twilio';
-import { ISmsPort } from '../../application/ports/out/sms.port';
-
-@Injectable()
-export class TwilioAdapter implements ISmsPort {
-  private client: Twilio.Twilio;
-
-  constructor() {
-    this.client = Twilio(
-      process.env.TWILIO_ACCOUNT_SID!,
-      process.env.TWILIO_AUTH_TOKEN!
-    );
-  }
-
-  async send(params: ISmsParams): Promise<void> {
-    await this.client.messages.create({
-      from: process.env.TWILIO_PHONE_NUMBER!,
-      to: params.to,
-      body: params.message,
-    });
-  }
-}
-```
-
-#### Méthodes NotificationUseCase
-```typescript
-// Ajouter dans notification.use-cases.ts
-
-async sendOtpEmail(params: {
+sendVerificationOTP?: (data: {
   email: string;
   otp: string;
   type: 'sign-in' | 'email-verification' | 'forget-password';
-}): Promise<void> {
-  const subjectMap = {
-    'sign-in': 'Votre code de connexion',
-    'email-verification': 'Vérifiez votre email',
-    'forget-password': 'Réinitialisez votre mot de passe',
-  };
+}) => Promise<void>;
 
-  await this.notificationPort.sendEmail({
-    to: params.email,
-    subject: subjectMap[params.type],
-    template: 'otp-code',
-    data: {
-      otp: params.otp,
-      expiresIn: '5 minutes',
-      type: params.type,
-    },
-  });
-}
-
-async sendOtpSms(params: {
+sendPhoneOTP?: (data: {
   phoneNumber: string;
-  otp: string;
-}): Promise<void> {
-  await this.notificationPort.sendSms({
-    to: params.phoneNumber,
-    message: `Votre code DropIt: ${params.otp}. Expire dans 5 minutes.`,
-  });
-}
+  code: string;
+}) => Promise<void>;
 ```
 
-#### Mise à jour sendInvitation
-```typescript
-// Dans notification.use-cases.ts, mettre à jour:
+### 2.3 BetterAuthAdapter
 
-async sendInvitation(params: {
-  organizationId: string;
-  organizationName: string;
-  email: string;
-  invitedBy: string;
-  invitationToken: string;
-}): Promise<void> {
-  const existingUser = await this.userRepository.getByEmail(params.email);
+Dans `better-auth.adapter.ts` :
 
-  if (existingUser) {
-    // User existe: email + push
-    await Promise.all([
-      this.notificationPort.sendEmail({
-        to: params.email,
-        subject: `Invitation à rejoindre ${params.organizationName}`,
-        template: 'organization-invitation',
-        data: {
-          organizationName: params.organizationName,
-          invitedBy: params.invitedBy,
-          token: params.invitationToken,
-        },
-      }),
-      this.notificationPort.sendPush({
-        userId: existingUser.id,
-        title: 'Nouvelle invitation',
-        body: `${params.invitedBy} vous invite à rejoindre ${params.organizationName}`,
-        data: {
-          type: 'invitation',
-          invitationId: params.invitationToken,
-        },
-      }).catch(err => {
-        // Graceful degradation si pas de device token
-        console.log('Push notification failed (web-only user?):', err.message);
-      }),
-    ]);
-  } else {
-    // User n'existe pas: email seul
-    await this.notificationPort.sendEmail({
-      to: params.email,
-      subject: `Vous êtes invité à rejoindre DropIt`,
-      template: 'organization-invitation-new-user',
-      data: {
-        organizationName: params.organizationName,
-        invitedBy: params.invitedBy,
-        token: params.invitationToken,
-      },
-    });
-  }
-}
-```
+- [ ] Passer `sendVerificationOTP` qui appelle `notificationUseCase.sendOtp({ origin: PLATFORM.WEB, email, otp, type })`
+- [ ] Passer `sendPhoneOTP` qui appelle `notificationUseCase.sendOtp({ origin: PLATFORM.MOBILE, otp, phoneNumber })`
+
+### 2.4 NotificationUseCase
+
+Dans `notification.use-cases.ts` :
+
+- [ ] L'appel web existe déjà : `sendOtp({ origin: PLATFORM.WEB, ... })` → email via `KIND.OTP`
+- [ ] L'appel mobile actuellement throw car SMS non implémenté. Une fois SmsAdapter implémenté, il enverra le SMS.
+- [ ] Adapter `notification.port.ts` si nécessaire : le type `NotificationRequest` pour OTP doit supporter `phoneNumber` en plus de `email` (pour le variant MOBILE).
 
 ---
 
-### Phase 4: Connecter better-auth
+## Phase 3 : Implémenter SmsAdapter (optionnel ou minimal)
 
-```typescript
-// apps/api/src/modules/core/auth/auth.service.ts
-
-// REMPLACER:
-// import { EmailService } from '../email/email.service';
-// constructor(private emailService: EmailService, ...)
-
-// PAR:
-import { INotificationUseCases, NOTIFICATION_USE_CASES } from '../notification/application/ports/in/notification-use-cases.port';
-
-constructor(
-  @Inject(NOTIFICATION_USE_CASES)
-  private notificationUseCase: INotificationUseCases,
-  private em: EntityManager
-) {}
-
-// Dans initialize():
-this._auth = createAuthConfig({
-  sendOTP: async (data) => {
-    if (data.transport === 'email' && data.email) {
-      await this.notificationUseCase.sendOtpEmail({
-        email: data.email,
-        otp: data.otp,
-        type: data.type || 'sign-in',
-      });
-    } else if (data.transport === 'sms' && data.phoneNumber) {
-      await this.notificationUseCase.sendOtpSms({
-        phoneNumber: data.phoneNumber,
-        otp: data.otp,
-      });
-    }
-  },
-
-  sendInvitationEmail: async (data) => {
-    await this.notificationUseCase.sendInvitation({
-      organizationId: data.organization.id,
-      organizationName: data.organization.name,
-      email: data.email,
-      invitedBy: data.inviter.user.name,
-      invitationToken: data.id,
-    });
-  },
-}, this.em);
-```
+- [ ] Créer un adaptateur Twilio (ou mock pour dev) dans `sms.adapter.ts`
+- [ ] Format SMS recommandé pour auto-fill Android/iOS : `Votre code DropIt : 123456` (conventions OTP)
+- [ ] Ajouter variables d'environnement : `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
+- [ ] En dev, possibilité de logger le code en console si Twilio non configuré
 
 ---
 
-### Phase 6: Frontend OTP
+## Phase 4 : Frontend Web (backoffice)
 
-#### Composant OTPInput
-```tsx
-// apps/web/src/shared/components/auth/otp-input.tsx
+### 4.1 auth-client
 
-interface OTPInputProps {
-  length?: number;
-  onComplete: (otp: string) => void;
-}
+- [ ] Dans `auth-client.ts` : ajouter `emailOTPClient()` au tableau des plugins.
 
-export function OTPInput({ length = 6, onComplete }: OTPInputProps) {
-  const [otp, setOtp] = useState<string[]>(Array(length).fill(''));
-  const inputRefs = useRef<(HTMLInputElement | null)[]>([]);
+### 4.2 Login form
 
-  const handleChange = (index: number, value: string) => {
-    if (!/^\d*$/.test(value)) return;
+- [ ] Créer un composant `LoginFormOTP` (ou adapter `login-form.tsx`) : étape 1 (email) → étape 2 (saisie OTP)
+- [ ] Utiliser `authClient.emailOtp.sendVerificationOtp({ email, type: 'sign-in' })` puis `authClient.signIn.emailOtp({ email, otp })`
+- [ ] **Lien super admin** : garder une option "Connexion admin" (email + password) sur la page login, ou une route `/admin/login` séparée. Sinon, afficher les deux options (OTP par défaut, "Mode admin" en petit lien).
 
-    const newOtp = [...otp];
-    newOtp[index] = value.slice(-1);
-    setOtp(newOtp);
+### 4.3 Signup
 
-    // Auto-focus next
-    if (value && index < length - 1) {
-      inputRefs.current[index + 1]?.focus();
-    }
+- [ ] Adapter le flow signup pour utiliser email OTP si on remplace la vérification par lien par OTP (`overrideDefaultEmailVerification`).
 
-    // Complete
-    const otpString = newOtp.join('');
-    if (otpString.length === length) {
-      onComplete(otpString);
-    }
-  };
+---
 
-  return (
-    <div className="flex gap-2">
-      {otp.map((digit, i) => (
-        <Input
-          key={i}
-          ref={el => inputRefs.current[i] = el}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digit}
-          onChange={e => handleChange(i, e.target.value)}
-          className="w-12 h-12 text-center text-2xl"
-          autoFocus={i === 0}
-        />
-      ))}
-    </div>
-  );
-}
-```
+## Phase 5 : App mobile
 
-#### LoginFormOTP
-```tsx
-// apps/web/src/shared/components/auth/login-form-otp.tsx
+### 5.1 auth-client
 
-export function LoginFormOTP({ onSuccess }: { onSuccess?: () => void }) {
-  const [step, setStep] = useState<'email' | 'otp'>('email');
-  const [email, setEmail] = useState('');
-  const [countdown, setCountdown] = useState(0);
+- [ ] Dans `auth-client.ts` mobile : ajouter `emailOTPClient()` et `phoneNumberClient()`.
 
-  const sendOtpMutation = useMutation({
-    mutationFn: async (email: string) => {
-      const res = await authClient.emailOTP.sendVerificationOtp({
-        email,
-        type: 'sign-in',
-      });
-      if (res.error) throw new Error(res.error.message);
-    },
-    onSuccess: () => {
-      setStep('otp');
-      setCountdown(60);
-      toast({ title: 'Code envoyé à ' + email });
-    },
-  });
+### 5.2 Écrans de connexion
 
-  const verifyOtpMutation = useMutation({
-    mutationFn: async (otp: string) => {
-      const res = await authClient.emailOTP.verifyEmail({
-        email,
-        otp,
-      });
-      if (res.error) throw new Error(res.error.message);
-    },
-    onSuccess: () => onSuccess?.(),
-  });
+- [ ] Écran login : deux onglets/boutons "Continuer avec email" et "Continuer avec téléphone"
+- [ ] **Email** : `sendVerificationOtp` → `signIn.emailOtp` (même flow que web)
+- [ ] **Téléphone** : `phoneNumber.sendOtp` → `phoneNumber.verify` (création de session)
+- [ ] Composant OTP réutilisable (6 chiffres, auto-focus, paste)
 
-  useEffect(() => {
-    if (countdown > 0) {
-      const timer = setTimeout(() => setCountdown(countdown - 1), 1000);
-      return () => clearTimeout(timer);
-    }
-  }, [countdown]);
+---
 
-  if (step === 'email') {
-    return (
-      <form onSubmit={e => { e.preventDefault(); sendOtpMutation.mutate(email); }}>
-        <Input
-          type="email"
-          value={email}
-          onChange={e => setEmail(e.target.value)}
-          placeholder="votre@email.com"
-        />
-        <Button type="submit">Envoyer le code</Button>
-      </form>
-    );
-  }
+## Phase 6 : Restriction email+password au super admin (optionnel)
 
-  return (
-    <div className="space-y-4">
-      <p>Code envoyé à <strong>{email}</strong></p>
+- Better-auth ne propose pas de hook "autoriser signIn.email seulement si user.role === 'admin'" natif.
+- Approches possibles :
+  1. **Frontend** : masquer le formulaire email+password pour les non-admins (mais un coach pourrait deviner l'URL)
+  2. **Backend** : hook/custom route qui vérifie `user.role === 'admin'` après `signIn.email` et invalide la session sinon (plus complexe)
+  3. **Pragmatique** : garder email+password disponible côté API, mais ne l'exposer que sur une route `/admin/login` non indexée. Les coachs n'utilisent que l'OTP.
 
-      <OTPInput onComplete={otp => verifyOtpMutation.mutate(otp)} />
+---
 
-      {countdown > 0 ? (
-        <p>Renvoyer dans {countdown}s</p>
-      ) : (
-        <Button onClick={() => sendOtpMutation.mutate(email)}>
-          Renvoyer le code
-        </Button>
-      )}
+## Ordre d'exécution recommandé
 
-      <Button variant="ghost" onClick={() => setStep('email')}>
-        Modifier l'email
-      </Button>
-    </div>
-  );
-}
-```
+1. Phase 1 (BDD) + migrations better-auth
+2. Phase 2 (backend better-auth)
+3. Phase 4 (frontend web) pour valider le flow email OTP
+4. Phase 3 (SMS) quand Twilio prêt
+5. Phase 5 (mobile)
+6. Phase 6 (restriction admin) si souhaité
 
 ---
 
 ## Points d'attention
 
-### ⚠️ Garder password field temporairement
-Le champ `password` dans la table `account` doit rester pendant 3-6 mois pour permettre une migration douce. Ne PAS supprimer immédiatement.
-
-### ⚠️ Phone optionnel
-Le champ `phone` est **optionnel**. Les utilisateurs web peuvent rester avec email OTP uniquement.
-
-### ⚠️ SMS coûte cher
-Implémenter rate limiting et monitoring des coûts Twilio dès le début.
-
-### ✅ Push graceful degradation
-Si pas de device token, le push échoue silencieusement. L'email est toujours envoyé comme backup.
-
-### ✅ Better-auth gère expiration OTP
-Pas besoin de Redis ou cache custom, better-auth stocke et gère l'expiration des OTP.
+- **emailVerification** : garder le lien ou passer en OTP via `overrideDefaultEmailVerification` selon préférence.
+- **Téléphone optionnel** : les athlètes peuvent rester en email OTP uniquement.
+- **Rate limiting** : better-auth a déjà du rate limit global ; éventuellement ajouter une limite plus stricte sur les endpoints OTP.
+- **Coût SMS** : surveiller l'usage Twilio et limiter les envois (ex. max 5 OTP/heure par numéro).
 
 ---
 
 ## Ressources
 
-### Documentation
 - [Better-auth Email OTP](https://www.better-auth.com/docs/plugins/email-otp)
 - [Better-auth Phone Number](https://www.better-auth.com/docs/plugins/phone-number)
+- [Better-auth Magic Link](https://www.better-auth.com/docs/plugins/magic-link)
 - [Twilio Node SDK](https://www.twilio.com/docs/libraries/node)
-- [Firebase Admin SDK](https://firebase.google.com/docs/admin/setup)
-
-### Fichiers existants importants
-- `apps/api/src/config/better-auth.config.ts` - Configuration auth
-- `apps/api/src/modules/core/auth/auth.service.ts` - Service auth
-- `apps/api/src/modules/core/notification/` - Module notification (déjà créé)
-- `apps/web/src/lib/auth-client.ts` - Client auth frontend
-
----
-
-## Questions pour review
-
-1. **SMS Provider**: Twilio ok ou préférer OVH SMS (France) ?
-2. **Phone obligatoire** pour athletes mobiles ou optionnel ?
-3. **Migration password**: Période de transition 3 mois suffisante ?
-4. **Push notifications**: Firebase ok ou préférer OneSignal ?
-5. **Rate limiting**: 5 OTP/heure ok ou trop restrictif ?
-6. **Templates email**: Garder inline dans adapters ou externaliser (Handlebars) ?
-
----
-
-## Next steps
-
-1. Review ce document ensemble
-2. Répondre aux questions ci-dessus
-3. Commencer par Phase 1 (BDD) quand prêt
-4. Tester chaque phase sur dev avant de passer à la suivante

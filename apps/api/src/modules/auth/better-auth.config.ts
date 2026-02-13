@@ -1,8 +1,10 @@
 import { BetterAuthOptions, User, betterAuth } from "better-auth";
-import { openAPI, admin, customSession } from "better-auth/plugins";
+import { openAPI, admin, customSession, emailOTP, EmailOTPOptions } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "../../config/env.config";
 import { organization, Organization, Invitation } from "better-auth/plugins/organization";
+
+export type SendEmailVerificationOTP = Parameters<EmailOTPOptions["sendVerificationOTP"]>[0];
 
 /** Context passed by customSession plugin (user + session from DB) */
 export interface CustomSessionContext {
@@ -28,6 +30,7 @@ interface BetterAuthDeps {
   }) => Promise<void>;
   enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
   databaseHooks?: BetterAuthOptions["databaseHooks"];
+  sendEmailVerificationOTP: (data: SendEmailVerificationOTP) => Promise<void>;
 }
 
 export function createAuthConfig(
@@ -61,11 +64,11 @@ export function createAuthConfig(
       window: 50,
       max: 100,
     },
-
-    // === CALLBACKS (delegate to better-auth.adapter) ===
     emailAndPassword: {
       enabled: true,
     },
+
+    // === CALLBACKS CORE (delegate to better-auth.adapter) ===
     emailVerification: {
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
@@ -75,13 +78,18 @@ export function createAuthConfig(
       },
     },
 
-    // === HOOKS (delegate to better-auth.adapter) ===
+    // === HOOKS CORE (delegate to better-auth.adapter) ===
     databaseHooks: deps.databaseHooks,
 
     // === PLUGINS ===
     plugins: [
       openAPI(),
       admin(),
+      emailOTP({
+        async sendVerificationOTP(data) {
+          deps.sendEmailVerificationOTP(data);
+        }
+      }),
       organization({
         allowUserToCreateOrganization: async (user) => {
           return user.role === 'admin';

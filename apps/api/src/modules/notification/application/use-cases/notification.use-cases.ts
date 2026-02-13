@@ -1,8 +1,7 @@
-import { INotificationUseCases, SendOtpParams } from '../ports/inbound/notification-use-cases.port';
+import { INotificationUseCases, OtpParams, TRANSPORT } from '../ports/inbound/notification-use-cases.port';
 import {
   INotificationPort,
   KIND,
-  PLATFORM,
   type NotificationRequest,
   RECIPIENT_TYPE,
 } from '../ports/outbound/notification.port';
@@ -56,14 +55,14 @@ export class NotificationUseCase implements INotificationUseCases {
     }
   }
 
-  async sendOtp(params: SendOtpParams
+  async sendOtp(params: OtpParams
   ): Promise<void> {
-    if (params.origin === PLATFORM.WEB) {
+    if (params.transport === TRANSPORT.EMAIL) {
 
       // Get user
-      const user = await this.userRepository.getByEmail(params.email)
+      const user = await this.userRepository.getByEmail(params.emailOTPOptions.email)
       if (!user) {
-        throw new UserNotFoundException(`User with ID ${params.email} not found`);
+        throw new UserNotFoundException(`User with ID ${params.emailOTPOptions.email} not found`);
       }
 
       // TODO implement function deternmineTransport
@@ -77,8 +76,8 @@ export class NotificationUseCase implements INotificationUseCases {
 
       const notificationRequest: NotificationRequest = {
         kind: KIND.OTP,
-        email: params.email,
-        otp: params.otp,
+        email: params.emailOTPOptions.email,
+        otp: params.emailOTPOptions.otp,
         platform: determinedPlatform,
       }
 

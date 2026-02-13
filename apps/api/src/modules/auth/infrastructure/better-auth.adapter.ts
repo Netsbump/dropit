@@ -5,10 +5,12 @@ import type { CustomSessionContext, EnrichedSessionResult } from '../better-auth
 import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
+  OtpParams,
 } from '../../notification/application/ports/inbound/notification-use-cases.port';
 import { Athlete } from '../../athletes/domain/athlete.entity';
 import { Member } from '../domain/organization/member.entity';
 import { EntityManager } from '@mikro-orm/core';
+import { TRANSPORT } from 'src/modules/notification/infrastructure/notification.types';
 
 
 /**
@@ -34,7 +36,7 @@ export class BetterAuthAdapter implements OnModuleInit {
   constructor(
     private em: EntityManager,
     @Inject(NOTIFICATION_USE_CASES) private notificationUseCase: INotificationUseCases,
-  ) {}
+  ) { }
 
   /**
    * NestJS lifecycle hook called automatically when the module starts.
@@ -102,6 +104,15 @@ export class BetterAuthAdapter implements OnModuleInit {
           invitationToken: data.invitation.id,
           email: data.invitation.email,
         });
+      },
+      sendEmailVerificationOTP: async (data) => {
+        const otpParams: OtpParams = {
+          transport: TRANSPORT.EMAIL,
+          emailOTPOptions: {
+            ...data
+          }
+        }
+        return this.notificationUseCase.sendOtp(otpParams)
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       databaseHooks: {

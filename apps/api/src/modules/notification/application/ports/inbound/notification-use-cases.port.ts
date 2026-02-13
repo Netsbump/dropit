@@ -1,4 +1,4 @@
-import { PLATFORM } from '../outbound/notification.port'
+import { SendEmailVerificationOTP } from '../../../../../modules/auth/better-auth.config';
 
 export type SendInvitationParams = {
   organizationId: string;
@@ -8,9 +8,17 @@ export type SendInvitationParams = {
   invitationToken: string;
 }
 
-export type SendOtpParams =
-  | { origin: typeof PLATFORM.WEB, otp: string, email: string, type: 'sign-in' | 'email-verification' }
-  | { origin: typeof PLATFORM.MOBILE, otp: string, phoneNumber: string };
+export const TRANSPORT = {
+  EMAIL: 'email',
+  SMS: 'sms',
+  PUSH: 'push'
+} as const;
+
+export type Transport = (typeof TRANSPORT[keyof typeof TRANSPORT]);
+
+export type OtpParams =
+  | { transport: Transport, emailOTPOptions: SendEmailVerificationOTP }
+  | { transport: typeof TRANSPORT.SMS, otp: string, phoneNumber: string };
 
 /**
  * Notification Use Cases Port (Port IN)
@@ -31,6 +39,7 @@ export interface INotificationUseCases {
    *
    * @description
    * Business logic:
+   * - If user exist
    * - If user exists: sends email + push notification
    * - If user doesn't exist: sends email only with signup link
    */
@@ -42,7 +51,7 @@ export interface INotificationUseCases {
    *
    * @description
    */
-  sendOtp(params: SendOtpParams
+  sendOtp(params: OtpParams
   ): Promise<void>;
 }
 
