@@ -5,13 +5,10 @@ import type { CustomSessionContext, EnrichedSessionResult } from '../better-auth
 import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
-  OtpParams,
 } from '../../notification/application/ports/inbound/notification-use-cases.port';
 import { Athlete } from '../../athletes/domain/athlete.entity';
 import { Member } from '../domain/organization/member.entity';
 import { EntityManager } from '@mikro-orm/core';
-import { TRANSPORT } from 'src/modules/notification/infrastructure/notification.types';
-
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -106,13 +103,7 @@ export class BetterAuthAdapter implements OnModuleInit {
         });
       },
       sendEmailVerificationOTP: async (data) => {
-        const otpParams: OtpParams = {
-          transport: TRANSPORT.EMAIL,
-          emailOTPOptions: {
-            ...data
-          }
-        }
-        return this.notificationUseCase.sendOtp(otpParams)
+        return this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type })
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       databaseHooks: {

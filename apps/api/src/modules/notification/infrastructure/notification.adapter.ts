@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import {
   INotificationPort,
+  KIND,
   NotificationRequest,
 } from '../application/ports/outbound/notification.port';
 import { EMAIL_CHANNEL_PORT, IEmailChannel } from './channels/email/email-channel.port';
@@ -50,8 +51,15 @@ export class NotificationAdapter implements INotificationPort {
    * 3. User preferences if applicable
    */
   private resolveChannel(request: NotificationRequest): Transport {
-    //TODO
+
+    if (request.kind === KIND.OTP) {
+      if ('email' in request.otpParams) {
+        return TRANSPORT.EMAIL
+      } else if ('phoneNumber' in request.otpParams) {
+        return TRANSPORT.SMS
+      }
+    }
+
     return TRANSPORT.EMAIL;
   }
-
 }

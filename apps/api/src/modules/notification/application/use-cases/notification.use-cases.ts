@@ -42,7 +42,7 @@ export class NotificationUseCase implements INotificationUseCases {
         ...params
       }
 
-      await this.notificationPort.send(notificationRequest)
+      this.notificationPort.send(notificationRequest)
     } else {
 
       const notificationRequest: NotificationRequest = {
@@ -51,46 +51,18 @@ export class NotificationUseCase implements INotificationUseCases {
         ...params
       }
 
-      await this.notificationPort.send(notificationRequest)
+      this.notificationPort.send(notificationRequest)
     }
   }
 
   async sendOtp(params: OtpParams
   ): Promise<void> {
-    if (params.transport === TRANSPORT.EMAIL) {
-
-      // Get user
-      const user = await this.userRepository.getByEmail(params.emailOTPOptions.email)
-      if (!user) {
-        throw new UserNotFoundException(`User with ID ${params.emailOTPOptions.email} not found`);
-      }
-
-      // TODO implement function deternmineTransport
-      // then call the notification adapters with the good kind
-      // We need to check if user have mobile number or email
-      // then both are present we need to check if user have sending preferences
-      // otherwise we sending by mobile in first choice
-      // otherwise we sending by email if no mobile number are provided
-      // for exemple :
-      const determinedPlatform = 'mobile'
-
-      const notificationRequest: NotificationRequest = {
-        kind: KIND.OTP,
-        email: params.emailOTPOptions.email,
-        otp: params.emailOTPOptions.otp,
-        platform: determinedPlatform,
-      }
-
-      await this.notificationPort.send(notificationRequest);
-    } else {
-      // When implemented:
-      // if (!user.phone) {
-      //   throw new UserPhoneNotFoundException(`User ${user.id} has no phone number`);
-      // }
-      // For now, throw an error
-      throw new UserPhoneNotFoundException(
-        'SMS notifications are not yet implemented. User phone field is required.'
-      );
+    const notificationRequest: NotificationRequest = {
+      kind: KIND.OTP,
+      otpParams: params,
     }
+
+    this.notificationPort.send(notificationRequest);
+
   }
 }

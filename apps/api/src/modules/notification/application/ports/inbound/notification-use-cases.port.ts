@@ -1,5 +1,3 @@
-import { SendEmailVerificationOTP } from '../../../../../modules/auth/better-auth.config';
-
 export type SendInvitationParams = {
   organizationId: string;
   organizationName: string;
@@ -17,8 +15,8 @@ export const TRANSPORT = {
 export type Transport = (typeof TRANSPORT[keyof typeof TRANSPORT]);
 
 export type OtpParams =
-  | { transport: Transport, emailOTPOptions: SendEmailVerificationOTP }
-  | { transport: typeof TRANSPORT.SMS, otp: string, phoneNumber: string };
+  | { otp: string, email: string, type: 'sign-in' | 'email-verification' | 'forget-password' }
+  | { otp: string, phoneNumber: string };
 
 /**
  * Notification Use Cases Port (Port IN)

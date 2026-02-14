@@ -1,3 +1,5 @@
+import { OtpParams } from "../inbound/notification-use-cases.port";
+
 export const KIND = {
   OTP: 'otp',
   ORGANIZATION_INVITATION: 'organization-invitation',
@@ -35,9 +37,7 @@ export type NotificationRequest =
   }
   | {
     kind: typeof KIND.OTP;
-    email: string;
-    otp: string;
-    platform: Platform;
+    otpParams: OtpParams
   }
 
 /**
