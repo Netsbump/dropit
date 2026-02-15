@@ -13,7 +13,7 @@ export class EmailAdapter implements IEmailChannel {
   constructor(
     private readonly brevoAdapter: BrevoAdapter,
     private readonly maildevAdapter: MaildevAdapter,
-  ) {}
+  ) { }
 
   async send(request: NotificationRequest): Promise<void> {
     const emailData = this.buildEmail(request);
@@ -34,18 +34,35 @@ export class EmailAdapter implements IEmailChannel {
           htmlContent: this.renderOrganizationInvitation(request)
         }
 
-      case KIND.OTP:
+      case KIND.OTP: {
+        if (!('email' in request.otpParams)) {
+          throw new Error('Otp notification routed to email channel without email address');
+        }
         return {
-          to: request.email,
+          to: request.otpParams.email,
           subject: 'Votre code de vérification DropIt',
           htmlContent: this.renderOtpCode(request),
         };
+      }
+
+
+      case KIND.VERIFICATION_USER_EMAIL:
+        return {
+          to: request.email,
+          subject: 'Vérification de votre adresse email',
+          htmlContent: this.renderVerificationUserEmail(request),
+        }
 
       default: {
-        const _exhaustive: never = request;
-        throw new Error('Unhandled notification kind');
+        const _exhaustive:never = request;
+        throw new Error(`Unhandled notification kind: ${_exhaustive}`);
       }
     }
+  }
+
+  private renderVerificationUserEmail(request: Extract<NotificationRequest, { kind: typeof KIND.VERIFICATION_USER_EMAIL }>) {
+
+    return ""
   }
 
   private renderOrganizationInvitation(request: Extract<NotificationRequest, { kind: typeof KIND.ORGANIZATION_INVITATION }>): string {
@@ -133,7 +150,7 @@ export class EmailAdapter implements IEmailChannel {
             <p>Voici votre code de vérification DropIt :</p>
 
             <div class="otp-code">
-              ${request.otp}
+              ${request.otpParams.otp}
             </div>
 
             <p style="text-align: center; margin-top: 20px; color: #6b7280;">

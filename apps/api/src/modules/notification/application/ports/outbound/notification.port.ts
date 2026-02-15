@@ -3,12 +3,11 @@ import { OtpParams } from "../inbound/notification-use-cases.port";
 export const KIND = {
   OTP: 'otp',
   ORGANIZATION_INVITATION: 'organization-invitation',
+  VERIFICATION_USER_EMAIL: 'verification-user-email',
   PASSWORD_RESET: 'password-reset',
   PR_ACHIEVED: 'pr-achieved',
   WORKOUT_REMINDER: 'workout-reminder'
 } as const;
-
-export type Kind = (typeof KIND)[keyof typeof KIND];
 
 export const RECIPIENT_TYPE = {
   NEW_USER: 'new-user',
@@ -16,13 +15,6 @@ export const RECIPIENT_TYPE = {
 } as const;
 
 export type RecipientType = (typeof RECIPIENT_TYPE)[keyof typeof RECIPIENT_TYPE];
-
-export const PLATFORM = {
-  MOBILE: 'mobile',
-  WEB: 'web'
-} as const;
-
-export type Platform = (typeof PLATFORM)[keyof typeof PLATFORM];
 
 export type NotificationRequest =
   | {
@@ -38,6 +30,12 @@ export type NotificationRequest =
   | {
     kind: typeof KIND.OTP;
     otpParams: OtpParams
+  }
+  | {
+    kind: typeof KIND.VERIFICATION_USER_EMAIL,
+    email: string,
+    token: string,
+    url: string,
   }
 
 /**

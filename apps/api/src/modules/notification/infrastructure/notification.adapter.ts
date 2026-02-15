@@ -37,9 +37,9 @@ export class NotificationAdapter implements INotificationPort {
     const channel = this.resolveChannel(request)
 
     switch (channel) {
-      case TRANSPORT.EMAIL: return this.emailChannel.send(request);
-      case TRANSPORT.SMS: return this.smsChannel.send(request);
-      case TRANSPORT.PUSH: return this.pushChannel.send(request);
+      case TRANSPORT.EMAIL: return await this.emailChannel.send(request);
+      case TRANSPORT.SMS: return await this.smsChannel.send(request);
+      case TRANSPORT.PUSH: return await this.pushChannel.send(request);
     }
   }
 
@@ -55,11 +55,14 @@ export class NotificationAdapter implements INotificationPort {
     if (request.kind === KIND.OTP) {
       if ('email' in request.otpParams) {
         return TRANSPORT.EMAIL
-      } else if ('phoneNumber' in request.otpParams) {
+      } if ('phoneNumber' in request.otpParams) {
         return TRANSPORT.SMS
       }
     }
 
+    if (request.kind === KIND.VERIFICATION_USER_EMAIL) {
+      return TRANSPORT.EMAIL;
+    }
     return TRANSPORT.EMAIL;
   }
 }

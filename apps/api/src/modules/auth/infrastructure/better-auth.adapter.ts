@@ -93,8 +93,15 @@ export class BetterAuthAdapter implements OnModuleInit {
 
     // Use centralized config and inject dependencies
     this._auth = createAuthConfig({
-      afterCreateInvitation: async (data) => {
-        return this.notificationUseCase.sendInvitation({
+      sendVerificationUserEmail: (data) => {
+        this.notificationUseCase.sendVerificationUserEmail({
+          email: data.user.email,
+          token: data.token,
+          url: data.url,
+        })
+      },
+      afterCreateInvitation: (data) => {
+        this.notificationUseCase.sendOrganizationInvitation({
           organizationId: data.organization.id,
           organizationName: data.organization.name,
           invitedBy: data.inviter.id,
@@ -102,8 +109,8 @@ export class BetterAuthAdapter implements OnModuleInit {
           email: data.invitation.email,
         });
       },
-      sendEmailVerificationOTP: async (data) => {
-        return this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type })
+      sendVerificationOTP: (data) => {
+        this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type })
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       databaseHooks: {

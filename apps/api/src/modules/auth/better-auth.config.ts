@@ -4,7 +4,7 @@ import { Pool } from "pg";
 import { config } from "../../config/env.config";
 import { organization, Organization, Invitation } from "better-auth/plugins/organization";
 
-export type SendEmailVerificationOTP = Parameters<EmailOTPOptions["sendVerificationOTP"]>[0];
+export type SendVerificationOTP = Parameters<EmailOTPOptions["sendVerificationOTP"]>[0];
 
 /** Context passed by customSession plugin (user + session from DB) */
 export interface CustomSessionContext {
@@ -19,18 +19,18 @@ export interface EnrichedSessionResult {
 }
 
 interface BetterAuthDeps {
-  sendVerificationEmail?: (
+  sendVerificationUserEmail: (
     data: { user: User; url: string; token: string },
     request: Request | undefined
-  ) => Promise<void>;
+  ) => void;
   afterCreateInvitation: (data: {
     invitation: Invitation;
     inviter: User;
     organization: Organization;
-  }) => Promise<void>;
+  }) => void;
+  sendVerificationOTP: (data: SendVerificationOTP) => void;
   enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
-  databaseHooks?: BetterAuthOptions["databaseHooks"];
-  sendEmailVerificationOTP: (data: SendEmailVerificationOTP) => Promise<void>;
+  databaseHooks: BetterAuthOptions["databaseHooks"];
 }
 
 export function createAuthConfig(
@@ -73,8 +73,7 @@ export function createAuthConfig(
       sendOnSignUp: true,
       expiresIn: 60 * 60 * 24 * 10, // 10 days
       sendVerificationEmail: async (data, request) => {
-        if (!deps?.sendVerificationEmail) return;
-        return deps?.sendVerificationEmail?.(data, request);
+        deps.sendVerificationUserEmail(data, request);
       },
     },
 
@@ -87,7 +86,7 @@ export function createAuthConfig(
       admin(),
       emailOTP({
         async sendVerificationOTP(data) {
-          deps.sendEmailVerificationOTP(data);
+          deps.sendVerificationOTP(data);
         }
       }),
       organization({
@@ -96,7 +95,7 @@ export function createAuthConfig(
         },
         organizationHooks: {
           afterCreateInvitation: async (data) => {
-            await deps.afterCreateInvitation(data);
+            deps.afterCreateInvitation(data);
           },
         },
       }),

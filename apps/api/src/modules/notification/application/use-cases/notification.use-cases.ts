@@ -1,4 +1,4 @@
-import { INotificationUseCases, OtpParams, TRANSPORT } from '../ports/inbound/notification-use-cases.port';
+import { INotificationUseCases, OtpParams, VerificationUserEmailParams } from '../ports/inbound/notification-use-cases.port';
 import {
   INotificationPort,
   KIND,
@@ -6,10 +6,6 @@ import {
   RECIPIENT_TYPE,
 } from '../ports/outbound/notification.port';
 import { IUserRepository } from '../../../auth/application/ports/user.repository.port';
-import {
-  UserNotFoundException,
-  UserPhoneNotFoundException,
-} from '../exceptions/notification.exceptions';
 
 /**
  * Notification Use Cases Implementation
@@ -24,45 +20,62 @@ export class NotificationUseCase implements INotificationUseCases {
     private readonly userRepository: IUserRepository,
   ) { }
 
-
-  async sendInvitation(params: {
+  async sendOrganizationInvitation(params: {
     organizationId: string;
     organizationName: string;
     email: string;
     invitedBy: string;
     invitationToken: string;
   }): Promise<void> {
-    const existingUser = await this.userRepository.getByEmail(params.email);
+    try {
+      const existingUser = await this.userRepository.getByEmail(params.email);
 
-    if (existingUser) {
-      const notificationRequest: NotificationRequest = {
-        kind: KIND.ORGANIZATION_INVITATION,
-        recipientType: RECIPIENT_TYPE.EXISTING_USER,
-        userId: existingUser.id,
-        ...params
+      if (existingUser) {
+        const notificationRequest: NotificationRequest = {
+          kind: KIND.ORGANIZATION_INVITATION,
+          recipientType: RECIPIENT_TYPE.EXISTING_USER,
+          userId: existingUser.id,
+          ...params
+        }
+        await this.notificationPort.send(notificationRequest)
+
+      } else {
+        const notificationRequest: NotificationRequest = {
+          kind: KIND.ORGANIZATION_INVITATION,
+          recipientType: RECIPIENT_TYPE.NEW_USER,
+          ...params
+        }
+        await this.notificationPort.send(notificationRequest)
       }
-
-      this.notificationPort.send(notificationRequest)
-    } else {
-
-      const notificationRequest: NotificationRequest = {
-        kind: KIND.ORGANIZATION_INVITATION,
-        recipientType: RECIPIENT_TYPE.NEW_USER,
-        ...params
-      }
-
-      this.notificationPort.send(notificationRequest)
+    } catch (error) {
+      console.error("Failed to send organization invitation", error);
     }
   }
 
-  async sendOtp(params: OtpParams
-  ): Promise<void> {
+  async sendOtp(params: OtpParams): Promise<void> {
     const notificationRequest: NotificationRequest = {
       kind: KIND.OTP,
       otpParams: params,
     }
+    try {
+      await this.notificationPort.send(notificationRequest);
+    } catch (error) {
+      console.error("Failed to send OTP notification", error);
+    }
+  }
 
-    this.notificationPort.send(notificationRequest);
+  async sendVerificationUserEmail(params: VerificationUserEmailParams): Promise<void> {
+    const notificationRequest: NotificationRequest = {
+      kind: KIND.VERIFICATION_USER_EMAIL,
+      email: params.email,
+      token: params.token,
+      url: params.url,
+    }
 
+    try {
+      await this.notificationPort.send(notificationRequest);
+    } catch (error) {
+      console.error("Failed to send email verification notification", error);
+    }
   }
 }

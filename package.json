@@ -10,7 +10,7 @@
     "dev:mobile": "pnpm --filter mobile dev",
     "typecheck": "pnpm --recursive --filter '{apps/*}' typecheck",
     "lint": "biome lint .",
-    "lint:fix": "biome lint --fix .",
+    "lint:fix": "biome lint --apply .",
     "format": "biome format .",
     "clean": "pnpm --recursive --filter '{apps/*}' clean && rm -rf node_modules",
     "test:api:unit": "dotenv -e .env -- pnpm --filter api test:unit",

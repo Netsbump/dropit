@@ -1,4 +1,4 @@
-export type SendInvitationParams = {
+export type OrganizationInvitationParams = {
   organizationId: string;
   organizationName: string;
   email: string;
@@ -6,13 +6,11 @@ export type SendInvitationParams = {
   invitationToken: string;
 }
 
-export const TRANSPORT = {
-  EMAIL: 'email',
-  SMS: 'sms',
-  PUSH: 'push'
-} as const;
-
-export type Transport = (typeof TRANSPORT[keyof typeof TRANSPORT]);
+export type VerificationUserEmailParams = {
+  email: string;
+  token: string;
+  url: string;
+}
 
 export type OtpParams =
   | { otp: string, email: string, type: 'sign-in' | 'email-verification' | 'forget-password' }
@@ -32,6 +30,7 @@ export type OtpParams =
  * via dependency injection.
  */
 export interface INotificationUseCases {
+
   /**
    * Send an invitation email to join an organization
    *
@@ -41,16 +40,19 @@ export interface INotificationUseCases {
    * - If user exists: sends email + push notification
    * - If user doesn't exist: sends email only with signup link
    */
-  sendInvitation(params: SendInvitationParams
-  ): Promise<void>;
+  sendOrganizationInvitation(params: OrganizationInvitationParams): Promise<void>;
 
   /** 
    * Send a one-time password (OTP) code
    *
    * @description
    */
-  sendOtp(params: OtpParams
-  ): Promise<void>;
+  sendOtp(params: OtpParams): Promise<void>
+
+  /**
+   * Send an verification link by email after signup 
+   */
+  sendVerificationUserEmail(params: VerificationUserEmailParams): Promise<void>;
 }
 
 /**
