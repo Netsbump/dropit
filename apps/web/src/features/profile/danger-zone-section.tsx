@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { useNavigate } from '@tanstack/react-router';
 import { api } from '@/lib/api';
 import { authClient } from '@/lib/auth-client';
-import { toast } from '@/shared/hooks/use-toast';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -17,15 +17,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
+} from '@/components/ui/form';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert';
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
 const getDeleteAccountSchema = (t: (key: string) => string) =>

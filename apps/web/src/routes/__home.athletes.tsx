@@ -7,9 +7,9 @@ import { AthleteInvitationForm } from '../features/athletes/athlete-invitation-f
 import { columns } from '../features/athletes/columns';
 import { DataTable } from '../features/athletes/data-table';
 import { DialogCreation } from '../features/athletes/dialog-creation';
-import { usePageMeta } from '../shared/hooks/use-page-meta';
-import { Button } from '../shared/components/ui/button';
-import { HeroCard } from '../shared/components/ui/hero-card';
+import { usePageMeta } from '../hooks/use-page-meta';
+import { Button } from '../components/ui/button';
+import { HeroCard } from '../components/ui/hero-card';
 import { Users } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/athletes')({

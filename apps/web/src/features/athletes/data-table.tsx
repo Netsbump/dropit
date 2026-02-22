@@ -1,20 +1,20 @@
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import { Input } from '@/shared/components/ui/input';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/shared/components/ui/table';
+} from '@/components/ui/table';
 import { useTranslation } from '@dropit/i18n';
 import { AthleteDetailsDto } from '@dropit/schemas';
 import {

@@ -1,9 +1,9 @@
 import { Outlet, createFileRoute, redirect, useMatches } from '@tanstack/react-router';
-import { AppSidebar } from '../shared/components/layout/app-sidebar';
-import { AppHeader } from '../shared/components/layout/app-header';
+import { AppSidebar } from '../components/layout/app-sidebar';
+import { AppHeader } from '../components/layout/app-header';
 import { authClient } from '../lib/auth-client';
 import { useTranslation } from '@dropit/i18n';
-import { PageMetaProvider } from '../shared/hooks/use-page-meta';
+import { PageMetaProvider } from '../hooks/use-page-meta';
 
 export const Route = createFileRoute('/__home')({
   beforeLoad: async () => {
@@ -53,7 +53,7 @@ function HomeLayout() {
           <AppSidebar />
 
           <main className="flex-1 flex flex-col">
-            <AppHeader tabs={getTabs()}/>
+            <AppHeader tabs={getTabs()} />
 
             <div className="flex-1 min-h-0 pb-3 px-3 pt-0 ">
               <div className="rounded-3xl h-full overflow-hidden shadow-none border bg-outlet">

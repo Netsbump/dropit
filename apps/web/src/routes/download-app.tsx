@@ -1,10 +1,10 @@
 import { authClient } from "@/lib/auth-client";
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "@dropit/i18n";
-import { Button } from "@/shared/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/shared/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Smartphone, Download, Apple, ArrowRight, CheckCircle, Star } from "lucide-react";
-import { Badge } from "@/shared/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute('/download-app')({

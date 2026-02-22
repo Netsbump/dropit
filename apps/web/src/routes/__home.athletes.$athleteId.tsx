@@ -1,7 +1,7 @@
 import { AthleteDetail } from '@/features/athletes/athlete-detail';
 import { api } from '@/lib/api';
-import { toast } from '@/shared/hooks/use-toast';
-import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { toast } from '@/hooks/use-toast';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
 import {
   CompetitorLevel,
@@ -16,7 +16,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const Route = createFileRoute('/__home/athletes/$athleteId')({
   component: AthleteDetailPage,

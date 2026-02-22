@@ -1,27 +1,27 @@
 import { api } from '@/lib/api';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { Textarea } from '@/shared/components/ui/textarea';
+} from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { createWorkoutSchema, WorkoutDto } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { UseFormReturn } from 'react-hook-form';
 import { Copy, Search } from 'lucide-react';
-import { Switch } from '@/shared/components/ui/switch';
+import { Switch } from '@/components/ui/switch';
 import { z } from 'zod';
 import { useState } from 'react';
 

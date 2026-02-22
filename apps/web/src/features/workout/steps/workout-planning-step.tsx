@@ -1,18 +1,18 @@
 import { api } from '@/lib/api';
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
-import { Card, CardContent } from '@/shared/components/ui/card';
-import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
-import { Switch } from '@/shared/components/ui/switch';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Switch } from '@/components/ui/switch';
 import { createWorkoutSchema } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';

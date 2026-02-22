@@ -36,6 +36,7 @@ const _authTermsLazyRouteImport = createFileRoute('/__auth/terms')()
 const _authSignupLazyRouteImport = createFileRoute('/__auth/signup')()
 const _authPrivacyLazyRouteImport = createFileRoute('/__auth/privacy')()
 const _authLoginLazyRouteImport = createFileRoute('/__auth/login')()
+const _authLoginAdminLazyRouteImport = createFileRoute('/__auth/login/admin')()
 
 const OnboardingRoute = OnboardingRouteImport.update({
   id: '/onboarding',
@@ -128,6 +129,13 @@ const _homeAthletesRoute = _homeAthletesRouteImport.update({
   path: '/athletes',
   getParentRoute: () => _homeRoute,
 } as any)
+const _authLoginAdminLazyRoute = _authLoginAdminLazyRouteImport
+  .update({
+    id: '/admin',
+    path: '/admin',
+    getParentRoute: () => _authLoginLazyRoute,
+  } as any)
+  .lazy(() => import('./routes/__auth.login.admin.lazy').then((d) => d.Route))
 const _homeWorkoutsCreateRoute = _homeWorkoutsCreateRouteImport.update({
   id: '/workouts/create',
   path: '/workouts/create',
@@ -177,7 +185,7 @@ export interface FileRoutesByFullPath {
   '/library': typeof _homeLibraryRouteWithChildren
   '/planning': typeof _homePlanningRoute
   '/profile': typeof _homeProfileRoute
-  '/login': typeof _authLoginLazyRoute
+  '/login': typeof _authLoginLazyRouteWithChildren
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
   '/terms': typeof _authTermsLazyRoute
@@ -188,6 +196,7 @@ export interface FileRoutesByFullPath {
   '/library/workouts': typeof _homeLibraryWorkoutsRoute
   '/workouts/$workoutId': typeof _homeWorkoutsWorkoutIdRoute
   '/workouts/create': typeof _homeWorkoutsCreateRoute
+  '/login/admin': typeof _authLoginAdminLazyRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -201,7 +210,7 @@ export interface FileRoutesByTo {
   '/library': typeof _homeLibraryRouteWithChildren
   '/planning': typeof _homePlanningRoute
   '/profile': typeof _homeProfileRoute
-  '/login': typeof _authLoginLazyRoute
+  '/login': typeof _authLoginLazyRouteWithChildren
   '/privacy': typeof _authPrivacyLazyRoute
   '/signup': typeof _authSignupLazyRoute
   '/terms': typeof _authTermsLazyRoute
@@ -212,6 +221,7 @@ export interface FileRoutesByTo {
   '/library/workouts': typeof _homeLibraryWorkoutsRoute
   '/workouts/$workoutId': typeof _homeWorkoutsWorkoutIdRoute
   '/workouts/create': typeof _homeWorkoutsCreateRoute
+  '/login/admin': typeof _authLoginAdminLazyRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -228,7 +238,7 @@ export interface FileRoutesById {
   '/__home/library': typeof _homeLibraryRouteWithChildren
   '/__home/planning': typeof _homePlanningRoute
   '/__home/profile': typeof _homeProfileRoute
-  '/__auth/login': typeof _authLoginLazyRoute
+  '/__auth/login': typeof _authLoginLazyRouteWithChildren
   '/__auth/privacy': typeof _authPrivacyLazyRoute
   '/__auth/signup': typeof _authSignupLazyRoute
   '/__auth/terms': typeof _authTermsLazyRoute
@@ -239,6 +249,7 @@ export interface FileRoutesById {
   '/__home/library/workouts': typeof _homeLibraryWorkoutsRoute
   '/__home/workouts/$workoutId': typeof _homeWorkoutsWorkoutIdRoute
   '/__home/workouts/create': typeof _homeWorkoutsCreateRoute
+  '/__auth/login/admin': typeof _authLoginAdminLazyRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -265,6 +276,7 @@ export interface FileRouteTypes {
     | '/library/workouts'
     | '/workouts/$workoutId'
     | '/workouts/create'
+    | '/login/admin'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -289,6 +301,7 @@ export interface FileRouteTypes {
     | '/library/workouts'
     | '/workouts/$workoutId'
     | '/workouts/create'
+    | '/login/admin'
   id:
     | '__root__'
     | '/'
@@ -315,6 +328,7 @@ export interface FileRouteTypes {
     | '/__home/library/workouts'
     | '/__home/workouts/$workoutId'
     | '/__home/workouts/create'
+    | '/__auth/login/admin'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -448,6 +462,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof _homeAthletesRouteImport
       parentRoute: typeof _homeRoute
     }
+    '/__auth/login/admin': {
+      id: '/__auth/login/admin'
+      path: '/admin'
+      fullPath: '/login/admin'
+      preLoaderRoute: typeof _authLoginAdminLazyRouteImport
+      parentRoute: typeof _authLoginLazyRoute
+    }
     '/__home/workouts/create': {
       id: '/__home/workouts/create'
       path: '/workouts/create'
@@ -500,8 +521,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface _authLoginLazyRouteChildren {
+  _authLoginAdminLazyRoute: typeof _authLoginAdminLazyRoute
+}
+
+const _authLoginLazyRouteChildren: _authLoginLazyRouteChildren = {
+  _authLoginAdminLazyRoute: _authLoginAdminLazyRoute,
+}
+
+const _authLoginLazyRouteWithChildren = _authLoginLazyRoute._addFileChildren(
+  _authLoginLazyRouteChildren,
+)
+
 interface _authRouteChildren {
-  _authLoginLazyRoute: typeof _authLoginLazyRoute
+  _authLoginLazyRoute: typeof _authLoginLazyRouteWithChildren
   _authPrivacyLazyRoute: typeof _authPrivacyLazyRoute
   _authSignupLazyRoute: typeof _authSignupLazyRoute
   _authTermsLazyRoute: typeof _authTermsLazyRoute
@@ -509,7 +542,7 @@ interface _authRouteChildren {
 }
 
 const _authRouteChildren: _authRouteChildren = {
-  _authLoginLazyRoute: _authLoginLazyRoute,
+  _authLoginLazyRoute: _authLoginLazyRouteWithChildren,
   _authPrivacyLazyRoute: _authPrivacyLazyRoute,
   _authSignupLazyRoute: _authSignupLazyRoute,
   _authTermsLazyRoute: _authTermsLazyRoute,

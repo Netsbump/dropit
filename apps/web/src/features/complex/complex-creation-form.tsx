@@ -1,5 +1,5 @@
 import { api } from '@/lib/api';
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -7,15 +7,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { useToast } from '@/shared/hooks/use-toast';
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import {
   DndContext,
   DragEndEvent,

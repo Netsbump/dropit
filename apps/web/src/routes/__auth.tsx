@@ -1,38 +1,10 @@
-import { authClient } from '@/lib/auth-client';
-import { Outlet, createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect } from 'react';
+import { getSession } from '@/features/auth/auth-queries';
+import { Outlet, createFileRoute, redirect } from '@tanstack/react-router';
 
 export const Route = createFileRoute('/__auth')({
-  component: AuthLayout,
+  beforeLoad: async () => {
+    const { data: session } = await getSession();
+    if (session) throw redirect({ to: '/dashboard' });
+  },
+  component: () => <Outlet />,
 });
-
-function AuthLayout() {
-  const { data: session, isPending } = authClient.useSession();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!isPending && session) {
-      navigate({ to: '/dashboard' });
-    }
-  }, [isPending, session, navigate]);
-
-  if (isPending) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center">
-        Loading...
-      </div>
-    );
-  }
-
-  if (session) {
-    return null;
-  }
-  
-  return (
-    <div
-      className="min-h-screen flex items-center justify-center"
-    >
-      <Outlet />
-    </div>
-  );
-}

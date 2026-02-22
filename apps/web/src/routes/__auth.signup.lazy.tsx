@@ -1,6 +1,6 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { SignupForm } from '@/shared/components/auth/signup-form';
+import { SignupForm } from '@/features/auth/signup-form';
 import { authClient } from '../lib/auth-client';
 import { useEffect } from 'react';
 import { BicepsFlexed } from 'lucide-react';

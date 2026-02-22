@@ -1,8 +1,8 @@
 import { WorkoutCreationStepper, workoutCreationSteps } from '@/features/workout/workout-creation-stepper';
 import { api } from '@/lib/api';
-import { Steps } from '@/shared/components/ui/steps';
-import { useToast } from '@/shared/hooks/use-toast';
-import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { Steps } from '@/components/ui/steps';
+import { useToast } from '@/hooks/use-toast';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { CreateWorkout } from '@dropit/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';

@@ -1,14 +1,14 @@
 import { PlanningCalendar } from '@/features/planning/planning-calendar';
 import { TrainingSessionDetailPopover } from '@/features/planning/training-session-detail-popover';
 import { api } from '@/lib/api';
-import { useToast } from '@/shared/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { EventClickArg } from '@fullcalendar/core';
 import { DateClickArg } from '@fullcalendar/interaction';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { usePageMeta } from '@/hooks/use-page-meta';
 
 export const Route = createFileRoute('/__home/planning')({
   component: PlanningPage,

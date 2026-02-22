@@ -1,7 +1,7 @@
 import { WorkoutDetail } from '@/features/workout/workout-detail';
 import { WorkoutEditor } from '@/features/workout/workout-editor';
 import { api } from '@/lib/api';
-import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';

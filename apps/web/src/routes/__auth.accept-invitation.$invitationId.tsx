@@ -2,14 +2,14 @@ import { useState } from 'react';
 import { useParams, useNavigate } from '@tanstack/react-router';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/shared/components/ui/tabs';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
-import { Button } from '@/shared/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from '@dropit/i18n';
-import { LoginForm } from '@/shared/components/auth/login-form';
-import { SignupForm } from '@/shared/components/auth/signup-form';
+import { LoginForm } from '@/features/auth/login-form';
+import { SignupForm } from '@/features/auth/signup-form';
 import { authClient } from '@/lib/auth-client';
 
 export const Route = createFileRoute('/__auth/accept-invitation/$invitationId')({

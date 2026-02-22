@@ -1,7 +1,7 @@
 import { cn } from '@/lib/utils';
-import { Button } from '@/shared/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/shared/components/ui/select';
-import { useToast } from '@/shared/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { TrainingSessionDto } from '@dropit/schemas';
 import { Duration, EventApi, EventClickArg, EventContentArg } from '@fullcalendar/core';

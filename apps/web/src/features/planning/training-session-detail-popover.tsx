@@ -2,7 +2,7 @@ import {
   Popover,
   PopoverAnchor,
   PopoverContent,
-} from '@/shared/components/ui/popover';
+} from '@/components/ui/popover';
 import { useEffect, useState } from 'react';
 import { TrainingSessionDetail } from './training-session-detail';
 

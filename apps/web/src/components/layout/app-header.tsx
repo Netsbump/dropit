@@ -1,9 +1,9 @@
 import { Link, useMatches, useRouter } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
-import { Avatar, AvatarFallback } from '@/shared/components/ui/avatar';
-import { Button } from '@/shared/components/ui/button';
-import { usePageMeta } from '@/shared/hooks/use-page-meta';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
 interface Tab {
   label: string;

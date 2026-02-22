@@ -1,13 +1,13 @@
 import { WorkoutFilters } from '@/features/workout/workout-filters';
 import { WorkoutGrid } from '@/features/workout/workout-grid';
 import { api } from '@/lib/api';
-import { HeroCard } from '@/shared/components/ui/hero-card';
-import { ScrollArea } from '@/shared/components/ui/scroll-area';
+import { HeroCard } from '@/components/ui/hero-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { usePageMeta } from '../shared/hooks/use-page-meta';
+import { usePageMeta } from '../hooks/use-page-meta';
 import { Layers } from 'lucide-react';
 
 export const Route = createFileRoute('/__home/library/workouts')({

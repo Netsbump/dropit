@@ -1,6 +1,6 @@
 import { api } from '@/lib/api';
-import { Button } from '@/shared/components/ui/button';
-import { FileUpload } from '@/shared/components/ui/file-upload';
+import { Button } from '@/components/ui/button';
+import { FileUpload } from '@/components/ui/file-upload';
 import {
   Form,
   FormControl,
@@ -8,16 +8,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { useToast } from '@/shared/hooks/use-toast';
+} from '@/components/ui/select';
+import { useToast } from '@/hooks/use-toast';
 import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';

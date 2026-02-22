@@ -1,18 +1,18 @@
-import { Button } from '@/shared/components/ui/button';
-import { Checkbox } from '@/shared/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
-import { Badge } from '@/shared/components/ui/badge';
+} from '@/components/ui/dropdown-menu';
+import { Badge } from '@/components/ui/badge';
 import { ExerciseDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
 import { MoreHorizontal } from 'lucide-react';
 import { ArrowUpDown } from 'lucide-react';
-import { getCategoryBadgeVariant } from '@/shared/utils';
+import { getCategoryBadgeVariant } from '@/utils';
 
 type Exercise = ExerciseDto;
 

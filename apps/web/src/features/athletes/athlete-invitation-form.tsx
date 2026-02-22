@@ -1,4 +1,4 @@
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -6,15 +6,15 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useTranslation } from '@dropit/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { toast } from '@/shared/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Mail, UserPlus, Send } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 

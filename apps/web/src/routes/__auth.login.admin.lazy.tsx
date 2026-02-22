@@ -5,7 +5,7 @@ import { BicepsFlexed } from 'lucide-react';
 import loginImage from '@/assets/images/hero-pages/login.svg';
 import { useAuthRedirect } from '@/features/auth/use-auth-redirect';
 
-export const Route = createLazyFileRoute('/__auth/login')({
+export const Route = createLazyFileRoute('/__auth/login/admin')({
   component: Login,
 });
 

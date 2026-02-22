@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { usePageMeta } from '../shared/hooks/use-page-meta';
-import { Card, CardContent, CardHeader } from '../shared/components/ui/card';
-import { Button } from '../shared/components/ui/button';
-import { ScrollArea } from '../shared/components/ui/scroll-area';
+import { usePageMeta } from '../hooks/use-page-meta';
+import { Card, CardContent, CardHeader } from '../components/ui/card';
+import { Button } from '../components/ui/button';
+import { ScrollArea } from '../components/ui/scroll-area';
 import { useEffect } from 'react';
 import { cn } from '@/lib/utils';
 import { AreaChart, Area, ResponsiveContainer, Tooltip, PieChart, Pie, Cell } from 'recharts';
@@ -122,8 +122,8 @@ function Dashboard() {
                   <AreaChart data={participationData}>
                     <defs>
                       <linearGradient id="colorRate" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0}/>
+                        <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <Tooltip
@@ -151,32 +151,32 @@ function Dashboard() {
 
           {/* Planning */}
           <Card className="flex-1 bg-background border rounded-2xl shadow-none">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  <p className="text-gray-500 text-md">Planning des 7 prochains jours</p>
-                  <div className="grid grid-cols-7 gap-1">
-                    {calendarDays.map((day, index) => (
-                      <div
-                        key={`${day.day}-${day.date}`}
-                        className={cn(
-                          "flex flex-col items-center p-2 rounded-lg transition-all",
-                          day.hasSession
-                            ? "bg-purple-500 text-white"
-                            : index === 0
+            <CardContent className="p-6">
+              <div className="space-y-4">
+                <p className="text-gray-500 text-md">Planning des 7 prochains jours</p>
+                <div className="grid grid-cols-7 gap-1">
+                  {calendarDays.map((day, index) => (
+                    <div
+                      key={`${day.day}-${day.date}`}
+                      className={cn(
+                        "flex flex-col items-center p-2 rounded-lg transition-all",
+                        day.hasSession
+                          ? "bg-purple-500 text-white"
+                          : index === 0
                             ? "bg-purple-100 border border-purple-300 text-purple-700"
                             : "bg-white/60 border"
-                        )}
-                      >
-                        <span className="text-xs font-medium mb-1">{day.day}</span>
-                        <span className="text-lg font-bold">{day.date}</span>
-                        {day.hasSession && (
-                          <div className="w-1.5 h-1.5 rounded-full bg-white mt-1" />
-                        )}
-                      </div>
-                    ))}
-                  </div>
+                      )}
+                    >
+                      <span className="text-xs font-medium mb-1">{day.day}</span>
+                      <span className="text-lg font-bold">{day.date}</span>
+                      {day.hasSession && (
+                        <div className="w-1.5 h-1.5 rounded-full bg-white mt-1" />
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
+              </div>
+            </CardContent>
           </Card>
 
           {/* Library repartition */}

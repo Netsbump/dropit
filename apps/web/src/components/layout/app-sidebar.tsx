@@ -1,5 +1,5 @@
 import { authClient } from '@/lib/auth-client';
-import { useToast } from '@/shared/hooks/use-toast';
+import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { Link, useMatches, useNavigate } from '@tanstack/react-router';
 import {
