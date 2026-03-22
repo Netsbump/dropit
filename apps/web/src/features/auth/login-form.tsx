@@ -15,20 +15,27 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@dropit/i18n';
+import { useState } from 'react';
 
-function getFormSchema(t: (key: string) => string) {
+function getEmailFormSchema(t: (key: string) => string) {
   return z.object({
     email: z.string().email({ message: t('common.validation.emailRequired') }),
-    password: z
-      .string()
-      .min(6, { message: t('common.validation.passwordMinLength') }),
-  });
+  })
 }
 
-type LoginFormData = {
-  email: string;
-  password: string;
+function getOtpFormSchema(t: (key: string) => string) {
+  return z.object({
+    otp: z.string().length(6, { message: t('login.validation.otpRequired') })
+  })
+}
+
+type LoginEmailFormData = {
+  email: string
 };
+
+type LoginOtpFormData = {
+  otp: string
+}
 
 interface LoginFormProps {
   onSuccess?: () => void;
@@ -43,31 +50,51 @@ export function LoginForm({
   showRedirect = true,
   className = ""
 }: LoginFormProps) {
+  const [step, setStep] = useState<'email' | 'otp'>('email');
+  const [email, setEmail] = useState('');
   const { t } = useTranslation(['auth']);
 
-  const formSchema = getFormSchema(t);
+  const emailformSchema = getEmailFormSchema(t);
+  const otpFormSchema = getOtpFormSchema(t);
 
-  const form = useForm<LoginFormData>({
-    resolver: zodResolver(formSchema),
+  const emailForm = useForm<LoginEmailFormData>({
+    resolver: zodResolver(emailformSchema),
     defaultValues: {
       email: '',
-      password: '',
     },
   });
 
-  const loginMutation = useMutation({
-    mutationFn: async (values: LoginFormData) => {
-      const response = await authClient.signIn.email({
-        email: values.email,
-        password: values.password,
-        callbackURL: '/dashboard',
-        rememberMe: true,
-      });
+  const otpForm = useForm<LoginOtpFormData>({
+    resolver: zodResolver(otpFormSchema),
+    defaultValues: {
+      otp: '',
+    },
+  });
 
-      if (response.error) {
-        throw new Error(response.error.message || 'Invalid email or password');
-      }
-      return response.data;
+  const loginEmailMutation = useMutation({
+    mutationFn: async (values: LoginEmailFormData) => {
+      const { data, error } = await authClient.emailOtp.sendVerificationOtp({
+        email: values.email,
+        type: 'sign-in'
+      });
+      if (error) throw new Error(error.message);
+      setEmail(values.email);
+      return data;
+    },
+    onSettled: () => {
+      setStep('otp');
+    }
+  });
+
+  const loginOtpMutation = useMutation({
+    mutationFn: async (values: LoginOtpFormData) => {
+      const { data, error } = await authClient.signIn.emailOtp({
+        email: email,
+        otp: values.otp,
+      });
+      console.log(error)
+      if (error) throw new Error(error.message);
+      return data
     },
     onSuccess: () => {
       toast({
@@ -77,6 +104,7 @@ export function LoginForm({
       onSuccess?.();
     },
     onError: (error: Error) => {
+      console.log('onError call', error)
       toast({
         title: t('login.toast.error.title'),
         description: error.message || t('login.toast.error.description'),
@@ -84,18 +112,26 @@ export function LoginForm({
       });
       onError?.(error);
     },
-  });
+  })
 
-  function onSubmit(values: LoginFormData) {
-    loginMutation.mutate(values);
+  function onSubmitEmail(values: LoginEmailFormData) {
+    loginEmailMutation.mutate(values);
   }
 
-  return (
+  function onSubmitOtp(values: LoginOtpFormData) {
+    loginOtpMutation.mutate(values);
+  }
+
+  if (step === 'email') return (
     <div className={className}>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <div className="flex flex-col space-y-2 text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">{t('login.title')}</h1>
+        <p className="text-sm text-gray-600">{t('login.description')}</p>
+      </div>
+      <Form {...emailForm}>
+        <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-4">
           <FormField
-            control={form.control}
+            control={emailForm.control}
             name="email"
             render={({ field }) => (
               <FormItem>
@@ -107,25 +143,12 @@ export function LoginForm({
               </FormItem>
             )}
           />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('login.password')}</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <Button
             type="submit"
             className="w-full"
-            disabled={loginMutation.isPending}
+            disabled={loginEmailMutation.isPending}
           >
-            {loginMutation.isPending
+            {loginEmailMutation.isPending
               ? t('login.buttonLoading')
               : t('login.button')}
           </Button>
@@ -145,4 +168,42 @@ export function LoginForm({
       )}
     </div>
   );
-} 
+
+  return (
+    <div className={className}>
+      <div className="flex flex-col space-y-2 text-center mb-6">
+        <h1 className="text-3xl font-bold text-gray-800">{t('login.title')}</h1>
+        <p className="text-sm text-gray-600">{t('login.otpDescription')}</p>
+      </div>
+      <Form {...otpForm}>
+        <form onSubmit={otpForm.handleSubmit(onSubmitOtp)} className="space-y-4">
+          <FormItem>
+            <FormLabel>{t('login.otp')}</FormLabel>
+            <FormControl>
+              <Input
+                {...otpForm.register('otp')}
+                placeholder={t('common.placeholders.otp')}
+                inputMode="numeric"
+                maxLength={6}
+              />
+            </FormControl>
+            {otpForm.formState.errors.otp && (
+              <p className="text-sm font-medium text-destructive">
+                {otpForm.formState.errors.otp.message}
+              </p>
+            )}
+          </FormItem>
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={loginOtpMutation.isPending}
+          >
+            {loginOtpMutation.isPending
+              ? t('login.otpButtonLoading')
+              : t('login.otpButton')}
+          </Button>
+        </form>
+      </Form>
+    </div>
+  );
+}

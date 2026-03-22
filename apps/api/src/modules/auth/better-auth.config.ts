@@ -85,6 +85,7 @@ export function createAuthConfig(
       openAPI(),
       admin(),
       emailOTP({
+        disableSignUp: true,
         async sendVerificationOTP(data) {
           deps.sendVerificationOTP(data);
         }

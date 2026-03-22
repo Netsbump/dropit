@@ -1,9 +1,9 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { LoginForm } from '@/features/auth/login-form';
 import { BicepsFlexed } from 'lucide-react';
 import loginImage from '@/assets/images/hero-pages/login.svg';
 import { useAuthRedirect } from '@/features/auth/use-auth-redirect';
+import { LoginAdminForm } from '@/features/auth/login-admin-form';
 
 export const Route = createLazyFileRoute('/__auth/login/admin')({
   component: Login,
@@ -19,7 +19,7 @@ function Login() {
 
   return (
     <div className="w-full min-h-screen grid lg:grid-cols-2 gap-20 p-8">
-      {/* Image à gauche */}
+
       <div className="hidden lg:flex items-center justify-center py-12">
         <img
           src={loginImage}
@@ -28,7 +28,6 @@ function Login() {
         />
       </div>
 
-      {/* Formulaire à droite */}
       <div className="w-full max-w-md mx-auto flex items-center">
         <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
           {/* Logo */}
@@ -46,7 +45,7 @@ function Login() {
             </p>
           </div>
 
-          <LoginForm
+          <LoginAdminForm
             onSuccess={handleLoginSuccess}
             showRedirect={true}
           />
