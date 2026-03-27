@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { usePageMeta } from '../hooks/use-page-meta';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useEffect } from 'react';
 import { UserProfileSection } from '@/features/profile/user-profile-section';
 import { AthleteProfileSection } from '@/features/profile/athlete-profile-section';
@@ -8,7 +8,7 @@ import { DangerZoneSection } from '@/features/profile/danger-zone-section';
 import { SettingsSection } from '@/features/profile/settings-section';
 import { Card, CardContent } from '@/components/ui/card';
 
-export const Route = createFileRoute('/__home/profile')({
+export const Route = createFileRoute('/_home/profile')({
   component: RouteComponent,
 });
 

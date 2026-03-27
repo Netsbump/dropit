@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
-import { usePageMeta } from '../hooks/use-page-meta';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,7 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 
-export const Route = createFileRoute('/__home/help')({
+export const Route = createFileRoute('/_home/help')({
   component: RouteComponent,
 });
 

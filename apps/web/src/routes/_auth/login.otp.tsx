@@ -1,15 +1,23 @@
-import { createLazyFileRoute } from '@tanstack/react-router';
-import { LoginForm } from '@/features/auth/login-form';
+import { createFileRoute } from '@tanstack/react-router'
 import { BicepsFlexed } from 'lucide-react';
 import loginImage from '@/assets/images/hero-pages/login.svg';
 import { useAuthRedirect } from '@/features/auth/use-auth-redirect';
+import { LoginOtpForm } from '@/features/auth/login-otp-form';
+import { z } from 'zod';
 
-export const Route = createLazyFileRoute('/__auth/login/')({
-  component: Login,
-});
+export const Route = createFileRoute('/_auth/login/otp')({
+  validateSearch: z.object({
+    email: z.string().email()
+  }),
+  component: LoginOtp,
+})
 
-function Login() {
+function LoginOtp() {
+  const { email } = Route.useSearch();
   const { redirectBasedOnRole } = useAuthRedirect();
+  const handleError = (error: Error) => {
+    console.log(error);
+  }
 
   return (
     <div className="w-full min-h-screen grid lg:grid-cols-2 gap-20 p-8">
@@ -28,9 +36,10 @@ function Login() {
             <span className="text-xl font-bold text-purple-700">Dropit</span>
           </div>
 
-          <LoginForm
+          <LoginOtpForm
+            email={email}
             onSuccess={redirectBasedOnRole}
-            showRedirect={true}
+            onError={handleError}
           />
         </div>
       </div>

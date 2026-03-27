@@ -13,7 +13,7 @@ const createWorkoutSearchSchema = z.object({
   date: z.string().optional(),
 });
 
-export const Route = createFileRoute('/__home/workouts/create')({
+export const Route = createFileRoute('/_home/workouts/create')({
   component: CreateWorkoutPage,
   validateSearch: createWorkoutSearchSchema,
 });

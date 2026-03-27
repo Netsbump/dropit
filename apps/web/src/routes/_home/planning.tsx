@@ -10,7 +10,7 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { usePageMeta } from '@/hooks/use-page-meta';
 
-export const Route = createFileRoute('/__home/planning')({
+export const Route = createFileRoute('/_home/planning')({
   component: PlanningPage,
 });
 

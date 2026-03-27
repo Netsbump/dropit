@@ -1,9 +1,9 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
-import { Button } from '../shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import { useTranslation } from '@dropit/i18n';
 
-export const Route = createLazyFileRoute('/__auth/terms')({
+export const Route = createLazyFileRoute('/_auth/terms')({
   component: Terms,
 });
 

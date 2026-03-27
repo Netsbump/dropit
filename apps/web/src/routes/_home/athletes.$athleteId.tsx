@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-export const Route = createFileRoute('/__home/athletes/$athleteId')({
+export const Route = createFileRoute('/_home/athletes/$athleteId')({
   component: AthleteDetailPage,
 });
 

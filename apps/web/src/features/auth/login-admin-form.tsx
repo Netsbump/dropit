@@ -35,14 +35,12 @@ interface LoginFormProps {
   onSuccess?: () => void;
   onError?: (error: Error) => void;
   showRedirect?: boolean;
-  className?: string;
 }
 
 export function LoginAdminForm({
   onSuccess,
   onError,
   showRedirect = true,
-  className = ""
 }: LoginFormProps) {
   const { t } = useTranslation(['auth']);
 
@@ -92,7 +90,7 @@ export function LoginAdminForm({
   }
 
   return (
-    <div className={className}>
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

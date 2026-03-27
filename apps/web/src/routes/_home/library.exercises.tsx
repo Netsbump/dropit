@@ -4,18 +4,18 @@ import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { columns } from '../features/exercises/columns'
-import { DataTable } from '../features/exercises/data-table'
-import { DialogCreation } from '../features/exercises/dialog-creation'
-import { ExerciseCreationForm } from '../features/exercises/exercise-creation-form'
-import { Button } from '../components/ui/button'
-import { DetailsPanel } from '../components/ui/details-panel'
-import { HeroCard } from '../components/ui/hero-card'
-import { Spinner } from '../components/ui/spinner'
-import { usePageMeta } from '../hooks/use-page-meta'
+import { columns } from '@/features/exercises/columns'
+import { DataTable } from '@/features/exercises/data-table'
+import { DialogCreation } from '@/features/exercises/dialog-creation'
+import { ExerciseCreationForm } from '@/features/exercises/exercise-creation-form'
+import { Button } from '@/components/ui/button'
+import { DetailsPanel } from '@/components/ui/details-panel'
+import { HeroCard } from '@/components/ui/hero-card'
+import { Spinner } from '@/components/ui/spinner'
+import { usePageMeta } from '@/hooks/use-page-meta'
 import { Library } from 'lucide-react'
 
-export const Route = createFileRoute('/__home/library/exercises')({
+export const Route = createFileRoute('/_home/library/exercises')({
   component: ExercisesPage,
 })
 

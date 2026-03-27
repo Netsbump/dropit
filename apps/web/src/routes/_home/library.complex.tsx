@@ -7,16 +7,16 @@ import { useTranslation } from '@dropit/i18n'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useState, useEffect } from 'react'
-import { ComplexCreationForm } from '../features/complex/complex-creation-form'
-import { ComplexDetail } from '../features/complex/complex-detail'
-import { ComplexFilters } from '../features/complex/complex-filters'
-import { ComplexGrid } from '../features/complex/complex-grid'
-import { DialogCreation } from '../features/exercises/dialog-creation'
-import { usePageMeta } from '../hooks/use-page-meta'
+import { ComplexCreationForm } from '@/features/complex/complex-creation-form'
+import { ComplexDetail } from '@/features/complex/complex-detail'
+import { ComplexFilters } from '@/features/complex/complex-filters'
+import { ComplexGrid } from '@/features/complex/complex-grid'
+import { DialogCreation } from '@/features/exercises/dialog-creation'
+import { usePageMeta } from '@/hooks/use-page-meta'
 import { Button } from '@/components/ui/button'
 import { Zap } from 'lucide-react'
 
-export const Route = createFileRoute('/__home/library/complex')({
+export const Route = createFileRoute('/_home/library/complex')({
   component: ComplexPage,
 })
 

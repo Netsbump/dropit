@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 
-export const Route = createFileRoute('/__home/workouts/$workoutId')({
+export const Route = createFileRoute('/_home/workouts/$workoutId')({
   component: WorkoutDetailPage,
   loader: ({ params }) => {
     return {

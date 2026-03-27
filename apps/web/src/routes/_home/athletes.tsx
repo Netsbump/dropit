@@ -3,16 +3,17 @@ import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { AthleteInvitationForm } from '../features/athletes/athlete-invitation-form';
-import { columns } from '../features/athletes/columns';
-import { DataTable } from '../features/athletes/data-table';
-import { DialogCreation } from '../features/athletes/dialog-creation';
-import { usePageMeta } from '../hooks/use-page-meta';
-import { Button } from '../components/ui/button';
-import { HeroCard } from '../components/ui/hero-card';
-import { Users } from 'lucide-react';
+import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
+import { columns } from '@/features/athletes/columns';
+import { DataTable } from '@/features/athletes/data-table';
+import { DialogCreation } from '@/features/athletes/dialog-creation';
+import { usePageMeta } from '@/hooks/use-page-meta';
+import { Button } from '@/components/ui/button';
+import { HeroCard } from '@/components/ui/hero-card';
+import { Users } from 'lucide-react';    // Route racine : toujours rediriger vers login
+// C'est la route /login qui gérera la redirection si l'utilisateur est déjà connecté
 
-export const Route = createFileRoute('/__home/athletes')({
+export const Route = createFileRoute('/_home/athletes')({
   component: AthletesPage,
 });
 
@@ -24,7 +25,7 @@ function AthletesPage() {
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isAthleteDetail = matches.some(
-    (match) => match.routeId === '/__home/athletes/$athleteId'
+    (match) => match.routeId === '/_home/athletes/$athleteId'
   );
 
   useEffect(() => {

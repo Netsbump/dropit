@@ -1,11 +1,11 @@
 import { Outlet, createFileRoute, redirect, useMatches } from '@tanstack/react-router';
-import { AppSidebar } from '../components/layout/app-sidebar';
-import { AppHeader } from '../components/layout/app-header';
-import { authClient } from '../lib/auth-client';
+import { AppSidebar } from '@/components/layout/app-sidebar';
+import { AppHeader } from '@/components/layout/app-header';
+import { authClient } from '@/lib/auth-client';
 import { useTranslation } from '@dropit/i18n';
-import { PageMetaProvider } from '../hooks/use-page-meta';
+import { PageMetaProvider } from '@/hooks/use-page-meta';
 
-export const Route = createFileRoute('/__home')({
+export const Route = createFileRoute('/_home')({
   beforeLoad: async () => {
     const session = await authClient.getSession();
     if (!session?.data) {
@@ -13,8 +13,9 @@ export const Route = createFileRoute('/__home')({
     }
 
     const activeMember = await authClient.organization.getActiveMember();
+    //TODO: Redirect into specific route if no active member
     if (!activeMember?.data) {
-      throw redirect({ to: '/onboarding' });
+      throw redirect({ to: '/login' });
     }
 
     const orgRole = activeMember.data.role;
@@ -33,7 +34,7 @@ function HomeLayout() {
   const { t } = useTranslation();
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
-  // Définir les tabs selon la route active
+  // Define tabs based on the active route
   const getTabs = () => {
     if (currentPath.startsWith('/library')) {
       return [
@@ -42,7 +43,7 @@ function HomeLayout() {
         { label: t('library.tabs.exercises'), path: '/library/exercises' },
       ];
     }
-    // On peut ajouter d'autres conditions pour d'autres sections avec tabs
+    // We can add other conditions for other sections with tabs
     return undefined;
   };
 

@@ -8,16 +8,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Loader2, CheckCircle, XCircle } from 'lucide-react';
 import { useTranslation } from '@dropit/i18n';
-import { LoginForm } from '@/features/auth/login-form';
+import { LoginEmailForm } from '@/features/auth/login-email-form';
 import { SignupForm } from '@/features/auth/signup-form';
 import { authClient } from '@/lib/auth-client';
 
-export const Route = createFileRoute('/__auth/accept-invitation/$invitationId')({
+export const Route = createFileRoute('/_auth/accept-invitation/$invitationId')({
   component: AcceptInvitationPage,
 });
 
 function AcceptInvitationPage() {
-  const { invitationId } = useParams({ from: '/__auth/accept-invitation/$invitationId' });
+  const { invitationId } = useParams({ from: '/_auth/accept-invitation/$invitationId' });
   const navigate = useNavigate();
   const { t } = useTranslation(['auth']);
   const [activeTab, setActiveTab] = useState<'login' | 'signup'>('login');
@@ -25,13 +25,11 @@ function AcceptInvitationPage() {
   const [isCheckingInvitation, setIsCheckingInvitation] = useState(false);
   const [invitationError, setInvitationError] = useState<Error | null>(null);
 
-
-
   // Accept invitation mutation
   const acceptInvitationMutation = useMutation({
     mutationFn: async () => {
-      const response = await authClient.organization.acceptInvitation({ 
-        invitationId 
+      const response = await authClient.organization.acceptInvitation({
+        invitationId
       });
       if (response.error) {
         throw new Error(response.error.message);
@@ -49,7 +47,7 @@ function AcceptInvitationPage() {
 
       // Redirection based on role
       // For athlete invitations, the role is always 'member'
-      // Coaches (admin/owner) are not invited, they create the organization
+      // Coaches (admin/owner) are not invited
       navigate({ to: '/download-app' });
     },
   });
@@ -58,7 +56,7 @@ function AcceptInvitationPage() {
     // After successful login/signup, check invitation validity
     setIsCheckingInvitation(true);
     setInvitationError(null);
-    
+
     try {
       const response = await authClient.organization.getInvitation({ query: { id: invitationId } });
       if (response.error) {
@@ -108,7 +106,7 @@ function AcceptInvitationPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
+            <Button
               onClick={() => navigate({ to: '/login' })}
               className="w-full"
             >
@@ -141,7 +139,7 @@ function AcceptInvitationPage() {
             </TabsList>
 
             <TabsContent value="login">
-              <LoginForm
+              <LoginEmailForm
                 onSuccess={handleAuthSuccess}
                 onError={handleAuthError}
                 showRedirect={false}

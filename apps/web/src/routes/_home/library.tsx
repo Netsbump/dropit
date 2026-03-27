@@ -3,7 +3,7 @@ import {
   createFileRoute,
 } from '@tanstack/react-router';
 
-export const Route = createFileRoute('/__home/library')({
+export const Route = createFileRoute('/_home/library')({
   component: LibraryLayout,
 });
 

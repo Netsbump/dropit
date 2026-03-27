@@ -7,10 +7,10 @@ import { useTranslation } from '@dropit/i18n';
 import { useQuery } from '@tanstack/react-query';
 import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
-import { usePageMeta } from '../hooks/use-page-meta';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { Layers } from 'lucide-react';
 
-export const Route = createFileRoute('/__home/library/workouts')({
+export const Route = createFileRoute('/_home/library/workouts')({
   component: WorkoutPage,
 });
 
@@ -20,7 +20,7 @@ function WorkoutPage() {
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isWorkoutDetail = matches.some(
-    (match) => match.routeId === '/__home/workouts/$workoutId'
+    (match) => match.routeId === '/_home/workouts/$workoutId'
   );
   const { t } = useTranslation();
   const { setPageMeta } = usePageMeta();

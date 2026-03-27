@@ -1,7 +1,7 @@
 import { createLazyFileRoute } from '@tanstack/react-router';
 import { Link } from '@tanstack/react-router';
-import { Button } from '../shared/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '../shared/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useTranslation } from '@dropit/i18n';
 
 // Privacy Policy Types
@@ -50,7 +50,7 @@ type SecurityMeasure = {
   measures: string[];
 };
 
-export const Route = createLazyFileRoute('/__auth/privacy')({
+export const Route = createLazyFileRoute('/_auth/privacy')({
   component: Privacy,
 });
 

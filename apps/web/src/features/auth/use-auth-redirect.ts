@@ -13,10 +13,8 @@ export function useAuthRedirect() {
 
     if (isSuperAdmin || role === 'admin') {
       navigate({ to: '/dashboard', replace: true });
-    } else if (role === 'member') {
-      navigate({ to: '/download-app', replace: true });
     } else {
-      navigate({ to: '/onboarding', replace: true });
+      navigate({ to: '/download-app', replace: true });
     }
   };
 
