@@ -26,8 +26,8 @@ export function AppSidebar() {
 
       // Redirect to the login page
       toast({
-        title: 'Logout successful',
-        description: 'You have been logged out successfully',
+        title: t('sidebar.logout.success.title'),
+        description: t('sidebar.logout.success.description'),
       });
 
       navigate({ to: '/', replace: true });
@@ -35,9 +35,8 @@ export function AppSidebar() {
       console.error('Erreur lors de la déconnexion:', error);
 
       toast({
-        title: 'Logout issue',
-        description:
-          'You have been logged out but there was an issue contacting the server',
+        title: t('sidebar.logout.error.title'),
+        description: t('sidebar.logout.error.description'),
         variant: 'destructive',
       });
 

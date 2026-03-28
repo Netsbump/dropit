@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -64,7 +65,7 @@ export function LoginAdminForm({
       });
 
       if (response.error) {
-        throw new Error(response.error.message || 'Invalid email or password');
+        throw new Error(response.error.code ?? response.error.message);
       }
       return response.data;
     },
@@ -78,7 +79,7 @@ export function LoginAdminForm({
     onError: (error: Error) => {
       toast({
         title: t('login.toast.error.title'),
-        description: error.message || t('login.toast.error.description'),
+        description: t(getAuthErrorKey(error.message)),
         variant: 'destructive',
       });
       onError?.(error);

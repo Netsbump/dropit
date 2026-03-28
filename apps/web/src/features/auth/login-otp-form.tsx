@@ -5,6 +5,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -53,7 +54,7 @@ export function LoginOtpForm({
         email: email,
         otp: values.otp,
       });
-      if (error) throw new Error(error.message);
+      if (error) throw new Error(error.code ?? error.message);
       return data
     },
     onSuccess: () => {
@@ -66,7 +67,7 @@ export function LoginOtpForm({
     onError: (error: Error) => {
       toast({
         title: t('login.toast.error.title'),
-        description: error.message || t('login.toast.error.description'),
+        description: t(getAuthErrorKey(error.message)),
         variant: 'destructive',
       });
       onError(error);

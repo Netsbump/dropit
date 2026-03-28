@@ -1,4 +1,5 @@
 import { authClient } from '@/lib/auth-client';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -42,7 +43,6 @@ interface SignupFormProps {
   onError?: (error: Error) => void;
   showRedirect?: boolean;
   showTerms?: boolean;
-  className?: string;
 }
 
 export function SignupForm({
@@ -50,7 +50,6 @@ export function SignupForm({
   onError,
   showRedirect = true,
   showTerms = true,
-  className = ""
 }: SignupFormProps) {
   const { t } = useTranslation(['auth']);
 
@@ -76,7 +75,7 @@ export function SignupForm({
       });
 
       if (response.error) {
-        throw new Error(response.error.message || 'Invalid email or password');
+        throw new Error(response.error.code ?? response.error.message);
       }
       return response.data;
     },
@@ -91,7 +90,7 @@ export function SignupForm({
       toast({
         title: t('signup.toast.error.title'),
         description:
-          error instanceof Error ? error.message : t('signup.toast.error.description'),
+          t(getAuthErrorKey(error instanceof Error ? error.message : undefined)),
         variant: 'destructive',
       });
       onError?.(error);
@@ -103,7 +102,7 @@ export function SignupForm({
   }
 
   return (
-    <div className={className}>
+    <div>
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
           <FormField

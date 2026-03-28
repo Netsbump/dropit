@@ -11,6 +11,7 @@ import { useTranslation } from '@dropit/i18n';
 import { LoginEmailForm } from '@/features/auth/login-email-form';
 import { SignupForm } from '@/features/auth/signup-form';
 import { authClient } from '@/lib/auth-client';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 
 export const Route = createFileRoute('/_auth/accept-invitation/$invitationId')({
   component: AcceptInvitationPage,
@@ -32,7 +33,7 @@ function AcceptInvitationPage() {
         invitationId
       });
       if (response.error) {
-        throw new Error(response.error.message);
+        throw new Error(response.error.code ?? response.error.message);
       }
       return response.data;
     },
@@ -60,7 +61,7 @@ function AcceptInvitationPage() {
     try {
       const response = await authClient.organization.getInvitation({ query: { id: invitationId } });
       if (response.error) {
-        throw new Error(response.error.message);
+        throw new Error(response.error.code ?? response.error.message);
       }
       // If invitation is valid, accept it
       acceptInvitationMutation.mutate();
@@ -85,7 +86,7 @@ function AcceptInvitationPage() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="flex items-center gap-2">
           <Loader2 className="h-4 w-4 animate-spin" />
-          <span>Vérification de l'invitation...</span>
+          <span>{t('acceptInvitation.loading')}</span>
         </div>
       </div>
     );
@@ -99,10 +100,10 @@ function AcceptInvitationPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-red-600">
               <XCircle className="h-5 w-5" />
-              Invitation invalide
+              {t('acceptInvitation.invalid.title')}
             </CardTitle>
             <CardDescription>
-              Cette invitation n'est plus valide. Veuillez recontacter votre coach pour obtenir une nouvelle invitation.
+              {t('acceptInvitation.invalid.description')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -110,7 +111,7 @@ function AcceptInvitationPage() {
               onClick={() => navigate({ to: '/login' })}
               className="w-full"
             >
-              Retour à la connexion
+              {t('acceptInvitation.invalid.button')}
             </Button>
           </CardContent>
         </Card>
@@ -159,7 +160,7 @@ function AcceptInvitationPage() {
           {acceptInvitationMutation.error && (
             <Alert variant="destructive" className="mt-4">
               <AlertDescription>
-                {acceptInvitationMutation.error.message || t('acceptInvitation.acceptError')}
+                {t(getAuthErrorKey(acceptInvitationMutation.error?.message))}
               </AlertDescription>
             </Alert>
           )}

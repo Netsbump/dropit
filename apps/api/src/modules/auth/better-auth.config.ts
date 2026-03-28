@@ -57,7 +57,7 @@ export function createAuthConfig(
     }),
     advanced: {
       database: {
-        generateId: false, // Fix for Better Auth 1.2.7 - new synthax
+        generateId: false,
       },
     },
     rateLimit: {
@@ -67,6 +67,12 @@ export function createAuthConfig(
     emailAndPassword: {
       enabled: true,
     },
+    // Disable unused routes to reduce attack surface and prevent email enumeration
+    disabledPaths: [
+      "/email-otp/check-verification-otp",
+      "/email-otp/verify-email",
+      "/sign-up/email",
+    ],
 
     // === CALLBACKS CORE (delegate to better-auth.adapter) ===
     emailVerification: {
