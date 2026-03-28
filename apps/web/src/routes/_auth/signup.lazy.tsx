@@ -1,7 +1,8 @@
 import { createLazyFileRoute, useNavigate } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
 import { SignupForm } from '@/features/auth/signup-form';
-import { BicepsFlexed } from 'lucide-react';
+import { AuthLogo } from '@/features/auth/auth-logo';
+import { AuthFormHeader } from '@/features/auth/auth-form-header';
 import loginImage from '@/assets/images/hero-pages/login.svg';
 
 export const Route = createLazyFileRoute('/_auth/signup')({
@@ -31,20 +32,9 @@ function Signup() {
         {/* Form on the right side */}
         <div className="w-full max-w-md mx-auto flex items-center">
           <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
-            {/* Logo */}
-            <div className="flex items-center justify-center gap-2 mb-8">
-              <BicepsFlexed className="h-8 w-8 stroke-[2.5] text-purple-700" />
-              <span className="text-xl font-bold text-purple-700">Dropit</span>
-            </div>
+            <AuthLogo />
 
-            <div className="flex flex-col space-y-2 text-center mb-6">
-              <h1 className="text-3xl font-bold text-gray-800">
-                {t('signup.title')}
-              </h1>
-              <p className="text-sm text-gray-600">
-                {t('signup.description')}
-              </p>
-            </div>
+            <AuthFormHeader title={t('signup.title')} description={t('signup.description')} />
 
             <SignupForm
               onSuccess={handleSignupSuccess}

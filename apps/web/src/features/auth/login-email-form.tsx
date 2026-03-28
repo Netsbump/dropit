@@ -3,6 +3,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
+import { toast } from '@/hooks/use-toast';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -21,13 +23,11 @@ type LoginEmailFormData = {
 
 interface LoginEmailFormProps {
   onSuccess: (email: string) => void;
-  onError: (error: Error) => void;
   showRedirect?: boolean;
 }
 
 export function LoginEmailForm({
   onSuccess,
-  onError,
   showRedirect = true,
 }: LoginEmailFormProps) {
   const { t } = useTranslation(['auth']);
@@ -54,9 +54,13 @@ export function LoginEmailForm({
     onSuccess: (email: string) => {
       onSuccess(email);
     },
-    onError: (error: Error) => (
-      onError(error)
-    )
+    onError: (error: Error) => {
+      toast({
+        title: t('login.toast.error.title'),
+        description: t(getAuthErrorKey(error.message)),
+        variant: 'destructive',
+      });
+    }
   });
 
 
@@ -66,10 +70,6 @@ export function LoginEmailForm({
 
   return (
     <div>
-      <div className="flex flex-col space-y-2 text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">{t('login.title')}</h1>
-        <p className="text-sm text-gray-600">{t('login.description')}</p>
-      </div>
       <Form {...emailForm}>
         <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-4">
           <FormField

@@ -16,7 +16,8 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { Input } from '@/components/ui/input'; import { useTranslation } from "@dropit/i18n";
+import { Input } from '@/components/ui/input';
+import { useTranslation } from "@dropit/i18n";
 
 type LoginOtpFormData = {
   otp: string
@@ -25,13 +26,11 @@ type LoginOtpFormData = {
 interface LoginOtpFormProps {
   email: string;
   onSuccess: () => void;
-  onError: (error: Error) => void;
 }
 
 export function LoginOtpForm({
   email,
   onSuccess,
-  onError,
 }: LoginOtpFormProps) {
   const { t } = useTranslation(['auth']);
 
@@ -68,7 +67,6 @@ export function LoginOtpForm({
         description: t(getAuthErrorKey(error.message)),
         variant: 'destructive',
       });
-      onError(error);
     },
   })
 
@@ -78,10 +76,6 @@ export function LoginOtpForm({
 
   return (
     <div>
-      <div className="flex flex-col space-y-2 text-center mb-6">
-        <h1 className="text-3xl font-bold text-gray-800">{t('login.title')}</h1>
-        <p className="text-sm text-gray-600">{t('login.otpDescription')}</p>
-      </div>
       <Form {...otpForm}>
         <form onSubmit={otpForm.handleSubmit(onSubmitOtp)} className="space-y-4">
           <FormField

@@ -26,14 +26,10 @@ type LoginFormData = {
 
 interface LoginFormProps {
   onSuccess?: () => void;
-  onError?: (error: Error) => void;
-  showRedirect?: boolean;
 }
 
 export function LoginAdminForm({
   onSuccess,
-  onError,
-  showRedirect = true,
 }: LoginFormProps) {
   const { t } = useTranslation(['auth']);
 
@@ -77,7 +73,6 @@ export function LoginAdminForm({
         description: t(getAuthErrorKey(error.message)),
         variant: 'destructive',
       });
-      onError?.(error);
     },
   });
 
@@ -126,18 +121,6 @@ export function LoginAdminForm({
           </Button>
         </form>
       </Form>
-
-      {showRedirect && (
-        <p className="text-center text-sm text-gray-600 mt-6">
-          {t('login.redirect').split('{{link}}')[0]}
-          <a
-            href="/signup"
-            className="text-purple-600 font-medium hover:text-purple-700 hover:underline"
-          >
-            {t('login.redirectLink')}
-          </a>
-        </p>
-      )}
     </div>
   );
 } 

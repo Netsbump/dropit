@@ -142,7 +142,6 @@ function AcceptInvitationPage() {
             <TabsContent value="login">
               <LoginEmailForm
                 onSuccess={handleAuthSuccess}
-                onError={handleAuthError}
                 showRedirect={false}
               />
             </TabsContent>
