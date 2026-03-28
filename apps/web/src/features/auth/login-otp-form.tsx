@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -17,12 +18,6 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input'; import { useTranslation } from "@dropit/i18n";
 
-function getOtpFormSchema(t: (key: string) => string) {
-  return z.object({
-    otp: z.string().length(6, { message: t('login.validation.otpRequired') })
-  })
-}
-
 type LoginOtpFormData = {
   otp: string
 }
@@ -39,7 +34,10 @@ export function LoginOtpForm({
   onError,
 }: LoginOtpFormProps) {
   const { t } = useTranslation(['auth']);
-  const otpFormSchema = getOtpFormSchema(t);
+
+  const otpFormSchema = useMemo(() => z.object({
+    otp: z.string().length(6, { message: t('login.validation.otpRequired') }),
+  }), [t]);
 
   const otpForm = useForm<LoginOtpFormData>({
     resolver: zodResolver(otpFormSchema),

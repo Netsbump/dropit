@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -30,14 +30,6 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-const getAthleteFormSchema = (t: (key: string) => string) =>
-  z.object({
-    firstName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    lastName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    birthday: z.string().optional(),
-    country: z.string().optional(),
-  });
-
 type AthleteFormData = {
   firstName: string;
   lastName: string;
@@ -53,7 +45,12 @@ export function AthleteProfileSection() {
   const [isCreating, setIsCreating] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const athleteFormSchema = getAthleteFormSchema(t);
+  const athleteFormSchema = useMemo(() => z.object({
+    firstName: z.string().min(1, { message: t('common:validation.nameRequired') }),
+    lastName: z.string().min(1, { message: t('common:validation.nameRequired') }),
+    birthday: z.string().optional(),
+    country: z.string().optional(),
+  }), [t]);
 
   // Fetch athlete profile by athleteId from session
   // @ts-expect-error - athleteId is an additional field configured in better-auth

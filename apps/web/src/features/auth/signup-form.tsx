@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { authClient } from '@/lib/auth-client';
 import { getAuthErrorKey } from '@/lib/auth-errors';
 import { toast } from '@/hooks/use-toast';
@@ -17,19 +18,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
-
-function getFormSchema(t: (key: string) => string) {
-  return z.object({
-    email: z.string().email({ message: t('common.validation.emailRequired') }),
-    password: z
-      .string()
-      .min(6, { message: t('common.validation.passwordMinLength') }),
-    name: z.string().min(1, { message: t('common.validation.nameRequired') }),
-    dataConsent: z.boolean().refine((val) => val === true, {
-      message: t('signup.dataConsent.required'),
-    }),
-  });
-}
 
 type SignupFormData = {
   email: string;
@@ -53,7 +41,14 @@ export function SignupForm({
 }: SignupFormProps) {
   const { t } = useTranslation(['auth']);
 
-  const formSchema = getFormSchema(t);
+  const formSchema = useMemo(() => z.object({
+    email: z.string().email({ message: t('common.validation.emailRequired') }),
+    password: z.string().min(6, { message: t('common.validation.passwordMinLength') }),
+    name: z.string().min(1, { message: t('common.validation.nameRequired') }),
+    dataConsent: z.boolean().refine((val) => val === true, {
+      message: t('signup.dataConsent.required'),
+    }),
+  }), [t]);
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(formSchema),

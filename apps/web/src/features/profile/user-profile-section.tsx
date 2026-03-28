@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -18,12 +18,6 @@ import {
 } from '@/components/ui/form';
 import { Skeleton } from '@/components/ui/skeleton';
 
-const getUpdateUserSchema = (t: (key: string) => string) =>
-  z.object({
-    name: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    email: z.string().email({ message: t('common:validation.emailRequired') }),
-  });
-
 type UpdateUserFormData = {
   name: string;
   email: string;
@@ -34,7 +28,10 @@ export function UserProfileSection() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
 
-  const updateUserSchema = getUpdateUserSchema(t);
+  const updateUserSchema = useMemo(() => z.object({
+    name: z.string().min(1, { message: t('common:validation.nameRequired') }),
+    email: z.string().email({ message: t('common:validation.emailRequired') }),
+  }), [t]);
 
   // Fetch current user
   const { data: user, isLoading } = useQuery({

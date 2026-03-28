@@ -1,4 +1,5 @@
 
+import { useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
@@ -18,15 +19,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { useTranslation } from '@dropit/i18n';
 
-function getFormSchema(t: (key: string) => string) {
-  return z.object({
-    email: z.string().email({ message: t('common.validation.emailRequired') }),
-    password: z
-      .string()
-      .min(6, { message: t('common.validation.passwordMinLength') }),
-  });
-}
-
 type LoginFormData = {
   email: string;
   password: string;
@@ -45,7 +37,10 @@ export function LoginAdminForm({
 }: LoginFormProps) {
   const { t } = useTranslation(['auth']);
 
-  const formSchema = getFormSchema(t);
+  const formSchema = useMemo(() => z.object({
+    email: z.string().email({ message: t('common.validation.emailRequired') }),
+    password: z.string().min(6, { message: t('common.validation.passwordMinLength') }),
+  }), [t]);
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),

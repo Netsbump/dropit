@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -28,13 +28,6 @@ import {
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 
-const getDeleteAccountSchema = (t: (key: string) => string) =>
-  z.object({
-    email: z.string().email({ message: t('common:validation.emailRequired') }),
-    password: z.string().min(1, { message: t('common:validation.passwordRequired') }),
-    confirmation: z.string().min(1, { message: t('common:validation.confirmationRequired') }),
-  });
-
 type DeleteAccountFormData = {
   email: string;
   password: string;
@@ -46,7 +39,11 @@ export function DangerZoneSection() {
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const deleteAccountSchema = getDeleteAccountSchema(t);
+  const deleteAccountSchema = useMemo(() => z.object({
+    email: z.string().email({ message: t('common:validation.emailRequired') }),
+    password: z.string().min(1, { message: t('common:validation.passwordRequired') }),
+    confirmation: z.string().min(1, { message: t('common:validation.confirmationRequired') }),
+  }), [t]);
 
   const form = useForm<DeleteAccountFormData>({
     resolver: zodResolver(deleteAccountSchema),
