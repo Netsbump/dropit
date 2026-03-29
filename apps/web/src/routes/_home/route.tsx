@@ -1,28 +1,23 @@
 import { Outlet, createFileRoute, redirect, useMatches } from '@tanstack/react-router';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { AppHeader } from '@/components/layout/app-header';
-import { authClient } from '@/lib/auth-client';
 import { useTranslation } from '@dropit/i18n';
 import { PageMetaProvider } from '@/hooks/use-page-meta';
+import { getMemberRole, getSession } from '@/features/auth/auth-queries';
 
 export const Route = createFileRoute('/_home')({
   beforeLoad: async () => {
-    const session = await authClient.getSession();
+    const session = await getSession();
     if (!session?.data) {
       throw redirect({ to: '/login' });
     }
 
-    const activeMember = await authClient.organization.getActiveMember();
-    //TODO: Redirect into specific route if no active member
-    if (!activeMember?.data) {
-      throw redirect({ to: '/login' });
-    }
-
-    const orgRole = activeMember.data.role;
-    const isSuperAdmin = session.data.user?.role === 'admin';
+    const memberRole = await getMemberRole();
+    const isCoach = memberRole.data?.role === 'admin';
+    const isSuperAdmin = session.data.user.role === 'admin';
 
     // Only coaches (org admin) and super admins can access the dashboard
-    if (orgRole !== 'admin' && !isSuperAdmin) {
+    if (!isCoach && !isSuperAdmin) {
       throw redirect({ to: '/download-app' });
     }
   },
@@ -32,6 +27,7 @@ export const Route = createFileRoute('/_home')({
 function HomeLayout() {
   const matches = useMatches();
   const { t } = useTranslation();
+  //TODO: Ugly, need changes
   const currentPath = matches[matches.length - 1]?.pathname || '';
 
   // Define tabs based on the active route

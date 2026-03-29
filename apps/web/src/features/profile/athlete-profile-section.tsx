@@ -5,7 +5,6 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { api } from '@/lib/api';
-import { authClient } from '@/lib/auth-client';
 import { toast } from '@/hooks/use-toast';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +28,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { useSession } from '../auth/auth-queries';
 
 type AthleteFormData = {
   firstName: string;
@@ -40,7 +40,7 @@ type AthleteFormData = {
 export function AthleteProfileSection() {
   const { t } = useTranslation(['profile', 'common']);
   const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
+  const { sessionData: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -52,9 +52,7 @@ export function AthleteProfileSection() {
     country: z.string().optional(),
   }), [t]);
 
-  // Fetch athlete profile by athleteId from session
-  // @ts-expect-error - athleteId is an additional field configured in better-auth
-  const athleteId = session?.session?.athleteId as string | undefined;
+  const athleteId = session?.session?.athleteId;
 
   const { data: athlete, isLoading } = useQuery({
     queryKey: ['athlete', athleteId],

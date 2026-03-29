@@ -9,9 +9,10 @@ export function useAuthRedirect() {
     const { data: memberRole } = await getMemberRole();
 
     const isSuperAdmin = session?.user?.role === 'admin';
-    const role = memberRole?.role;
+    const isCoach = memberRole?.role === 'admin';
 
-    if (isSuperAdmin || role === 'admin') {
+
+    if (isSuperAdmin || isCoach) {
       navigate({ to: '/dashboard', replace: true });
     } else {
       navigate({ to: '/download-app', replace: true });

@@ -1,10 +1,10 @@
 import { Link, useMatches, useRouter } from '@tanstack/react-router';
 import { ChevronLeft } from 'lucide-react';
-import { authClient } from '@/lib/auth-client';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
+import { useSession } from '@/features/auth/auth-queries';
 interface Tab {
   label: string;
   path: string;
@@ -17,7 +17,7 @@ interface AppHeaderProps {
 export function AppHeader({ tabs }: AppHeaderProps) {
   const matches = useMatches();
   const router = useRouter();
-  const { data: session } = authClient.useSession();
+  const { sessionData: session } = useSession();
   const { pageMeta } = usePageMeta();
   const { t } = useTranslation();
   const pageTitle = pageMeta.title;
@@ -84,11 +84,10 @@ export function AppHeader({ tabs }: AppHeaderProps) {
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`px-3 transition-all uppercase text-sm ${
-                  isActive
-                    ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
-                    : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
-                }`}
+                className={`px-3 transition-all uppercase text-sm ${isActive
+                  ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
+                  : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
+                  }`}
               >
                 {tab.label}
               </Link>

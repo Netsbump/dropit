@@ -108,15 +108,17 @@ export class EmailAdapter implements IEmailChannel {
           Ce lien expirera dans 48 heures.
         </p>
       `,
-      footerContent: `<p>Si vous ne souhaitez pas recevoir cette invitation, vous pouvez ignorer cet email.</p>`,
+      footerContent:
+        "<p>Si vous ne souhaitez pas recevoir cette invitation, vous pouvez ignorer cet email.</p>",
     });
   }
 
   private renderOtpCode(request: Extract<NotificationRequest, { kind: typeof KIND.OTP }>): string {
     return renderEmailLayout({
       title: 'Votre code de vérification',
-      headerContent: `<h1>Code de vérification</h1>`,
-      extraStyles: `.otp-code { font-size: 32px; font-weight: bold; text-align: center; background: white; padding: 20px; border-radius: 8px; letter-spacing: 8px; }`,
+      headerContent: "<h1>Code de vérification</h1>",
+      extraStyles:
+        ".otp-code { font-size: 32px; font-weight: bold; text-align: center; background: white; padding: 20px; border-radius: 8px; letter-spacing: 8px; }",
       bodyContent: `
         <p>Voici votre code de vérification DropIt :</p>
         <div class="otp-code">${request.otpParams.otp}</div>
