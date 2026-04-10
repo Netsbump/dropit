@@ -192,7 +192,7 @@ Dashboard admin (impersonate, gestion users, etc.)
 ### Production
 
 - **Email** : Brevo (API)
-  - Requires: `BREVO_API_KEY`
+  - Requires: `BREVO_API_KEY`, `EMAIL_FROM_EMAIL`, `EMAIL_FROM_NAME`
 - **SMS** : Twilio
   - Requires: `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
 - **Push** : Firebase Cloud Messaging

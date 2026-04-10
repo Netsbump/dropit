@@ -4,9 +4,10 @@ import { NOTIFICATION_USE_CASES } from './application/ports/inbound/notification
 import { type INotificationPort, NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
 import { type IUserRepository, USER_REPO } from '../auth/application/ports/user.repository.port';
 import { NotificationAdapter } from './infrastructure/notification.adapter';
+import { config } from '../../config/env.config';
 
 // Email channel
-import { EMAIL_CHANNEL_PORT } from './infrastructure/channels/email/email-channel.port';
+import { EMAIL_CHANNEL_PORT, EMAIL_TRANSPORT, IEmailTransport } from './infrastructure/channels/email/email-channel.port';
 import { BrevoAdapter } from './infrastructure/channels/email/brevo.adapter';
 import { EmailAdapter } from './infrastructure/channels/email/email.adapter';
 import { MaildevAdapter } from './infrastructure/channels/email/maildev.adapter';
@@ -59,8 +60,32 @@ import { AuthModule } from '../auth/auth.module';
     },
 
     // Email Channel (switch based on environment)
-    BrevoAdapter,
-    MaildevAdapter,
+    {
+      provide: EMAIL_TRANSPORT,
+      useFactory: (): IEmailTransport => {
+        if (config.env !== 'production') {
+          return new MaildevAdapter(
+            config.email.maildev.host,
+            config.email.maildev.smtpPort,
+            config.email.maildev.webPort,
+            config.email.sender.fromEmail,
+            config.email.sender.fromName,
+            config.email.maildev.user,
+            config.email.maildev.pass,
+          );
+        }
+
+        if (!config.email.brevo.apiKey) {
+          throw new Error('BREVO_API_KEY is required in production');
+        }
+
+        return new BrevoAdapter(
+          config.email.brevo.apiKey,
+          config.email.sender.fromEmail,
+          config.email.sender.fromName,
+        );
+      },
+    },
     {
       provide: EMAIL_CHANNEL_PORT,
       useClass: EmailAdapter,

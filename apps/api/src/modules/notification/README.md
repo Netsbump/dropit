@@ -24,7 +24,7 @@ notification/
 │   └── channels/
 │       ├── email/
 │       │   ├── email-channel.port.ts # IEmailChannel, IEmailTransport, EmailData
-│       │   ├── email.adapter.ts      # Template rendering + transport selection
+│       │   ├── email.adapter.ts      # Template rendering + transport delegation
 │       │   ├── brevo.adapter.ts      # Production transport (Brevo API)
 │       │   └── maildev.adapter.ts    # Development transport (local SMTP)
 │       ├── sms/
@@ -81,9 +81,9 @@ When NestJS sees a constructor, it tries to figure out what to inject for each
 parameter. How it does this depends on what the parameter type is:
 
 ```typescript
-// EmailAdapter asks for BrevoAdapter directly.
-// NestJS sees the class name and knows exactly what to create — no help needed.
-constructor(private readonly brevoAdapter: BrevoAdapter) {}
+// EmailAdapter asks for IEmailTransport via EMAIL_TRANSPORT token.
+// The concrete transport (Brevo or Maildev) is selected in notification.module.ts.
+constructor(@Inject(EMAIL_TRANSPORT) private readonly transport: IEmailTransport) {}
 
 // NotificationAdapter asks for IEmailChannel, which is an interface.
 // Interfaces disappear after TypeScript compiles to JavaScript,
@@ -93,8 +93,31 @@ constructor(private readonly brevoAdapter: BrevoAdapter) {}
 constructor(@Inject(EMAIL_CHANNEL_PORT) private readonly emailChannel: IEmailChannel) {}
 ```
 
-In the module, the link is made here:
+In the module, the links are made here:
 ```typescript
+{
+  provide: EMAIL_TRANSPORT,
+  useFactory: (): IEmailTransport => {
+    if (config.env !== 'production') {
+      return new MaildevAdapter(
+        config.email.maildev.host,
+        config.email.maildev.smtpPort,
+        config.email.maildev.webPort,
+        config.email.sender.fromEmail,
+        config.email.sender.fromName,
+        config.email.maildev.user,
+        config.email.maildev.pass
+      );
+    }
+    if (!config.email.brevo.apiKey) throw new Error('BREVO_API_KEY is required in production');
+    return new BrevoAdapter(
+      config.email.brevo.apiKey,
+      config.email.sender.fromEmail,
+      config.email.sender.fromName
+    );
+  },
+}
+
 { provide: EMAIL_CHANNEL_PORT, useClass: EmailAdapter }
 // → "when someone asks for EMAIL_CHANNEL_PORT, give them an EmailAdapter"
 ```

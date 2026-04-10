@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
-import { config } from '../../../../../config/env.config';
 import { EmailData, IEmailTransport } from './email-channel.port';
 import { EmailSendFailedException } from '../../exceptions/infrastructure.exceptions';
 
@@ -15,30 +14,38 @@ import { EmailSendFailedException } from '../../exceptions/infrastructure.except
 export class MaildevAdapter implements IEmailTransport {
   private transporter: nodemailer.Transporter;
 
-  constructor() {
+  constructor(
+    private readonly host: string,
+    private readonly smtpPort: number,
+    private readonly webPort: number,
+    private readonly fromEmail: string,
+    private readonly fromName: string,
+    private readonly user?: string,
+    private readonly pass?: string,
+  ) {
     this.transporter = nodemailer.createTransport({
-      host: process.env.MAILDEV_HOST || 'localhost',
-      port: parseInt(process.env.MAILDEV_SMTP_PORT || '1025', 10),
+      host: this.host,
+      port: this.smtpPort,
       ignoreTLS: true,
-      auth: process.env.MAILDEV_USER && process.env.MAILDEV_PASS
+      auth: this.user && this.pass
         ? {
-          user: process.env.MAILDEV_USER,
-          pass: process.env.MAILDEV_PASS,
+          user: this.user,
+          pass: this.pass,
         }
         : undefined,
     });
 
     console.log('📧 [MaildevAdapter] Initialized with Maildev SMTP:', {
-      host: process.env.MAILDEV_HOST || 'localhost',
-      port: process.env.MAILDEV_SMTP_PORT || '1025',
-      webUI: `http://localhost:${process.env.MAILDEV_WEB_PORT || '1080'}`,
+      host: this.host,
+      port: this.smtpPort,
+      webUI: `http://localhost:${this.webPort}`,
     });
   }
 
   async send(emailData: EmailData): Promise<void> {
     try {
       const info = await this.transporter.sendMail({
-        from: `"${config.email.fromName}" <${config.email.fromEmail}>`,
+        from: `"${this.fromName}" <${this.fromEmail}>`,
         to: emailData.to,
         subject: emailData.subject,
         html: emailData.htmlContent,
@@ -48,7 +55,7 @@ export class MaildevAdapter implements IEmailTransport {
         messageId: info.messageId,
         to: emailData.to,
         subject: emailData.subject,
-        preview: `http://localhost:${process.env.MAILDEV_WEB_PORT || '1080'}`,
+        preview: `http://localhost:${this.webPort}`,
       });
     } catch (error) {
       console.error('❌ [MaildevAdapter] Error sending email:', error);

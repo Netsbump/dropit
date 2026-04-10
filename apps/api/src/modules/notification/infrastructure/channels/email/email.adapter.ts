@@ -1,29 +1,19 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { config } from "src/config/env.config";
 import { KIND, NotificationRequest } from "../../../application/ports/outbound/notification.port";
-import { BrevoAdapter } from "./brevo.adapter";
-import { EmailData, IEmailChannel } from "./email-channel.port";
-import { MaildevAdapter } from "./maildev.adapter";
+import { EMAIL_TRANSPORT, EmailData, IEmailChannel, IEmailTransport } from "./email-channel.port";
 import { renderEmailLayout } from "./email-template";
 
 @Injectable()
 export class EmailAdapter implements IEmailChannel {
-
-  private readonly isProduction = config.env === "production";
-
   constructor(
-    private readonly brevoAdapter: BrevoAdapter,
-    private readonly maildevAdapter: MaildevAdapter,
+    @Inject(EMAIL_TRANSPORT)
+    private readonly transport: IEmailTransport,
   ) { }
 
   async send(request: NotificationRequest): Promise<void> {
     const emailData = this.buildEmail(request);
-
-    if (this.isProduction) {
-      await this.brevoAdapter.send(emailData);
-    } else {
-      await this.maildevAdapter.send(emailData);
-    }
+    await this.transport.send(emailData);
   }
 
   private buildEmail(request: NotificationRequest): EmailData {
