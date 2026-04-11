@@ -74,12 +74,6 @@ function AcceptInvitationPage() {
   };
 
 
-
-  const handleAuthError = (error: Error) => {
-    console.error('Auth error:', error);
-    // The error is already handled by the LoginForm/SignupForm components
-  };
-
   // Show loading while fetching invitation after auth
   if (isCheckingInvitation) {
     return (
@@ -149,7 +143,6 @@ function AcceptInvitationPage() {
             <TabsContent value="signup">
               <SignupForm
                 onSuccess={handleAuthSuccess}
-                onError={handleAuthError}
                 showRedirect={false}
                 showTerms={true}
               />

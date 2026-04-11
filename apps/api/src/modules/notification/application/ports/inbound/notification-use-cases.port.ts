@@ -1,3 +1,5 @@
+import { RequestAccess } from "@dropit/schemas";
+
 export type OrganizationInvitationParams = {
   organizationId: string;
   organizationName: string;
@@ -53,7 +55,13 @@ export interface INotificationUseCases {
    * Send an verification link by email after signup 
    */
   sendVerificationUserEmail(params: VerificationUserEmailParams): Promise<void>;
+
+  /**
+   * Send a notification to super admin to new request access from backoffice form
+   */
+  sendRequestAccess(params: RequestAccess): Promise<void>;
 }
+
 
 /**
  * Injection token for INotificationUseCases

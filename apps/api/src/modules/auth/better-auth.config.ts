@@ -66,6 +66,7 @@ export function createAuthConfig(
     },
     emailAndPassword: {
       enabled: true,
+      disableSignUp: true,
     },
     // Disable unused routes to reduce attack surface and prevent email enumeration
     disabledPaths: [

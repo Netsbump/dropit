@@ -6,6 +6,7 @@ import {
   RECIPIENT_TYPE,
 } from '../ports/outbound/notification.port';
 import { IUserRepository } from '../../../auth/application/ports/user.repository.port';
+import { RequestAccess } from '@dropit/schemas';
 
 /**
  * Notification Use Cases Implementation
@@ -76,6 +77,20 @@ export class NotificationUseCase implements INotificationUseCases {
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
       console.error("Failed to send email verification notification", error);
+    }
+  }
+
+  async sendRequestAccess(params: RequestAccess): Promise<void> {
+    const notificationRequest: NotificationRequest = {
+      kind: KIND.REQUEST_ACCESS,
+      email: params.email,
+      name: params.name,
+    }
+
+    try {
+      await this.notificationPort.send(notificationRequest);
+    } catch (error) {
+      console.error('Failed to send notification request access', error);
     }
   }
 }

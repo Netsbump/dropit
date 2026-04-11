@@ -6,7 +6,8 @@ export const KIND = {
   VERIFICATION_USER_EMAIL: 'verification-user-email',
   PASSWORD_RESET: 'password-reset',
   PR_ACHIEVED: 'pr-achieved',
-  WORKOUT_REMINDER: 'workout-reminder'
+  WORKOUT_REMINDER: 'workout-reminder',
+  REQUEST_ACCESS: 'request-access'
 } as const;
 
 export const RECIPIENT_TYPE = {
@@ -36,6 +37,11 @@ export type NotificationRequest =
     email: string,
     token: string,
     url: string,
+  }
+  | {
+    kind: typeof KIND.REQUEST_ACCESS,
+    email: string,
+    name: string,
   }
 
 /**

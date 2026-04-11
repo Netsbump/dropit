@@ -1,7 +1,4 @@
 import { useMemo } from 'react';
-import { authClient } from '@/lib/auth-client';
-import { getAuthErrorKey } from '@/lib/auth-errors';
-import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -18,24 +15,23 @@ import {
 import { Input } from '@/components/ui/input';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
+import { api } from '@/lib/api';
+import { toast } from '@/hooks/use-toast';
 
 type SignupFormData = {
   email: string;
-  password: string;
   name: string;
   dataConsent: boolean;
 };
 
 interface SignupFormProps {
-  onSuccess?: () => void;
-  onError?: (error: Error) => void;
+  onSuccess: () => void;
   showRedirect?: boolean;
   showTerms?: boolean;
 }
 
 export function SignupForm({
   onSuccess,
-  onError,
   showRedirect = true,
   showTerms = true,
 }: SignupFormProps) {
@@ -43,7 +39,6 @@ export function SignupForm({
 
   const formSchema = useMemo(() => z.object({
     email: z.string().email({ message: t('common.validation.emailRequired') }),
-    password: z.string().min(6, { message: t('common.validation.passwordMinLength') }),
     name: z.string().min(1, { message: t('common.validation.nameRequired') }),
     dataConsent: z.boolean().refine((val) => val === true, {
       message: t('signup.dataConsent.required'),
@@ -54,7 +49,6 @@ export function SignupForm({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: '',
       name: '',
       dataConsent: false,
     },
@@ -62,33 +56,14 @@ export function SignupForm({
 
   const signupMutation = useMutation({
     mutationFn: async (values: SignupFormData) => {
-      const response = await authClient.signUp.email({
-        name: values.name,
-        email: values.email,
-        password: values.password,
-        callbackURL: '/',
-      });
-
-      if (response.error) {
-        throw new Error(response.error.code ?? response.error.message);
-      }
-      return response.data;
+      return await api.access.requestAccess({ body: { email: values.email, name: values.name } });
     },
     onSuccess: () => {
       toast({
         title: t('signup.toast.success.title'),
         description: t('signup.toast.success.description'),
       });
-      onSuccess?.();
-    },
-    onError: (error) => {
-      toast({
-        title: t('signup.toast.error.title'),
-        description:
-          t(getAuthErrorKey(error instanceof Error ? error.message : undefined)),
-        variant: 'destructive',
-      });
-      onError?.(error);
+      onSuccess();
     },
   });
 
@@ -121,19 +96,6 @@ export function SignupForm({
                 <FormLabel>{t('signup.name')}</FormLabel>
                 <FormControl>
                   <Input placeholder={t('common.placeholders.name')} {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>{t('signup.password')}</FormLabel>
-                <FormControl>
-                  <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

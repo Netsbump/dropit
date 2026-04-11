@@ -15,6 +15,7 @@ import { MikroMemberRepository } from './infrastructure/orm/mikro-member.reposit
 import { UserUseCases } from './application/user.use-cases';
 import { OrganizationUseCases } from './application/organization.use-cases';
 import { MemberUseCases } from './application/member.use-cases';
+import { AccessUseCases } from './application/access.use-cases';
 
 // Application - Ports
 import { USER_REPO, IUserRepository } from './application/ports/user.repository.port';
@@ -23,6 +24,8 @@ import { MEMBER_REPO, IMemberRepository } from './application/ports/member.repos
 import { USER_USE_CASES } from './application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
+import { ACCESS_USE_CASES } from './application/ports/access-use-cases.port';
+
 
 // Domain - Entities
 import { Organization } from './domain/organization/organization.entity';
@@ -32,9 +35,11 @@ import { User } from './domain/auth/user.entity';
 
 // Interface
 import { UserController } from './interface/controllers/user.controller';
+import { AccessController } from './interface/controllers/access.controller';
 
 // External modules
 import { NotificationModule } from '../notification/notification.module';
+import { INotificationUseCases, NOTIFICATION_USE_CASES } from '../notification/application/ports/inbound/notification-use-cases.port';
 
 /**
  * AuthModule - Main authentication and identity module
@@ -61,7 +66,7 @@ import { NotificationModule } from '../notification/notification.module';
     forwardRef(() => NotificationModule),
     MikroOrmModule.forFeature([Organization, Member, Invitation, User]),
   ],
-  controllers: [UserController],
+  controllers: [UserController, AccessController],
   providers: [
     // Better-auth adapter
     BetterAuthAdapter,
@@ -80,6 +85,7 @@ import { NotificationModule } from '../notification/notification.module';
     UserUseCases,
     OrganizationUseCases,
     MemberUseCases,
+    AccessUseCases,
 
     // Port -> Implementation bindings (use-cases)
     {
@@ -96,6 +102,11 @@ import { NotificationModule } from '../notification/notification.module';
       provide: ORGANIZATION_USE_CASES,
       useFactory: (organizationRepo: IOrganizationRepository) => new OrganizationUseCases(organizationRepo),
       inject: [ORGANIZATION_REPO],
+    },
+    {
+      provide: ACCESS_USE_CASES,
+      useFactory: (notificationUseCases: INotificationUseCases) => new AccessUseCases(notificationUseCases),
+      inject: [NOTIFICATION_USE_CASES],
     },
 
     // Global guard - validates session on all routes

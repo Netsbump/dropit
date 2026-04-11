@@ -36,7 +36,6 @@ export class EmailAdapter implements IEmailChannel {
         };
       }
 
-
       case KIND.VERIFICATION_USER_EMAIL:
         return {
           to: request.email,
@@ -44,8 +43,15 @@ export class EmailAdapter implements IEmailChannel {
           htmlContent: this.renderVerificationUserEmail(request),
         }
 
+      case KIND.REQUEST_ACCESS:
+        return {
+          to: config.email.sender.fromEmail,
+          subject: 'Demande de nouvel accès coach',
+          htmlContent: this.renderRequestAccess(request),
+        }
+
       default: {
-        const _exhaustive:never = request;
+        const _exhaustive: never = request;
         throw new Error(`Unhandled notification kind: ${_exhaustive}`);
       }
     }
@@ -101,6 +107,43 @@ export class EmailAdapter implements IEmailChannel {
       footerContent:
         "<p>Si vous ne souhaitez pas recevoir cette invitation, vous pouvez ignorer cet email.</p>",
     });
+  }
+
+  private renderRequestAccess(request: Extract<NotificationRequest, { kind: typeof KIND.REQUEST_ACCESS }>): string {
+    const name = this.escapeHtml(request.name);
+    const email = this.escapeHtml(request.email);
+
+    return renderEmailLayout({
+      title: 'Nouvelle demande d\'accès coach',
+      headerContent: `
+        <h1>DropIt</h1>
+        <h2>Nouvelle demande d'accès coach</h2>
+      `,
+      bodyContent: `
+        <p>Bonjour,</p>
+        <p>Une nouvelle demande d'accès au backoffice coach a été soumise :</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold; background: #f3f4f6; width: 30%;">Nom</td>
+            <td style="padding: 10px; border: 1px solid #e5e7eb;">${name}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #e5e7eb; font-weight: bold; background: #f3f4f6;">Email</td>
+            <td style="padding: 10px; border: 1px solid #e5e7eb;"><a href="mailto:${email}">${email}</a></td>
+          </tr>
+        </table>
+      `,
+      footerContent: `<p>Cet email a été généré automatiquement par DropIt.</p>`,
+    });
+  }
+
+  private escapeHtml(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;');
   }
 
   private renderOtpCode(request: Extract<NotificationRequest, { kind: typeof KIND.OTP }>): string {
