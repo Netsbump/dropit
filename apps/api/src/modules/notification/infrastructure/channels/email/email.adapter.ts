@@ -112,7 +112,7 @@ export class EmailAdapter implements IEmailChannel {
           </tr>
         </table>
       `,
-      footerContent: `<p>Cet email a été généré automatiquement par DropIt.</p>`,
+      footerContent: '<p>Cet email a été généré automatiquement par DropIt.</p>',
     });
   }
 
