@@ -6,9 +6,18 @@ import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
 } from '../../notification/application/ports/inbound/notification-use-cases.port';
-import { Athlete } from '../../athletes/domain/athlete.entity';
-import { Member } from '../domain/organization/member.entity';
-import { EntityManager } from '@mikro-orm/core';
+import {
+  IOnboardingUseCases,
+  ONBOARDING_USE_CASES,
+} from '../application/ports/onboarding-use-cases.port';
+import {
+  IMemberUseCases,
+  MEMBER_USE_CASES,
+} from '../application/ports/member-use-cases.port';
+import {
+  IAthleteUseCases,
+  ATHLETE_USE_CASES,
+} from '../../athletes/application/ports/athlete-use-cases.port';
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -17,7 +26,7 @@ import { EntityManager } from '@mikro-orm/core';
  * It has 3 responsibilities:
  *
  * 1. INITIALIZATION: Configures better-auth at startup with NestJS dependencies
- *    (EntityManager for DB access, INotificationUseCases for sending invitations/notifications)
+ *    (use cases for business logic, no direct DB access)
  *
  * 2. SINGLETON: Ensures only one better-auth instance exists for the entire app
  *    (via the static initPromise pattern to prevent race conditions)
@@ -31,8 +40,10 @@ export class BetterAuthAdapter implements OnModuleInit {
   private static initPromise: Promise<void> | null = null;
 
   constructor(
-    private em: EntityManager,
     @Inject(NOTIFICATION_USE_CASES) private notificationUseCase: INotificationUseCases,
+    @Inject(ONBOARDING_USE_CASES) private onboardingUseCases: IOnboardingUseCases,
+    @Inject(MEMBER_USE_CASES) private memberUseCases: IMemberUseCases,
+    @Inject(ATHLETE_USE_CASES) private athleteUseCases: IAthleteUseCases,
   ) { }
 
   /**
@@ -49,8 +60,6 @@ export class BetterAuthAdapter implements OnModuleInit {
     await BetterAuthAdapter.initPromise;
   }
 
-
-
   /**
    * Enriches the session returned by getSession with organizationRole and athleteId.
    * Called by customSession plugin on each getSession(); no extra DB columns.
@@ -60,17 +69,14 @@ export class BetterAuthAdapter implements OnModuleInit {
     const activeOrgId = session.activeOrganizationId as string | undefined;
     let organizationRole: string | null = null;
     let athleteId: string | null = null;
+
     if (user?.id) {
       if (activeOrgId) {
-        const memberRecord = await this.em.findOne(Member, {
-          user: { id: user.id },
-          organization: { id: activeOrgId },
-        });
-        organizationRole = memberRecord?.role ?? null;
+        organizationRole = await this.memberUseCases.getMemberRole(user.id, activeOrgId);
       }
-      const athlete = await this.em.findOne(Athlete, { user: { id: user.id } });
-      athleteId = athlete?.id ?? null;
+      athleteId = await this.athleteUseCases.getAthleteId(user.id);
     }
+
     return {
       user: { ...user },
       session: {
@@ -83,7 +89,7 @@ export class BetterAuthAdapter implements OnModuleInit {
 
   /**
    * Creates and configures the better-auth instance.
-   * Injects NestJS dependencies (em, notificationUseCase) into the config
+   * Injects NestJS dependencies (use cases) into the config
    * so that better-auth hooks can use them.
    */
   private async initialize() {
@@ -91,69 +97,35 @@ export class BetterAuthAdapter implements OnModuleInit {
       return;
     }
 
-    // Use centralized config and inject dependencies
     this._auth = createAuthConfig({
-      sendVerificationUserEmail: (data) => {
-        this.notificationUseCase.sendVerificationUserEmail({
-          email: data.user.email,
-          token: data.token,
-          url: data.url,
-        })
-      },
-      afterCreateInvitation: (data) => {
+      afterCreateInvitation: async (data) => {
+        const { isNewUser, hasOtherOrganization } =
+          await this.onboardingUseCases.prepareUserForInvitation(
+            data.invitation.email,
+            data.organization.id,
+          );
+
         this.notificationUseCase.sendOrganizationInvitation({
           organizationId: data.organization.id,
           organizationName: data.organization.name,
-          invitedBy: data.inviter.id,
+          invitedBy: data.inviter.name,
           invitationToken: data.invitation.id,
           email: data.invitation.email,
+          isNewUser,
+          hasOtherOrganization,
         });
       },
       sendVerificationOTP: (data) => {
-        this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type })
+        this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type });
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       databaseHooks: {
-        user: {
-          create: {
-            after: async (user) => {
-              try {
-                const emFork = this.em.fork();
-                const existingAthlete = await emFork.findOne(Athlete, { user: { id: user.id } });
-                if (existingAthlete) {
-                  console.log('🔧 [BetterAuth Hook] Athlete already exists for user:', user.email);
-                  return;
-                }
-
-                // Extract first and last name from user.name
-                const nameParts = user.name.trim().split(' ');
-                const firstName = nameParts[0] || user.name;
-                const lastName = nameParts.slice(1).join(' ') || '';
-
-                // Create new athlete profile
-                const athlete = emFork.create(Athlete, {
-                  firstName,
-                  lastName,
-                  user: user.id,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                });
-
-                await emFork.persistAndFlush(athlete);
-                console.log('🔧 [BetterAuth Hook] Created athlete profile for user:', user.email);
-              } catch (error) {
-                console.error('❌ [BetterAuth Hook] Error creating athlete profile:', error);
-              }
-            },
-          },
-        },
         session: {
           create: {
             before: async (session) => {
               try {
-                const emFork = this.em.fork();
-                const memberRecord = await emFork.findOne(Member, { user: { id: session.userId } });
-                const activeOrganizationId = memberRecord?.organization.id ?? null;
+                const activeOrganizationId =
+                  await this.memberUseCases.getActiveOrganizationId(session.userId);
                 console.log('🔧 [BetterAuth Hook] Setting session activeOrganizationId:', {
                   userId: session.userId,
                   activeOrganizationId,

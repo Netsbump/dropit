@@ -33,6 +33,16 @@ export interface IMemberUseCases {
    * Generate the filter conditions for entities created by coaches
    */
   getCoachFilterConditions(organizationId: string): Promise<CoachFilterConditions>;
+
+  /**
+   * Get the active organization ID for a user, null if not a member of any org
+   */
+  getActiveOrganizationId(userId: string): Promise<string | null>;
+
+  /**
+   * Get the role of a user in a specific organization, null if not a member
+   */
+  getMemberRole(userId: string, organizationId: string): Promise<string | null>;
 }
 
 /**

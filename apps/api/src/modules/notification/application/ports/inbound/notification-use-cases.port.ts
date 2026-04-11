@@ -6,12 +6,8 @@ export type OrganizationInvitationParams = {
   email: string;
   invitedBy: string;
   invitationToken: string;
-}
-
-export type VerificationUserEmailParams = {
-  email: string;
-  token: string;
-  url: string;
+  isNewUser: boolean;
+  hasOtherOrganization: boolean;
 }
 
 export type OtpParams =
@@ -50,11 +46,6 @@ export interface INotificationUseCases {
    * @description
    */
   sendOtp(params: OtpParams): Promise<void>
-
-  /**
-   * Send an verification link by email after signup 
-   */
-  sendVerificationUserEmail(params: VerificationUserEmailParams): Promise<void>;
 
   /**
    * Send a notification to super admin to new request access from backoffice form

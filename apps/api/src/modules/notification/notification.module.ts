@@ -1,8 +1,7 @@
-import { Module, forwardRef } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { NotificationUseCase } from './application/use-cases/notification.use-cases';
 import { NOTIFICATION_USE_CASES } from './application/ports/inbound/notification-use-cases.port';
 import { type INotificationPort, NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
-import { type IUserRepository, USER_REPO } from '../auth/application/ports/user.repository.port';
 import { NotificationAdapter } from './infrastructure/notification.adapter';
 import { config } from '../../config/env.config';
 
@@ -19,9 +18,6 @@ import { SmsAdapter } from './infrastructure/channels/sms/sms.adapter';
 // Push channel
 import { PUSH_CHANNEL_PORT } from './infrastructure/channels/push/push-channel.port';
 import { PushAdapter } from './infrastructure/channels/push/push.adapter';
-
-import { AuthModule } from '../auth/auth.module';
-
 
 /**
  * Notification Module
@@ -41,16 +37,13 @@ import { AuthModule } from '../auth/auth.module';
  * - Development: MaildevAdapter (local SMTP)
  */
 @Module({
-  imports: [
-    forwardRef(() => AuthModule),
-  ],
   providers: [
     // Use Case (Port IN — plain class, no NestJS decorators)
     {
       provide: NOTIFICATION_USE_CASES,
-      useFactory: (notificationPort: INotificationPort, userRepository: IUserRepository) =>
-        new NotificationUseCase(notificationPort, userRepository),
-      inject: [NOTIFICATION_PORT, USER_REPO],
+      useFactory: (notificationPort: INotificationPort) =>
+        new NotificationUseCase(notificationPort),
+      inject: [NOTIFICATION_PORT],
     },
 
     // Notification Adapter (Port OUT - routes to channels)

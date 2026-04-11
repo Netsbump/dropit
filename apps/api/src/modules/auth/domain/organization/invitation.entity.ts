@@ -25,6 +25,9 @@ export class Invitation {
   @Property()
   status!: string;
 
+  @Property({ fieldName: 'createdAt' })
+  createdAt: Date = new Date();
+
   @Property({ fieldName: 'expiresAt' })
   expiresAt!: Date;
 } 

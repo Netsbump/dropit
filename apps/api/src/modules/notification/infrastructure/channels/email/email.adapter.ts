@@ -36,13 +36,6 @@ export class EmailAdapter implements IEmailChannel {
         };
       }
 
-      case KIND.VERIFICATION_USER_EMAIL:
-        return {
-          to: request.email,
-          subject: 'Vérification de votre adresse email',
-          htmlContent: this.renderVerificationUserEmail(request),
-        }
-
       case KIND.REQUEST_ACCESS:
         return {
           to: config.email.sender.fromEmail,
@@ -57,29 +50,14 @@ export class EmailAdapter implements IEmailChannel {
     }
   }
 
-  private renderVerificationUserEmail(request: Extract<NotificationRequest, { kind: typeof KIND.VERIFICATION_USER_EMAIL }>): string {
-    return renderEmailLayout({
-      title: 'Vérification de votre adresse email',
-      headerContent: `
-        <h1>DropIt</h1>
-        <h2>Vérification de votre adresse email</h2>
-      `,
-      bodyContent: `
-        <p>Bonjour,</p>
-        <p>Veuillez cliquer sur le bouton ci-dessous pour vérifier votre adresse email.</p>
-        <div style="text-align: center;">
-          <a href="${request.url}" class="button">Vérifier mon adresse email</a>
-        </div>
-        <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">
-          Ce lien expirera dans 10 jours.
-        </p>
-      `,
-      footerContent: `<p>Si vous n'avez pas demandé cette vérification, vous pouvez ignorer cet email.</p>`,
-    });
-  }
-
   private renderOrganizationInvitation(request: Extract<NotificationRequest, { kind: typeof KIND.ORGANIZATION_INVITATION }>): string {
     const inviteLink = `${config.appUrl}/accept-invitation/${request.invitationToken}`;
+
+    const warningBlock = request.hasOtherOrganization
+      ? `<p style="margin-top: 20px; padding: 12px 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; color: #92400e; font-size: 14px;">
+          ⚠️ <strong>Attention :</strong> En acceptant cette invitation, vous quitterez votre club actuel.
+        </p>`
+      : '';
 
     return renderEmailLayout({
       title: `Invitation à rejoindre ${request.organizationName}`,
@@ -97,7 +75,8 @@ export class EmailAdapter implements IEmailChannel {
           <li>Recevoir des programmes personnalisés</li>
           <li>Communiquer avec votre coach</li>
         </ul>
-        <div style="text-align: center;">
+        ${warningBlock}
+        <div style="text-align: center; margin-top: 24px;">
           <a href="${inviteLink}" class="button">Accepter l'invitation</a>
         </div>
         <p style="margin-top: 30px; font-size: 14px; color: #6b7280;">

@@ -56,7 +56,7 @@ export function SignupForm({
 
   const signupMutation = useMutation({
     mutationFn: async (values: SignupFormData) => {
-      return await api.access.requestAccess({ body: { email: values.email, name: values.name } });
+      return await api.onboarding.requestCoachAccess({ body: { email: values.email, name: values.name } });
     },
     onSuccess: () => {
       toast({

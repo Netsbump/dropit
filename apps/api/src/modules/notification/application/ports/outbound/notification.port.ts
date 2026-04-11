@@ -3,7 +3,6 @@ import { OtpParams } from "../inbound/notification-use-cases.port";
 export const KIND = {
   OTP: 'otp',
   ORGANIZATION_INVITATION: 'organization-invitation',
-  VERIFICATION_USER_EMAIL: 'verification-user-email',
   PASSWORD_RESET: 'password-reset',
   PR_ACHIEVED: 'pr-achieved',
   WORKOUT_REMINDER: 'workout-reminder',
@@ -26,17 +25,11 @@ export type NotificationRequest =
     invitedBy: string;
     invitationToken: string;
     recipientType: RecipientType;
-    userId?: string;
+    hasOtherOrganization: boolean;
   }
   | {
     kind: typeof KIND.OTP;
     otpParams: OtpParams
-  }
-  | {
-    kind: typeof KIND.VERIFICATION_USER_EMAIL,
-    email: string,
-    token: string,
-    url: string,
   }
   | {
     kind: typeof KIND.REQUEST_ACCESS,

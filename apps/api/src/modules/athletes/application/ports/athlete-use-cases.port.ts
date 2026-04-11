@@ -49,6 +49,11 @@ export interface IAthleteUseCases {
    * Delete an athlete
    */
   delete(idAthlete: string, userId: string): Promise<void>;
+
+  /**
+   * Get the athlete ID for a given user, null if no athlete profile exists
+   */
+  getAthleteId(userId: string): Promise<string | null>;
 }
 
 /**

@@ -19,10 +19,6 @@ export interface EnrichedSessionResult {
 }
 
 interface BetterAuthDeps {
-  sendVerificationUserEmail: (
-    data: { user: User; url: string; token: string },
-    request: Request | undefined
-  ) => void;
   afterCreateInvitation: (data: {
     invitation: Invitation;
     inviter: User;
@@ -74,15 +70,6 @@ export function createAuthConfig(
       "/email-otp/verify-email",
       "/sign-up/email",
     ],
-
-    // === CALLBACKS CORE (delegate to better-auth.adapter) ===
-    emailVerification: {
-      sendOnSignUp: true,
-      expiresIn: 60 * 60 * 24 * 10, // 10 days
-      sendVerificationEmail: async (data, request) => {
-        deps.sendVerificationUserEmail(data, request);
-      },
-    },
 
     // === HOOKS CORE (delegate to better-auth.adapter) ===
     databaseHooks: deps.databaseHooks,

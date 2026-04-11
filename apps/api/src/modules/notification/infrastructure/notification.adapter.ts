@@ -60,9 +60,6 @@ export class NotificationAdapter implements INotificationPort {
       }
     }
 
-    if (request.kind === KIND.VERIFICATION_USER_EMAIL) {
-      return TRANSPORT.EMAIL;
-    }
     return TRANSPORT.EMAIL;
   }
 }
