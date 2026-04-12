@@ -6,11 +6,11 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
-import { Media } from '../../core/media/media.entity';
+import { Media } from '../../media/media.entity';
 import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
 import { ExerciseCategory } from './exercise-category.entity';
 import { ExerciseComplex } from './exercise-complex.entity';
-import { User } from '../../identity/domain/auth/user.entity';
+import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity()
 export class Exercise {

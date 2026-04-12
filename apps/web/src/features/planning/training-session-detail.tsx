@@ -1,13 +1,13 @@
 import { api } from '@/lib/api';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from '@/shared/components/ui/dropdown-menu';
+} from '@/components/ui/dropdown-menu';
 import { useTranslation } from '@dropit/i18n';
 import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';

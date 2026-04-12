@@ -11,3 +11,4 @@ export * from './competitor-status.schema';
 export * from './personal-record.schema';
 export * from './common.schema';
 export * from './user.schema';
+export * from './access.schema';

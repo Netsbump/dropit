@@ -1,4 +1,4 @@
-import { Button } from '@/shared/components/ui/button';
+import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -6,17 +6,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Input } from '@/shared/components/ui/input';
+} from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { useTranslation } from '@dropit/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { toast } from '@/shared/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { Mail, UserPlus, Send } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
+import { getAuthErrorKey } from '@/lib/auth-errors';
 
 type AthleteInvitationFormProps = {
   onSuccess: () => void;
@@ -30,7 +31,6 @@ export function AthleteInvitationForm({
   const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation(['athletes']);
 
-  // Schéma de validation pour l'invitation
   const invitationSchema = z.object({
     email: z.string().email(t('invitation.email_required')),
   });
@@ -41,11 +41,11 @@ export function AthleteInvitationForm({
     mutationFn: async (data: InvitationFormData) => {
       const response = await authClient.organization.inviteMember({
         email: data.email,
-        role: 'member', // Toujours member (athlète)
+        role: 'member',
       });
 
       if (response.error) {
-        throw new Error(response.error.message || t('invitation.error_description'));
+        throw new Error(response.error.code ?? response.error.message);
       }
 
       return response.data;
@@ -60,7 +60,7 @@ export function AthleteInvitationForm({
     onError: (error) => {
       toast({
         title: t('invitation.error_title'),
-        description: error instanceof Error ? error.message : t('invitation.error_description'),
+        description: t(getAuthErrorKey(error instanceof Error ? error.message : undefined)),
         variant: 'destructive',
       });
     },
@@ -86,7 +86,6 @@ export function AthleteInvitationForm({
 
   return (
     <div className="space-y-6">
-      {/* Header avec icône et description */}
       <div className="text-center space-y-2">
         <div className="mx-auto w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
           <UserPlus className="w-6 h-6 text-blue-600" />
@@ -99,7 +98,6 @@ export function AthleteInvitationForm({
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-          {/* Email - Champ principal */}
           <FormField
             control={form.control}
             name="email"
@@ -121,7 +119,6 @@ export function AthleteInvitationForm({
             )}
           />
 
-          {/* Informations sur le processus */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-medium text-blue-900 mb-2">{t('invitation.how_it_works')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
@@ -132,7 +129,6 @@ export function AthleteInvitationForm({
             </ul>
           </div>
 
-          {/* Boutons d'action */}
           <div className="flex justify-end gap-2 pt-4">
             <Button 
               type="button" 

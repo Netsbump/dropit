@@ -2,18 +2,18 @@ import { MikroORM } from '@mikro-orm/core';
 import { cleanDatabase, createTestOrganization, TestData } from './utils/test-setup';
 
 /**
- * Setup l'organisation et les utilisateurs de test
+ * Setup the test organization and users
  */
 export async function setupOrganization(orm: MikroORM): Promise<TestData> {
   console.log('📋 Setting up organization...');
   
-  // Nettoyer la base de données
+  // Clean the database
   await cleanDatabase(orm);
   
-  // Créer l'organisation et les utilisateurs
+  // Create the organization and users
   const testData = await createTestOrganization(orm);
   
-  // Vérifications
+  // Assertions
   expect(testData.organization).toBeDefined();
   expect(testData.organization.id).toBeDefined();
   expect(testData.organization.name).toBe('Test Organization');

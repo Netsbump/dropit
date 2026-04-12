@@ -1,15 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { api } from '@/lib/api';
-import { authClient } from '@/lib/auth-client';
-import { toast } from '@/shared/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/shared/components/ui/card';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -17,7 +16,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
+} from '@/components/ui/form';
 import {
   Dialog,
   DialogContent,
@@ -25,18 +24,11 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog';
-import { Skeleton } from '@/shared/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/shared/components/ui/alert';
+} from '@/components/ui/dialog';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-
-const getAthleteFormSchema = (t: (key: string) => string) =>
-  z.object({
-    firstName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    lastName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    birthday: z.string().optional(),
-    country: z.string().optional(),
-  });
+import { useSession } from '../auth/auth-queries';
 
 type AthleteFormData = {
   firstName: string;
@@ -48,16 +40,19 @@ type AthleteFormData = {
 export function AthleteProfileSection() {
   const { t } = useTranslation(['profile', 'common']);
   const queryClient = useQueryClient();
-  const { data: session } = authClient.useSession();
+  const { sessionData: session } = useSession();
   const [isEditing, setIsEditing] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const athleteFormSchema = getAthleteFormSchema(t);
+  const athleteFormSchema = useMemo(() => z.object({
+    firstName: z.string().min(1, { message: t('common:validation.nameRequired') }),
+    lastName: z.string().min(1, { message: t('common:validation.nameRequired') }),
+    birthday: z.string().optional(),
+    country: z.string().optional(),
+  }), [t]);
 
-  // Fetch athlete profile by athleteId from session
-  // @ts-expect-error - athleteId is an additional field configured in better-auth
-  const athleteId = session?.session?.athleteId as string | undefined;
+  const athleteId = session?.session?.athleteId;
 
   const { data: athlete, isLoading } = useQuery({
     queryKey: ['athlete', athleteId],

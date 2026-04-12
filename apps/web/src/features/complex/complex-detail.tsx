@@ -1,7 +1,7 @@
 import { api } from '@/lib/api';
-import { Badge } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
-import { CardContent, CardHeader } from '@/shared/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { CardContent, CardHeader } from '@/components/ui/card';
 import {
   Form,
   FormControl,
@@ -9,17 +9,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
-import { Label } from '@/shared/components/ui/label';
+} from '@/components/ui/form';
+import { Label } from '@/components/ui/label';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
-import { useToast } from '@/shared/hooks/use-toast';
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
+import { useToast } from '@/hooks/use-toast';
 import {
   DndContext,
   DragEndEvent,
@@ -50,7 +50,7 @@ import { z } from 'zod';
 import { DialogCreation } from '../exercises/dialog-creation';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
-import { getCategoryBadgeVariant } from '@/shared/utils';
+import { getCategoryBadgeVariant } from '@/utils';
 
 interface ComplexDetailProps {
   complex: ComplexDto;

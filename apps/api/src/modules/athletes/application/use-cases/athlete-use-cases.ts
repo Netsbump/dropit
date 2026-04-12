@@ -2,8 +2,8 @@ import { Athlete } from "../../domain/athlete.entity";
 import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
 import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
 import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository.port";
-import { IUserUseCases } from "../../../identity/application/ports/user-use-cases.port";
-import { IMemberUseCases } from "../../../identity/application/ports/member-use-cases.port";
+import { IUserUseCases } from "../../../auth/application/ports/user-use-cases.port";
+import { IMemberUseCases } from "../../../auth/application/ports/member-use-cases.port";
 import {
   AthleteNotFoundException,
   AthleteAccessDeniedException,
@@ -190,6 +190,11 @@ export class AthleteUseCases implements IAthleteUseCases {
     await this.athleteRepository.save(athlete);
 
     return athlete;
+  }
+
+  async getAthleteId(userId: string): Promise<string | null> {
+    const athlete = await this.athleteRepository.findByUserId(userId);
+    return athlete?.id ?? null;
   }
 
   async delete(idAthlete: string, userId: string): Promise<void> {

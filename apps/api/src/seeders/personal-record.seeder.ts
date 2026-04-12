@@ -6,13 +6,13 @@ import { Exercise } from '../modules/training/domain/exercise.entity';
 export async function seedPersonalRecords(em: EntityManager): Promise<void> {
   console.log('Seeding personal records...');
 
-  // Récupérer les 5 athlètes
+  // Get the 5 athletes
   const athletes = await em.find(Athlete, {}, { limit: 5 });
 
-  // Récupérer tous les exercices
+  // Get all exercises
   const exercises = await em.find(Exercise, {});
 
-  // Trouver les exercices spécifiques
+  // Find the specific exercises
   const snatch = exercises.find((e) => e.name === 'Arraché');
   const cleanAndJerk = exercises.find((e) => e.name === 'Épaulé-Jeté');
   const commonExercises = [
@@ -24,9 +24,9 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
     .map((name) => exercises.find((e) => e.name === name))
     .filter(Boolean);
 
-  // Distribution des PR pour chaque athlète
+  // PR distribution per athlete
   const prDistribution = [
-    // Athlète 1: Snatch, C&J et autres
+    // Athlete 1: Snatch, C&J and others
     async (athlete: Athlete) => {
       if (snatch && cleanAndJerk) {
         await createPR(em, athlete, snatch, 80);
@@ -43,7 +43,7 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
         }
       }
     },
-    // Athlète 2: Snatch, C&J et autres
+    // Athlete 2: Snatch, C&J and others
     async (athlete: Athlete) => {
       if (snatch && cleanAndJerk) {
         await createPR(em, athlete, snatch, 85);
@@ -60,19 +60,19 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
         }
       }
     },
-    // Athlète 3: Snatch uniquement
+    // Athlete 3: Snatch only
     async (athlete: Athlete) => {
       if (snatch) {
         await createPR(em, athlete, snatch, 75);
       }
     },
-    // Athlète 4: C&J uniquement
+    // Athlete 4: C&J only
     async (athlete: Athlete) => {
       if (cleanAndJerk) {
         await createPR(em, athlete, cleanAndJerk, 95);
       }
     },
-    // Athlète 5: Autres exercices uniquement
+    // Athlete 5: Other exercises only
     async (athlete: Athlete) => {
       for (const exercise of commonExercises) {
         if (exercise) {
@@ -82,7 +82,7 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
     },
   ];
 
-  // Créer les PR pour chaque athlète selon leur distribution
+  // Create PRs for each athlete according to their distribution
   for (let i = 0; i < athletes.length; i++) {
     await prDistribution[i](athletes[i]);
   }
@@ -91,7 +91,7 @@ export async function seedPersonalRecords(em: EntityManager): Promise<void> {
   console.log('Personal records seeded successfully');
 }
 
-// Fonction utilitaire pour créer un PR
+// Helper to create a PR
 async function createPR(
   em: EntityManager,
   athlete: Athlete,
@@ -102,12 +102,12 @@ async function createPR(
   pr.athlete = athlete;
   pr.exercise = exercise;
   pr.weight = weight;
-  // Date aléatoire dans les 6 derniers mois
+  // Random date within the last 6 months
   pr.date = new Date(Date.now() - Math.random() * 180 * 24 * 60 * 60 * 1000);
   em.persist(pr);
 }
 
-// Fonction utilitaire pour générer des poids réalistes selon l'exercice
+// Helper to generate realistic weights per exercise
 function getRandomWeight(exerciseName: string): number {
   const weightRanges: Record<string, [number, number]> = {
     'Squat Nuque': [100, 180],

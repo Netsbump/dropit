@@ -2,7 +2,7 @@ import { CreateExercise, ExerciseCategoryDto, ExerciseDto } from '@dropit/schema
 import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
 import { setupOrganization } from './organization.integration';
@@ -10,7 +10,7 @@ import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**
- * Exécute les tests d'intégration pour les exercices
+ * Run integration tests for exercises
  */
 export async function runExerciseTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running exercise integration tests...');
@@ -22,19 +22,19 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
   let exerciseCategory: ExerciseCategory;
 
   try {
-    // Nettoyer la base de données
+    // Clean the database
     await cleanDatabase(orm);
     
-    // Setup l'organisation (dépendance)
+    // Setup organization (dependency)
     testData = await setupOrganization(orm);
 
-    // Utiliser la factory pour créer les use cases
+    // Use the factory to create use cases
     const factory = new TestUseCaseFactory(orm);
     organizationUseCases = factory.createOrganizationUseCases();
     exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
     exerciseUseCase = factory.createExerciseUseCase();
 
-    // Créer une catégorie d'exercice via use case
+    // Create an exercise category via use case
     try {
       exerciseCategory = await exerciseCategoryUseCase.create({ 
         name: 'Haltérophilie' 
@@ -47,7 +47,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     expect(exerciseCategory.id).toBeDefined();
     expect(exerciseCategory.name).toBe('Haltérophilie');
 
-    // Test 1: Créer des exercices via use case
+    // Test 1: Create exercises via use case
     console.log('🧪 Testing exercise creation via use case...');
     let exercise1: Exercise;
     try {
@@ -91,7 +91,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     expect(exercise3.englishName).toBe('Front Squat');
     expect(exercise3.shortName).toBe('FS');
 
-    // Test 2: Récupérer des exercices via use case
+    // Test 2: Get exercises via use case
     console.log('🧪 Testing exercise retrieval via use case...');
     let exercises: Exercise[];
     try {
@@ -101,7 +101,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     }
     expect(exercises.length).toBeGreaterThanOrEqual(3);
 
-    // Test 3: Récupérer un exercice spécifique
+    // Test 3: Get a specific exercise
     console.log('🧪 Testing single exercise retrieval via use case...');
     let singleExercise: Exercise;
     try {
@@ -112,7 +112,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     expect(singleExercise.id).toBe(exercise1.id);
     expect(singleExercise.name).toBe('Squat');
 
-    // Test 4: Mettre à jour un exercice via use case
+    // Test 4: Update an exercise via use case
     console.log('🧪 Testing exercise update via use case...');
     let updatedExercise: Exercise;
     try {
@@ -129,7 +129,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     }
     expect(updatedExercise.name).toBe('Squat Modifié');
 
-    // Test 5: Rechercher des exercices via use case
+    // Test 5: Search exercises via use case
     console.log('🧪 Testing exercise search via use case...');
     let searchResults: Exercise[];
     try {
@@ -139,7 +139,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     }
     expect(searchResults.length).toBeGreaterThanOrEqual(2); // Squat + Squat Clavicule
 
-    // Test 6: Supprimer un exercice via use case
+    // Test 6: Delete an exercise via use case
     console.log('🧪 Testing exercise deletion via use case...');
     try {
       await exerciseUseCase.delete(exercise2.id, testData.organization.id, testData.adminUser.id);

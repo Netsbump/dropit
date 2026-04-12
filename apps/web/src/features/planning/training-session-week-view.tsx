@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { Badge } from '@/shared/components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import { useTranslation } from '@dropit/i18n';
 import { WORKOUT_ELEMENT_TYPES, TrainingSessionDto } from '@dropit/schemas';
 import { User } from 'lucide-react';

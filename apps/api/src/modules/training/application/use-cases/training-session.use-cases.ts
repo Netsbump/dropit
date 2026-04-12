@@ -1,12 +1,12 @@
 import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
-import { IOrganizationUseCases } from '../../../identity/application/ports/organization-use-cases.port';
+import { IOrganizationUseCases } from '../../../auth/application/ports/organization-use-cases.port';
 import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
 import { IWorkoutRepository } from '../ports/workout.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { ITrainingSessionUseCases } from '../ports/training-session-use-cases.port';
 import {
   TrainingSessionNotFoundException,

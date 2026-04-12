@@ -1,26 +1,26 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Organization } from '../modules/identity/domain/organization/organization.entity';
-import { Member } from '../modules/identity/domain/organization/member.entity';
-import { User } from '../modules/identity/domain/auth/user.entity';
+import { Organization } from '../modules/auth/domain/organization/organization.entity';
+import { Member } from '../modules/auth/domain/organization/member.entity';
+import { User } from '../modules/auth/domain/auth/user.entity';
 
 export async function seedOrganizations(
   em: EntityManager
 ): Promise<{ organization: Organization; coachMember: Member }> {
   console.log('Seeding organizations...');
 
-  // Vérifier si une organisation existe déjà
+  // Check if an organization already exists
   const existingOrganization = await em.findOne(Organization, { name: 'DropIt Coaching' });
 
   if (existingOrganization) {
     console.log('Organization already exists, using existing one');
     
-    // Récupérer le coach existant
+    // Get the existing coach
     const coachUser = await em.findOne(User, { email: 'coach@example.com' });
     if (!coachUser) {
       throw new Error('Coach user not found. Please run seedAthletes first.');
     }
 
-    // Vérifier si le coach est déjà membre de l'organisation
+    // Check if the coach is already a member of the organization
     const existingMember = await em.findOne(Member, {
       user: { id: coachUser.id },
       organization: { id: existingOrganization.id },
@@ -31,19 +31,19 @@ export async function seedOrganizations(
       return { organization: existingOrganization, coachMember: existingMember };
     }
 
-    // Ajouter le coach comme membre de l'organisation
+    // Add the coach as a member of the organization
     const coachMember = new Member();
     coachMember.user = coachUser;
     coachMember.organization = existingOrganization;
-    coachMember.role = 'owner'; // Le coach devient owner de l'organisation
+    coachMember.role = 'admin';
 
     await em.persistAndFlush(coachMember);
-    console.log('Coach added as owner to existing organization');
+    console.log('Coach added as admin to existing organization');
 
     return { organization: existingOrganization, coachMember };
   }
 
-  // Créer une nouvelle organisation
+  // Create a new organization
   const organization = new Organization();
   organization.name = 'Halterophilie Club';
   organization.slug = 'halterophilie-club';
@@ -56,25 +56,37 @@ export async function seedOrganizations(
   await em.persistAndFlush(organization);
   console.log('Created new organization:', organization.name);
 
-  // Récupérer le coach existant
+  // Owner = creator of the organization and admin (app-level admin)
+  const superAdmin = await em.findOne(User, { email: 'super.admin@gmail.com' });
+  if (!superAdmin) {
+    throw new Error('Super admin user not found. Please run seedAthletes first.');
+  }
+  const ownerMember = new Member();
+  ownerMember.user = superAdmin;
+  ownerMember.organization = organization;
+  ownerMember.role = 'owner';
+  await em.persistAndFlush(ownerMember);
+  console.log('Super admin added as owner (creator) of organization');
+
+  // Coach = admin of the organization, remains "user" in the app
   const coachUser = await em.findOne(User, { email: 'coach@example.com' });
   if (!coachUser) {
     throw new Error('Coach user not found. Please run seedAthletes first.');
   }
-
-  // Ajouter le coach comme membre de l'organisation (owner)
   const coachMember = new Member();
   coachMember.user = coachUser;
   coachMember.organization = organization;
-  coachMember.role = 'owner'; 
-
+  coachMember.role = 'admin';
   await em.persistAndFlush(coachMember);
-  console.log('Coach added as owner to organization');
+  console.log('Coach added as admin to organization');
   console.log('Coach user ID:', coachUser.id);
   console.log('Coach member role:', coachMember.role);
 
-  // Ajouter les athlètes comme membres de l'organisation
-  const athletes = await em.find(User, { isSuperAdmin: false, email: { $ne: 'coach@example.com' } });
+  // Add athletes as members of the organization
+  const athletes = await em.find(User, {
+    $or: [{ role: { $ne: 'admin' } }, { role: null }],
+    email: { $ne: 'coach@example.com' },
+  });
   for (const athlete of athletes) {
     const athleteMember = new Member();
     athleteMember.user = athlete;

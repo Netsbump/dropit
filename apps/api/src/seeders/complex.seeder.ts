@@ -35,7 +35,7 @@ export async function seedComplexes(
     console.log('Complex category created:', categoryToCreate);
   }
 
-  // Complexes basés sur les vrais entraînements
+  // Complexes based on real training sessions
   const complexesToCreate = [
     {
       category: 'Arraché',

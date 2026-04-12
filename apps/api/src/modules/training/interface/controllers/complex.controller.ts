@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { IComplexUseCases, COMPLEX_USE_CASES } from '../../application/ports/complex-use-cases.port';
-import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ComplexMapper } from '../mappers/complex.mapper';
 import { ComplexPresenter } from '../presenters/complex.presenter';
 

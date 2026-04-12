@@ -1,4 +1,4 @@
-import { Form } from '@/shared/components/ui/form';
+import { Form } from '@/components/ui/form';
 import { createWorkoutSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';

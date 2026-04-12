@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { ITrainingSessionUseCases, TRAINING_SESSION_USE_CASES } from '../../application/ports/training-session-use-cases.port';
-import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { TrainingSessionMapper } from '../mappers/training-session.mapper';
 import { TrainingSessionPresenter } from '../presenters/training-session.presenter';
 

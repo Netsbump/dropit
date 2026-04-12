@@ -1,5 +1,5 @@
 import { Complex } from "../../domain/complex.entity";
-import { CoachFilterConditions } from "../../../identity/application/ports/member.repository.port";
+import { CoachFilterConditions } from "../../../auth/application/ports/member.repository.port";
 
 export const COMPLEX_REPO = Symbol('COMPLEX_REPO');
 

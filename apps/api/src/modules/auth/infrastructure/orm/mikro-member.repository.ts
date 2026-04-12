@@ -1,0 +1,61 @@
+import { EntityManager, EntityRepository } from "@mikro-orm/core";
+import { Injectable } from "@nestjs/common";
+import { Member } from "../../domain/organization/member.entity";
+import { IMemberRepository } from "../../application/ports/member.repository.port";
+
+@Injectable()
+export class MikroMemberRepository extends EntityRepository<Member> implements IMemberRepository {
+  constructor(public readonly em: EntityManager) {
+    super(em, Member);
+  }
+
+  async getCoachUserIds(organizationId: string): Promise<Member[]> {
+      return await this.em.find(Member, {
+        organization: {
+          id: organizationId,
+        },
+        // 'owner' covers the org creator (super admin) — they need coach-level access in use-case logic
+        role: { $in: ['admin', 'owner'] }
+      });
+  }
+
+  async getAthleteUserIds(organizationId: string): Promise<Member[]> {
+      return await this.em.find(Member, {
+        organization: { id: organizationId },
+        role: 'member'
+      });
+  }
+
+  async isUserCoachInOrganization(userId: string, organizationId: string): Promise<boolean> {
+      const member = await this.em.findOne(Member, {
+      user: userId,
+      organization: organizationId,
+      // 'owner' covers the org creator (super admin) — they need coach-level access in use-case logic
+      role: { $in: ['admin', 'owner'] }
+      });
+      
+      return !!member;
+  }
+
+  async isUserAthleteInOrganization(athleteId: string, organizationId: string): Promise<boolean> {
+      const member = await this.em.findOne(Member, {
+        user: { id: athleteId },
+        organization: { id: organizationId },
+        role: 'member'
+      });
+
+      return !!member;
+  }
+
+  async findByUserId(userId: string): Promise<Member | null> {
+    return await this.em.findOne(Member, { user: { id: userId } });
+  }
+
+  async save(member: Member): Promise<void> {
+    await this.em.persistAndFlush(member);
+  }
+
+  async remove(member: Member): Promise<void> {
+    await this.em.removeAndFlush(member);
+  }
+}

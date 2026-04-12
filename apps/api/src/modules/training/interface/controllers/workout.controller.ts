@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { IWorkoutUseCases, WORKOUT_USE_CASES } from '../../application/ports/workout-use-cases.port';
-import { PermissionsGuard } from '../../../identity/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../identity/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../identity/infrastructure/decorators/organization.decorator';
-import { CurrentUser } from '../../../identity/infrastructure/decorators/auth.decorator';
-import { AuthenticatedUser } from '../../../identity/infrastructure/decorators/auth.decorator';
+import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import { AuthenticatedUser } from '../../../auth/infrastructure/decorators/auth.decorator';
 import { WorkoutMapper } from '../mappers/workout.mapper';
 import { WorkoutPresenter } from '../presenters/workout.presenter';
 

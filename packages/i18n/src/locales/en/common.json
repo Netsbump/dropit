@@ -44,6 +44,16 @@
       "help": "Help",
       "logout": "Logout"
     },
+    "logout": {
+      "success": {
+        "title": "Logged out",
+        "description": "You have been logged out successfully."
+      },
+      "error": {
+        "title": "Logout issue",
+        "description": "You have been logged out but there was an issue contacting the server."
+      }
+    },
     "sections": {
       "application": "Application"
     }

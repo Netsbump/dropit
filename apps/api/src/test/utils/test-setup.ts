@@ -1,7 +1,7 @@
 import { MikroORM } from '@mikro-orm/core';
-import { Organization } from '../../modules/identity/domain/organization/organization.entity';
-import { User } from '../../modules/identity/domain/auth/user.entity';
-import { Member } from '../../modules/identity/domain/organization/member.entity';
+import { Organization } from '../../modules/auth/domain/organization/organization.entity';
+import { User } from '../../modules/auth/domain/auth/user.entity';
+import { Member } from '../../modules/auth/domain/organization/member.entity';
 
 export interface TestData {
   organization: Organization;
@@ -12,7 +12,7 @@ export interface TestData {
 }
 
 /**
- * Nettoie la base de données
+ * Clean the database
  */
 export async function cleanDatabase(orm: MikroORM): Promise<void> {
   const generator = orm.getSchemaGenerator();
@@ -21,10 +21,10 @@ export async function cleanDatabase(orm: MikroORM): Promise<void> {
 }
 
 /**
- * Crée l'organisation et les utilisateurs de test
+ * Create the test organization and users
  */
 export async function createTestOrganization(orm: MikroORM): Promise<TestData> {
-  // Créer l'organisation
+  // Create the organization
   const organization = new Organization();
   organization.name = 'Test Organization';
   organization.slug = 'test-organization';
@@ -35,21 +35,21 @@ export async function createTestOrganization(orm: MikroORM): Promise<TestData> {
   });
   await orm.em.persistAndFlush(organization);
 
-  // Créer l'utilisateur admin
+  // Create the admin user (org role = admin; app role = user)
   const adminUser = new User();
   adminUser.email = 'admin@test.com';
   adminUser.name = 'Admin User';
-  adminUser.isSuperAdmin = false;
+  adminUser.role = 'user';
   await orm.em.persistAndFlush(adminUser);
 
-  // Créer l'utilisateur member
+  // Create the member user
   const memberUser = new User();
   memberUser.email = 'member@test.com';
   memberUser.name = 'Member User';
-  memberUser.isSuperAdmin = false;
+  memberUser.role = 'user';
   await orm.em.persistAndFlush(memberUser);
 
-  // Créer les relations Member
+  // Create Member relations
   const adminMember = new Member();
   adminMember.user = adminUser;
   adminMember.organization = organization;

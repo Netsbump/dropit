@@ -1,0 +1,17 @@
+const AUTH_ERROR_KEYS: Record<string, string> = {
+  INVALID_OTP: 'auth:errors.INVALID_OTP',
+  OTP_EXPIRED: 'auth:errors.OTP_EXPIRED',
+  TOO_MANY_ATTEMPTS: 'auth:errors.TOO_MANY_ATTEMPTS',
+  INVALID_EMAIL_OR_PASSWORD: 'auth:errors.INVALID_EMAIL_OR_PASSWORD',
+  EMAIL_NOT_VERIFIED: 'auth:errors.EMAIL_NOT_VERIFIED',
+  INVALID_EMAIL: 'auth:errors.INVALID_EMAIL',
+  INVITATION_NOT_FOUND: 'auth:errors.INVITATION_NOT_FOUND',
+  USER_IS_ALREADY_INVITED_TO_THIS_ORGANIZATION: 'auth:errors.USER_IS_ALREADY_INVITED_TO_THIS_ORGANIZATION',
+  YOU_ARE_NOT_THE_RECIPIENT_OF_THE_INVITATION: 'auth:errors.YOU_ARE_NOT_THE_RECIPIENT_OF_THE_INVITATION',
+  USER_IS_NOT_A_MEMBER_OF_THE_ORGANIZATION: 'auth:errors.USER_IS_NOT_A_MEMBER_OF_THE_ORGANIZATION',
+};
+
+export function getAuthErrorKey(code: string | undefined): string {
+  if (!code) return 'auth:errors.UNKNOWN';
+  return AUTH_ERROR_KEYS[code] ?? 'auth:errors.UNKNOWN';
+}

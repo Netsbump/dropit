@@ -3,7 +3,7 @@ import { ComplexCategoryUseCase } from '../modules/training/application/use-case
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationUseCases } from '../modules/identity/application/organization.use-cases';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
 import { Complex } from '../modules/training/domain/complex.entity';
@@ -13,7 +13,7 @@ import { cleanDatabase, TestData } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**
- * Exécute les tests d'intégration pour les complexes
+ * Run integration tests for complexes
  */
 export async function runComplexTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running complex integration tests...');
@@ -28,13 +28,13 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
   let complexCategory: ComplexCategory;
 
   try {
-    // Nettoyer la base de données
+    // Clean the database
     await cleanDatabase(orm);
     
-    // Setup l'organisation (dépendance)
+    // Setup organization (dependency)
     testData = await setupOrganization(orm);
     
-    // Utiliser la factory pour créer les use cases
+    // Use the factory to create use cases
     const factory = new TestUseCaseFactory(orm);
     organizationUseCases = factory.createOrganizationUseCases();
     exerciseCategoryUseCase = factory.createExerciseCategoryUseCase();
@@ -42,7 +42,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     complexCategoryUseCase = factory.createComplexCategoryUseCase();
     complexUseCase = factory.createComplexUseCase();
 
-    // Créer une catégorie d'exercice via use case
+    // Create an exercise category via use case
     try {
       exerciseCategory = await exerciseCategoryUseCase.create({ 
         name: 'Haltérophilie' 
@@ -51,7 +51,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
       throw new Error(`Failed to create exercise category: ${(error as Error).message}`);
     }
 
-    // Créer une catégorie de complex via use case
+    // Create a complex category via use case
     try {
       complexCategory = await complexCategoryUseCase.create({ 
         name: 'Complexes Haltérophilie' 
@@ -64,7 +64,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     expect(complexCategory.id).toBeDefined();
     expect(complexCategory.name).toBe('Complexes Haltérophilie');
 
-    // Test 1: Créer des exercices pour les complexes via use case
+    // Test 1: Create exercises for complexes via use case
     console.log('🧪 Testing exercise creation for complexes...');
     let exercise1: Exercise;
     let exercise2: Exercise;
@@ -92,7 +92,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     expect(exercise2).toBeDefined();
     expect(exercise3).toBeDefined();
 
-    // Test 2: Créer un complex via use case
+    // Test 2: Create a complex via use case
     console.log('🧪 Testing complex creation via use case...');
     let complex1: Complex;
     try {
@@ -121,7 +121,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     expect(complex1.id).toBeDefined();
     expect(complex1.exercises).toHaveLength(3);
 
-    // Test 3: Créer un autre complex
+    // Test 3: Create another complex
     console.log('🧪 Testing second complex creation via use case...');
     let exercise4: Exercise;
     let exercise5: Exercise;
@@ -151,7 +151,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     expect(complex2).toBeDefined();
     expect(complex2.exercises).toHaveLength(2);
 
-    // Test 4: Récupérer tous les complexes via use case
+    // Test 4: Get all complexes via use case
     console.log('🧪 Testing complex retrieval via use case...');
     let complexes: Complex[];
     try {
@@ -161,7 +161,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     }
     expect(complexes.length).toBeGreaterThanOrEqual(2);
 
-    // Test 5: Récupérer un complex spécifique
+    // Test 5: Get a specific complex
     console.log('🧪 Testing single complex retrieval via use case...');
     let singleComplex: Complex;
     try {
@@ -171,7 +171,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     }
     expect(singleComplex.id).toBe(complex1.id);
 
-    // Test 6: Mettre à jour un complex via use case
+    // Test 6: Update a complex via use case
     console.log('🧪 Testing complex update via use case...');
     let updatedComplex: Complex;
     try {
@@ -197,7 +197,7 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     }
     expect(updatedComplex.exercises).toHaveLength(2);
 
-    // Test 7: Supprimer un complex via use case
+    // Test 7: Delete a complex via use case
     console.log('🧪 Testing complex deletion via use case...');
     try {
       await complexUseCase.delete(complex2.id, testData.organization.id, testData.adminUser.id);

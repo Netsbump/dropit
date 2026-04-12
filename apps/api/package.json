@@ -19,14 +19,14 @@
     "clean": "rm -rf dist",
     "db:create": "npx mikro-orm database:create && pnpm db:migration:up",
     "db:sync": "npx mikro-orm schema:update --run",
-    "db:fresh": "npx mikro-orm schema:fresh --seed --run --config=./src/config/mikro-orm.config.ts",
+    "db:fresh": "npx mikro-orm schema:fresh --seed --run --config=./src/modules/database/mikro-orm.config.ts",
     "db:migration:check": "npx mikro-orm migration:check",
     "db:migration:up": "npx mikro-orm migration:up",
     "db:migration:down": "npx mikro-orm migration:down",
     "db:migration:create": "npx mikro-orm migration:create",
     "db:migration:list": "npx mikro-orm migration:list",
-    "db:seed": "npx mikro-orm seeder:run --config=./src/config/mikro-orm.config.ts",
-    "db:seed:prod": "npx mikro-orm seeder:run --config=./dist/config/mikro-orm.config.js",
+    "db:seed": "npx mikro-orm seeder:run --config=./src/modules/database/mikro-orm.config.ts",
+    "db:seed:prod": "npx mikro-orm seeder:run --config=./dist/modules/database/mikro-orm.config.js",
     "test": "NODE_ENV=test jest",
     "test:watch": "NODE_ENV=test jest --watch",
     "test:unit": "NODE_ENV=test jest --testPathIgnorePatterns=src/test/",
@@ -37,7 +37,6 @@
   },
   "dependencies": {
     "@dropit/contract": "workspace:*",
-    "@dropit/permissions": "workspace:*",
     "@dropit/schemas": "workspace:*",
     "@faker-js/faker": "^9.3.0",
     "@getbrevo/brevo": "^2.5.0",
@@ -56,7 +55,7 @@
     "@nestjs/swagger": "^11.2.0",
     "@ts-rest/nest": "^3.51.0",
     "@ts-rest/open-api": "^3.51.0",
-    "better-auth": "^1.2.7",
+    "better-auth": "^1.4",
     "better-auth-mikro-orm": "^0.3.0",
     "dotenv": "^16.5.0",
     "express": "^4.21.1",
@@ -88,8 +87,8 @@
   "mikro-orm": {
     "useTsNode": true,
     "configPaths": [
-      "./src/config/mikro-orm.config.ts",
-      "./dist/config/mikro-orm.config.js"
+      "./src/modules/database/mikro-orm.config.ts",
+      "./dist/modules/database/mikro-orm.config.js"
     ]
   }
 }

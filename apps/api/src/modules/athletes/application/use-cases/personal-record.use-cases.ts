@@ -8,7 +8,7 @@ import { IPersonalRecordRepository } from '../ports/personal-record.repository.p
 import { IAthleteRepository } from '../ports/athlete.repository.port';
 import { Exercise } from '../../../training/domain/exercise.entity';
 import { IExerciseRepository } from '../../../training/application/ports/exercise.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IPersonalRecordUseCases } from '../ports/personal-record-use-cases.port';
 import {
   PersonalRecordNotFoundException,

@@ -1,6 +1,6 @@
 import { IWorkoutCategoryRepository } from '../ports/workout-category.repository.port';
-import { IMemberUseCases } from '../../../identity/application/ports/member-use-cases.port';
-import { IUserUseCases } from '../../../identity/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
 import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 import { IWorkoutCategoryUseCases } from '../ports/workout-category-use-cases.port';

@@ -1,7 +1,8 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AppModule } from '../app.module';
-import { createTestMikroOrmOptions } from '../config/mikro-orm.config';
+import { createTestMikroOrmOptions } from '../modules/database/mikro-orm.config';
+import { BrevoAdapter } from '../modules/notification/infrastructure/channels/email/brevo.adapter';
 import { setupOrganization } from './organization.integration';
 import { runExerciseTests } from './exercise.integration';
 import { runComplexTests } from './complex.integration';
@@ -23,6 +24,8 @@ describe('Integration Tests Suite', () => {
       .useFactory({
         factory: () => MikroORM.init(createTestMikroOrmOptions()),
       })
+      .overrideProvider(BrevoAdapter)
+      .useValue({ send: jest.fn() })
       .compile();
 
     orm = moduleFixture.get<MikroORM>(MikroORM);

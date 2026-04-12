@@ -2,7 +2,7 @@ import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { forwardRef, Module } from '@nestjs/common';
 
 import { AthletesModule } from '../athletes/athletes.module';
-import { IdentityModule } from '../identity/identity.module';
+import { AuthModule } from '../auth/auth.module';
 
 import { Athlete } from '../athletes/domain/athlete.entity';
 import { Workout } from './domain/workout.entity';
@@ -66,9 +66,9 @@ import { COMPLEX_CATEGORY_USE_CASES } from './application/ports/complex-category
 
 // External dependencies
 import { ATHLETE_REPO, IAthleteRepository } from '../athletes/application/ports/athlete.repository.port';
-import { USER_USE_CASES, IUserUseCases } from '../identity/application/ports/user-use-cases.port';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../identity/application/ports/member-use-cases.port';
-import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/application/ports/organization-use-cases.port';
+import { USER_USE_CASES, IUserUseCases } from '../auth/application/ports/user-use-cases.port';
+import { MEMBER_USE_CASES, IMemberUseCases } from '../auth/application/ports/member-use-cases.port';
+import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../auth/application/ports/organization-use-cases.port';
 
 @Module({
   imports: [
@@ -88,7 +88,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
       ],
     }),
     forwardRef(() => AthletesModule),
-    forwardRef(() => IdentityModule),
+    forwardRef(() => AuthModule),
   ],
   controllers: [
     TrainingSessionController,
@@ -101,7 +101,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
     WorkoutCategoryController,
   ],
   providers: [
-    // implémentations MikroORM
+    // MikroORM implementations
     MikroTrainingSessionRepository,
     MikroAthleteTrainingSessionRepository,
     MikroComplexRepository,
@@ -113,7 +113,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
     MikroWorkoutCategoryRepository,
     MikroWorkoutElementRepository,
 
-    // liaisons port -> implémentation (repositories)
+    // Port to implementation bindings (repositories)
     { provide: TRAINING_SESSION_REPO, useClass: MikroTrainingSessionRepository },
     { provide: ATHLETE_TRAINING_SESSION_REPO, useClass: MikroAthleteTrainingSessionRepository },
     { provide: COMPLEX_REPO, useClass: MikroComplexRepository },
@@ -134,7 +134,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
     WorkoutCategoryUseCase,
     WorkoutUseCases,
 
-    // liaisons port -> implémentation (use-cases)
+    // Port to implementation bindings (use-cases)
     {
       provide: TRAINING_SESSION_USE_CASES,
       useFactory: (
@@ -260,7 +260,7 @@ import { ORGANIZATION_USE_CASES, IOrganizationUseCases } from '../identity/appli
     WORKOUT_REPO,
     WORKOUT_ELEMENT_REPO,
     
-    // Ports pour les use-cases
+    // Ports for use-cases
     TRAINING_SESSION_USE_CASES,
     WORKOUT_USE_CASES,
     EXERCISE_USE_CASES,

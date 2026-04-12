@@ -45,7 +45,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
     console.log('Workout category created:', categoryToCreate);
   }
 
-  // Basé sur la séance du Lundi 17 Novembre
+  // Based on the Monday 17 November session
   const workout1 = new Workout();
   workout1.description = 'Séance technique avec variations d\'intensité';
   workout1.category = workoutCategoriesMap.Saison;
@@ -78,7 +78,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   element1.workout = workout1;
   await em.persistAndFlush(element1);
 
-  // Element 2: Complex Arraché Flexion + Flexion d'Arraché avec progression
+  // Element 2: Complex Arraché Flexion + Flexion d'Arraché with progression
   const element2 = new WorkoutElement();
   element2.type = WORKOUT_ELEMENT_TYPES.COMPLEX;
   element2.complex = complexes[1]; // Arraché Flexion + Flexion d'Arraché
@@ -117,7 +117,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   element2.workout = workout1;
   await em.persistAndFlush(element2);
 
-  // Element 3: Arraché Flexion simple
+  // Element 3: Simple Arraché Flexion
   const element3 = new WorkoutElement();
   element3.type = WORKOUT_ELEMENT_TYPES.EXERCISE;
   element3.exercise = exercisesMap['Arraché Flexion'];
@@ -166,7 +166,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   console.log('Workout 1 created:', workout1);
 
-  // Workout 2 - Basé sur Mercredi 19 Novembre
+  // Workout 2 - Based on Wednesday 19 November
   const workout2 = new Workout();
   workout2.description = 'Focus montée en charge progressive';
   workout2.category = workoutCategoriesMap.Saison;
@@ -174,7 +174,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   await em.persistAndFlush(workout2);
 
-  // Element 1: Epaulé Flexion + Jeté Fente avec 5 blocs de progression
+  // Element 1: Epaulé Flexion + Jeté Fente with 5 progression blocks
   const workout2Element1 = new WorkoutElement();
   workout2Element1.type = WORKOUT_ELEMENT_TYPES.COMPLEX;
   workout2Element1.complex = complexes[3]; // Epaulé Flexion + Jeté Fente
@@ -254,7 +254,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   workout2Element1.workout = workout2;
   await em.persistAndFlush(workout2Element1);
 
-  // Element 2: Squat Nuque simple
+  // Element 2: Simple Squat Nuque
   const workout2Element2 = new WorkoutElement();
   workout2Element2.type = WORKOUT_ELEMENT_TYPES.EXERCISE;
   workout2Element2.exercise = exercisesMap['Squat Nuque'];
@@ -280,7 +280,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   console.log('Workout 2 created:', workout2);
 
-  // Workout 3 - Simple pour la décharge
+  // Workout 3 - Simple for deload
   const workout3 = new Workout();
   workout3.description = 'Séance technique avec charges légères';
   workout3.category = workoutCategoriesMap.Décharge;
@@ -314,7 +314,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   console.log('Workout 3 created:', workout3);
 
-  // Workout 4 - Exemple 2 : Arraché Flexion avec montée progressive
+  // Workout 4 - Example 2: Arraché Flexion with progressive loading
   const workout4 = new Workout();
   workout4.description = 'Montée progressive en intensité - Arraché Flexion';
   workout4.category = workoutCategoriesMap.Saison;
@@ -322,7 +322,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   await em.persistAndFlush(workout4);
 
-  // Element 1: Arraché Flexion avec montée progressive (78%, 82%, 85%, 90%)
+  // Element 1: Arraché Flexion with progressive loading (78%, 82%, 85%, 90%)
   const workout4Element1 = new WorkoutElement();
   workout4Element1.type = WORKOUT_ELEMENT_TYPES.EXERCISE;
   workout4Element1.exercise = exercisesMap['Arraché Flexion'];
@@ -387,7 +387,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   console.log('Workout 4 created:', workout4);
 
-  // Workout 5 - Exemple 4 : Tirage Lourd d'Arraché + Arraché Flexion
+  // Workout 5 - Example 4: Tirage Lourd d'Arraché + Arraché Flexion
   const workout5 = new Workout();
   workout5.description = 'Variations de volume - Tirage Lourd d\'Arraché';
   workout5.category = workoutCategoriesMap.Saison;
@@ -449,7 +449,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   console.log('Workout 5 created:', workout5);
 
-  // Workout 6 - Exemple 6 : Complex large avec multiples exercices
+  // Workout 6 - Example 6: Large complex with multiple exercises
   const workout6 = new Workout();
   workout6.description = 'Complex complet Epaulé Debout + Squat (drop) + Epaulé Flexion + Jeté Fente';
   workout6.category = workoutCategoriesMap.Saison;

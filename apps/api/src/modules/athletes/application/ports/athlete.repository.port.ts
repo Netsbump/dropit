@@ -23,6 +23,7 @@ export interface IAthleteRepository {
   findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
   getOne(athleteId: string): Promise<Athlete | null>;
   getAll(athleteUserIds: string[]): Promise<Athlete[]>;
+  findByUserId(userId: string): Promise<Athlete | null>;
   save(athlete: Athlete): Promise<void>;
   remove(athlete: Athlete): Promise<void>;
 }

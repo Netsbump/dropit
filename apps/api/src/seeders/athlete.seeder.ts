@@ -1,28 +1,22 @@
 import { EntityManager } from '@mikro-orm/core';
 import { Athlete } from  '../modules/athletes/domain/athlete.entity';
 import { faker } from '@faker-js/faker';
-import { User } from '../modules/identity/domain/auth/user.entity';
+import { User } from '../modules/auth/domain/auth/user.entity';
 import { hashPassword } from 'better-auth/crypto';
-import { Account } from '../modules/identity/domain/auth/account.entity';
+import { Account } from '../modules/auth/domain/auth/account.entity';
 
 export async function seedAthletes(
   em: EntityManager
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
   console.log('Seeding one super admin...');
-  
-  // Créer un super admin
+
+  // Create a super admin (admin plugin role = app-level super admin)
   const superAdmin = new User();
   superAdmin.name = 'Super Admin';
   superAdmin.email = 'super.admin@gmail.com';
   superAdmin.emailVerified = true;
-  //Le champs isSuperAdmin est créé automatiquement par la config de better-auth
+  superAdmin.role = 'admin';
   await em.persistAndFlush(superAdmin);
-
-  // Mettre à jour le champs isSuperAdmin manuellement via SQL
-  await em.getConnection().execute(
-    'UPDATE "user" SET is_super_admin = true WHERE id = ?',
-    [superAdmin.id]
-  );
 
   const superAdminAccount = new Account();
   superAdminAccount.user = superAdmin;
@@ -38,19 +32,13 @@ export async function seedAthletes(
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
-  // Créer un coach
+  // Create a coach (app-level role = user) — no credential account, login via emailOTP
   const coachUser = new User();
   coachUser.name = 'Jean Dupont';
   coachUser.email = 'coach@example.com';
   coachUser.emailVerified = true;
+  coachUser.role = 'user';
   await em.persistAndFlush(coachUser);
-
-  const coachAccount = new Account();
-  coachAccount.user = coachUser;
-  coachAccount.providerId = 'credential';
-  coachAccount.accountId = coachUser.email;
-  coachAccount.password = await hashPassword('Password123!');
-  await em.persistAndFlush(coachAccount);
 
   coach = new Athlete();
   coach.firstName = 'Jean';
@@ -62,7 +50,7 @@ export async function seedAthletes(
   await em.persistAndFlush(coach);
   athletes.push(coach);
 
-  // Créer des athlètes avec faker
+  // Create athletes with faker
   const numberOfAthletes = faker.number.int({ min: 15, max: 25 });
   
   for (let i = 0; i < numberOfAthletes; i++) {
@@ -74,9 +62,10 @@ export async function seedAthletes(
     user.email = email.toLowerCase();
     user.name = `${firstName} ${lastName}`;
     user.emailVerified = true;
+    user.role = 'user';
     await em.persistAndFlush(user);
 
-    // Créer un compte avec mot de passe pour chaque athlète
+    // Create an account with password for each athlete
     const account = new Account();
     account.user = user;
     account.providerId = 'credential';

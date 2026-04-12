@@ -1,0 +1,38 @@
+# Helix configuration for using Biome (linter + formatter)
+# Biome replaces ESLint + Prettier, works alongside TypeScript LSP
+# This file takes precedence over the global Helix config
+
+# Configure Biome as a language server for linting
+[language-server.biome]
+command = "biome"
+args = ["lsp-proxy"]
+
+[[language]]
+name = "typescript"
+language-servers = ["typescript-language-server", "biome"]
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.ts"] }
+auto-format = true
+
+[[language]]
+name = "tsx"
+language-servers = ["typescript-language-server", "biome"]
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.tsx"] }
+auto-format = true
+
+[[language]]
+name = "javascript"
+language-servers = ["typescript-language-server", "biome"]
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.js"] }
+auto-format = true
+
+[[language]]
+name = "jsx"
+language-servers = ["typescript-language-server", "biome"]
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.jsx"] }
+auto-format = true
+
+[[language]]
+name = "json"
+language-servers = ["biome"]
+formatter = { command = "biome", args = ["format", "--stdin-file-path", "file.json"] }
+auto-format = true
