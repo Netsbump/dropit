@@ -15,6 +15,10 @@ import {
   MEMBER_USE_CASES,
 } from '../application/ports/member-use-cases.port';
 import {
+  IUserUseCases,
+  USER_USE_CASES,
+} from '../application/ports/user-use-cases.port';
+import {
   IAthleteUseCases,
   ATHLETE_USE_CASES,
 } from '../../athletes/application/ports/athlete-use-cases.port';
@@ -44,6 +48,7 @@ export class BetterAuthAdapter implements OnModuleInit {
     @Inject(ONBOARDING_USE_CASES) private onboardingUseCases: IOnboardingUseCases,
     @Inject(MEMBER_USE_CASES) private memberUseCases: IMemberUseCases,
     @Inject(ATHLETE_USE_CASES) private athleteUseCases: IAthleteUseCases,
+    @Inject(USER_USE_CASES) private userUseCases: IUserUseCases,
   ) { }
 
   /**
@@ -58,6 +63,15 @@ export class BetterAuthAdapter implements OnModuleInit {
     }
 
     await BetterAuthAdapter.initPromise;
+  }
+
+  /**
+   * Returns true if the email belongs to a super admin (role === 'admin').
+   * Used by the better-auth hook to restrict signIn.email to super admins only.
+   */
+  private async checkIsSuperAdminByEmail(email: string): Promise<boolean> {
+    const user = await this.userUseCases.getByEmail(email);
+    return user?.role === 'admin';
   }
 
   /**
@@ -119,6 +133,7 @@ export class BetterAuthAdapter implements OnModuleInit {
         this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type });
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
+      checkIsSuperAdminByEmail: (email) => this.checkIsSuperAdminByEmail(email),
       databaseHooks: {
         session: {
           create: {

@@ -1,5 +1,6 @@
 import { BetterAuthOptions, User, betterAuth } from "better-auth";
-import { openAPI, admin, customSession, emailOTP, EmailOTPOptions } from "better-auth/plugins";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { openAPI, admin, customSession, emailOTP, bearer, EmailOTPOptions } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "../../config/env.config";
 import { organization, Organization, Invitation } from "better-auth/plugins/organization";
@@ -26,6 +27,8 @@ interface BetterAuthDeps {
   }) => void;
   sendVerificationOTP: (data: SendVerificationOTP) => void;
   enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
+  /** Returns true if the email belongs to a super admin (role === 'admin'). */
+  checkIsSuperAdminByEmail: (email: string) => Promise<boolean>;
   databaseHooks: BetterAuthOptions["databaseHooks"];
 }
 
@@ -36,18 +39,6 @@ export function createAuthConfig(
     // === STATIC (env.config) ===
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
-    // cookies configuration HttpOnly
-    cookies: {
-      enabled: true,
-      httpOnly: true, // restrict javascript access (XSS protect)
-      secure: config.env === "production", // HTTPS in prod
-      sameSite: "lax", // CRSF protection
-      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
-    },
-    // Support bearer token only for mobile app
-    bearerToken: {
-      enabled: true,
-    },
     database: new Pool({
       connectionString: config.database.connectionStringUrl,
     }),
@@ -71,6 +62,23 @@ export function createAuthConfig(
       "/sign-up/email",
     ],
 
+    // Restrict signIn.email to super admins only (role === 'admin').
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== '/sign-in/email') return;
+
+        const body = ctx.body as { email?: string } | undefined;
+        if (!body?.email) return;
+
+        const isSuperAdmin = await deps.checkIsSuperAdminByEmail(body.email);
+        if (!isSuperAdmin) {
+          throw new APIError('FORBIDDEN', {
+            message: 'Password sign-in is restricted to admin accounts',
+          });
+        }
+      }),
+    },
+
     // === HOOKS CORE (delegate to better-auth.adapter) ===
     databaseHooks: deps.databaseHooks,
 
@@ -78,6 +86,7 @@ export function createAuthConfig(
     plugins: [
       openAPI(),
       admin(),
+      bearer(), // Support bearer token for mobile app
       emailOTP({
         disableSignUp: true,
         async sendVerificationOTP(data) {

@@ -11,9 +11,6 @@ Notifications are centralized: callers depend on **`INotificationUseCases`** (po
 **How other modules use it**  
 Same pattern as elsewhere: consumers do not reach into this module’s concrete classes. They inject **`INotificationUseCases`** into **their own** application or infrastructure code—usually a use case or an adapter—and call the appropriate method from there. HTTP controllers stay thin: they call *their* use case, and only that layer (or an adapter such as **`BetterAuthAdapter`**) talks to notifications. Examples: **`BetterAuthAdapter`** invokes `sendOtp({ email, otp, type })` for better-auth’s `emailOTP` plugin and `sendOrganizationInvitation` after organization invites; **`OnboardingUseCases`** invokes `sendRequestAccess` for coach access requests. Authentication-specific wiring (clients → plugins → channels) is sketched under [**Authentication overview**](../auth/README.md#authentication-overview) in the auth module README.
 
-**Product / roadmap**  
-SMS (`phoneNumber`), push, and admin 2FA are tracked in [`docs/task-management/001-migration-otp-notifications.md`](../../../../../docs/task-management/001-migration-otp-notifications.md).
-
 ### Flow (conceptual)
 
 ```

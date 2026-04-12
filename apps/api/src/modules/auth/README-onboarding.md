@@ -9,7 +9,7 @@ How people enter the app: who creates what, how an athlete is tied to a club, an
 | **Super admin** | Creates **clubs** (organizations) and **coach accounts**. On the API side, only a user with `user.role === 'admin'` (better-auth admin plugin) can create an organization: `allowUserToCreateOrganization` in `better-auth.config.ts`. |
 | **Coach candidate** | Does not create a club on their own. They submit a **request** via the backoffice signup form (`/signup`) → email notification to the super admin (`requestCoachAccess` / `sendRequestAccess`). |
 | **Coach** | Runs their club in the backoffice; **invites** athletes by email (organization plugin). |
-| **Athlete** | **No** self-service signup: they are **always invited** by a coach. When they click the link, they are **attached to the organization** from the invitation (see acceptance flow). Session / mobile login (OTP, etc.) is **outside** this acceptance step. |
+| **Athlete** | **No** self-service signup: they are **always invited** by a coach. When they click the link, they are **attached to the organization** from the invitation (see acceptance flow). Session / mobile login (**email OTP**) is **outside** this acceptance step — see [Auth module README](./README.md#authentication-overview). |
 
 ---
 

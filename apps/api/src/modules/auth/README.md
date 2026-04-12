@@ -65,7 +65,7 @@ auth/
 
 ## Authentication overview
 
-Clients, plugins better-auth, and OTP delivery through **NotificationModule**. Today **email OTP** and **email + password** (admin) are wired; the **phone → SMS** path is the product target but not enabled on the API yet (see `docs/task-management/001-migration-otp-notifications.md`).
+Clients, plugins better-auth, and OTP delivery through **NotificationModule**. **Email OTP** (coach + mobile) and **email + password** (super admin only; server restricts `/sign-in/email` to admin accounts) are wired. **SMS** is not used for sign-in; a future **phone number for notification preferences** (alerts by SMS) is tracked in [`docs/task-management/mobile-notification-preferences-phonenumber.md`](../../../../../docs/task-management/mobile-notification-preferences-phonenumber.md).
 
 ```mermaid
 flowchart TB
@@ -77,7 +77,6 @@ flowchart TB
     subgraph Auth[better-auth]
         EmailPassword[emailAndPassword]
         EmailOTP[emailOTP]
-        PhoneNumber[phoneNumber]
     end
 
     subgraph Notification[NotificationModule]
@@ -89,12 +88,10 @@ flowchart TB
     Web -->|Super admin| EmailPassword
     Web -->|Coach| EmailOTP
     Mobile -->|Email OTP| EmailOTP
-    Mobile -->|Phone / SMS| PhoneNumber
 
     EmailOTP --> NotificationAdapter
-    PhoneNumber --> NotificationAdapter
     NotificationAdapter --> EmailChannel
-    NotificationAdapter --> SmsChannel
+    NotificationAdapter -.->|future SMS prefs| SmsChannel
 ```
 
 ## How it works
@@ -107,7 +104,7 @@ Better-auth handles authentication (sessions, organization plugin, admin plugin,
 
 - **`BetterAuthAdapter`** initializes better-auth at startup and wires callbacks: invitation emails via `INotificationUseCases.sendOrganizationInvitation`, **OTP emails** via `INotificationUseCases.sendOtp` (from the `emailOTP` plugin’s `sendVerificationOTP`), session enrichment, and database hooks.
 
-For product status (SMS, phone plugin, mobile), see `docs/task-management/001-migration-otp-notifications.md`. For how notifications are wired (ports, invitation pipeline), see the [Notification module README](../notification/README.md).
+For roadmap tasks (deep links, SMS preferences, admin 2FA / password reset), see [`docs/task-management/deep-links-mobile-download-app.md`](../../../../../docs/task-management/deep-links-mobile-download-app.md), [`mobile-notification-preferences-phonenumber.md`](../../../../../docs/task-management/mobile-notification-preferences-phonenumber.md), [`super-admin-2fa-password-reset.md`](../../../../../docs/task-management/super-admin-2fa-password-reset.md). For how notifications are wired (ports, invitation pipeline), see the [Notification module README](../notification/README.md).
 
 ### Middleware
 
@@ -160,6 +157,7 @@ Nest `imports` and cross-module wiring (see `auth.module.ts`):
 ## Related docs
 
 - **[Hexagonal architecture](../../../../../docs/architecture-hexagonale.md)** (French) — ports & adapters, token-based injection, `useFactory`, channel vs transport composition
+- **[Task management (auth & mobile)](../../../../../docs/task-management/)** — [`deep-links-mobile-download-app.md`](../../../../../docs/task-management/deep-links-mobile-download-app.md), [`mobile-notification-preferences-phonenumber.md`](../../../../../docs/task-management/mobile-notification-preferences-phonenumber.md), [`super-admin-2fa-password-reset.md`](../../../../../docs/task-management/super-admin-2fa-password-reset.md)
 - **[Onboarding](./README-onboarding.md)** — clubs, coaches, invitations, acceptance flow
 - **[Permissions](./README-permissions.md)** — `PermissionsGuard`, `@RequirePermissions`, role matrix
 - **[Notification module](../notification/README.md)** — `NotificationRequest` / `KIND`, email channel, Maildev/Brevo; generic DI patterns in the hexagonal doc above
