@@ -2,8 +2,8 @@ import { onboardingContract } from '@dropit/contract';
 import { Controller, Inject } from '@nestjs/common';
 import { tsRestHandler, TsRestHandler } from '@ts-rest/nest';
 import { ONBOARDING_USE_CASES, IOnboardingUseCases } from '../../application/ports/onboarding-use-cases.port';
-import { InvitationException } from '../../application/exceptions/invitation.exceptions';
 import { Public } from '../../infrastructure/decorators/auth.decorator';
+import { OnboardingPresenter } from '../presenters/onboarding.presenter';
 
 const c = onboardingContract;
 
@@ -18,8 +18,12 @@ export class OnboardingController {
   @Public()
   requestCoachAccess(): ReturnType<typeof tsRestHandler<typeof c.requestCoachAccess>> {
     return tsRestHandler(c.requestCoachAccess, async ({ body }) => {
-      await this.onboardingUseCases.createCoachAccessRequest(body);
-      return { status: 202 as const, body: { accepted: true as const } };
+      try {
+        await this.onboardingUseCases.createCoachAccessRequest(body);
+        return OnboardingPresenter.presentCoachAccessAccepted();
+      } catch (error) {
+        return OnboardingPresenter.presentError(error as Error);
+      }
     });
   }
 
@@ -29,13 +33,9 @@ export class OnboardingController {
     return tsRestHandler(c.acceptInvitation, async ({ params }) => {
       try {
         await this.onboardingUseCases.acceptInvitation(params.invitationId);
-        return { status: 200 as const, body: { joined: true as const } };
+        return OnboardingPresenter.presentInvitationAccepted();
       } catch (error) {
-        if (error instanceof InvitationException) {
-          const status = error.statusCode === 410 ? 410 as const : 404 as const;
-          return { status, body: { message: error.message } };
-        }
-        throw error;
+        return OnboardingPresenter.presentError(error as Error);
       }
     });
   }
