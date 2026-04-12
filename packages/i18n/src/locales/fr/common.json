@@ -44,6 +44,16 @@
       "help": "Aide",
       "logout": "Déconnexion"
     },
+    "logout": {
+      "success": {
+        "title": "Déconnexion réussie",
+        "description": "Vous avez été déconnecté avec succès."
+      },
+      "error": {
+        "title": "Problème de déconnexion",
+        "description": "Vous avez été déconnecté mais une erreur s'est produite côté serveur."
+      }
+    },
     "sections": {
       "application": "Application"
     }

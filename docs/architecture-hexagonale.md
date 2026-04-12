@@ -1,5 +1,7 @@
 # Architecture Hexagonale dans DropIt
 
+Ce document est la **référence française** pour les patterns transverses de l’API (ports, adapters, injection Nest avec tokens, `useFactory`, découpage canal/transport). Les README des modules (ex. notification, auth) renvoient ici pour la théorie et gardent les détails propres au module.
+
 ## Vue d'ensemble
 
 DropIt utilise une approche inspirée de l'architecture hexagonale (aussi appelée "Ports & Adapters") pour isoler la **logique métier** des **frameworks et infrastructures**.
@@ -53,6 +55,13 @@ modules/
         └── presenters/
             └── athlete.presenter.ts         # DTO → Réponse HTTP
 ```
+
+### Règle de placement (application / infrastructure / interface)
+
+- **`application/`** : ports (contrats), use-cases sans décorateurs Nest, types et exceptions métier. Aucune dépendance à NestJS, à l’ORM ni aux SDK externes.
+- **`infrastructure/`** : implémentations des ports sortants (`@Injectable()`, `@Inject()`, accès base de données, APIs tierces, email, etc.).
+- **`interface/`** : adaptateurs entrants (controllers, mappers, presenters).
+- **`*Module` Nest** : composition uniquement — enregistre les `providers`, `useFactory` / `useClass`, et relie chaque **token** (`Symbol`) à son implémentation.
 
 ---
 
@@ -260,6 +269,63 @@ export class AthleteUseCases { // <- Pur TypeScript !
 }
 ```
 **Avantage** : On contrôle la création de l'instance et on injecte les dépendances manuellement.
+
+### Composition d’adaptateurs sortants : port → canal → transport
+
+Parfois un seul adapter ne suffit pas : on découpe en **plusieurs responsabilités**, chacune derrière un petit contrat.
+
+- **Port sortant large** : ce que le use-case voit (ex. « envoyer une notification »).
+- **Canal** : traduit une demande métier en message adapté au médium (ex. construire un email HTML à partir d’un `NotificationRequest`).
+- **Transport** : envoie réellement le message avec une technologie précise (ex. SMTP local en dev, API HTTP en prod).
+
+Le use-case et les ports **application** ne choisissent pas Maildev vs Brevo : ce choix vit dans une **factory** enregistrée dans le module (voir ci-dessous). Exemple concret dans le dépôt : module **notification** — `INotificationPort` / `NotificationAdapter`, canaux email/SMS/push, et `EMAIL_TRANSPORT` pour Brevo ou Maildev.
+
+```mermaid
+flowchart LR
+  useCase[UseCase]
+  notifPort[INotificationPort]
+  notifAdapter[NotificationAdapter]
+  emailChannel[IEmailChannel]
+  emailAdapter[EmailAdapter]
+  transport[IEmailTransport]
+  brevo[BrevoAdapter]
+  maildev[MaildevAdapter]
+
+  useCase --> notifPort
+  notifPort --> notifAdapter
+  notifAdapter --> emailChannel
+  emailChannel --> emailAdapter
+  emailAdapter --> transport
+  transport --> brevo
+  transport --> maildev
+```
+
+### Factory pilotée par l’environnement
+
+Quand l’implémentation dépend du **contexte d’exécution** (dev, test, prod), un `useFactory` sans dépendances injectées, ou avec la config, permet de retourner la bonne classe **sans** que les adapters métier contiennent de `if (env === 'production')`.
+
+Pattern typique dans un `@Module` :
+
+```typescript
+{
+  provide: EMAIL_TRANSPORT,
+  useFactory: (): IEmailTransport => {
+    if (config.env !== 'production') {
+      return new MaildevAdapter(/* … */);
+    }
+    if (!config.email.brevo.apiKey) {
+      throw new Error('BREVO_API_KEY is required in production');
+    }
+    return new BrevoAdapter(/* … */);
+  },
+}
+```
+
+Les adapters (canal) reçoivent uniquement `IEmailTransport` via `@Inject(EMAIL_TRANSPORT)` : ils restent testables et découplés du fournisseur concret.
+
+### Fail-fast au démarrage
+
+Pour l’infra **indispensable** (clés API, URLs, secrets), il est préférable de **faire échouer le bootstrap** de l’application si la configuration est invalide, plutôt que de découvrir l’erreur au premier envoi en production. Les `useFactory` du module sont un endroit naturel pour ces validations.
 
 ---
 
@@ -500,6 +566,7 @@ export class MyFeatureModule {}
 - [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/)
 - [NestJS Dependency Injection](https://docs.nestjs.com/fundamentals/custom-providers)
 - [Clean Architecture (Robert C. Martin)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- Exemple appliqué dans le dépôt : [module notification](../apps/api/src/modules/notification/README.md) (flux métier, canaux, wiring Nest)
 
 ---
 
@@ -518,5 +585,8 @@ export class MyFeatureModule {}
 - `workout-use-cases` (à refactoriser)
 - `training-session-use-cases` (à refactoriser)
 
-**Identity Module :**
-- En attente (use-cases utilisés comme services internes pour l'instant)
+**Notification Module :**
+- Ports IN/OUT, use-case pur, adapters canaux + factory transport (Maildev / Brevo) ✅ — voir [apps/api/src/modules/notification/README.md](../apps/api/src/modules/notification/README.md)
+
+**Auth Module :**
+- Structure hexagonale en place (ports, use-cases, adapters better-auth, repositories MikroORM) ; affinages et alignement avec le reste du monorepo en cours selon les besoins produit (OTP, organisations, etc.)

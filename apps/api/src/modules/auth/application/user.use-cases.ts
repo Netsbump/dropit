@@ -27,10 +27,15 @@ export class UserUseCases implements IUserUseCases {
   }
 
   async getByEmail(email: string): Promise<User | null> {
-    const user = await this.userRepository.getByEmail(email);
-    if (!user) {
-      throw new Error(`User with email ${email} not found`);
-    }
+    return await this.userRepository.getByEmail(email);
+  }
+
+  async create(data: { name: string; email: string; emailVerified: boolean }): Promise<User> {
+    const user = new User();
+    user.name = data.name;
+    user.email = data.email;
+    user.emailVerified = data.emailVerified;
+    await this.userRepository.save(user);
     return user;
   }
 

@@ -1,16 +1,18 @@
-import { PLATFORM } from '../outbound/notification.port'
+import { RequestAccess } from "@dropit/schemas";
 
-export type SendInvitationParams = {
+export type OrganizationInvitationParams = {
   organizationId: string;
   organizationName: string;
   email: string;
   invitedBy: string;
   invitationToken: string;
+  isNewUser: boolean;
+  hasOtherOrganization: boolean;
 }
 
-export type SendOtpParams =
-  | { origin: typeof PLATFORM.WEB, otp: string, email: string, type: 'sign-in' | 'email-verification' }
-  | { origin: typeof PLATFORM.MOBILE, otp: string, phoneNumber: string };
+export type OtpParams =
+  | { otp: string, email: string, type: 'sign-in' | 'email-verification' | 'forget-password' }
+  | { otp: string, phoneNumber: string };
 
 /**
  * Notification Use Cases Port (Port IN)
@@ -26,25 +28,31 @@ export type SendOtpParams =
  * via dependency injection.
  */
 export interface INotificationUseCases {
+
   /**
    * Send an invitation email to join an organization
    *
    * @description
    * Business logic:
+   * - If user exist
    * - If user exists: sends email + push notification
    * - If user doesn't exist: sends email only with signup link
    */
-  sendInvitation(params: SendInvitationParams
-  ): Promise<void>;
+  sendOrganizationInvitation(params: OrganizationInvitationParams): Promise<void>;
 
   /** 
    * Send a one-time password (OTP) code
    *
    * @description
    */
-  sendOtp(params: SendOtpParams
-  ): Promise<void>;
+  sendOtp(params: OtpParams): Promise<void>
+
+  /**
+   * Send a notification to super admin to new request access from backoffice form
+   */
+  sendRequestAccess(params: RequestAccess): Promise<void>;
 }
+
 
 /**
  * Injection token for INotificationUseCases

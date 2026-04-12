@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
 import { useMutation } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -7,9 +7,9 @@ import { z } from 'zod';
 import { useNavigate } from '@tanstack/react-router';
 import { api } from '@/lib/api';
 import { authClient } from '@/lib/auth-client';
-import { toast } from '@/shared/hooks/use-toast';
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import { toast } from '@/hooks/use-toast';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Form,
   FormControl,
@@ -17,23 +17,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/shared/components/ui/form';
+} from '@/components/ui/form';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog';
-import { Alert, AlertDescription, AlertTitle } from '@/shared/components/ui/alert';
+} from '@/components/ui/dialog';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
-
-const getDeleteAccountSchema = (t: (key: string) => string) =>
-  z.object({
-    email: z.string().email({ message: t('common:validation.emailRequired') }),
-    password: z.string().min(1, { message: t('common:validation.passwordRequired') }),
-    confirmation: z.string().min(1, { message: t('common:validation.confirmationRequired') }),
-  });
 
 type DeleteAccountFormData = {
   email: string;
@@ -46,7 +39,11 @@ export function DangerZoneSection() {
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const deleteAccountSchema = getDeleteAccountSchema(t);
+  const deleteAccountSchema = useMemo(() => z.object({
+    email: z.string().email({ message: t('common:validation.emailRequired') }),
+    password: z.string().min(1, { message: t('common:validation.passwordRequired') }),
+    confirmation: z.string().min(1, { message: t('common:validation.confirmationRequired') }),
+  }), [t]);
 
   const form = useForm<DeleteAccountFormData>({
     resolver: zodResolver(deleteAccountSchema),

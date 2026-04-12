@@ -192,6 +192,11 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athlete;
   }
 
+  async getAthleteId(userId: string): Promise<string | null> {
+    const athlete = await this.athleteRepository.findByUserId(userId);
+    return athlete?.id ?? null;
+  }
+
   async delete(idAthlete: string, userId: string): Promise<void> {
     //1. Get Athlete
     const athlete = await this.athleteRepository.getOne(idAthlete);

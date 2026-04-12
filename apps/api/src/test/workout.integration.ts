@@ -224,6 +224,10 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
                 order: 1,
                 numberOfSets: 3,
                 rest: 60,
+                intensity: {
+                  percentageOfMax: 75,
+                  type: 'percentage' as const,
+                },
                 exercises: [
                   {
                     exerciseId: exercise1.id,

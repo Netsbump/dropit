@@ -85,6 +85,6 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
   ],
 
   // What other modules can inject
-  exports: [ATHLETE_REPO, COMPETITOR_STATUS_REPO, PERSONAL_RECORD_REPO],
+  exports: [ATHLETE_REPO, COMPETITOR_STATUS_REPO, PERSONAL_RECORD_REPO, ATHLETE_USE_CASES],
 })
 export class AthletesModule {}

@@ -1,8 +1,11 @@
 import { BetterAuthOptions, User, betterAuth } from "better-auth";
-import { openAPI, admin, customSession } from "better-auth/plugins";
+import { createAuthMiddleware, APIError } from "better-auth/api";
+import { openAPI, admin, customSession, emailOTP, bearer, EmailOTPOptions } from "better-auth/plugins";
 import { Pool } from "pg";
 import { config } from "../../config/env.config";
 import { organization, Organization, Invitation } from "better-auth/plugins/organization";
+
+export type SendVerificationOTP = Parameters<EmailOTPOptions["sendVerificationOTP"]>[0];
 
 /** Context passed by customSession plugin (user + session from DB) */
 export interface CustomSessionContext {
@@ -17,17 +20,16 @@ export interface EnrichedSessionResult {
 }
 
 interface BetterAuthDeps {
-  sendVerificationEmail?: (
-    data: { user: User; url: string; token: string },
-    request: Request | undefined
-  ) => Promise<void>;
   afterCreateInvitation: (data: {
     invitation: Invitation;
     inviter: User;
     organization: Organization;
-  }) => Promise<void>;
+  }) => void;
+  sendVerificationOTP: (data: SendVerificationOTP) => void;
   enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
-  databaseHooks?: BetterAuthOptions["databaseHooks"];
+  /** Returns true if the email belongs to a super admin (role === 'admin'). */
+  checkIsSuperAdminByEmail: (email: string) => Promise<boolean>;
+  databaseHooks: BetterAuthOptions["databaseHooks"];
 }
 
 export function createAuthConfig(
@@ -37,58 +39,67 @@ export function createAuthConfig(
     // === STATIC (env.config) ===
     secret: config.betterAuth.secret,
     trustedOrigins: config.betterAuth.trustedOrigins,
-    // cookies configuration HttpOnly
-    cookies: {
-      enabled: true,
-      httpOnly: true, // restrict javascript access (XSS protect)
-      secure: config.env === "production", // HTTPS in prod
-      sameSite: "lax", // CRSF protection
-      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
-    },
-    // Support bearer token only for mobile app
-    bearerToken: {
-      enabled: true,
-    },
     database: new Pool({
       connectionString: config.database.connectionStringUrl,
     }),
     advanced: {
       database: {
-        generateId: false, // Fix for Better Auth 1.2.7 - new synthax
+        generateId: false,
       },
     },
     rateLimit: {
       window: 50,
       max: 100,
     },
-
-    // === CALLBACKS (delegate to better-auth.adapter) ===
     emailAndPassword: {
       enabled: true,
+      disableSignUp: true,
     },
-    emailVerification: {
-      sendOnSignUp: true,
-      expiresIn: 60 * 60 * 24 * 10, // 10 days
-      sendVerificationEmail: async (data, request) => {
-        if (!deps?.sendVerificationEmail) return;
-        return deps?.sendVerificationEmail?.(data, request);
-      },
+    // Disable unused routes to reduce attack surface and prevent email enumeration
+    disabledPaths: [
+      "/email-otp/check-verification-otp",
+      "/email-otp/verify-email",
+      "/sign-up/email",
+    ],
+
+    // Restrict signIn.email to super admins only (role === 'admin').
+    hooks: {
+      before: createAuthMiddleware(async (ctx) => {
+        if (ctx.path !== '/sign-in/email') return;
+
+        const body = ctx.body as { email?: string } | undefined;
+        if (!body?.email) return;
+
+        const isSuperAdmin = await deps.checkIsSuperAdminByEmail(body.email);
+        if (!isSuperAdmin) {
+          throw new APIError('FORBIDDEN', {
+            message: 'Password sign-in is restricted to admin accounts',
+          });
+        }
+      }),
     },
 
-    // === HOOKS (delegate to better-auth.adapter) ===
+    // === HOOKS CORE (delegate to better-auth.adapter) ===
     databaseHooks: deps.databaseHooks,
 
     // === PLUGINS ===
     plugins: [
       openAPI(),
       admin(),
+      bearer(), // Support bearer token for mobile app
+      emailOTP({
+        disableSignUp: true,
+        async sendVerificationOTP(data) {
+          deps.sendVerificationOTP(data);
+        }
+      }),
       organization({
         allowUserToCreateOrganization: async (user) => {
           return user.role === 'admin';
         },
         organizationHooks: {
           afterCreateInvitation: async (data) => {
-            await deps.afterCreateInvitation(data);
+            deps.afterCreateInvitation(data);
           },
         },
       }),

@@ -1,11 +1,9 @@
 import { userContract } from '@dropit/contract';
 import {
   Controller,
-  UseGuards,
   Inject,
 } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { AuthGuard } from '../../infrastructure/guards/auth.guard';
 import { AuthenticatedUser, CurrentUser } from '../../infrastructure/decorators/auth.decorator';
 import { IUserUseCases, USER_USE_CASES } from '../../application/ports/user-use-cases.port';
 import { UserMapper } from '../mappers/user.mapper';
@@ -32,7 +30,7 @@ export class UserController {
   constructor(
     @Inject(USER_USE_CASES)
     private readonly userUseCases: IUserUseCases,
-  ) {}
+  ) { }
 
   /**
    * Get current user profile.

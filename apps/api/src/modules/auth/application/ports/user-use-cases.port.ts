@@ -15,9 +15,14 @@ export interface IUserUseCases {
   getOne(userId: string): Promise<User>;
 
   /**
-   * Get user by email
+   * Get user by email, returns null if not found
    */
   getByEmail(email: string): Promise<User | null>;
+
+  /**
+   * Create a new user
+   */
+  create(data: { name: string; email: string; emailVerified: boolean }): Promise<User>;
 
   /**
    * Update user

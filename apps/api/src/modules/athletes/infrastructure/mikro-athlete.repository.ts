@@ -115,6 +115,10 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
     return await this.em.findOne(Athlete, { id: athleteId }, { populate: ['user.id'] });
   }
 
+  async findByUserId(userId: string): Promise<Athlete | null> {
+    return await this.em.findOne(Athlete, { user: { id: userId } });
+  }
+
   async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
     return await this.em.find(Athlete, { id: { $in: athleteUserIds } }, { populate: ['user.id'] });
   }

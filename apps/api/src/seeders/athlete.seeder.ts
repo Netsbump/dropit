@@ -32,20 +32,13 @@ export async function seedAthletes(
   const athletes: Athlete[] = [];
   let coach: Athlete | null = null;
 
-  // Create a coach (app-level role = user)
+  // Create a coach (app-level role = user) — no credential account, login via emailOTP
   const coachUser = new User();
   coachUser.name = 'Jean Dupont';
   coachUser.email = 'coach@example.com';
   coachUser.emailVerified = true;
   coachUser.role = 'user';
   await em.persistAndFlush(coachUser);
-
-  const coachAccount = new Account();
-  coachAccount.user = coachUser;
-  coachAccount.providerId = 'credential';
-  coachAccount.accountId = coachUser.email;
-  coachAccount.password = await hashPassword('Password123!');
-  await em.persistAndFlush(coachAccount);
 
   coach = new Athlete();
   coach.firstName = 'Jean';

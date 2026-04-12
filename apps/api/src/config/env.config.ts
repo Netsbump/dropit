@@ -40,10 +40,19 @@ export const configValidationSchema = z.object({
   BETTER_AUTH_SECRET: z.string(),
   TRUSTED_ORIGINS: z.string().transform((val) => val.split(',')),
 
+  // Email sender (shared across providers)
+  EMAIL_FROM_EMAIL: z.string().default('levasseur.sten@gmail.com'),
+  EMAIL_FROM_NAME: z.string().default('Dropit'),
+
   // Email (Brevo)
   BREVO_API_KEY: z.string().optional(),
-  BREVO_FROM_EMAIL: z.string().default('levasseur.sten@gmail.com'),
-  BREVO_FROM_NAME: z.string().default('Dropit'),
+
+  // Email (Maildev)
+  MAILDEV_HOST: z.string().default('localhost'),
+  MAILDEV_SMTP_PORT: z.coerce.number().default(1025),
+  MAILDEV_WEB_PORT: z.coerce.number().default(1080),
+  MAILDEV_USER: z.string().optional(),
+  MAILDEV_PASS: z.string().optional(),
 });
 
 export type ConfigSchema = z.infer<typeof configValidationSchema>;
@@ -77,8 +86,19 @@ export const config = {
     connectionStringUrl: `postgresql://${configParsed.data.DB_USER}:${configParsed.data.DB_PASSWORD}@${configParsed.data.DB_HOST}:${configParsed.data.DB_PORT}/${configParsed.data.DB_NAME}`,
   },
   email: {
-    brevoApiKey: configParsed.data.BREVO_API_KEY,
-    fromEmail: configParsed.data.BREVO_FROM_EMAIL,
-    fromName: configParsed.data.BREVO_FROM_NAME,
+    sender: {
+      fromEmail: configParsed.data.EMAIL_FROM_EMAIL,
+      fromName: configParsed.data.EMAIL_FROM_NAME,
+    },
+    brevo: {
+      apiKey: configParsed.data.BREVO_API_KEY,
+    },
+    maildev: {
+      host: configParsed.data.MAILDEV_HOST,
+      smtpPort: configParsed.data.MAILDEV_SMTP_PORT,
+      webPort: configParsed.data.MAILDEV_WEB_PORT,
+      user: configParsed.data.MAILDEV_USER,
+      pass: configParsed.data.MAILDEV_PASS,
+    },
   },
 } as const;

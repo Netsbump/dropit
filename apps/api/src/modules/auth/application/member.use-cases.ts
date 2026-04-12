@@ -75,14 +75,24 @@ export class MemberUseCases implements IMemberUseCases {
    * @returns Filter conditions for MikroORM
   */
   async getCoachFilterConditions(organizationId: string): Promise<CoachFilterConditions> {
-  const coachUserIds = await this.getCoachUserIds(organizationId);
-  
-  return {
-    $or: [
-      { createdBy: null }, // Public entities
-      { createdBy: { id: { $in: coachUserIds } } }, // Entities created by coaches
-    ],
-  };
- }
+    const coachUserIds = await this.getCoachUserIds(organizationId);
 
+    return {
+      $or: [
+        { createdBy: null }, // Public entities
+        { createdBy: { id: { $in: coachUserIds } } }, // Entities created by coaches
+      ],
+    };
+  }
+
+  async getActiveOrganizationId(userId: string): Promise<string | null> {
+    const member = await this.memberRepository.findByUserId(userId);
+    return member?.organization.id ?? null;
+  }
+
+  async getMemberRole(userId: string, organizationId: string): Promise<string | null> {
+    const member = await this.memberRepository.findByUserId(userId);
+    if (!member || member.organization.id !== organizationId) return null;
+    return member.role;
+  }
 }

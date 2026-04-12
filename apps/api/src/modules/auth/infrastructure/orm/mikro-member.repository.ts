@@ -43,7 +43,19 @@ export class MikroMemberRepository extends EntityRepository<Member> implements I
         organization: { id: organizationId },
         role: 'member'
       });
-      
+
       return !!member;
+  }
+
+  async findByUserId(userId: string): Promise<Member | null> {
+    return await this.em.findOne(Member, { user: { id: userId } });
+  }
+
+  async save(member: Member): Promise<void> {
+    await this.em.persistAndFlush(member);
+  }
+
+  async remove(member: Member): Promise<void> {
+    await this.em.removeAndFlush(member);
   }
 }

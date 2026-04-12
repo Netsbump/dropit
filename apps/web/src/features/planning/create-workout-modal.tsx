@@ -3,8 +3,8 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from '@/shared/components/ui/dialog';
-import { Steps } from '@/shared/components/ui/steps';
+} from '@/components/ui/dialog';
+import { Steps } from '@/components/ui/steps';
 import { useTranslation } from '@dropit/i18n';
 import { CreateWorkout } from '@dropit/schemas';
 import { format } from 'date-fns';

@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import * as SibApiV3Sdk from '@getbrevo/brevo';
-import { config } from '../../../../../config/env.config';
 import { EmailData, IEmailTransport } from './email-channel.port';
 import { EmailSendFailedException } from '../../exceptions/infrastructure.exceptions';
 
@@ -12,19 +11,17 @@ import { EmailSendFailedException } from '../../exceptions/infrastructure.except
  */
 @Injectable()
 export class BrevoAdapter implements IEmailTransport {
-  private readonly fromEmail = config.email.fromEmail;
-  private readonly fromName = config.email.fromName;
   private brevoApi: SibApiV3Sdk.TransactionalEmailsApi;
 
-  constructor() {
-    if (!config.email.brevoApiKey) {
-      throw new Error('BREVO_API_KEY is required for BrevoAdapter');
-    }
-
+  constructor(
+    private readonly apiKey: string,
+    private readonly fromEmail: string,
+    private readonly fromName: string,
+  ) {
     this.brevoApi = new SibApiV3Sdk.TransactionalEmailsApi();
     this.brevoApi.setApiKey(
       SibApiV3Sdk.TransactionalEmailsApiApiKeys.apiKey,
-      config.email.brevoApiKey
+      this.apiKey
     );
     console.log('📧 [BrevoAdapter] Initialized with Brevo API');
   }

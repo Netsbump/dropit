@@ -1,13 +1,13 @@
-import { Button } from '@/shared/components/ui/button';
-import { Input } from '@/shared/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/shared/components/ui/select';
-import { Separator } from '@/shared/components/ui/separator';
+} from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { ComplexCategoryDto } from '@dropit/schemas';
 import { useTranslation } from '@dropit/i18n';
 import { Search } from 'lucide-react';

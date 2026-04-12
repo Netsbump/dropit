@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
+import { getSession } from '@/features/auth/auth-queries';
 
 export const Route = createFileRoute('/')({
   beforeLoad: async () => {
-    // Route racine : toujours rediriger vers login
-    // C'est la route /login qui gérera la redirection si l'utilisateur est déjà connecté
-    throw redirect({ to: '/login' });
+    const { data: session } = await getSession();
+    throw redirect({ to: session ? '/dashboard' : '/login' });
   },
 });

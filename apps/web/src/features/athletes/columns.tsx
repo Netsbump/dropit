@@ -2,14 +2,14 @@ import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from '@/shared/components/ui/avatar';
-import { Badge } from '@/shared/components/ui/badge';
-import { Checkbox } from '@/shared/components/ui/checkbox';
+} from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
 import { AthleteDetailsDto } from '@dropit/schemas';
 import { ColumnDef } from '@tanstack/react-table';
 import { Mars, Venus } from 'lucide-react';
-import { getLevelBadgeVariant } from '@/shared/utils';
+import { getLevelBadgeVariant } from '@/utils';
 
 export const columns: ColumnDef<AthleteDetailsDto>[] = [
   {
