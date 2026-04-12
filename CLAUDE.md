@@ -22,7 +22,7 @@ The API follows Clean Architecture with domain-driven design:
 - `interface/` - Controllers, mappers, and presenters
 
 Main modules:
-- `identity/` - Authentication and organization management using better-auth
+- `auth/` - Authentication and organization management using better-auth
 - `athletes/` - Athlete profiles, competitor status, personal records
 - `training/` - Exercises, complexes, workouts, training sessions
 - `core/` - Database, email, and media services

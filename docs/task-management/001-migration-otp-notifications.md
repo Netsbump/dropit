@@ -1,197 +1,194 @@
-# Plan Migration Auth OTP (emailOTP + phoneNumber)
+# Migration auth OTP & notifications — suivi
 
-## Contexte
+Document de **suivi** (état réel du dépôt + reste à faire). Diagramme d’ensemble (clients → better-auth → notifications) : section **Authentication overview** du [`README du module auth`](../../apps/api/src/modules/auth/README.md). Module notifications (ports, exemple invitation) : [`apps/api/src/modules/notification/README.md`](../../apps/api/src/modules/notification/README.md).
 
-Actuellement : authentification **email + password** pour tous, avec **emailVerification** par lien.
+## Déjà en place
 
-Cible :
+- **Backend better-auth** : plugin `emailOTP`, callback `sendVerificationOTP` branché sur `INotificationUseCases.sendOtp()` avec `{ email, otp, type }` depuis `BetterAuthAdapter` (`apps/api/src/modules/auth/infrastructure/better-auth.adapter.ts`).
+- **Config** : `emailAndPassword` conservé pour les comptes avec mot de passe ; `emailOTP` avec `disableSignUp: true` ; certaines routes désactivées via `disabledPaths` dans `better-auth.config.ts` (réduire la surface d’attaque).
+- **Notifications** : un seul use case `sendOtp` avec un type union (email **ou** numéro prévu pour plus tard) ; routage email dans `NotificationAdapter` pour l’OTP par email.
+- **Web (backoffice)** : client `emailOTPClient` ; flux coach en OTP (`login-otp-form`, `login-email-form`, etc.) et volet **admin** séparé en mot de passe (`login-admin-form`, route dédiée).
+- **Invitation athlète** : à l’invitation, `prepareUserForInvitation` peut **créer l’utilisateur** (sans parcours signup web classique) ; l’acceptation sur le web passe par l’**API onboarding** ts-rest, pas par `acceptInvitation` better-auth (voir [`README-onboarding.md`](../../apps/api/src/modules/auth/README-onboarding.md)).
 
-- **Super admin** : garder email + password (plus sécurisé)
-- **Coachs (backoffice)** : email OTP
-- **Athlètes (app mobile)** : au choix, email OTP **ou** phone OTP (SMS)
+## Pas fait ou partiel
 
-## Architecture cible
+- **Plugin `phoneNumber` better-auth** : non activé ; pas de champs `phoneNumber` / `phoneNumberVerified` sur l’entité `User` ni migration associée.
+- **SMS** : `SmsAdapter` lève encore `NotificationServiceNotConfiguredException` ; pas d’envoi réel (Twilio ou autre) branché sur `sendOtp` avec `phoneNumber`.
+- **App mobile** : flux OTP email / téléphone côté client mobile à aligner sur la cible (si l’app existe dans le repo, à vérifier fichier par fichier).
+- **2FA / OTP après mot de passe pour super admin** : non implémenté ; aujourd’hui le login admin est **email + mot de passe** uniquement (voir formulaire admin web).
+- **Restriction stricte** « seuls les super admins peuvent utiliser `signIn.email` » : pas de garde serveur dédiée documentée dans le code ; mitigation actuelle surtout **UX** (routes / formulaires séparés).
 
-```mermaid
-flowchart TB
-    subgraph Clients
-        Web[Backoffice Web]
-        Mobile[App Mobile]
-    end
+## Ordre suggéré pour la suite
 
-    subgraph Auth[better-auth]
-        EmailPassword[emailAndPassword]
-        EmailOTP[emailOTP]
-        PhoneNumber[phoneNumber]
-    end
+1. Champs utilisateur + migration + plugin `phoneNumber` si le produit veut le login par SMS.
+2. Implémenter l’envoi SMS (Twilio ou mock dev) dans `SmsAdapter` et tests d’intégration minimaux.
+3. Mobile : mêmes primitives client que le web (`emailOTPClient`, puis `phoneNumberClient` quand le backend est prêt).
+4. Optionnel : 2FA admin ou hook serveur pour limiter `signIn.email` aux rôles admin.
 
-    subgraph Notification[NotificationModule]
-        NotificationAdapter[NotificationAdapter]
-        EmailChannel[EmailAdapter]
-        SmsChannel[SmsAdapter]
-    end
+## Liens utiles
 
-    Web -->|Super admin| EmailPassword
-    Web -->|Coach| EmailOTP
-    Mobile -->|Choix email| EmailOTP
-    Mobile -->|Choix téléphone| PhoneNumber
+- [Better-auth — Email OTP](https://www.better-auth.com/docs/plugins/email-otp)
+- [Better-auth — Phone Number](https://www.better-auth.com/docs/plugins/phone-number)
 
-    EmailOTP --> NotificationAdapter
-    PhoneNumber --> NotificationAdapter
-    NotificationAdapter --> EmailChannel
-    NotificationAdapter --> SmsChannel
+
+---
+
+
+## Deep Links - Invitations Mobile
+
+### Concept
+
+Un **deep link** est une URL spéciale qui ouvre directement une application mobile installée sur le device, à une page spécifique avec des paramètres.
+
+**Format** : `dropit://accept-invitation/abc123xyz`
+
+### Comment ça marche ?
+
+#### 1. Configuration App Mobile
+
+Dans le fichier de configuration de l'app (iOS/Android), on déclare un **URL scheme** :
+
+```xml
+<!-- iOS: Info.plist -->
+<key>CFBundleURLTypes</key>
+<array>
+  <dict>
+    <key>CFBundleURLSchemes</key>
+    <array>
+      <string>dropit</string>
+    </array>
+  </dict>
+</array>
+
+<!-- Android: AndroidManifest.xml -->
+<intent-filter>
+  <action android:name="android.intent.action.VIEW" />
+  <category android:name="android.intent.category.DEFAULT" />
+  <category android:name="android.intent.category.BROWSABLE" />
+  <data android:scheme="dropit" android:host="accept-invitation" />
+</intent-filter>
 ```
 
-## Fichiers clés
+#### 2. Email d'Invitation (Nouveau User)
 
-| Fichier | Rôle |
-|---------|------|
-| `apps/api/src/modules/auth/better-auth.config.ts` | Config better-auth (ajouter plugins) |
-| `apps/api/src/modules/auth/infrastructure/better-auth.adapter.ts` | Injection des callbacks OTP |
-| `apps/api/src/modules/auth/domain/auth/user.entity.ts` | Entity User (ajouter `phoneNumber`, `phoneNumberVerified`) |
-| `apps/api/src/modules/notification/application/use-cases/notification.use-cases.ts` | sendOtp déjà prêt (WEB/MOBILE) |
-| `apps/api/src/modules/notification/infrastructure/channels/sms/sms.adapter.ts` | À implémenter (Twilio) |
-| `apps/web/src/lib/auth-client.ts` | Client auth web (ajouter emailOTPClient) |
-| `apps/web/src/shared/components/auth/login-form.tsx` | Remplacer par flow OTP pour coachs |
-| `apps/mobile/src/lib/auth-client.ts` | Client auth mobile (ajouter emailOTPClient + phoneNumberClient) |
+Le coach invite `john@example.com` qui n'a PAS de compte.
 
----
+**Email envoyé** :
+```html
+<p>Vous êtes invité à rejoindre [Nom du Club]</p>
 
-## Phase 1 : Base de données
+<!-- Bouton principal -->
+<a href="https://dropit.com/invite/abc123xyz">
+  Accepter l'invitation
+</a>
+```
 
-- [ ] Ajouter à `User` entity :
-  - `phoneNumber?: string` (nullable, unique, format E.164)
-  - `phoneNumberVerified?: boolean`
-- [ ] Le plugin `phoneNumber` de better-auth requiert ces champs. Créer une migration MikroORM.
-- [ ] Exécuter les migrations better-auth pour les tables OTP (`npx @better-auth/cli migrate` ou `generate`).
+#### 3. Landing Page Web (https://dropit.com/invite/{token})
 
----
+Quand l'user clique sur le lien email, il arrive sur une **landing page web** :
 
-## Phase 2 : Backend - better-auth
+```
+┌────────────────────────────┐
+│  Vous êtes invité !        │
+│                            │
+│  [ Ouvrir l'app mobile ]  │  ← Bouton avec deep link
+│                            │
+│  Pas l'app ?               │
+│  [ Télécharger iOS ]       │  ← App Store
+│  [ Télécharger Android ]   │  ← Play Store
+└────────────────────────────┘
+```
 
-### 2.1 Config better-auth
+**Code de la landing page** :
+```typescript
+// Page: /invite/[token]
+export default function InvitePage({ token }: { token: string }) {
+  const handleOpenApp = () => {
+    // Tenter d'ouvrir l'app
+    window.location.href = `dropit://accept-invitation/${token}`;
 
-Dans `better-auth.config.ts` :
+    // Si l'app ne s'ouvre pas après 2s, proposer le téléchargement
+    setTimeout(() => {
+      setShowDownload(true);
+    }, 2000);
+  };
 
-- [ ] **Garder** `emailAndPassword: { enabled: true }` (super admin)
-- [ ] **Garder** `emailVerification` (ou optionnellement `overrideDefaultEmailVerification: true` dans emailOTP pour tout passer en OTP)
-- [ ] **Ajouter** plugin `emailOTP` avec :
-  - `sendVerificationOTP` → délègue à `BetterAuthDeps.sendVerificationOTP`
-  - `otpLength: 6`, `expiresIn: 300`, `allowedAttempts: 3`
-- [ ] **Ajouter** plugin `phoneNumber` avec :
-  - `sendOTP` → délègue à `BetterAuthDeps.sendPhoneOTP`
-  - `signUpOnVerification: { getTempEmail: (phone) => \`${phone}@dropit.temp\` }` pour inscription par téléphone
-  - `otpLength: 6`, `expiresIn: 300`
+  return (
+    <div>
+      <h1>Invitation à rejoindre {organizationName}</h1>
+      <button onClick={handleOpenApp}>
+        Ouvrir l'app DropIt
+      </button>
 
-### 2.2 Interface BetterAuthDeps
+      {showDownload && (
+        <div>
+          <p>Vous n'avez pas l'app ?</p>
+          <a href="https://apps.apple.com/app/dropit">App Store</a>
+          <a href="https://play.google.com/store/apps/dropit">Play Store</a>
+        </div>
+      )}
+    </div>
+  );
+}
+```
 
-- [ ] Étendre l'interface dans `better-auth.config.ts` :
+#### 4. App Mobile Réagit au Deep Link
+
+L'app mobile intercepte le deep link et extrait le token :
 
 ```typescript
-sendVerificationOTP?: (data: {
-  email: string;
-  otp: string;
-  type: 'sign-in' | 'email-verification' | 'forget-password';
-}) => Promise<void>;
+// React Native - App.tsx
+import { Linking } from 'react-native';
 
-sendPhoneOTP?: (data: {
-  phoneNumber: string;
-  code: string;
-}) => Promise<void>;
+useEffect(() => {
+  // Écouter les deep links
+  const handleDeepLink = ({ url }: { url: string }) => {
+    // url = "dropit://accept-invitation/abc123xyz"
+
+    if (url.startsWith('dropit://accept-invitation/')) {
+      const token = url.split('/').pop(); // "abc123xyz"
+
+      // Naviguer vers l'écran d'acceptation d'invitation
+      navigation.navigate('AcceptInvitation', { token });
+    }
+  };
+
+  Linking.addEventListener('url', handleDeepLink);
+
+  // Vérifier si l'app a été ouverte via deep link
+  Linking.getInitialURL().then((url) => {
+    if (url) handleDeepLink({ url });
+  });
+
+  return () => Linking.removeEventListener('url', handleDeepLink);
+}, []);
 ```
 
-### 2.3 BetterAuthAdapter
+#### 5. Flow Complet Invitation Nouveau User
 
-Dans `better-auth.adapter.ts` :
+```
+1. Coach invite john@example.com (pas de compte)
+    ↓
+2. Backend envoie email avec lien: https://dropit.com/invite/abc123
+    ↓
+3. John clique sur le lien email
+    ↓
+4. Landing page web s'ouvre
+    ↓
+5. John clique "Ouvrir l'app"
+    ↓
+6a. Si app installée:
+    → Deep link ouvre l'app: dropit://accept-invitation/abc123
+    → App navigue vers écran AcceptInvitation
+    → John signup avec OTP
+    → Invitation auto-acceptée
 
-- [ ] Passer `sendVerificationOTP` qui appelle `notificationUseCase.sendOtp({ origin: PLATFORM.WEB, email, otp, type })`
-- [ ] Passer `sendPhoneOTP` qui appelle `notificationUseCase.sendOtp({ origin: PLATFORM.MOBILE, otp, phoneNumber })`
-
-### 2.4 NotificationUseCase
-
-Dans `notification.use-cases.ts` :
-
-- [ ] L'appel web existe déjà : `sendOtp({ origin: PLATFORM.WEB, ... })` → email via `KIND.OTP`
-- [ ] L'appel mobile actuellement throw car SMS non implémenté. Une fois SmsAdapter implémenté, il enverra le SMS.
-- [ ] Adapter `notification.port.ts` si nécessaire : le type `NotificationRequest` pour OTP doit supporter `phoneNumber` en plus de `email` (pour le variant MOBILE).
-
----
-
-## Phase 3 : Implémenter SmsAdapter (optionnel ou minimal)
-
-- [ ] Créer un adaptateur Twilio (ou mock pour dev) dans `sms.adapter.ts`
-- [ ] Format SMS recommandé pour auto-fill Android/iOS : `Votre code DropIt : 123456` (conventions OTP)
-- [ ] Ajouter variables d'environnement : `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, `TWILIO_PHONE_NUMBER`
-- [ ] En dev, possibilité de logger le code en console si Twilio non configuré
-
----
-
-## Phase 4 : Frontend Web (backoffice)
-
-### 4.1 auth-client
-
-- [ ] Dans `auth-client.ts` : ajouter `emailOTPClient()` au tableau des plugins.
-
-### 4.2 Login form
-
-- [ ] Créer un composant `LoginFormOTP` (ou adapter `login-form.tsx`) : étape 1 (email) → étape 2 (saisie OTP)
-- [ ] Utiliser `authClient.emailOtp.sendVerificationOtp({ email, type: 'sign-in' })` puis `authClient.signIn.emailOtp({ email, otp })`
-- [ ] **Lien super admin** : garder une option "Connexion admin" (email + password) sur la page login, ou une route `/admin/login` séparée. Sinon, afficher les deux options (OTP par défaut, "Mode admin" en petit lien).
-
-### 4.3 Signup
-
-- [ ] Adapter le flow signup pour utiliser email OTP si on remplace la vérification par lien par OTP (`overrideDefaultEmailVerification`).
-
----
-
-## Phase 5 : App mobile
-
-### 5.1 auth-client
-
-- [ ] Dans `auth-client.ts` mobile : ajouter `emailOTPClient()` et `phoneNumberClient()`.
-
-### 5.2 Écrans de connexion
-
-- [ ] Écran login : deux onglets/boutons "Continuer avec email" et "Continuer avec téléphone"
-- [ ] **Email** : `sendVerificationOtp` → `signIn.emailOtp` (même flow que web)
-- [ ] **Téléphone** : `phoneNumber.sendOtp` → `phoneNumber.verify` (création de session)
-- [ ] Composant OTP réutilisable (6 chiffres, auto-focus, paste)
-
----
-
-## Phase 6 : Restriction email+password au super admin (optionnel)
-
-- Better-auth ne propose pas de hook "autoriser signIn.email seulement si user.role === 'admin'" natif.
-- Approches possibles :
-  1. **Frontend** : masquer le formulaire email+password pour les non-admins (mais un coach pourrait deviner l'URL)
-  2. **Backend** : hook/custom route qui vérifie `user.role === 'admin'` après `signIn.email` et invalide la session sinon (plus complexe)
-  3. **Pragmatique** : garder email+password disponible côté API, mais ne l'exposer que sur une route `/admin/login` non indexée. Les coachs n'utilisent que l'OTP.
-
----
-
-## Ordre d'exécution recommandé
-
-1. Phase 1 (BDD) + migrations better-auth
-2. Phase 2 (backend better-auth)
-3. Phase 4 (frontend web) pour valider le flow email OTP
-4. Phase 3 (SMS) quand Twilio prêt
-5. Phase 5 (mobile)
-6. Phase 6 (restriction admin) si souhaité
-
----
-
-## Points d'attention
-
-- **emailVerification** : garder le lien ou passer en OTP via `overrideDefaultEmailVerification` selon préférence.
-- **Téléphone optionnel** : les athlètes peuvent rester en email OTP uniquement.
-- **Rate limiting** : better-auth a déjà du rate limit global ; éventuellement ajouter une limite plus stricte sur les endpoints OTP.
-- **Coût SMS** : surveiller l'usage Twilio et limiter les envois (ex. max 5 OTP/heure par numéro).
-
----
-
-## Ressources
-
-- [Better-auth Email OTP](https://www.better-auth.com/docs/plugins/email-otp)
-- [Better-auth Phone Number](https://www.better-auth.com/docs/plugins/phone-number)
-- [Better-auth Magic Link](https://www.better-auth.com/docs/plugins/magic-link)
-- [Twilio Node SDK](https://www.twilio.com/docs/libraries/node)
+6b. Si app PAS installée:
+    → Deep link échoue
+    → Après 2s, affichage boutons téléchargement
+    → John télécharge l'app
+    → Ouvre l'app manuellement
+    → Entre le code d'invitation abc123 (ou re-clique sur l'email)
+    → Signup avec OTP
+    → Invitation acceptée
+```
