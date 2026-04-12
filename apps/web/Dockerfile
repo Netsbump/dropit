@@ -12,7 +12,6 @@ COPY pnpm-workspace.yaml .
 COPY ./apps/web/ ./apps/web/
 COPY ./packages/contract/ ./packages/contract/
 COPY ./packages/schemas/ ./packages/schemas/
-COPY ./packages/permissions/ ./packages/permissions/
 COPY ./packages/i18n/ ./packages/i18n/
 
 RUN pnpm install --frozen-lockfile
