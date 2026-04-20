@@ -51,5 +51,5 @@ EXPOSE 3000
 ENV MIKRO_ORM_CLI_USE_TS_NODE=false
 ENV MIKRO_ORM_CLI_CONFIG=dist/config/mikro-orm.config.js
 
-# Start the application after syncing the database and optionally seeding
-CMD ["sh", "-c", "pnpm db:sync && if [ \"$SEED_DB\" = \"true\" ]; then pnpm db:seed:prod; fi && pnpm run start:prod"]
+# Apply pending migrations then start (DB env must be available at runtime)
+CMD ["sh", "-c", "pnpm db:migration:up && pnpm run start:prod"]

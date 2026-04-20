@@ -1,71 +1,78 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from  '../modules/athletes/domain/athlete.entity';
+import { Athlete } from '../modules/athletes/domain/athlete.entity';
 import { faker } from '@faker-js/faker';
 import { User } from '../modules/auth/domain/auth/user.entity';
 import { hashPassword } from 'better-auth/crypto';
 import { Account } from '../modules/auth/domain/auth/account.entity';
 
+/** Coach + 18 generated athletes (same order of magnitude as the old 15–25 range). */
+const TARGET_ATHLETE_COUNT = 19;
+
 export async function seedAthletes(
-  em: EntityManager
+  em: EntityManager,
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
-  console.log('Seeding one super admin...');
+  console.log('Ensuring super admin...');
 
-  // Create a super admin (admin plugin role = app-level super admin)
-  const superAdmin = new User();
-  superAdmin.name = 'Super Admin';
-  superAdmin.email = 'super.admin@gmail.com';
-  superAdmin.emailVerified = true;
-  superAdmin.role = 'admin';
-  await em.persistAndFlush(superAdmin);
+  let superAdmin = await em.findOne(User, { email: 'super.admin@gmail.com' });
+  if (!superAdmin) {
+    superAdmin = new User();
+    superAdmin.name = 'Super Admin';
+    superAdmin.email = 'super.admin@gmail.com';
+    superAdmin.emailVerified = true;
+    superAdmin.role = 'admin';
+    await em.persistAndFlush(superAdmin);
+  }
 
-  const superAdminAccount = new Account();
-  superAdminAccount.user = superAdmin;
-  superAdminAccount.providerId = 'credential';
-  superAdminAccount.accountId = superAdmin.email;
-  superAdminAccount.password = await hashPassword('Password123!');
-  await em.persistAndFlush(superAdminAccount);
+  let superAdminAccount = await em.findOne(Account, {
+    user: superAdmin,
+    providerId: 'credential',
+  });
+  if (!superAdminAccount) {
+    superAdminAccount = new Account();
+    superAdminAccount.user = superAdmin;
+    superAdminAccount.providerId = 'credential';
+    superAdminAccount.accountId = superAdmin.email;
+    superAdminAccount.password = await hashPassword('Password123!');
+    await em.persistAndFlush(superAdminAccount);
+  }
 
-  console.log('Super admin created');
+  console.log('Ensuring coach and athletes...');
 
-  console.log('Seeding athletes and coach...');
+  let coachUser = await em.findOne(User, { email: 'coach@example.com' });
+  if (!coachUser) {
+    coachUser = new User();
+    coachUser.name = 'Jean Dupont';
+    coachUser.email = 'coach@example.com';
+    coachUser.emailVerified = true;
+    coachUser.role = 'user';
+    await em.persistAndFlush(coachUser);
+  }
 
-  const athletes: Athlete[] = [];
-  let coach: Athlete | null = null;
+  let coach = await em.findOne(Athlete, { user: coachUser });
+  if (!coach) {
+    coach = new Athlete();
+    coach.firstName = 'Jean';
+    coach.lastName = 'Dupont';
+    coach.birthday = new Date('1985-05-15');
+    coach.country = 'France';
+    coach.user = coachUser;
+    await em.persistAndFlush(coach);
+  }
 
-  // Create a coach (app-level role = user) — no credential account, login via emailOTP
-  const coachUser = new User();
-  coachUser.name = 'Jean Dupont';
-  coachUser.email = 'coach@example.com';
-  coachUser.emailVerified = true;
-  coachUser.role = 'user';
-  await em.persistAndFlush(coachUser);
-
-  coach = new Athlete();
-  coach.firstName = 'Jean';
-  coach.lastName = 'Dupont';
-  coach.birthday = new Date('1985-05-15');
-  coach.country = 'France';
-  coach.user = coachUser;
-
-  await em.persistAndFlush(coach);
-  athletes.push(coach);
-
-  // Create athletes with faker
-  const numberOfAthletes = faker.number.int({ min: 15, max: 25 });
-  
-  for (let i = 0; i < numberOfAthletes; i++) {
+  const currentTotal = await em.count(Athlete);
+  const toCreate = Math.max(0, TARGET_ATHLETE_COUNT - currentTotal);
+  for (let i = 0; i < toCreate; i++) {
     const firstName = faker.person.firstName();
     const lastName = faker.person.lastName();
-    const email = faker.internet.email({ firstName, lastName });
+    const email = faker.internet.email({ firstName, lastName }).toLowerCase();
 
     const user = new User();
-    user.email = email.toLowerCase();
+    user.email = email;
     user.name = `${firstName} ${lastName}`;
     user.emailVerified = true;
     user.role = 'user';
     await em.persistAndFlush(user);
 
-    // Create an account with password for each athlete
     const account = new Account();
     account.user = user;
     account.providerId = 'credential';
@@ -79,11 +86,10 @@ export async function seedAthletes(
     athlete.birthday = faker.date.birthdate({ min: 16, max: 35, mode: 'age' });
     athlete.country = 'France';
     athlete.user = user;
-
     await em.persistAndFlush(athlete);
-    athletes.push(athlete);
   }
 
-  console.log(`1 coach and ${athletes.length - 1} athletes seeded`);
+  const athletes = await em.find(Athlete, {});
+  console.log(`Athletes ready: ${athletes.length} total`);
   return { athletes, coach };
 }
