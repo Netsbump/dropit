@@ -8,8 +8,10 @@ import { Athlete } from '../modules/athletes/domain/athlete.entity';
 export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   console.log('Seeding training sessions...');
 
-  // 1. Get the first created workout
-  const workouts = await em.find(Workout, {}, { orderBy: { createdAt: 'ASC' }, limit: 1 });
+  const workouts = await em.find(Workout, {}, {
+    orderBy: { createdAt: 'ASC' },
+    limit: 1,
+  });
 
   if (workouts.length === 0) {
     console.warn('No workouts found, skipping training session seeding');
@@ -17,11 +19,8 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   }
 
   const firstWorkout = workouts[0];
-  console.log('Using workout:', firstWorkout.id);
 
-  // 2. Get the organization
   const organizations = await em.find(Organization, {}, { limit: 1 });
-
   if (organizations.length === 0) {
     console.warn('No organization found, skipping training session seeding');
     return;
@@ -29,35 +28,42 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
 
   const organization = organizations[0];
 
-  console.log('Using organization:', organization.name);
-
-  // 3. Get all athletes
   const athletes = await em.find(Athlete, {});
-
   if (athletes.length === 0) {
     console.warn('No athletes found, skipping training session seeding');
     return;
   }
 
-  console.log(`Found ${athletes.length} athletes`);
+  let trainingSession = await em.findOne(TrainingSession, {
+    workout: firstWorkout,
+    organization,
+  });
 
-  // 4. Create a TrainingSession scheduled for 3 days from now
-  const trainingSession = new TrainingSession();
-  trainingSession.workout = firstWorkout;
-  trainingSession.organization = organization;
-  trainingSession.scheduledDate = new Date(Date.now() + 3 * 24 * 60 * 60 * 1000); // In 3 days
+  if (!trainingSession) {
+    trainingSession = new TrainingSession();
+    trainingSession.workout = firstWorkout;
+    trainingSession.organization = organization;
+    trainingSession.scheduledDate = new Date(
+      Date.now() + 3 * 24 * 60 * 60 * 1000,
+    );
+    await em.persistAndFlush(trainingSession);
+    console.log('Training session created for:', trainingSession.scheduledDate);
+  } else {
+    console.log('Training session already exists for demo workout/org');
+  }
 
-  await em.persistAndFlush(trainingSession);
-  console.log('Training session created for:', trainingSession.scheduledDate);
-
-  // 5. Create AthleteTrainingSession for each athlete
   for (const athlete of athletes) {
+    const link = await em.findOne(AthleteTrainingSession, {
+      athlete,
+      trainingSession,
+    });
+    if (link) continue;
+
     const athleteTrainingSession = new AthleteTrainingSession();
     athleteTrainingSession.athlete = athlete;
     athleteTrainingSession.trainingSession = trainingSession;
     await em.persistAndFlush(athleteTrainingSession);
   }
 
-  console.log(`Training session assigned to ${athletes.length} athletes`);
   console.log('Training session seeding completed');
 }

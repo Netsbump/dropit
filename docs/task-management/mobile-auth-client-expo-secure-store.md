@@ -1,5 +1,7 @@
 # Mobile auth client — migration vers @better-auth/expo
 
+> Convention: document de backlog technique non contractuel. Il ne décrit pas l'etat reel garanti en production.
+
 **Statut :** `Planned` (le storage manuel actuel fonctionne ; migration à faire pour aligner sur la doc officielle)
 
 ---

@@ -1,5 +1,7 @@
 # Préférences mobile : numéro de téléphone pour alertes SMS — suivi
 
+> Convention: document de backlog technique non contractuel. Il ne décrit pas l'etat reel garanti en production.
+
 **Statut :** `Planned` (pas de login par numéro ; stockage / SMS pour préférences utilisateur uniquement)
 
 Document de suivi pour permettre à un utilisateur mobile d’indiquer un **numéro de téléphone** et de **préférer recevoir certaines alertes par SMS** plutôt que par email — **sans** utiliser le téléphone comme identifiant de connexion.

@@ -6,7 +6,6 @@ import { CompetitorStatus } from '../modules/athletes/domain/competitor-status.e
 export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
   console.log('Seeding competitor statuses...');
 
-  // Get 5 random athletes
   const athletes = await em.find(Athlete, {}, { limit: 5 });
 
   const competitorData = [
@@ -37,16 +36,19 @@ export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
     },
   ];
 
-  for (let i = 0; i < athletes.length; i++) {
+  const n = Math.min(athletes.length, competitorData.length);
+  for (let i = 0; i < n; i++) {
+    const existing = await em.findOne(CompetitorStatus, { athlete: athletes[i] });
+    if (existing) continue;
+
     const status = new CompetitorStatus();
     status.level = competitorData[i].level;
     status.sexCategory = competitorData[i].sexCategory;
     status.weightCategory = competitorData[i].weightCategory;
     status.athlete = athletes[i];
-
     em.persist(status);
   }
 
   await em.flush();
-  console.log(`${athletes.length} competitor statuses seeded`);
+  console.log('Competitor statuses ensured');
 }
