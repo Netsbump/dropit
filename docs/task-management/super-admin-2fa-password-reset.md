@@ -1,5 +1,7 @@
 # Super admin : 2FA & réinitialisation mot de passe — suivi
 
+> Convention: document de backlog technique non contractuel. Il ne décrit pas l'etat reel garanti en production.
+
 **Statut :** `Partially implemented` (restriction `sign-in/email` côté serveur **déjà en place** ; 2FA et reset mot de passe **non implémentés**)
 
 Document de suivi pour renforcer la sécurité des comptes **super admin** (rôle `user.role === 'admin'`) et pour un éventuel flux de **réinitialisation de mot de passe** self-service.

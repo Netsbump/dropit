@@ -170,7 +170,7 @@ Wait a few seconds for PostgreSQL to fully start, then run migrations or create 
 pnpm --filter api db:migration:up
 
 # Option 2: Fresh database with seed data
-pnpm db:fresh
+pnpm --filter api db:fresh
 ```
 
 ### 5. Start development

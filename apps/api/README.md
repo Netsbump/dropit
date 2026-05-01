@@ -54,7 +54,7 @@ When making changes to entities, follow these steps to create and apply migratio
 pnpm db:migration:create --name <MigrationName>
 ```
 
-3. Review the generated migration in `src/migrations`
+3. Review the generated migration in `src/modules/database/migrations`
 
 4. Apply the migration:
 ```bash
@@ -72,6 +72,7 @@ The application includes seeders to populate the database with initial data:
 - Sample complexes with ordered exercises and training parameters
 - Workout categories (Saisons, Deload, etc.)
 - Sample workouts with ordered elements and training parameters
+- Seeders are idempotent and can be safely re-run
 
 To reset and seed the database:
 ```bash
@@ -83,11 +84,12 @@ pnpm db:fresh
 ```
 src/
 ├── entities/         # Database entities
-├── migrations/       # Database migrations
 ├── modules/         # Feature modules
 │   ├── exercise/    # Exercise module
 │   ├── complex/     # Complex module
 │   └── media/       # Media module
+│   └── database/    # DB config, migrations, and seed tooling
+│       └── migrations/
 ├── seeders/         # Database seeders
 └── main.ts          # Application entry point
 ```
@@ -113,4 +115,3 @@ The documentation is automatically kept in sync with the API contracts defined i
 ## Architecture
 
 This API follows a hexagonal architecture (Ports & Adapters) approach to separate business logic from infrastructure concerns. For a comprehensive guide on the architecture patterns, dependency injection, and implementation details, see the [Hexagonal Architecture Guide](../../docs/architecture-hexagonale.md).
-

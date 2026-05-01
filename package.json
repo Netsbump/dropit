@@ -14,9 +14,7 @@
     "format": "biome format .",
     "clean": "pnpm --recursive --filter '{apps/*}' clean && rm -rf node_modules",
     "test:api:unit": "dotenv -e .env -- pnpm --filter api test:unit",
-    "test:api:integration": "dotenv -e .env -- pnpm --filter api test:integration:docker",
-    "db:seed": "pnpm --filter api db:seed",
-    "db:fresh": "pnpm --filter api db:fresh"
+    "test:api:integration": "dotenv -e .env -- pnpm --filter api test:integration:docker"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",

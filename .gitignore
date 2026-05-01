@@ -35,3 +35,6 @@ node_modules
 
 # better-auth
 apps/api/temp
+
+# reference projects
+references

@@ -77,7 +77,7 @@ Password: [générer nouveau mot de passe sécurisé]
 ```
 Provider: GitHub
 Repository: dropit
-Branch: develop
+Branch: main
 Build Path: apps/api
 Build Type: Dockerfile
 Docker File: apps/api/Dockerfile
@@ -102,7 +102,7 @@ API_URL=https://api.dropit-app.fr
 ```
 Provider: GitHub
 Repository: dropit
-Branch: develop
+Branch: main
 Build Path: apps/web
 Build Type: Dockerfile
 Docker File: apps/web/Dockerfile
@@ -118,9 +118,9 @@ Container Port: 80
 curl -I https://dropit-app.fr
 curl -I https://api.dropit-app.fr
 
-# Vérification certificats SSL
-curl -I https://dropit-app.fr | grep -i "HTTP/2"
-curl -I https://api.dropit-app.fr | grep -i "HTTP/2"
+# Vérification certificats SSL (doit afficher HTTP/2 200)
+curl -I https://dropit-app.fr
+curl -I https://api.dropit-app.fr
 
 # Test API health
 curl https://api.dropit-app.fr/api/health
@@ -155,7 +155,7 @@ curl -sSL https://dokploy.com/install.sh | sudo sh
 sudo docker logs [container_id]
 
 # Logs Traefik
-sudo docker logs [traefik_container_id] | grep -i error
+sudo docker logs [traefik_container_id]
 
 # Redéploiement via Dokploy
 # Interface Dokploy → Service → Redeploy
@@ -213,7 +213,7 @@ sudo docker logs [traefik_container_id] | grep -i error
 2. Exécuter le script d'anonymisation : `scripts/anonymize-data.sql`
 3. Vérifier que les données sensibles sont bien anonymisées avant utilisation
 
-Consultez le guide `docs/migrations-production.md` section "Conformité RGPD" pour la procédure complète.
+Consultez le guide `docs/data-anonymization-rgpd.md` pour la procedure complete.
 
 ## Escalade
 

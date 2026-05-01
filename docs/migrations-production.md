@@ -1,32 +1,32 @@
 # Guide des Migrations en Production
 
-## ⚠️ État actuel : Phase de prototypage
+## État actuel
 
-**Important :** Le projet est actuellement en phase de prototypage. Aucune migration n'a encore été créée car le schéma de base de données évolue fréquemment. L'application utilise `db:fresh` pour recréer le schéma à la volée avec les seeders.
-
-**Workflow CI actuel :** La vérification des migrations dans la CI est configurée pour être skippée tant qu'aucun fichier de migration n'existe. Cela permet de continuer à itérer rapidement sur le modèle de données sans la contrainte des migrations.
-
-**Action requise avant production :** Lorsque le schéma de données sera stabilisé et prêt pour les premiers utilisateurs réels, il faudra :
-1. Créer la migration initiale : `pnpm --filter api db:migration:create --initial`
-2. Modifier le Dockerfile pour utiliser `db:migration:up` au lieu de `db:sync` (voir section ci-dessous)
-3. Configurer les backups automatiques
-4. À partir de là, chaque modification du schéma devra passer par une migration
+- Les migrations sont versionnées dans `apps/api/src/modules/database/migrations`.
+- Le conteneur API applique automatiquement les migrations au démarrage via `pnpm db:migration:up`.
+- Le seeding n'est pas lancé automatiquement en production ; il reste optionnel pour les environnements de démo/staging.
+- Les seeders sont idempotents et peuvent être relancés sans duplication de données de référence.
 
 ## Vue d'ensemble
 
-Ce guide documente les stratégies et bonnes pratiques pour gérer les migrations de base de données en production avec de vraies données utilisateur. Actuellement, l'application utilise un système de migrations MikroORM avec exécution automatique au démarrage de l'API.
+Ce guide documente les stratégies et bonnes pratiques pour gérer les migrations de base de données en production avec de vraies données utilisateur.
 
-## État actuel du système
+## Exécution des migrations
 
-### Configuration actuelle des migrations
+### Déclenchement automatique
 
-**Déclenchement automatique :**
-Le Dockerfile de l'API exécute actuellement `db:sync` au démarrage, qui utilise `schema:update --run`. Cette commande force la synchronisation du schéma directement **sans passer par les migrations**, ce qui est acceptable en phase de développement mais impossible en production avec de vraies données.
+Le Dockerfile de l'API exécute `db:migration:up` au démarrage. Le schéma est donc appliqué de manière traçable, dans l'ordre, via l'historique des migrations.
 
-**Emplacement :** `apps/api/Dockerfile` ligne 55
+**Emplacement :** `apps/api/Dockerfile`
 ```bash
-CMD ["sh", "-c", "pnpm db:sync && if [ \"$SEED_DB\" = \"true\" ]; then pnpm db:seed:prod; fi && pnpm run start:prod"]
+CMD ["sh", "-c", "pnpm db:migration:up && pnpm run start:prod"]
 ```
+
+### Pourquoi ne pas utiliser `db:sync` en production
+
+- `db:sync` modifie le schéma directement sans historique exploitable
+- impossible de relire précisément les changements appliqués sur un environnement
+- stratégie de rollback plus fragile qu'avec des migrations explicites
 
 ### Validation en CI
 
@@ -37,28 +37,9 @@ Le workflow CI sur `develop` vérifie les migrations :
 
 Cette validation garantit que les migrations sont fonctionnelles avant le merge vers `main`.
 
-## Modifications à apporter avant la production
+## Modifications à garder avant production
 
-### 1. Passer de `db:sync` à `db:migration:up`
-
-**Pourquoi ?**
-- `db:sync` (schema:update) modifie directement le schéma sans historique
-- `db:migration:up` applique les migrations de manière contrôlée et traçable
-- Permet le rollback et la validation progressive
-
-**Modification nécessaire :**
-
-```dockerfile
-# Remplacer dans apps/api/Dockerfile ligne 55
-CMD ["sh", "-c", "pnpm db:migration:up && if [ \"$SEED_DB\" = \"true\" ]; then pnpm db:seed:prod; fi && pnpm run start:prod"]
-```
-
-**Impact :**
-- Les migrations s'exécuteront automatiquement au démarrage de chaque nouveau déploiement
-- Si une migration échoue, le conteneur ne démarrera pas (protection)
-- Dokploy conserve l'ancienne version fonctionnelle disponible pour rollback manuel
-
-### 2. Ajouter une gestion d'erreur gracieuse
+### 1. Ajouter une gestion d'erreur gracieuse
 
 Pour éviter qu'une migration échouée ne bloque complètement le déploiement, ajouter une stratégie de fallback :
 
@@ -67,6 +48,10 @@ CMD ["sh", "-c", "pnpm db:migration:up || (echo 'Migration failed, starting with
 ```
 
 Cela permet à Dokploy de détecter l'échec et de ne pas router le trafic vers la nouvelle version.
+
+### 2. Configurer des backups automatiques et testés
+
+Le point critique restant pour une mise en production robuste est l'automatisation des sauvegardes et la validation régulière des restaurations.
 
 ## Stratégies de backup en production
 
@@ -208,7 +193,7 @@ docker exec -i dropit-postgres psql -U postgres dropit < /backups/dropit-YYYYMMD
 
 ### Avant les premiers utilisateurs réels
 
-- [ ] Modifier le Dockerfile pour utiliser `db:migration:up` au lieu de `db:sync`
+- [x] Utiliser `db:migration:up` au démarrage de l'API
 - [ ] Configurer les backups automatiques quotidiens (Dokploy ou cron)
 - [ ] Tester une procédure de restore complète en environnement de staging
 - [ ] Documenter les identifiants et chemins d'accès aux backups
@@ -217,7 +202,7 @@ docker exec -i dropit-postgres psql -U postgres dropit < /backups/dropit-YYYYMMD
 ### Avant chaque migration destructive
 
 - [ ] Review de la migration par un pair
-- [ ] Test de la migration sur une copie anonymisée de la base de production (voir section RGPD)
+- [ ] Test de la migration sur une copie anonymisee de la base de production (voir `docs/data-anonymization-rgpd.md`)
 - [ ] Plan de rollback documenté et validé
 - [ ] Communication aux utilisateurs si downtime nécessaire
 
@@ -235,60 +220,9 @@ docker exec -i dropit-postgres psql -U postgres dropit < /backups/dropit-YYYYMMD
 - [Dokploy Backup Configuration](https://docs.dokploy.com/)
 - [Zero-downtime database migrations](https://fly.io/ruby-dispatch/zero-downtime-migrations/)
 
-## Conformité RGPD et anonymisation des données
-
-### ⚠️ Important : Test avec données de production
-
-Lorsque vous testez une migration critique sur une copie de la base de production, vous **devez impérativement anonymiser les données personnelles** conformément au RGPD avant de les utiliser dans un environnement non-production (staging, développement local).
-
-### Données à anonymiser
-
-**Données personnelles identifiantes :**
-- Emails utilisateurs
-- Noms et prénoms
-- Numéros de téléphone
-- Adresses postales
-- Dates de naissance exactes
-- Tout identifiant externe (numéros de licence sportive, etc.)
-
-**Données sensibles :**
-- Photos de profil (supprimer ou remplacer par des avatars génériques)
-- Notes personnelles ou commentaires contenant des informations privées
-- Historique de connexion avec adresses IP
-
-### Procédure d'anonymisation
-
-**1. Créer un backup de production**
-```bash
-ssh user@dropit-app.fr
-docker exec dropit-postgres pg_dump -U postgres dropit | gzip > /tmp/prod-backup-$(date +%Y%m%d).sql.gz
-```
-
-**2. Restaurer en environnement de staging**
-```bash
-# Sur le serveur de staging ou en local
-gunzip -c prod-backup-YYYYMMDD.sql.gz | docker exec -i staging-postgres psql -U postgres dropit_staging
-```
-
-**3. Exécuter le script d'anonymisation**
-```bash
-# Utiliser le script fourni
-docker exec -i staging-postgres psql -U postgres dropit_staging < scripts/anonymize-data.sql
-```
-
-Consultez le script `scripts/anonymize-data.sql` pour les détails de l'anonymisation appliquée.
-
-### Conservation des données anonymisées
-
-- ✅ Les données anonymisées peuvent être conservées en staging sans limite de durée
-- ✅ Peuvent être partagées avec des développeurs ou testeurs
-- ❌ Ne jamais utiliser de données de production brutes hors de l'environnement de production
-- ❌ Ne jamais commiter de dumps contenant des données réelles dans Git
-
 ## Notes importantes
 
 - **Ne jamais** exécuter `db:sync` en production avec de vraies données
-- **Ne jamais** utiliser de données de production non-anonymisées hors production (RGPD)
 - **Toujours** tester les migrations down (rollback) en local
 - **Privilégier** les migrations additives (ajout) plutôt que destructives (suppression)
 - **Documenter** les migrations complexes avec des commentaires explicites

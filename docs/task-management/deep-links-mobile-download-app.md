@@ -1,5 +1,7 @@
 # Deep links mobile & page téléchargement — suivi
 
+> Convention: document de backlog technique non contractuel. Il ne décrit pas l'etat reel garanti en production.
+
 **Statut :** `Planned` (spécification et checklist ; implémentation mobile/web à venir)
 
 Document de suivi pour ouvrir l’app depuis le web (invitations, onboarding) et pour aligner les **liens App Store / Play Store** sur la page `/download-app`.
