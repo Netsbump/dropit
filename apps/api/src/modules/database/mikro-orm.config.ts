@@ -33,8 +33,8 @@ export function createMikroOrmOptions(options?: CreateMikroOrmOptions) {
       fileName: (className: string) => className,
     },
     migrations: {
-      path: './dist/modules/db/migrations',
-      pathTs: './src/modules/db/migrations',
+      path: './dist/modules/database/migrations',
+      pathTs: './src/modules/database/migrations',
       allOrNothing: true,
       disableForeignKeys: false,
     },

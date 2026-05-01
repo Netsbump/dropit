@@ -19,7 +19,7 @@
     "clean": "rm -rf dist",
     "db:create": "npx mikro-orm database:create && pnpm db:migration:up",
     "db:sync": "npx mikro-orm schema:update --run",
-    "db:fresh": "npx mikro-orm schema:fresh --seed --run --config=./src/modules/database/mikro-orm.config.ts",
+    "db:fresh": "npx mikro-orm schema:fresh --run --config=./src/modules/database/mikro-orm.config.ts",
     "db:migration:check": "npx mikro-orm migration:check",
     "db:migration:up": "npx mikro-orm migration:up",
     "db:migration:down": "npx mikro-orm migration:down",

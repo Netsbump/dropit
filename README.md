@@ -22,7 +22,7 @@
   </p>
 </div>
 
-***
+---
 
 <!-- TABLE OF CONTENTS -->
 <details>
@@ -41,19 +41,23 @@
   </ol>
 </details>
 
-***
+---
 
 ## 🔍 About The Project
 
-DropIt is a web and mobile application designed to optimize training tracking and management for weightlifting.
+DropIt is a web and mobile application designed to optimize training tracking and management for
+weightlifting.
 
-**Main Features**: Athlete management, personalized training program creation, exercise library, session planning, and mobile app for performance tracking.
+**Main Features**: Athlete management, personalized training program creation, exercise library, session
+planning, and mobile app for performance tracking.
 
-To discover all features in detail, check out the [landing page](https://docs-dropit.pages.dev/) and the [technical documentation](https://docs-dropit.pages.dev/introduction/presentation/). (Documentation is in French, as this project started as a school study project)
+To discover all features in detail, check out the [landing page](https://docs-dropit.pages.dev/) and the
+[technical documentation](https://docs-dropit.pages.dev/introduction/presentation/). (Documentation is in
+French, as this project started as a school study project)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-***
+---
 
 ## 🛠️ Tech Stack
 
@@ -67,7 +71,7 @@ To discover all features in detail, check out the [landing page](https://docs-dr
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-***
+---
 
 ## 📋 Prerequisites
 
@@ -105,6 +109,7 @@ pnpm build
 #### Automated Setup (Recommended)
 
 The project includes an automated setup script that will:
+
 - Detect and copy `.env.example` files to `.env` (if they don't exist)
 - Check for existing `.env` files and only prompt for missing variables
 - Prompt you for database configuration (user, password, name, host, port)
@@ -116,10 +121,11 @@ The project includes an automated setup script that will:
 - Optionally run database migrations or set up a fresh database with seed data
 
 ```bash
-pnpm rock
+pnpm setup
 ```
 
-The script will guide you through the configuration process interactively. After completion, you'll see a summary of all configured services and their URLs.
+The script will guide you through the configuration process interactively. After completion, you'll see a
+summary of all configured services and their URLs.
 
 #### Manual Setup (Alternative)
 
@@ -150,7 +156,7 @@ cp apps/mobile/.env.example apps/mobile/.env.production
 Edit each `.env` file and update the values according to your environment. Key variables to configure:
 
 - **Database**: `DB_USER`, `DB_PASSWORD`, `DB_NAME`, `DB_PORT`, `DB_HOST`
-- **API**: `API_PORT`, `BETTER_AUTH_SECRET`, `TRUSTED_ORIGINS`
+- **API**: `API_PORT`, `BETTER_AUTH_SECRET`, `BETTER_AUTH_URL`, `TRUSTED_ORIGINS`
 - **Mobile**: `EXPO_PUBLIC_API_URL` (use your local IP, e.g., `http://192.168.1.XXX:3000`)
 
 ⚠️ Make sure to update the API URL and port in all `.env` files to match your configuration.
@@ -170,7 +176,7 @@ Wait a few seconds for PostgreSQL to fully start, then run migrations or create 
 pnpm --filter api db:migration:up
 
 # Option 2: Fresh database with seed data
-pnpm db:fresh
+pnpm --filter api db:fresh
 ```
 
 ### 5. Start development
@@ -180,6 +186,7 @@ pnpm dev
 ```
 
 The services will be available at the following URLs:
+
 - **Web Frontend**: http://localhost:5173
 - **API**: http://localhost:3000
 - **API Documentation (Swagger)**: http://localhost:3000/api
@@ -199,7 +206,7 @@ The project uses Docker Compose to provide the following services:
 
 ### Setup
 
-- **Automated setup**: `pnpm rock`
+- **Automated setup**: `pnpm setup`
 
 ### Docker
 
@@ -220,8 +227,8 @@ The project uses Docker Compose to provide the following services:
 
 ### Database (API)
 
-- **Fresh database with seeds**: `pnpm db:fresh`
-- **Run seeds only**: `pnpm db:seed`
+- **Fresh database with seeds**: `pnpm --filter api db:fresh`
+- **Run seeds only**: `pnpm --filter api db:seed`
 - **Create migration**: `pnpm --filter api db:migration:create`
 - **Run migrations**: `pnpm --filter api db:migration:up`
 - **Rollback last migration**: `pnpm --filter api db:migration:down`
@@ -234,13 +241,16 @@ The project uses Docker Compose to provide the following services:
 
 ## 💻 Development
 
-### Database Migrations
-
-Migrations are automatically applied when the API starts. For more details on migration management (creation, manual application, etc.), see the [API README](apps/api/README.md#database-migrations).
-
 ### Test Data (Seeds)
 
-On first launch, test data is automatically created in the database, including:
+Seed data is not created automatically. To populate development data, run:
+
+```bash
+pnpm --filter api db:seed
+```
+
+This creates test data including:
+
 - A super admin (Super Admin - super.admin@gmail.com)
 - A coach to test the web interface (Jean Dupont - coach@example.com)
 - A default club
@@ -248,20 +258,36 @@ On first launch, test data is automatically created in the database, including:
 
 ### Web Interface Login
 
-To test the web interface, you can log in with the coach account:
-- **Email**: `coach@example.com`
-- **Password**: `Password123!`
+After running seeds, the web app has two login routes:
+
+- **Admin login (email + password)**: `/login/admin` (example seeded account: `super.admin@gmail.com` / `Password123!`)
+- **Member/coach login (email OTP)**: `/login` then `/login/otp` (example seeded account: `coach@example.com`)
+
+Source of truth for seeded auth data: `apps/api/src/seeders/athlete.seeder.ts` and `apps/api/src/seeders/organization.seeder.ts`.
+
+### Email Verification in Local Dev (MailDev)
+
+The OTP login flow sends a verification code by email. In local development, use MailDev to read those emails:
+
+- **MailDev UI**: http://localhost:1080
+- **SMTP**: `localhost:1025`
+
+After requesting OTP login, open MailDev to retrieve the verification email/code.
 
 ### Mobile Application (React Native)
 
-A mobile application is available in `apps/mobile/`. It starts automatically with `pnpm dev` (which launches all apps in parallel). To test it:
+A mobile application is available in `apps/mobile/`. It starts automatically with `pnpm dev` (which launches
+all apps in parallel). To test it:
 
 1. Install Expo Go on your phone
-2. Scan the QR code displayed in the terminal (the mobile app starts with `pnpm dev`; if the QR code doesn't appear, run the command from the `apps/mobile/` folder)
+2. Scan the QR code displayed in the terminal (the mobile app starts with `pnpm dev`; if the QR code doesn't
+   appear, run the command from the `apps/mobile/` folder)
 
-To log in, use one of the users generated by the seeds. Since names and emails are generated by Faker, check the database directly via PgAdmin to retrieve credentials.
+To log in, use one of the users generated by the seeds. Since names and emails are generated by Faker, check
+the database directly via PgAdmin to retrieve credentials.
 
 **PgAdmin Access**:
+
 - URL: http://localhost:5050
 - Email: `admin@admin.com`
 - Password: `admin`
@@ -269,28 +295,34 @@ To log in, use one of the users generated by the seeds. Since names and emails a
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-***
+---
 
 ## 📚 Additional Documentation
 
 For deeper technical aspects of the project, check out the following guides:
 
 ### Deployment and Infrastructure
-- **[Deployment Guide](docs/deployment.md)**: Complete production infrastructure configuration (VPS, Dokploy, Traefik, Docker Swarm) *(in French)*
-- **[Emergency Recovery Plan](docs/emergency-recovery.md)**: Recovery procedures in case of major failure *(in French)*
+
+- **[Deployment Guide](docs/deployment.md)**: Complete production infrastructure configuration (VPS, Dokploy,
+  Traefik, Docker Swarm) _(in French)_
+- **[Emergency Recovery Plan](docs/emergency-recovery.md)**: Recovery procedures in case of major failure _(in
+  French)_
 
 ### Database Management
-- **[Production Migration Guide](docs/migrations-production.md)**: Strategies and best practices for managing migrations with real user data *(in French)*
+
+- **[Production Migration Guide](docs/migrations-production.md)**: Strategies and best practices for managing
+  migrations with real user data _(in French)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-***
+---
 
 ## 📄 License
 
 Distributed under the GNU Affero General Public License v3.0 (AGPL-3.0).
 
 **This software is free and open source**, but with strong protection against commercial appropriation:
+
 - ✅ You can freely use, modify, and redistribute this software
 - ✅ Any fork must remain open source under AGPL-3.0
 - ✅ Modifications on a web server must be shared publicly
@@ -299,7 +331,7 @@ See the [LICENSE.md](LICENSE.md) file for the full license text.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-***
+---
 
 ## 📧 Contact
 
