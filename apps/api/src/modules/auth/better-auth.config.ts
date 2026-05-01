@@ -38,6 +38,7 @@ export function createAuthConfig(
   return betterAuth({
     // === STATIC (env.config) ===
     secret: config.betterAuth.secret,
+    baseURL: config.betterAuth.baseUrl,
     trustedOrigins: config.betterAuth.trustedOrigins,
     database: new Pool({
       connectionString: config.database.connectionStringUrl,

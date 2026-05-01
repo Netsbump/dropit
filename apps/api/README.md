@@ -45,6 +45,12 @@ pnpm db:seed      # Run database seeders
 
 ## Database Migrations
 
+For a fresh local setup, run migrations explicitly:
+
+```bash
+pnpm db:migration:up
+```
+
 When making changes to entities, follow these steps to create and apply migrations:
 
 1. Make changes to your entity files (e.g., `src/entities/*.entity.ts`)
@@ -74,10 +80,18 @@ The application includes seeders to populate the database with initial data:
 - Sample workouts with ordered elements and training parameters
 - Seeders are idempotent and can be safely re-run
 
+To run seeders on the current database:
+
+```bash
+pnpm db:seed
+```
+
 To reset and seed the database:
 ```bash
 pnpm db:fresh
 ```
+
+Seeder source of truth (test users, passwords, fixtures): `src/seeders/`.
 
 ## Project Structure
 

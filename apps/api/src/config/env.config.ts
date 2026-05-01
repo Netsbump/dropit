@@ -38,6 +38,8 @@ export const configValidationSchema = z.object({
 
   // BetterAuth
   BETTER_AUTH_SECRET: z.string(),
+  BETTER_AUTH_URL: z.string().url().optional(),
+  BETTER_AUTH_BASE_URL: z.string().url().optional(),
   TRUSTED_ORIGINS: z.string().transform((val) => val.split(',')),
 
   // Email sender (shared across providers)
@@ -75,6 +77,10 @@ export const config = {
   appUrl: configParsed.data.APP_URL,
   betterAuth: {
     secret: configParsed.data.BETTER_AUTH_SECRET,
+    baseUrl:
+      configParsed.data.BETTER_AUTH_URL ??
+      configParsed.data.BETTER_AUTH_BASE_URL ??
+      `http://localhost:${configParsed.data.API_PORT}`,
     trustedOrigins: configParsed.data.TRUSTED_ORIGINS,
   },
   database: {

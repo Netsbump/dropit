@@ -4,7 +4,7 @@ import { Migration } from '@mikro-orm/migrations';
  * Idempotent reference data: exercise, complex, and workout categories.
  * Run after schema exists (db:migration:up for DDL migrations, or schema:sync in dev).
  */
-export class Migration20260420120000_ReferenceCategories extends Migration {
+export class Migration20260501093500_ReferenceCategories extends Migration {
   override async up(): Promise<void> {
     this.addSql(`
       INSERT INTO "exercise_category" ("id", "name", "created_at", "updated_at", "created_by_id")
