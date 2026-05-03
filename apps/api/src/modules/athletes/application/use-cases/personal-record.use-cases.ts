@@ -1,7 +1,7 @@
 import {
-  CreatePersonalRecord,
+  CreatePersonalRecordInput,
   PersonalRecordsSummary,
-  UpdatePersonalRecord,
+  UpdatePersonalRecordInput,
 } from '@dropit/schemas';
 import { PersonalRecord } from '../../domain/personal-record.entity';
 import { IPersonalRecordRepository } from '../ports/personal-record.repository.port';
@@ -180,7 +180,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
   }
 
   async create(
-    data: CreatePersonalRecord,
+    data: CreatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord> {
@@ -235,7 +235,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
 
   async update(
     id: string,
-    data: UpdatePersonalRecord,
+    data: UpdatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord> {

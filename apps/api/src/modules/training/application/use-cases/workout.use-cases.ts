@@ -1,4 +1,4 @@
-import { CreateWorkout, UpdateWorkout } from '@dropit/schemas';
+import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
 import { Athlete } from '../../../athletes/domain/athlete.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
@@ -118,7 +118,7 @@ export class WorkoutUseCases implements IWorkoutUseCases {
     return workout;
   }
 
-  async createWorkout(workout: CreateWorkout, organizationId: string, userId: string): Promise<Workout> {
+  async createWorkout(workout: CreateWorkoutInput, organizationId: string, userId: string): Promise<Workout> {
     //1. Check if user is coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
@@ -230,7 +230,7 @@ export class WorkoutUseCases implements IWorkoutUseCases {
     return workoutCreated;
   }
 
-  async updateWorkout(id: string, workout: UpdateWorkout, organizationId: string, userId: string): Promise<Workout> {
+  async updateWorkout(id: string, workout: UpdateWorkoutInput, organizationId: string, userId: string): Promise<Workout> {
     //1. Check if user is coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 

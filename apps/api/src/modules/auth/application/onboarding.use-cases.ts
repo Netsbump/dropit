@@ -1,4 +1,4 @@
-import { RequestAccess } from "@dropit/schemas";
+import { RequestAccessInput } from "@dropit/schemas";
 import { IOnboardingUseCases } from "./ports/onboarding-use-cases.port";
 import { INotificationUseCases } from "../../notification/application/ports/inbound/notification-use-cases.port";
 import { IInvitationRepository } from "./ports/invitation.repository.port";
@@ -15,9 +15,9 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     private readonly memberRepository: IMemberRepository,
     private readonly userUseCases: IUserUseCases,
     private readonly athleteUseCases: IAthleteUseCases,
-  ) { }
+  ) {}
 
-  async createCoachAccessRequest(data: RequestAccess): Promise<void> {
+  async createCoachAccessRequest(data: RequestAccessInput): Promise<void> {
     await this.notificationUseCases.sendRequestAccess(data);
   }
 
@@ -28,14 +28,24 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     const existingUser = await this.userUseCases.getByEmail(email);
 
     if (!existingUser) {
-      const user = await this.userUseCases.create({ name: email, email, emailVerified: false });
-      await this.athleteUseCases.create({ firstName: '', lastName: '' }, user.id);
+      const user = await this.userUseCases.create({
+        name: email,
+        email,
+        emailVerified: false,
+      });
+      await this.athleteUseCases.create(
+        { firstName: "", lastName: "" },
+        user.id,
+      );
       return { isNewUser: true, hasOtherOrganization: false };
     }
 
-    const existingMember = await this.memberRepository.findByUserId(existingUser.id);
+    const existingMember = await this.memberRepository.findByUserId(
+      existingUser.id,
+    );
     const hasOtherOrganization =
-      existingMember !== null && existingMember.organization.id !== organizationId;
+      existingMember !== null &&
+      existingMember.organization.id !== organizationId;
 
     return { isNewUser: false, hasOtherOrganization };
   }
@@ -47,7 +57,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
       throw InvitationException.notFound(invitationId);
     }
 
-    if (invitation.status !== 'pending' || invitation.expiresAt < new Date()) {
+    if (invitation.status !== "pending" || invitation.expiresAt < new Date()) {
       throw InvitationException.expiredOrUsed();
     }
 
@@ -70,7 +80,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     member.createdAt = new Date();
     await this.memberRepository.save(member);
 
-    invitation.status = 'accepted';
+    invitation.status = "accepted";
     await this.invitationRepository.save(invitation);
   }
 }

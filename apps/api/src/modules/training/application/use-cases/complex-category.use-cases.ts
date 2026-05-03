@@ -1,7 +1,7 @@
 import { IComplexCategoryRepository } from '../ports/complex-category.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
-import { CreateComplexCategory, UpdateComplexCategory } from '@dropit/schemas';
+import { CreateComplexCategoryInput, UpdateComplexCategoryInput } from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 import { IComplexCategoryUseCases } from '../ports/complex-category-use-cases.port';
 import {
@@ -66,7 +66,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     return complexCategories;
   }
 
-  async create(data: CreateComplexCategory, organizationId: string, userId: string): Promise<ComplexCategory> {
+  async create(data: CreateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory> {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
@@ -101,7 +101,7 @@ export class ComplexCategoryUseCase implements IComplexCategoryUseCases {
     return created;
   }
 
-  async update(complexCategoryId: string, data: UpdateComplexCategory, organizationId: string, userId: string): Promise<ComplexCategory> {
+  async update(complexCategoryId: string, data: UpdateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory> {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {

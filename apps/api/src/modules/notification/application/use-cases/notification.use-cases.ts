@@ -1,11 +1,15 @@
-import { INotificationUseCases, OtpParams, OrganizationInvitationParams } from '../ports/inbound/notification-use-cases.port';
+import {
+  INotificationUseCases,
+  OtpParams,
+  OrganizationInvitationParams,
+} from "../ports/inbound/notification-use-cases.port";
 import {
   INotificationPort,
   KIND,
   type NotificationRequest,
   RECIPIENT_TYPE,
-} from '../ports/outbound/notification.port';
-import { RequestAccess } from '@dropit/schemas';
+} from "../ports/outbound/notification.port";
+import { RequestAccessInput } from "@dropit/schemas";
 
 /**
  * Notification Use Cases Implementation
@@ -15,15 +19,17 @@ import { RequestAccess } from '@dropit/schemas';
  * Dependencies are plain interfaces (ports) — wired by the module via useFactory.
  */
 export class NotificationUseCase implements INotificationUseCases {
-  constructor(
-    private readonly notificationPort: INotificationPort,
-  ) { }
+  constructor(private readonly notificationPort: INotificationPort) {}
 
-  async sendOrganizationInvitation(params: OrganizationInvitationParams): Promise<void> {
+  async sendOrganizationInvitation(
+    params: OrganizationInvitationParams,
+  ): Promise<void> {
     try {
       const notificationRequest: NotificationRequest = {
         kind: KIND.ORGANIZATION_INVITATION,
-        recipientType: params.isNewUser ? RECIPIENT_TYPE.NEW_USER : RECIPIENT_TYPE.EXISTING_USER,
+        recipientType: params.isNewUser
+          ? RECIPIENT_TYPE.NEW_USER
+          : RECIPIENT_TYPE.EXISTING_USER,
         hasOtherOrganization: params.hasOtherOrganization,
         organizationId: params.organizationId,
         organizationName: params.organizationName,
@@ -41,7 +47,7 @@ export class NotificationUseCase implements INotificationUseCases {
     const notificationRequest: NotificationRequest = {
       kind: KIND.OTP,
       otpParams: params,
-    }
+    };
     try {
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
@@ -49,17 +55,17 @@ export class NotificationUseCase implements INotificationUseCases {
     }
   }
 
-  async sendRequestAccess(params: RequestAccess): Promise<void> {
+  async sendRequestAccess(params: RequestAccessInput): Promise<void> {
     const notificationRequest: NotificationRequest = {
       kind: KIND.REQUEST_ACCESS,
       email: params.email,
       name: params.name,
-    }
+    };
 
     try {
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
-      console.error('Failed to send notification request access', error);
+      console.error("Failed to send notification request access", error);
     }
   }
 }

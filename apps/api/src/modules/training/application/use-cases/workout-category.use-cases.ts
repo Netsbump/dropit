@@ -1,7 +1,7 @@
 import { IWorkoutCategoryRepository } from '../ports/workout-category.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
-import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
+import { CreateWorkoutCategoryInput, UpdateWorkoutCategoryInput } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 import { IWorkoutCategoryUseCases } from '../ports/workout-category-use-cases.port';
 import {
@@ -64,7 +64,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     return workoutCategories;
   }
 
-  async create(data: CreateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory> {
+  async create(data: CreateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory> {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {
@@ -99,7 +99,7 @@ export class WorkoutCategoryUseCase implements IWorkoutCategoryUseCases {
     return created;
   }
 
-  async update(workoutCategoryId: string, data: UpdateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory> {
+  async update(workoutCategoryId: string, data: UpdateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory> {
     // 1. Verify user is a coach of the organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {

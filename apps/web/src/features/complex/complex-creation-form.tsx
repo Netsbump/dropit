@@ -28,7 +28,7 @@ import {
   SortableContext,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { CreateComplex, createComplexSchema } from '@dropit/schemas';
+import { CreateComplexInput, createComplexSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { PlusCircle } from 'lucide-react';
@@ -74,7 +74,7 @@ export function ComplexCreationForm({
   });
 
   const { mutateAsync: createComplexMutation } = useMutation({
-    mutationFn: async (data: CreateComplex) => {
+    mutationFn: async (data: CreateComplexInput) => {
       const response = await api.complex.createComplex({ body: data });
       if (response.status !== 201) {
         throw new Error('Erreur lors de la création du complex');

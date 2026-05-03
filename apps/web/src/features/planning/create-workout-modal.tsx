@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/dialog';
 import { Steps } from '@/components/ui/steps';
 import { useTranslation } from '@dropit/i18n';
-import { CreateWorkout } from '@dropit/schemas';
+import { CreateWorkoutInput } from '@dropit/schemas';
 import { format } from 'date-fns';
 import { enGB, fr } from 'date-fns/locale';
 import { useState } from 'react';
@@ -27,7 +27,7 @@ export function CreateWorkoutModal({
   const locale = i18n.language === 'fr' ? fr : enGB;
   const [currentStep, setCurrentStep] = useState(0);
 
-  const handleSubmitSuccess = (data: CreateWorkout) => {
+  const handleSubmitSuccess = (data: CreateWorkoutInput) => {
     // Ici vous pourriez traiter les données du workout si nécessaire
     console.log(data);
     onClose();

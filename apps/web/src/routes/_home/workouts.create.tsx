@@ -3,7 +3,7 @@ import { api } from '@/lib/api';
 import { Steps } from '@/components/ui/steps';
 import { useToast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/use-page-meta';
-import { CreateWorkout } from '@dropit/schemas';
+import { CreateWorkoutInput } from '@dropit/schemas';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
@@ -27,7 +27,7 @@ function CreateWorkoutPage() {
 
   // Mutation pour créer un workout
   const { mutate: createWorkoutMutation } = useMutation({
-    mutationFn: async (data: CreateWorkout) => {
+    mutationFn: async (data: CreateWorkoutInput) => {
       const response = await api.workout.createWorkout({ body: data });
       if (response.status !== 201) {
         throw new Error('Erreur lors de la création du workout');
@@ -52,7 +52,7 @@ function CreateWorkoutPage() {
     },
   });
 
-  const handleCreationSuccess = (data: CreateWorkout) => {
+  const handleCreationSuccess = (data: CreateWorkoutInput) => {
     createWorkoutMutation(data);
     if (data.trainingSession?.scheduledDate) {
       navigate({ to: '/planning', replace: true, search: { date: data.trainingSession.scheduledDate } });

@@ -640,7 +640,11 @@ async function main(): Promise<void> {
             console.log(`  ${colorize('ℹ', 'blue')} Pending migrations detected`)
             const dbChoice = await select(
               'How do you want to set up the database?',
-              ['Apply migrations (db:migration:up)', 'Fresh database with seeds (db:fresh)', 'Skip'],
+              [
+                'Apply migrations (db:migration:up)',
+                'Create database + migrate + seed (db:create + db:seed)',
+                'Skip',
+              ],
               0,
             )
 
@@ -654,21 +658,25 @@ async function main(): Promise<void> {
                   `  ${colorize('You can run migrations manually later with:', 'dim')} ${colorize('pnpm --filter api db:migration:up', 'bright')}`,
                 )
               }
-            } else if (dbChoice.includes('Fresh database')) {
+            } else if (dbChoice.includes('Create database')) {
               try {
-                await runCommand('pnpm', ['db:fresh'])
+                await runCommand('pnpm', ['--filter', 'api', 'db:create'])
+                await runCommand('pnpm', ['--filter', 'api', 'db:seed'])
                 console.log(
-                  `\n  ${colorize('✓', 'green')} Fresh database created and seeded successfully`,
+                  `\n  ${colorize('✓', 'green')} Database created, migrated, and seeded successfully`,
                 )
               } catch (error) {
-                console.error(`\n  ${colorize('⚠', 'yellow')} db:fresh failed:`, error)
+                console.error(
+                  `\n  ${colorize('⚠', 'yellow')} db:create + db:seed failed:`,
+                  error,
+                )
                 console.log(
-                  `  ${colorize('You can run db:fresh manually later with:', 'dim')} ${colorize('pnpm db:fresh', 'bright')}`,
+                  `  ${colorize('You can run setup manually later with:', 'dim')} ${colorize('pnpm --filter api db:create && pnpm --filter api db:seed', 'bright')}`,
                 )
               }
             } else {
               console.log(
-                `  ${colorize('→', 'cyan')} Skipped database setup. Run manually with: ${colorize('pnpm --filter api db:migration:up', 'bright')} or ${colorize('pnpm db:fresh', 'bright')}`,
+                `  ${colorize('→', 'cyan')} Skipped database setup. Run manually with: ${colorize('pnpm --filter api db:create && pnpm --filter api db:seed', 'bright')} or ${colorize('pnpm --filter api db:migration:up', 'bright')}`,
               )
             }
           } else {
@@ -677,7 +685,7 @@ async function main(): Promise<void> {
 
             if (shouldSeed) {
               try {
-                await runCommand('pnpm', ['db:seed'])
+                await runCommand('pnpm', ['--filter', 'api', 'db:seed'])
                 console.log(`\n  ${colorize('✓', 'green')} Database seeded successfully`)
               } catch (error) {
                 console.error(`\n  ${colorize('⚠', 'yellow')} Seeding failed:`, error)
@@ -712,7 +720,7 @@ async function main(): Promise<void> {
       )
       step++
       console.log(
-        `  ${colorize(`${step}.`, 'bright')} Run database setup: ${colorize('pnpm db:fresh', 'blue')} or ${colorize('pnpm --filter api db:migration:up', 'blue')}`,
+        `  ${colorize(`${step}.`, 'bright')} Run database setup: ${colorize('pnpm --filter api db:create && pnpm --filter api db:seed', 'blue')}`,
       )
       step++
     }

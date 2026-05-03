@@ -4,7 +4,7 @@ import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IExerciseComplexRepository } from '../ports/exercise-complex.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
-import { CreateComplex, UpdateComplex } from '@dropit/schemas';
+import { CreateComplexInput, UpdateComplexInput } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
 import { ExerciseComplex } from '../../domain/exercise-complex.entity';
 import { IComplexUseCases } from '../ports/complex-use-cases.port';
@@ -80,7 +80,7 @@ export class ComplexUseCase implements IComplexUseCases {
     return complexes;
   }
 
-  async create(data: CreateComplex, organizationId: string, userId: string): Promise<Complex> {
+  async create(data: CreateComplexInput, organizationId: string, userId: string): Promise<Complex> {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
@@ -141,7 +141,7 @@ export class ComplexUseCase implements IComplexUseCases {
     return complexCreated;
   }
 
-  async update(complexId: string, data: UpdateComplex, organizationId: string, userId: string): Promise<Complex> {
+  async update(complexId: string, data: UpdateComplexInput, organizationId: string, userId: string): Promise<Complex> {
     // 1. Check if the user is coach of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
     if (!isCoach) {

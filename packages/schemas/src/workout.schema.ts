@@ -74,11 +74,11 @@ export const createWorkoutSchema = z.object({
   trainingSession: createTrainingSessionWithWorkoutSchema.optional(),
 });
 
-export type CreateWorkout = z.infer<typeof createWorkoutSchema>;
+export type CreateWorkoutInput = z.infer<typeof createWorkoutSchema>;
 
 export const updateWorkoutSchema = createWorkoutSchema.partial();
 
-export type UpdateWorkout = z.infer<typeof updateWorkoutSchema>;
+export type UpdateWorkoutInput = z.infer<typeof updateWorkoutSchema>;
 
 const workoutExerciseElement = z.object({
   id: z.string(),

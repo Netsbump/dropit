@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const createAthleteSchema = z.object({
   firstName: z.string(),
@@ -7,11 +7,11 @@ export const createAthleteSchema = z.object({
   country: z.string().optional(),
 });
 
-export type CreateAthlete = z.infer<typeof createAthleteSchema>;
+export type CreateAthleteInput = z.infer<typeof createAthleteSchema>;
 
 export const updateAthleteSchema = createAthleteSchema.partial();
 
-export type UpdateAthlete = z.infer<typeof updateAthleteSchema>;
+export type UpdateAthleteInput = z.infer<typeof updateAthleteSchema>;
 
 export const athleteSchema = z.object({
   id: z.string(),

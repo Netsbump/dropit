@@ -36,7 +36,7 @@ import {
 import { CSS } from '@dnd-kit/utilities';
 import {
   ComplexDto,
-  UpdateComplex,
+  UpdateComplexInput,
   updateComplexSchema,
 } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -144,7 +144,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   });
 
   const { mutate: updateComplexMutation } = useMutation({
-    mutationFn: async (data: UpdateComplex) => {
+    mutationFn: async (data: UpdateComplexInput) => {
       const response = await api.complex.updateComplex({
         params: { id: complex.id },
         body: data,

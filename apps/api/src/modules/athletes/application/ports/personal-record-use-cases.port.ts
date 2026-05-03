@@ -1,7 +1,7 @@
 import {
-  CreatePersonalRecord,
+  CreatePersonalRecordInput,
   PersonalRecordsSummary,
-  UpdatePersonalRecord,
+  UpdatePersonalRecordInput,
 } from '@dropit/schemas';
 import { PersonalRecord } from '../../domain/personal-record.entity';
 
@@ -62,7 +62,7 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Created personal record entity
    */
-  create(data: CreatePersonalRecord, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
+  create(data: CreatePersonalRecordInput, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
 
   /**
    * Updates an existing personal record
@@ -72,7 +72,7 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Updated personal record entity
    */
-  update(id: string, data: UpdatePersonalRecord, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
+  update(id: string, data: UpdatePersonalRecordInput, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
 
   /**
    * Deletes a personal record

@@ -1,4 +1,4 @@
-import { CreateCompetitorStatus, UpdateCompetitorStatus } from '@dropit/schemas';
+import { CreateCompetitorStatusInput, UpdateCompetitorStatusInput } from '@dropit/schemas';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
 
 /**
@@ -27,12 +27,12 @@ export interface ICompetitorStatusUseCases {
   /**
    * Create a new competitor status
    */
-  create(data: CreateCompetitorStatus, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
+  create(data: CreateCompetitorStatusInput, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
 
   /**
    * Update an existing competitor status
    */
-  update(id: string, data: UpdateCompetitorStatus, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
+  update(id: string, data: UpdateCompetitorStatusInput, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
 }
 
 /**

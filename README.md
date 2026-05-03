@@ -169,14 +169,14 @@ docker compose up -d
 
 4. **Set up the database:**
 
-Wait a few seconds for PostgreSQL to fully start, then run migrations or create a fresh database:
+Wait a few seconds for PostgreSQL to fully start, then create and seed the database:
 
 ```bash
-# Option 1: Run migrations
-pnpm --filter api db:migration:up
+# Create database and run migrations
+pnpm --filter api db:create
 
-# Option 2: Fresh database with seed data
-pnpm --filter api db:fresh
+# Seed demo data
+pnpm --filter api db:seed
 ```
 
 ### 5. Start development

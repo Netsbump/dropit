@@ -4,11 +4,11 @@ export const createWorkoutCategorySchema = z.object({
   name: z.string(),
 });
 
-export type CreateWorkoutCategory = z.infer<typeof createWorkoutCategorySchema>;
+export type CreateWorkoutCategoryInput = z.infer<typeof createWorkoutCategorySchema>;
 
 export const updateWorkoutCategorySchema = createWorkoutCategorySchema;
 
-export type UpdateWorkoutCategory = z.infer<typeof updateWorkoutCategorySchema>;
+export type UpdateWorkoutCategoryInput = z.infer<typeof updateWorkoutCategorySchema>;
 
 export const workoutCategorySchema = z.object({
   id: z.string(),

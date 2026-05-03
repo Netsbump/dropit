@@ -1,31 +1,31 @@
-import { AthleteDetail } from '@/features/athletes/athlete-detail';
-import { api } from '@/lib/api';
-import { toast } from '@/hooks/use-toast';
-import { usePageMeta } from '@/hooks/use-page-meta';
-import { useTranslation } from '@dropit/i18n';
+import { AthleteDetail } from "@/features/athletes/athlete-detail";
+import { api } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import { usePageMeta } from "@/hooks/use-page-meta";
+import { useTranslation } from "@dropit/i18n";
 import {
   CompetitorLevel,
-  CreateCompetitorStatus,
+  CreateCompetitorStatusInput,
   SexCategory,
-  UpdateCompetitorStatus,
+  UpdateCompetitorStatusInput,
   createCompetitorStatusSchema,
   updateCompetitorStatusSchema,
-} from '@dropit/schemas';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { ScrollArea } from '@/components/ui/scroll-area';
+} from "@dropit/schemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
-export const Route = createFileRoute('/_home/athletes/$athleteId')({
+export const Route = createFileRoute("/_home/athletes/$athleteId")({
   component: AthleteDetailPage,
 });
 
 function AthleteDetailPage() {
   const { athleteId } = Route.useParams();
   const navigate = Route.useNavigate();
-  const { t } = useTranslation(['common', 'athletes']);
+  const { t } = useTranslation(["common", "athletes"]);
   const { setPageMeta } = usePageMeta();
   const [isEditingCompetitorStatus, setIsEditingCompetitorStatus] =
     useState(false);
@@ -35,13 +35,13 @@ function AthleteDetailPage() {
   const queryClient = useQueryClient();
 
   const { data: athlete, isLoading: athleteLoading } = useQuery({
-    queryKey: ['athlete', athleteId],
+    queryKey: ["athlete", athleteId],
     queryFn: async () => {
       const response = await api.athlete.getAthlete({
         params: { id: athleteId },
       });
       if (response.status !== 200)
-        throw new Error('Failed to load athlete details');
+        throw new Error("Failed to load athlete details");
       return response.body;
     },
   });
@@ -49,7 +49,7 @@ function AthleteDetailPage() {
   // Fetch all personal records for the athlete
   const { data: personalRecords, isLoading: personalRecordsLoading } = useQuery(
     {
-      queryKey: ['personalRecords', athleteId],
+      queryKey: ["personalRecords", athleteId],
       queryFn: async () => {
         // Don't execute if athlete is not loaded yet
         if (!athlete?.id) return null;
@@ -60,17 +60,17 @@ function AthleteDetailPage() {
         });
 
         if (response.status !== 200)
-          throw new Error('Failed to load personal records');
+          throw new Error("Failed to load personal records");
         return response.body;
       },
       enabled: !!athlete?.id, // Only run if athlete.id exists
-    }
+    },
   );
 
   // L'erreur de linter indique que ces variables ne sont pas utilisées, mais gardons
   // la requête pour s'assurer que les données sont chargées - potentiel usage futur
   useQuery({
-    queryKey: ['competitorStatus', athleteId],
+    queryKey: ["competitorStatus", athleteId],
     queryFn: async () => {
       // Ne pas exécuter la requête si l'athlète n'est pas encore chargé
       if (!athlete?.id) return null;
@@ -79,22 +79,22 @@ function AthleteDetailPage() {
         params: { id: athlete.id },
       });
       if (response.status !== 200)
-        throw new Error('Failed to load competitor status');
+        throw new Error("Failed to load competitor status");
       return response.body;
     },
     enabled: !!athlete?.id, // Exécuter seulement si athlete.id existe
   });
 
   // Mutation for creating a new competitor status
-  const createCompetitorStatus = async (data: CreateCompetitorStatus) => {
+  const createCompetitorStatus = async (data: CreateCompetitorStatusInput) => {
     setIsLoading(true);
     try {
       // S'assurer que athlete existe
       if (!athlete) {
-        throw new Error('Athlète non trouvé');
+        throw new Error("Athlète non trouvé");
       }
 
-      const requestBody: CreateCompetitorStatus = {
+      const requestBody: CreateCompetitorStatusInput = {
         level: data.level,
         sexCategory: data.sexCategory,
         weightCategory: data.weightCategory,
@@ -107,24 +107,24 @@ function AthleteDetailPage() {
 
       if (response.status !== 201) {
         throw new Error(
-          "Erreur lors de la création du nouveau statut compétitif de l'athlète"
+          "Erreur lors de la création du nouveau statut compétitif de l'athlète",
         );
       }
       toast({
-        title: 'Nouveau statut compétitif créé',
+        title: "Nouveau statut compétitif créé",
         description:
           "Un nouveau statut compétitif a été créé pour l'athlète, l'ancien statut a été archivé",
       });
       setIsCreatingCompetitorStatus(false);
-      queryClient.invalidateQueries({ queryKey: ['athletes'] });
-      queryClient.invalidateQueries({ queryKey: ['athlete', athleteId] });
+      queryClient.invalidateQueries({ queryKey: ["athletes"] });
+      queryClient.invalidateQueries({ queryKey: ["athlete", athleteId] });
       return response.body;
     } catch (error: unknown) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description:
-          error instanceof Error ? error.message : 'Une erreur est survenue',
-        variant: 'destructive',
+          error instanceof Error ? error.message : "Une erreur est survenue",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -132,12 +132,12 @@ function AthleteDetailPage() {
   };
 
   // Mutation for updating athlete competitor status (correction only)
-  const updateCompetitorStatus = async (data: UpdateCompetitorStatus) => {
+  const updateCompetitorStatus = async (data: UpdateCompetitorStatusInput) => {
     setIsLoading(true);
     try {
       // Vérifier que l'athlète existe
       if (!athlete) {
-        throw new Error('Athlète non trouvé');
+        throw new Error("Athlète non trouvé");
       }
 
       // Obtenir le dernier statut compétitif avec l'ID via une requête dédiée
@@ -146,13 +146,13 @@ function AthleteDetailPage() {
       });
 
       if (getStatusResponse.status !== 200 || !getStatusResponse.body.id) {
-        throw new Error('Impossible de récupérer le statut compétitif actuel');
+        throw new Error("Impossible de récupérer le statut compétitif actuel");
       }
 
       // Utiliser l'ID obtenu de la réponse pour la mise à jour
       const competitorStatusId = getStatusResponse.body.id;
 
-      const requestBody: UpdateCompetitorStatus = {
+      const requestBody: UpdateCompetitorStatusInput = {
         level: data.level,
         sexCategory: data.sexCategory,
         weightCategory: data.weightCategory,
@@ -165,27 +165,27 @@ function AthleteDetailPage() {
 
       if (response.status !== 200) {
         throw new Error(
-          "Erreur lors de la correction du statut compétitif de l'athlète"
+          "Erreur lors de la correction du statut compétitif de l'athlète",
         );
       }
       toast({
-        title: 'Statut compétitif corrigé avec succès',
+        title: "Statut compétitif corrigé avec succès",
         description:
           "Le statut compétitif de l'athlète a été corrigé avec succès",
       });
       setIsEditingCompetitorStatus(false);
-      queryClient.invalidateQueries({ queryKey: ['athletes'] });
-      queryClient.invalidateQueries({ queryKey: ['athlete', athleteId] });
+      queryClient.invalidateQueries({ queryKey: ["athletes"] });
+      queryClient.invalidateQueries({ queryKey: ["athlete", athleteId] });
       queryClient.invalidateQueries({
-        queryKey: ['competitorStatus', athleteId],
+        queryKey: ["competitorStatus", athleteId],
       });
       return response.body;
     } catch (error: unknown) {
       toast({
-        title: 'Erreur',
+        title: "Erreur",
         description:
-          error instanceof Error ? error.message : 'Une erreur est survenue',
-        variant: 'destructive',
+          error instanceof Error ? error.message : "Une erreur est survenue",
+        variant: "destructive",
       });
     } finally {
       setIsLoading(false);
@@ -193,7 +193,7 @@ function AthleteDetailPage() {
   };
 
   // Form setup for updating competitor status
-  const updateCompetitorStatusForm = useForm<UpdateCompetitorStatus>({
+  const updateCompetitorStatusForm = useForm<UpdateCompetitorStatusInput>({
     resolver: zodResolver(updateCompetitorStatusSchema),
     defaultValues: {
       level: CompetitorLevel.ROOKIE,
@@ -203,7 +203,7 @@ function AthleteDetailPage() {
   });
 
   // Form setup for creating competitor status
-  const createCompetitorStatusForm = useForm<CreateCompetitorStatus>({
+  const createCompetitorStatusForm = useForm<CreateCompetitorStatusInput>({
     resolver: zodResolver(createCompetitorStatusSchema),
     defaultValues: {
       level: CompetitorLevel.ROOKIE,
@@ -229,16 +229,16 @@ function AthleteDetailPage() {
       setPageMeta({
         title: `${athlete.firstName} ${athlete.lastName}`,
         showBackButton: true,
-        onBackClick: () => navigate({ to: '/athletes' })
+        onBackClick: () => navigate({ to: "/athletes" }),
       });
     }
 
     // Cleanup: reset to default when leaving the page
     return () => {
       setPageMeta({
-        title: t('common:routes./athletes'),
+        title: t("common:routes./athletes"),
         showBackButton: false,
-        onBackClick: undefined
+        onBackClick: undefined,
       });
     };
   }, [athlete, setPageMeta, navigate, t]);
@@ -246,13 +246,13 @@ function AthleteDetailPage() {
   if (athleteLoading) {
     return (
       <div className="flex items-center justify-center h-screen">
-        {t('common:loading')}
+        {t("common:loading")}
       </div>
     );
   }
 
   if (!athlete) {
-    return <div>{t('common:not_found')}</div>;
+    return <div>{t("common:not_found")}</div>;
   }
 
   return (

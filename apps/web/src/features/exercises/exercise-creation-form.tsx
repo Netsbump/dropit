@@ -18,7 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { CreateExercise, createExerciseSchema } from '@dropit/schemas';
+import { CreateExerciseInput, createExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -47,7 +47,7 @@ export function ExerciseCreationForm({
   });
 
   const { mutateAsync: createExerciseMutation } = useMutation({
-    mutationFn: async (data: CreateExercise) => {
+    mutationFn: async (data: CreateExerciseInput) => {
       const response = await api.exercise.createExercise({ body: data });
       if (response.status !== 201) {
         throw new Error("Erreur lors de la création de l'exercice");

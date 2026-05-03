@@ -1,4 +1,4 @@
-import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
+import { CreateTrainingSessionInput, UpdateAthleteTrainingSessionInput, UpdateTrainingSessionInput } from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 
@@ -33,12 +33,12 @@ export interface ITrainingSessionUseCases {
   /**
    * Create a new training session
    */
-  create(data: CreateTrainingSession, organizationId: string, userId: string): Promise<TrainingSession>;
+  create(data: CreateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession>;
 
   /**
    * Update a training session
    */
-  update(sessionId: string, data: UpdateTrainingSession, organizationId: string, userId: string): Promise<TrainingSession>;
+  update(sessionId: string, data: UpdateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession>;
 
   /**
    * Delete a training session
@@ -61,7 +61,7 @@ export interface ITrainingSessionUseCases {
   updateAthleteTrainingSession(
     athleteId: string,
     athleteTrainingSessionId: string,
-    data: UpdateAthleteTrainingSession,
+    data: UpdateAthleteTrainingSessionInput,
     userId: string
   ): Promise<AthleteTrainingSession>;
 }

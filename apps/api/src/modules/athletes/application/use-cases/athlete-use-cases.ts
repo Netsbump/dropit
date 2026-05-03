@@ -1,5 +1,5 @@
 import { Athlete } from "../../domain/athlete.entity";
-import { CreateAthlete, UpdateAthlete } from "@dropit/schemas";
+import { CreateAthleteInput, UpdateAthleteInput } from "@dropit/schemas";
 import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
 import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository.port";
 import { IUserUseCases } from "../../../auth/application/ports/user-use-cases.port";
@@ -119,7 +119,7 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athletes;
   }
 
-  async create(data: CreateAthlete, userId: string): Promise<Athlete> {
+  async create(data: CreateAthleteInput, userId: string): Promise<Athlete> {
     //1. Get User from repository
     const user = await this.userUseCases.getOne(userId);
 
@@ -151,7 +151,7 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athlete;
   }
 
-  async update(idAthlete: string, data: UpdateAthlete, userId: string): Promise<Athlete> {
+  async update(idAthlete: string, data: UpdateAthleteInput, userId: string): Promise<Athlete> {
     //1. Get Athlete
     const athlete = await this.athleteRepository.getOne(idAthlete);
 

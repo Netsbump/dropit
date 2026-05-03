@@ -8,11 +8,11 @@ export const createExerciseSchema = z.object({
   shortName: z.string().optional(),
 });
 
-export type CreateExercise = z.infer<typeof createExerciseSchema>;
+export type CreateExerciseInput = z.infer<typeof createExerciseSchema>;
 
 export const updateExerciseSchema = createExerciseSchema.partial();
 
-export type UpdateExercise = z.infer<typeof updateExerciseSchema>;
+export type UpdateExerciseInput = z.infer<typeof updateExerciseSchema>;
 
 export const exerciseSchema = z.object({
   id: z.string(),

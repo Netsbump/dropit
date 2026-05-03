@@ -1,4 +1,4 @@
-import { CreateComplexCategory, UpdateComplexCategory } from '@dropit/schemas';
+import { CreateComplexCategoryInput, UpdateComplexCategoryInput } from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 
 /**
@@ -27,12 +27,12 @@ export interface IComplexCategoryUseCases {
   /**
    * Create a new complex category
    */
-  create(data: CreateComplexCategory, organizationId: string, userId: string): Promise<ComplexCategory>;
+  create(data: CreateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory>;
 
   /**
    * Update a complex category
    */
-  update(complexCategoryId: string, data: UpdateComplexCategory, organizationId: string, userId: string): Promise<ComplexCategory>;
+  update(complexCategoryId: string, data: UpdateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory>;
 
   /**
    * Delete a complex category

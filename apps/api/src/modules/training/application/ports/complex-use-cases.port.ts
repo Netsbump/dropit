@@ -1,4 +1,4 @@
-import { CreateComplex, UpdateComplex } from '@dropit/schemas';
+import { CreateComplexInput, UpdateComplexInput } from '@dropit/schemas';
 import { Complex } from '../../domain/complex.entity';
 
 /**
@@ -27,12 +27,12 @@ export interface IComplexUseCases {
   /**
    * Create a new complex
    */
-  create(data: CreateComplex, userId: string, organizationId: string): Promise<Complex>;
+  create(data: CreateComplexInput, userId: string, organizationId: string): Promise<Complex>;
 
   /**
    * Update a complex
    */
-  update(complexId: string, data: UpdateComplex, userId: string, organizationId: string): Promise<Complex>;
+  update(complexId: string, data: UpdateComplexInput, userId: string, organizationId: string): Promise<Complex>;
 
   /**
    * Delete a complex

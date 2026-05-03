@@ -11,7 +11,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import {
-  CreateComplexCategory,
+  CreateComplexCategoryInput,
   createComplexCategorySchema,
 } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -33,7 +33,7 @@ export function ComplexCategoryCreationForm({
   const { toast } = useToast();
 
   const { mutate: createCategoryMutation } = useMutation({
-    mutationFn: async (data: CreateComplexCategory) => {
+    mutationFn: async (data: CreateComplexCategoryInput) => {
       const response = await api.complexCategory.createComplexCategory({
         body: data,
       });
