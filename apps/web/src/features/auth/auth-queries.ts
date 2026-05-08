@@ -1,4 +1,4 @@
-import { authClient } from "@/lib/auth-client";
+import { authClient } from '@/lib/auth-client';
 
 // ---- BETTER-AUTH HOOKS ----
 
@@ -11,14 +11,18 @@ import { authClient } from "@/lib/auth-client";
  * return <span>{sessionData?.user?.name}</span>
  */
 export function useSession() {
-  const { data: sessionData, isPending: isSessionPending, error } = authClient.useSession();
+  const {
+    data: sessionData,
+    isPending: isSessionPending,
+    error,
+  } = authClient.useSession();
 
   if (error) throw error;
 
   return {
     sessionData,
-    isSessionPending
-  }
+    isSessionPending,
+  };
 }
 
 // ---- BETTER-AUTH CALLBACKS ----

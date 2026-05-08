@@ -1,11 +1,11 @@
-import { NotificationServiceNotConfiguredException } from "../../exceptions/infrastructure.exceptions";
-import { NotificationRequest } from "../../../application/ports/outbound/notification.port";
-import { IPushChannel } from "./push-channel.port";
+import { NotificationServiceNotConfiguredException } from '../../exceptions/infrastructure.exceptions';
+import { NotificationRequest } from '../../../application/ports/outbound/notification.port';
+import { IPushChannel } from './push-channel.port';
 
 export class PushAdapter implements IPushChannel {
   async send(request: NotificationRequest): Promise<void> {
     // TODO: Implement push notification when push service is available
-    throw new NotificationServiceNotConfiguredException("Push");
+    throw new NotificationServiceNotConfiguredException('Push');
 
     // When implemented:
     // try {

@@ -21,7 +21,12 @@ export type AppAction = (typeof AppAction)[keyof typeof AppAction];
 
 /** Permissions per resource for the athlete role (DB role: member) */
 const ATHLETE_PERMISSIONS: Record<string, readonly AppAction[]> = {
-  athlete: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
+  athlete: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
   session: [AppAction.read],
   personalRecord: [AppAction.read, AppAction.create],
   trainingSession: [AppAction.read],
@@ -32,19 +37,74 @@ const ATHLETE_PERMISSIONS: Record<string, readonly AppAction[]> = {
 
 /** Permissions per resource for the coach role (DB role: admin) */
 const COACH_PERMISSIONS: Record<string, readonly AppAction[]> = {
-  workout: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  workoutCategory: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  exercise: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  exerciseCategory: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  complex: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  complexCategory: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  athlete: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  session: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  personalRecord: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
-  trainingSession: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
+  workout: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  workoutCategory: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  exercise: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  exerciseCategory: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  complex: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  complexCategory: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  athlete: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  session: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  personalRecord: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
+  trainingSession: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
   athleteTrainingSession: [AppAction.read, AppAction.update],
   competitorStatus: [AppAction.read, AppAction.create, AppAction.update],
-  invitation: [AppAction.read, AppAction.create, AppAction.update, AppAction.delete],
+  invitation: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
 };
 
 const ROLE_PERMISSIONS: Record<
@@ -69,5 +129,7 @@ export function hasPermission(
       : undefined;
   if (!permissions) return false;
   const resourcePermissions = permissions[resource] ?? [];
-  return requiredActions.some((action) => resourcePermissions.includes(action as AppAction));
+  return requiredActions.some((action) =>
+    resourcePermissions.includes(action as AppAction)
+  );
 }

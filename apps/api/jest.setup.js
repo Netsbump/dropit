@@ -28,4 +28,4 @@ jest.mock('better-auth/plugins/organization', () => ({
     id: 'organization',
     endpoints: {},
   })),
-})); 
+}));

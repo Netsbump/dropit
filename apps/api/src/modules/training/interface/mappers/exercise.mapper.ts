@@ -19,4 +19,4 @@ export const ExerciseMapper = {
   toDtoList(exercises: Exercise[]): ExerciseDto[] {
     return exercises.map((exercise) => ExerciseMapper.toDto(exercise));
   },
-}; 
+};

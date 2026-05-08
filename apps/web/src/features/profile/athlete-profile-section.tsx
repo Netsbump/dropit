@@ -6,7 +6,13 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { api } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -45,12 +51,20 @@ export function AthleteProfileSection() {
   const [isCreating, setIsCreating] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const athleteFormSchema = useMemo(() => z.object({
-    firstName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    lastName: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    birthday: z.string().optional(),
-    country: z.string().optional(),
-  }), [t]);
+  const athleteFormSchema = useMemo(
+    () =>
+      z.object({
+        firstName: z
+          .string()
+          .min(1, { message: t('common:validation.nameRequired') }),
+        lastName: z
+          .string()
+          .min(1, { message: t('common:validation.nameRequired') }),
+        birthday: z.string().optional(),
+        country: z.string().optional(),
+      }),
+    [t]
+  );
 
   const athleteId = session?.session?.athleteId;
 
@@ -58,7 +72,9 @@ export function AthleteProfileSection() {
     queryKey: ['athlete', athleteId],
     queryFn: async () => {
       if (!athleteId) return null;
-      const response = await api.athlete.getAthlete({ params: { id: athleteId } });
+      const response = await api.athlete.getAthlete({
+        params: { id: athleteId },
+      });
       if (response.status !== 200) {
         throw new Error('Failed to load athlete profile');
       }
@@ -238,7 +254,9 @@ export function AthleteProfileSection() {
     return (
       <Card className="w-full">
         <CardHeader>
-          <CardTitle className="text-2xl shadow-none">{t('profile:athlete.title')}</CardTitle>
+          <CardTitle className="text-2xl shadow-none">
+            {t('profile:athlete.title')}
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center py-8">
@@ -261,7 +279,9 @@ export function AthleteProfileSection() {
     <>
       <Card className="w-full shadow-none">
         <CardHeader>
-          <CardTitle className="text-2xl">{t('profile:athlete.title')}</CardTitle>
+          <CardTitle className="text-2xl">
+            {t('profile:athlete.title')}
+          </CardTitle>
           {!isEditing && !isCreating && (
             <CardDescription>
               {athlete?.firstName} {athlete?.lastName}
@@ -319,7 +339,10 @@ export function AthleteProfileSection() {
             </div>
           ) : (
             <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <form
+                onSubmit={form.handleSubmit(onSubmit)}
+                className="space-y-4"
+              >
                 <FormField
                   control={form.control}
                   name="firstName"
@@ -385,7 +408,9 @@ export function AthleteProfileSection() {
                       </FormLabel>
                       <FormControl>
                         <Input
-                          placeholder={t('profile:athlete.form.country_placeholder')}
+                          placeholder={t(
+                            'profile:athlete.form.country_placeholder'
+                          )}
                           {...field}
                         />
                       </FormControl>
@@ -406,7 +431,11 @@ export function AthleteProfileSection() {
                           ? t('profile:athlete.form.create_button')
                           : t('profile:athlete.form.save_button')}
                   </Button>
-                  <Button type="button" variant="outline" onClick={handleCancel}>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleCancel}
+                  >
                     {t('profile:athlete.form.cancel_button')}
                   </Button>
                 </div>
@@ -420,7 +449,9 @@ export function AthleteProfileSection() {
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>{t('profile:athlete.delete.dialog_title')}</DialogTitle>
+            <DialogTitle>
+              {t('profile:athlete.delete.dialog_title')}
+            </DialogTitle>
             <DialogDescription>
               {t('profile:athlete.delete.dialog_description')}
             </DialogDescription>

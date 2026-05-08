@@ -1,33 +1,33 @@
-import { api } from '@/lib/api'
-import { DetailsPanel } from '@/components/ui/details-panel'
-import { HeroCard } from '@/components/ui/hero-card'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Spinner } from '@/components/ui/spinner'
-import { useTranslation } from '@dropit/i18n'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
-import { ComplexCreationForm } from '@/features/complex/complex-creation-form'
-import { ComplexDetail } from '@/features/complex/complex-detail'
-import { ComplexFilters } from '@/features/complex/complex-filters'
-import { ComplexGrid } from '@/features/complex/complex-grid'
-import { DialogCreation } from '@/features/exercises/dialog-creation'
-import { usePageMeta } from '@/hooks/use-page-meta'
-import { Button } from '@/components/ui/button'
-import { Zap } from 'lucide-react'
+import { api } from '@/lib/api';
+import { DetailsPanel } from '@/components/ui/details-panel';
+import { HeroCard } from '@/components/ui/hero-card';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Spinner } from '@/components/ui/spinner';
+import { useTranslation } from '@dropit/i18n';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import { ComplexCreationForm } from '@/features/complex/complex-creation-form';
+import { ComplexDetail } from '@/features/complex/complex-detail';
+import { ComplexFilters } from '@/features/complex/complex-filters';
+import { ComplexGrid } from '@/features/complex/complex-grid';
+import { DialogCreation } from '@/features/exercises/dialog-creation';
+import { usePageMeta } from '@/hooks/use-page-meta';
+import { Button } from '@/components/ui/button';
+import { Zap } from 'lucide-react';
 
 export const Route = createFileRoute('/_home/library/complex')({
   component: ComplexPage,
-})
+});
 
 function ComplexPage() {
   const { t } = useTranslation();
   const { setPageMeta } = usePageMeta();
-  const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false)
-  const [filter, setFilter] = useState('')
-  const [categoryFilter, setCategoryFilter] = useState('all')
-  const queryClient = useQueryClient()
-  const [selectedComplex, setSelectedComplex] = useState<string | null>(null)
+  const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
+  const [filter, setFilter] = useState('');
+  const [categoryFilter, setCategoryFilter] = useState('all');
+  const queryClient = useQueryClient();
+  const [selectedComplex, setSelectedComplex] = useState<string | null>(null);
 
   useEffect(() => {
     setPageMeta({ title: t('library.title') });
@@ -36,48 +36,49 @@ function ComplexPage() {
   const { data: complexes, isLoading } = useQuery({
     queryKey: ['complexes'],
     queryFn: async () => {
-      const response = await api.complex.getComplexes()
-      if (response.status !== 200) throw new Error('Failed to load complexes')
-      return response.body
+      const response = await api.complex.getComplexes();
+      if (response.status !== 200) throw new Error('Failed to load complexes');
+      return response.body;
     },
-  })
+  });
 
   const { data: categories } = useQuery({
     queryKey: ['complexCategories'],
     queryFn: async () => {
-      const response = await api.complexCategory.getComplexCategories()
-      if (response.status !== 200) throw new Error('Failed to load categories')
-      return response.body
+      const response = await api.complexCategory.getComplexCategories();
+      if (response.status !== 200) throw new Error('Failed to load categories');
+      return response.body;
     },
-  })
+  });
 
   const { data: complexDetails, isLoading: complexDetailsLoading } = useQuery({
     queryKey: ['complex', selectedComplex],
     queryFn: async () => {
-      if (!selectedComplex) return null
+      if (!selectedComplex) return null;
       const response = await api.complex.getComplex({
         params: { id: selectedComplex },
-      })
+      });
       if (response.status !== 200)
-        throw new Error('Failed to load complex details')
-      return response.body
+        throw new Error('Failed to load complex details');
+      return response.body;
     },
     enabled: !!selectedComplex,
-  })
+  });
 
   const filteredComplexes = complexes?.filter((complex) => {
     const matchesSearch = complex.complexCategory?.name
       .toLowerCase()
-      .includes(filter.toLowerCase())
+      .includes(filter.toLowerCase());
     const matchesCategory =
-      categoryFilter === 'all' || complex.complexCategory?.id === categoryFilter
-    return matchesSearch && matchesCategory
-  })
+      categoryFilter === 'all' ||
+      complex.complexCategory?.id === categoryFilter;
+    return matchesSearch && matchesCategory;
+  });
 
   const handleCreationSuccess = () => {
-    setCreateComplexModalOpen(false)
-    queryClient.invalidateQueries({ queryKey: ['complexes'] })
-  }
+    setCreateComplexModalOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['complexes'] });
+  };
 
   return (
     <div className="h-full flex gap-6 p-4">
@@ -97,8 +98,8 @@ function ComplexPage() {
                 text: t('complex.hero.stat_cta'),
                 onClick: () => {
                   console.log('Open complex tutorial video');
-                }
-              }
+                },
+              },
             }}
           />
 
@@ -121,7 +122,9 @@ function ComplexPage() {
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
               <p>{t('complex.filters.no_results')}</p>
               <p className="text-sm">{t('common.start_create')}</p>
-              <Button onClick={() => setCreateComplexModalOpen(true)}>{t('complex.filters.create_complex')}</Button>
+              <Button onClick={() => setCreateComplexModalOpen(true)}>
+                {t('complex.filters.create_complex')}
+              </Button>
             </div>
           ) : (
             <ComplexGrid
@@ -158,5 +161,5 @@ function ComplexPage() {
         />
       </DialogCreation>
     </div>
-  )
+  );
 }

@@ -11,10 +11,7 @@ import { createWorkoutSchema, updateWorkoutSchema } from '@dropit/schemas';
  * and returns a 400 error with validation details on failure.
  */
 describe('Zod Validation - Automatic validation with ts-rest', () => {
-
   describe('createWorkoutSchema - used by POST /api/workout', () => {
-
-
     it('should reject when workoutCategory is missing (required field)', () => {
       const invalidPayload = {
         elements: [],
@@ -25,8 +22,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const categoryError = result.error.issues.find(
-          issue => issue.path.includes('workoutCategory')
+        const categoryError = result.error.issues.find((issue) =>
+          issue.path.includes('workoutCategory')
         );
         expect(categoryError).toBeDefined();
       }
@@ -61,8 +58,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const setsError = result.error.issues.find(
-          issue => issue.path.includes('numberOfSets')
+        const setsError = result.error.issues.find((issue) =>
+          issue.path.includes('numberOfSets')
         );
         expect(setsError).toBeDefined();
         expect(setsError?.code).toBe('too_small');
@@ -98,8 +95,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const repsError = result.error.issues.find(
-          issue => issue.path.includes('reps')
+        const repsError = result.error.issues.find((issue) =>
+          issue.path.includes('reps')
         );
         expect(repsError).toBeDefined();
         expect(repsError?.code).toBe('too_small');
@@ -135,8 +132,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const orderError = result.error.issues.find(
-          issue => issue.path.includes('order')
+        const orderError = result.error.issues.find((issue) =>
+          issue.path.includes('order')
         );
         expect(orderError).toBeDefined();
         expect(orderError?.code).toBe('too_small');
@@ -206,8 +203,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const idError = result.error.issues.find(
-          issue => issue.path.includes('exerciseId')
+        const idError = result.error.issues.find((issue) =>
+          issue.path.includes('exerciseId')
         );
         expect(idError).toBeDefined();
       }
@@ -310,7 +307,6 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
   });
 
   describe('updateWorkoutSchema - used by PATCH /api/workout/:id', () => {
-
     it('should accept partial data (all fields optional)', () => {
       const validPayload = {
         description: 'Updated Description',
@@ -352,8 +348,8 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
 
       expect(result.success).toBe(false);
       if (!result.success) {
-        const setsError = result.error.issues.find(
-          issue => issue.path.includes('numberOfSets')
+        const setsError = result.error.issues.find((issue) =>
+          issue.path.includes('numberOfSets')
         );
         expect(setsError).toBeDefined();
       }
@@ -403,7 +399,6 @@ describe('Zod Validation - Automatic validation with ts-rest', () => {
   });
 
   describe('Documentation - How ts-rest uses these schemas', () => {
-
     it('documents that tsRestHandler automatically validates body', () => {
       /**
        * In workout.controller.ts, tsRestHandler automatically applies

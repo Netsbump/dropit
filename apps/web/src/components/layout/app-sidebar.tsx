@@ -65,7 +65,7 @@ export function AppSidebar() {
       url: '/athletes',
       icon: GraduationCap,
     },
-  ]
+  ];
 
   const secondaryItems = [
     {
@@ -81,7 +81,10 @@ export function AppSidebar() {
 
     // Special handling for nested routes
     if (itemUrl === '/library/workouts') {
-      return currentPath.startsWith('/library/') || currentPath.startsWith('/workouts/');
+      return (
+        currentPath.startsWith('/library/') ||
+        currentPath.startsWith('/workouts/')
+      );
     }
 
     if (itemUrl === '/athletes') {
@@ -100,7 +103,9 @@ export function AppSidebar() {
       {/* Logo */}
       <div className="flex items-center gap-2 px-2">
         <BicepsFlexed className="h-7 w-7 stroke-[2.5] text-[hsl(var(--sidebar-logo))]" />
-        <span className="text-base font-bold text-[hsl(var(--sidebar-logo))]">Dropit</span>
+        <span className="text-base font-bold text-[hsl(var(--sidebar-logo))]">
+          Dropit
+        </span>
       </div>
 
       {/* Main Menu */}
@@ -117,9 +122,17 @@ export function AppSidebar() {
                   : 'text-sidebar-foreground hover:bg-purple-200'
               }`}
             >
-              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <item.icon
+                className={`h-5 w-5 stroke-[2] ${
+                  isActive ? 'text-purple-700' : 'text-sidebar-foreground'
+                }`}
+              />
               <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
-                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                <span
+                  className={`${
+                    isActive ? 'text-purple-700' : 'text-sidebar-foreground'
+                  }`}
+                >
                   {item.title}
                 </span>
               </span>
@@ -142,9 +155,17 @@ export function AppSidebar() {
                   : 'text-sidebar-foreground hover:bg-purple-200'
               }`}
             >
-              <item.icon className={`h-5 w-5 stroke-[2] ${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`} />
+              <item.icon
+                className={`h-5 w-5 stroke-[2] ${
+                  isActive ? 'text-purple-700' : 'text-sidebar-foreground'
+                }`}
+              />
               <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
-                <span className={`${isActive ? 'text-purple-700' : 'text-sidebar-foreground'}`}>
+                <span
+                  className={`${
+                    isActive ? 'text-purple-700' : 'text-sidebar-foreground'
+                  }`}
+                >
                   {item.title}
                 </span>
               </span>

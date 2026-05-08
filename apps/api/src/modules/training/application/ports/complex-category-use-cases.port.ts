@@ -1,4 +1,7 @@
-import { CreateComplexCategoryInput, UpdateComplexCategoryInput } from '@dropit/schemas';
+import {
+  CreateComplexCategoryInput,
+  UpdateComplexCategoryInput,
+} from '@dropit/schemas';
 import { ComplexCategory } from '../../domain/complex-category.entity';
 
 /**
@@ -17,7 +20,11 @@ export interface IComplexCategoryUseCases {
   /**
    * Get one complex category by ID
    */
-  getOne(complexCategoryId: string, organizationId: string, userId: string): Promise<ComplexCategory>;
+  getOne(
+    complexCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<ComplexCategory>;
 
   /**
    * Get all complex categories for an organization
@@ -27,17 +34,30 @@ export interface IComplexCategoryUseCases {
   /**
    * Create a new complex category
    */
-  create(data: CreateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory>;
+  create(
+    data: CreateComplexCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ComplexCategory>;
 
   /**
    * Update a complex category
    */
-  update(complexCategoryId: string, data: UpdateComplexCategoryInput, organizationId: string, userId: string): Promise<ComplexCategory>;
+  update(
+    complexCategoryId: string,
+    data: UpdateComplexCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ComplexCategory>;
 
   /**
    * Delete a complex category
    */
-  delete(complexCategoryId: string, organizationId: string, userId: string): Promise<void>;
+  delete(
+    complexCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void>;
 }
 
 /**

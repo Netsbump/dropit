@@ -5,8 +5,17 @@ export const WORKOUT_REPO = 'WORKOUT_REPO';
 
 export interface IWorkoutRepository {
   getAll(coachFilterConditions: CoachFilterConditions): Promise<Workout[]>;
-  getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null>;
-  getOneWithDetails(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null>;
+  getOne(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<Workout | null>;
+  getOneWithDetails(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<Workout | null>;
   save(workout: Workout): Promise<Workout>;
-  remove(id: string, coachFilterConditions: CoachFilterConditions): Promise<void>;
-} 
+  remove(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<void>;
+}

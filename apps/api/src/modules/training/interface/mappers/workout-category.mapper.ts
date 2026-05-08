@@ -10,6 +10,8 @@ export const WorkoutCategoryMapper = {
   },
 
   toDtoList(workoutCategories: WorkoutCategory[]): WorkoutCategoryDto[] {
-    return workoutCategories.map((workoutCategory) => WorkoutCategoryMapper.toDto(workoutCategory));
+    return workoutCategories.map((workoutCategory) =>
+      WorkoutCategoryMapper.toDto(workoutCategory)
+    );
   },
-}; 
+};

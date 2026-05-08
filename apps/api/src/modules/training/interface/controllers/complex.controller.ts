@@ -1,15 +1,17 @@
 import { complexContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { IComplexUseCases, COMPLEX_USE_CASES } from '../../application/ports/complex-use-cases.port';
+import {
+  IComplexUseCases,
+  COMPLEX_USE_CASES,
+} from '../../application/ports/complex-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ComplexMapper } from '../mappers/complex.mapper';
 import { ComplexPresenter } from '../presenters/complex.presenter';
 
@@ -17,16 +19,16 @@ const c = complexContract;
 
 /**
  * Complex Controller
- * 
+ *
  * @description
  * Handles all complex related operations including CRUD operations.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
- * 
+ *
  * @see {@link IComplexUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -53,7 +55,10 @@ export class ComplexController {
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexes>> {
     return tsRestHandler(c.getComplexes, async () => {
       try {
-        const complexes = await this.complexUseCase.getAll(organizationId, user.id);
+        const complexes = await this.complexUseCase.getAll(
+          organizationId,
+          user.id
+        );
         const complexesDto = ComplexMapper.toDtoList(complexes);
         return ComplexPresenter.present(complexesDto);
       } catch (error) {
@@ -78,7 +83,11 @@ export class ComplexController {
   ): ReturnType<typeof tsRestHandler<typeof c.getComplex>> {
     return tsRestHandler(c.getComplex, async ({ params }) => {
       try {
-        const complex = await this.complexUseCase.getOne(params.id, organizationId, user.id);
+        const complex = await this.complexUseCase.getOne(
+          params.id,
+          organizationId,
+          user.id
+        );
         const complexDto = ComplexMapper.toDto(complex);
         return ComplexPresenter.presentOne(complexDto);
       } catch (error) {
@@ -103,7 +112,11 @@ export class ComplexController {
   ): ReturnType<typeof tsRestHandler<typeof c.createComplex>> {
     return tsRestHandler(c.createComplex, async ({ body }) => {
       try {
-        const complex = await this.complexUseCase.create(body, organizationId, user.id);
+        const complex = await this.complexUseCase.create(
+          body,
+          organizationId,
+          user.id
+        );
         const complexDto = ComplexMapper.toDto(complex);
         return ComplexPresenter.presentCreationSuccess(complexDto);
       } catch (error) {
@@ -129,7 +142,12 @@ export class ComplexController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateComplex>> {
     return tsRestHandler(c.updateComplex, async ({ params, body }) => {
       try {
-        const complex = await this.complexUseCase.update(params.id, body, organizationId, user.id);
+        const complex = await this.complexUseCase.update(
+          params.id,
+          body,
+          organizationId,
+          user.id
+        );
         const complexDto = ComplexMapper.toDto(complex);
         return ComplexPresenter.presentOne(complexDto);
       } catch (error) {

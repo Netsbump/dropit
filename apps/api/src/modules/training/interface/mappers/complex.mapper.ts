@@ -30,4 +30,4 @@ export const ComplexMapper = {
   toDtoList(complexes: Complex[]): ComplexDto[] {
     return complexes.map((complex) => ComplexMapper.toDto(complex));
   },
-}; 
+};

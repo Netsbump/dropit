@@ -10,10 +10,7 @@ interface WorkoutDetailProps {
   onEdit: () => void;
 }
 
-export function WorkoutDetail({
-  workout,
-  onEdit,
-}: WorkoutDetailProps) {
+export function WorkoutDetail({ workout, onEdit }: WorkoutDetailProps) {
   return (
     <div className="space-y-6">
       {/* Actions */}
@@ -79,7 +76,11 @@ export function WorkoutDetail({
                         <div className="space-y-2">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
+                              {element.blocks.reduce(
+                                (sum, b) => sum + b.numberOfSets,
+                                0
+                              )}{' '}
+                              séries
                             </Badge>
                             <span className="font-medium">
                               {element.exercise.name}
@@ -87,10 +88,14 @@ export function WorkoutDetail({
                           </div>
                           <div className="space-y-1">
                             {element.blocks.map((block) => (
-                              <p key={block.order} className="text-xs text-muted-foreground">
+                              <p
+                                key={block.order}
+                                className="text-xs text-muted-foreground"
+                              >
                                 {block.numberOfSets}x{block.exercises[0].reps}
                                 {block.rest && ` - ${block.rest}s repos`}
-                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                                {block.intensity?.percentageOfMax &&
+                                  ` @ ${block.intensity.percentageOfMax}%`}
                               </p>
                             ))}
                           </div>
@@ -99,10 +104,15 @@ export function WorkoutDetail({
                         <div className="space-y-3">
                           <div className="flex items-center gap-2">
                             <Badge variant="secondary">
-                              {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} séries
+                              {element.blocks.reduce(
+                                (sum, b) => sum + b.numberOfSets,
+                                0
+                              )}{' '}
+                              séries
                             </Badge>
                             <span className="font-medium">
-                              {element.complex.complexCategory?.name || 'Complex'}
+                              {element.complex.complexCategory?.name ||
+                                'Complex'}
                             </span>
                           </div>
                           <div className="space-y-2 ml-6">
@@ -117,10 +127,14 @@ export function WorkoutDetail({
                           </div>
                           <div className="space-y-1">
                             {element.blocks.map((block) => (
-                              <p key={block.order} className="text-xs text-muted-foreground">
+                              <p
+                                key={block.order}
+                                className="text-xs text-muted-foreground"
+                              >
                                 {block.numberOfSets} séries
                                 {block.rest && ` - ${block.rest}s repos`}
-                                {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                                {block.intensity?.percentageOfMax &&
+                                  ` @ ${block.intensity.percentageOfMax}%`}
                               </p>
                             ))}
                           </div>

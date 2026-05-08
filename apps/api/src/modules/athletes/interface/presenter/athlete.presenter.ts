@@ -2,7 +2,6 @@ import { AthleteDto, AthleteDetailsDto } from '@dropit/schemas';
 import { AthleteException } from '../../application/exceptions/athlete.exceptions';
 
 export const AthletePresenter = {
-
   presentList(athletes: AthleteDto[]) {
     return {
       status: 200 as const,
@@ -43,7 +42,7 @@ export const AthletePresenter = {
     if (error instanceof AthleteException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
@@ -51,7 +50,7 @@ export const AthletePresenter = {
     console.error('Athlete unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
   },
 
@@ -60,7 +59,7 @@ export const AthletePresenter = {
     if (error instanceof AthleteException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
@@ -68,8 +67,7 @@ export const AthletePresenter = {
     console.error('Athlete unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-
-}
+  },
+};

@@ -3,7 +3,6 @@ import { AthleteDetails } from '../../application/ports/athlete.repository.port'
 import { Athlete } from '../../domain/athlete.entity';
 
 export const AthleteMapper = {
-    
   toDtoDetails(athlete: AthleteDetails): AthleteDetailsDto {
     return {
       id: athlete.id,

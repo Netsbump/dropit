@@ -190,7 +190,9 @@ export function ComplexCreationForm({
     });
   };
 
-  const handleSubmit = async (formValues: z.infer<typeof formComplexSchema>) => {
+  const handleSubmit = async (
+    formValues: z.infer<typeof formComplexSchema>
+  ) => {
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',

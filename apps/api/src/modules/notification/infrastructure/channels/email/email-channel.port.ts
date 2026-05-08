@@ -1,4 +1,4 @@
-import { NotificationRequest } from "src/modules/notification/application/ports/outbound/notification.port";
+import { NotificationRequest } from 'src/modules/notification/application/ports/outbound/notification.port';
 
 /**
  * Rendered email ready to be sent by a transport (Brevo, Maildev).

@@ -284,7 +284,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
               name="complexCategory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-gray-500'>Catégorie</FormLabel>
+                  <FormLabel className="text-gray-500">Catégorie</FormLabel>
                   <Select
                     onValueChange={(value) => {
                       if (value === 'new') {
@@ -320,7 +320,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           <Separator />
           {/* Liste des exercices avec drag & drop */}
           <CardHeader className="flex flex-row items-center justify-between p-0">
-            <Label className='text-gray-500'>Exercices ({fields.length})</Label>
+            <Label className="text-gray-500">Exercices ({fields.length})</Label>
             <Button
               type="button"
               variant="outline"
@@ -464,8 +464,12 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       <CardContent className="p-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className='text-gray-500'>Catégorie</Label>
-            <Badge className={`text-xs border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}>
+            <Label className="text-gray-500">Catégorie</Label>
+            <Badge
+              className={`text-xs border-0 ${getCategoryBadgeVariant(
+                complex.complexCategory.name
+              )}`}
+            >
               {complex.complexCategory.name}
             </Badge>
           </div>
@@ -476,11 +480,18 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       {/* Liste des exercices */}
       <CardContent className="p-0">
         <div className="space-y-4">
-          <Label className='text-gray-500'>Exercices ({complex.exercises?.length || 0})</Label>
+          <Label className="text-gray-500">
+            Exercices ({complex.exercises?.length || 0})
+          </Label>
           <div className="space-y-3">
             {complex.exercises?.map((exercise) => (
-              <div key={exercise.id} className="bg-background rounded-xl p-4 border">
-                <p className="font-medium text-sm text-gray-700">{exercise.name}</p>
+              <div
+                key={exercise.id}
+                className="bg-background rounded-xl p-4 border"
+              >
+                <p className="font-medium text-sm text-gray-700">
+                  {exercise.name}
+                </p>
               </div>
             ))}
           </div>
@@ -493,13 +504,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className='text-gray-500'>Créé le</Label>
+              <Label className="text-gray-500">Créé le</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>
             </div>
             <div className="space-y-2">
-              <Label className='text-gray-500'>Dernière modification</Label>
+              <Label className="text-gray-500">Dernière modification</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>

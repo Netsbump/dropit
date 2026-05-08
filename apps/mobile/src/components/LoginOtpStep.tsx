@@ -17,7 +17,11 @@ interface LoginOtpStepProps {
   onBack: () => void;
 }
 
-export default function LoginOtpStep({ email, onSuccess, onBack }: LoginOtpStepProps) {
+export default function LoginOtpStep({
+  email,
+  onSuccess,
+  onBack,
+}: LoginOtpStepProps) {
   const [otp, setOtp] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
@@ -37,7 +41,10 @@ export default function LoginOtpStep({ email, onSuccess, onBack }: LoginOtpStepP
 
       if (error) {
         console.error('Verify OTP error:', error);
-        Alert.alert('Erreur de connexion', error.message || 'Code incorrect ou expiré');
+        Alert.alert(
+          'Erreur de connexion',
+          error.message || 'Code incorrect ou expiré'
+        );
         return;
       }
 
@@ -75,7 +82,10 @@ export default function LoginOtpStep({ email, onSuccess, onBack }: LoginOtpStepP
       </View>
 
       <TouchableOpacity
-        style={[loginStyles.primaryButton, isLoading && loginStyles.primaryButtonDisabled]}
+        style={[
+          loginStyles.primaryButton,
+          isLoading && loginStyles.primaryButtonDisabled,
+        ]}
         onPress={handleVerifyOtp}
         disabled={isLoading}
       >

@@ -10,7 +10,9 @@ export const createPersonalRecordSchema = z.object({
   exerciseId: z.string(),
 });
 
-export type CreatePersonalRecordInput = z.infer<typeof createPersonalRecordSchema>;
+export type CreatePersonalRecordInput = z.infer<
+  typeof createPersonalRecordSchema
+>;
 
 export const updatePersonalRecordSchema = createPersonalRecordSchema
   .partial()
@@ -19,7 +21,9 @@ export const updatePersonalRecordSchema = createPersonalRecordSchema
     exerciseId: true,
   });
 
-export type UpdatePersonalRecordInput = z.infer<typeof updatePersonalRecordSchema>;
+export type UpdatePersonalRecordInput = z.infer<
+  typeof updatePersonalRecordSchema
+>;
 
 export const personalRecordSchema = z.object({
   id: z.string(),

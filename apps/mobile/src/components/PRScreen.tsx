@@ -23,7 +23,9 @@ interface PRScreenProps {
 export default function PRScreen({ onTabPress }: PRScreenProps) {
   const [searchText, setSearchText] = useState('');
   const [allRecords, setAllRecords] = useState<PersonalRecordDto[]>([]);
-  const [filteredRecords, setFilteredRecords] = useState<PersonalRecordDto[]>([]);
+  const [filteredRecords, setFilteredRecords] = useState<PersonalRecordDto[]>(
+    []
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [athleteId, setAthleteId] = useState<string | null>(null);
 
@@ -53,7 +55,10 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
           params: { id: athleteId },
         });
 
-        const data = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+        const data =
+          typeof response.body === 'string'
+            ? JSON.parse(response.body)
+            : response.body;
 
         if (response.status === 200) {
           setAllRecords(data);
@@ -76,7 +81,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
     if (text === '') {
       setFilteredRecords(allRecords);
     } else {
-      const filtered = allRecords.filter(record =>
+      const filtered = allRecords.filter((record) =>
         record.exerciseName?.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredRecords(filtered);
@@ -101,12 +106,14 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
         styles.prCard,
         index === filteredRecords.length - 1 && filteredRecords.length % 2 === 1
           ? styles.fullWidthCard
-          : styles.halfWidthCard
+          : styles.halfWidthCard,
       ]}
       onPress={() => handleRecordPress(record)}
       activeOpacity={0.8}
     >
-      <Text style={styles.exerciseName}>{record.exerciseName || 'Exercice'}</Text>
+      <Text style={styles.exerciseName}>
+        {record.exerciseName || 'Exercice'}
+      </Text>
       <Text style={styles.recordValue}>
         {record.weight}
         <Text style={styles.unit}>kg</Text>
@@ -145,7 +152,9 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
           </View>
         ) : filteredRecords.length > 0 ? (
           <View style={styles.recordsGrid}>
-            {filteredRecords.map((record, index) => renderPRCard(record, index))}
+            {filteredRecords.map((record, index) =>
+              renderPRCard(record, index)
+            )}
           </View>
         ) : (
           <View style={styles.emptyState}>
@@ -153,7 +162,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
             <Text style={styles.emptyStateText}>
               {searchText
                 ? 'Aucun record trouvé pour cette recherche'
-                : 'Vous n\'avez pas encore de records personnels'}
+                : "Vous n'avez pas encore de records personnels"}
             </Text>
           </View>
         )}
@@ -170,16 +179,12 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
           </LinearGradient>
         </TouchableOpacity>
 
-
         {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab="pr"
-        onTabPress={onTabPress}
-      />
+      <BottomNavigation activeTab="pr" onTabPress={onTabPress} />
     </View>
   );
 }

@@ -1,7 +1,5 @@
 {
-  "namespaces": [
-    "public"
-  ],
+  "namespaces": ["public"],
   "name": "public",
   "tables": [
     {
@@ -82,9 +80,7 @@
       "indexes": [
         {
           "keyName": "media_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -163,9 +159,7 @@
       "indexes": [
         {
           "keyName": "organization_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -293,9 +287,7 @@
       "schema": "public",
       "indexes": [
         {
-          "columnNames": [
-            "email"
-          ],
+          "columnNames": ["email"],
           "composite": false,
           "keyName": "user_email_unique",
           "constraint": true,
@@ -304,9 +296,7 @@
         },
         {
           "keyName": "user_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -429,9 +419,7 @@
       "schema": "public",
       "indexes": [
         {
-          "columnNames": [
-            "token"
-          ],
+          "columnNames": ["token"],
           "composite": false,
           "keyName": "session_token_unique",
           "constraint": true,
@@ -440,9 +428,7 @@
         },
         {
           "keyName": "session_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -453,13 +439,9 @@
       "foreignKeys": {
         "session_userId_foreign": {
           "constraintName": "session_userId_foreign",
-          "columnNames": [
-            "userId"
-          ],
+          "columnNames": ["userId"],
           "localTableName": "public.session",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -524,9 +506,7 @@
       "indexes": [
         {
           "keyName": "member_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -543,26 +523,18 @@
       "foreignKeys": {
         "member_userId_foreign": {
           "constraintName": "member_userId_foreign",
-          "columnNames": [
-            "userId"
-          ],
+          "columnNames": ["userId"],
           "localTableName": "public.member",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "member_organizationId_foreign": {
           "constraintName": "member_organizationId_foreign",
-          "columnNames": [
-            "organizationId"
-          ],
+          "columnNames": ["organizationId"],
           "localTableName": "public.member",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.organization",
           "updateRule": "cascade"
         }
@@ -655,9 +627,7 @@
       "indexes": [
         {
           "keyName": "invitation_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -668,25 +638,17 @@
       "foreignKeys": {
         "invitation_inviterId_foreign": {
           "constraintName": "invitation_inviterId_foreign",
-          "columnNames": [
-            "inviterId"
-          ],
+          "columnNames": ["inviterId"],
           "localTableName": "public.invitation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "updateRule": "cascade"
         },
         "invitation_organizationId_foreign": {
           "constraintName": "invitation_organizationId_foreign",
-          "columnNames": [
-            "organizationId"
-          ],
+          "columnNames": ["organizationId"],
           "localTableName": "public.invitation",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.organization",
           "updateRule": "cascade"
         }
@@ -750,9 +712,7 @@
       "indexes": [
         {
           "keyName": "exercise_category_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -763,13 +723,9 @@
       "foreignKeys": {
         "exercise_category_created_by_id_foreign": {
           "constraintName": "exercise_category_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.exercise_category",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "set null",
           "updateRule": "cascade"
@@ -872,9 +828,7 @@
       "indexes": [
         {
           "keyName": "exercise_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -885,38 +839,26 @@
       "foreignKeys": {
         "exercise_created_by_id_foreign": {
           "constraintName": "exercise_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.exercise",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "exercise_exercise_category_id_foreign": {
           "constraintName": "exercise_exercise_category_id_foreign",
-          "columnNames": [
-            "exercise_category_id"
-          ],
+          "columnNames": ["exercise_category_id"],
           "localTableName": "public.exercise",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.exercise_category",
           "updateRule": "cascade"
         },
         "exercise_video_id_foreign": {
           "constraintName": "exercise_video_id_foreign",
-          "columnNames": [
-            "video_id"
-          ],
+          "columnNames": ["video_id"],
           "localTableName": "public.exercise",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.media",
           "deleteRule": "set null",
           "updateRule": "cascade"
@@ -981,9 +923,7 @@
       "indexes": [
         {
           "keyName": "complex_category_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -994,13 +934,9 @@
       "foreignKeys": {
         "complex_category_created_by_id_foreign": {
           "constraintName": "complex_category_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.complex_category",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "set null",
           "updateRule": "cascade"
@@ -1064,9 +1000,7 @@
       "indexes": [
         {
           "keyName": "complex_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1077,25 +1011,17 @@
       "foreignKeys": {
         "complex_complex_category_id_foreign": {
           "constraintName": "complex_complex_category_id_foreign",
-          "columnNames": [
-            "complex_category_id"
-          ],
+          "columnNames": ["complex_category_id"],
           "localTableName": "public.complex",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.complex_category",
           "updateRule": "cascade"
         },
         "complex_created_by_id_foreign": {
           "constraintName": "complex_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.complex",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1158,10 +1084,7 @@
       "indexes": [
         {
           "keyName": "exercise_complex_pkey",
-          "columnNames": [
-            "complex_id",
-            "exercise_id"
-          ],
+          "columnNames": ["complex_id", "exercise_id"],
           "composite": true,
           "constraint": true,
           "primary": true,
@@ -1172,26 +1095,18 @@
       "foreignKeys": {
         "exercise_complex_complex_id_foreign": {
           "constraintName": "exercise_complex_complex_id_foreign",
-          "columnNames": [
-            "complex_id"
-          ],
+          "columnNames": ["complex_id"],
           "localTableName": "public.exercise_complex",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.complex",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "exercise_complex_exercise_id_foreign": {
           "constraintName": "exercise_complex_exercise_id_foreign",
-          "columnNames": [
-            "exercise_id"
-          ],
+          "columnNames": ["exercise_id"],
           "localTableName": "public.exercise_complex",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.exercise",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1285,9 +1200,7 @@
       "schema": "public",
       "indexes": [
         {
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "composite": false,
           "keyName": "athlete_user_id_unique",
           "constraint": true,
@@ -1296,9 +1209,7 @@
         },
         {
           "keyName": "athlete_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1309,13 +1220,9 @@
       "foreignKeys": {
         "athlete_user_id_foreign": {
           "constraintName": "athlete_user_id_foreign",
-          "columnNames": [
-            "user_id"
-          ],
+          "columnNames": ["user_id"],
           "localTableName": "public.athlete",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1398,9 +1305,7 @@
       "indexes": [
         {
           "keyName": "physical_metric_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1411,13 +1316,9 @@
       "foreignKeys": {
         "physical_metric_athlete_id_foreign": {
           "constraintName": "physical_metric_athlete_id_foreign",
-          "columnNames": [
-            "athlete_id"
-          ],
+          "columnNames": ["athlete_id"],
           "localTableName": "public.physical_metric",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.athlete",
           "updateRule": "cascade"
         }
@@ -1499,9 +1400,7 @@
       "indexes": [
         {
           "keyName": "personal_record_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1512,25 +1411,17 @@
       "foreignKeys": {
         "personal_record_athlete_id_foreign": {
           "constraintName": "personal_record_athlete_id_foreign",
-          "columnNames": [
-            "athlete_id"
-          ],
+          "columnNames": ["athlete_id"],
           "localTableName": "public.personal_record",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.athlete",
           "updateRule": "cascade"
         },
         "personal_record_exercise_id_foreign": {
           "constraintName": "personal_record_exercise_id_foreign",
-          "columnNames": [
-            "exercise_id"
-          ],
+          "columnNames": ["exercise_id"],
           "localTableName": "public.personal_record",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.exercise",
           "updateRule": "cascade"
         }
@@ -1572,10 +1463,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "enumItems": [
-            "men",
-            "women"
-          ],
+          "enumItems": ["men", "women"],
           "mappedType": "enum"
         },
         "weight_category": {
@@ -1632,9 +1520,7 @@
       "indexes": [
         {
           "keyName": "competitor_status_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1645,13 +1531,9 @@
       "foreignKeys": {
         "competitor_status_athlete_id_foreign": {
           "constraintName": "competitor_status_athlete_id_foreign",
-          "columnNames": [
-            "athlete_id"
-          ],
+          "columnNames": ["athlete_id"],
           "localTableName": "public.competitor_status",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.athlete",
           "updateRule": "cascade"
         }
@@ -1795,9 +1677,7 @@
       "indexes": [
         {
           "keyName": "account_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1808,13 +1688,9 @@
       "foreignKeys": {
         "account_userId_foreign": {
           "constraintName": "account_userId_foreign",
-          "columnNames": [
-            "userId"
-          ],
+          "columnNames": ["userId"],
           "localTableName": "public.account",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1890,9 +1766,7 @@
       "indexes": [
         {
           "keyName": "verification_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1960,9 +1834,7 @@
       "indexes": [
         {
           "keyName": "workout_category_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1973,13 +1845,9 @@
       "foreignKeys": {
         "workout_category_created_by_id_foreign": {
           "constraintName": "workout_category_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.workout_category",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "set null",
           "updateRule": "cascade"
@@ -2053,9 +1921,7 @@
       "indexes": [
         {
           "keyName": "workout_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -2066,25 +1932,17 @@
       "foreignKeys": {
         "workout_category_id_foreign": {
           "constraintName": "workout_category_id_foreign",
-          "columnNames": [
-            "category_id"
-          ],
+          "columnNames": ["category_id"],
           "localTableName": "public.workout",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.workout_category",
           "updateRule": "cascade"
         },
         "workout_created_by_id_foreign": {
           "constraintName": "workout_created_by_id_foreign",
-          "columnNames": [
-            "created_by_id"
-          ],
+          "columnNames": ["created_by_id"],
           "localTableName": "public.workout",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.user",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -2168,9 +2026,7 @@
       "indexes": [
         {
           "keyName": "training_session_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -2181,25 +2037,17 @@
       "foreignKeys": {
         "training_session_workout_id_foreign": {
           "constraintName": "training_session_workout_id_foreign",
-          "columnNames": [
-            "workout_id"
-          ],
+          "columnNames": ["workout_id"],
           "localTableName": "public.training_session",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.workout",
           "updateRule": "cascade"
         },
         "training_session_organization_id_foreign": {
           "constraintName": "training_session_organization_id_foreign",
-          "columnNames": [
-            "organization_id"
-          ],
+          "columnNames": ["organization_id"],
           "localTableName": "public.training_session",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.organization",
           "updateRule": "cascade"
         }
@@ -2262,10 +2110,7 @@
       "indexes": [
         {
           "keyName": "athlete_training_session_pkey",
-          "columnNames": [
-            "athlete_id",
-            "training_session_id"
-          ],
+          "columnNames": ["athlete_id", "training_session_id"],
           "composite": true,
           "constraint": true,
           "primary": true,
@@ -2276,25 +2121,17 @@
       "foreignKeys": {
         "athlete_training_session_athlete_id_foreign": {
           "constraintName": "athlete_training_session_athlete_id_foreign",
-          "columnNames": [
-            "athlete_id"
-          ],
+          "columnNames": ["athlete_id"],
           "localTableName": "public.athlete_training_session",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.athlete",
           "updateRule": "cascade"
         },
         "athlete_training_session_training_session_id_foreign": {
           "constraintName": "athlete_training_session_training_session_id_foreign",
-          "columnNames": [
-            "training_session_id"
-          ],
+          "columnNames": ["training_session_id"],
           "localTableName": "public.athlete_training_session",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.training_session",
           "updateRule": "cascade"
         }
@@ -2320,10 +2157,7 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "enumItems": [
-            "exercise",
-            "complex"
-          ],
+          "enumItems": ["exercise", "complex"],
           "mappedType": "enum"
         },
         "workout_id": {
@@ -2417,9 +2251,7 @@
       "indexes": [
         {
           "keyName": "workout_element_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -2436,39 +2268,27 @@
       "foreignKeys": {
         "workout_element_workout_id_foreign": {
           "constraintName": "workout_element_workout_id_foreign",
-          "columnNames": [
-            "workout_id"
-          ],
+          "columnNames": ["workout_id"],
           "localTableName": "public.workout_element",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.workout",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "workout_element_exercise_id_foreign": {
           "constraintName": "workout_element_exercise_id_foreign",
-          "columnNames": [
-            "exercise_id"
-          ],
+          "columnNames": ["exercise_id"],
           "localTableName": "public.workout_element",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.exercise",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "workout_element_complex_id_foreign": {
           "constraintName": "workout_element_complex_id_foreign",
-          "columnNames": [
-            "complex_id"
-          ],
+          "columnNames": ["complex_id"],
           "localTableName": "public.workout_element",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.complex",
           "deleteRule": "cascade",
           "updateRule": "cascade"

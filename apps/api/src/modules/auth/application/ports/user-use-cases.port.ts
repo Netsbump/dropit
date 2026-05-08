@@ -22,7 +22,11 @@ export interface IUserUseCases {
   /**
    * Create a new user
    */
-  create(data: { name: string; email: string; emailVerified: boolean }): Promise<User>;
+  create(data: {
+    name: string;
+    email: string;
+    emailVerified: boolean;
+  }): Promise<User>;
 
   /**
    * Update user

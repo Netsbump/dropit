@@ -1,4 +1,4 @@
-import { Organization } from "../../domain/organization/organization.entity";
+import { Organization } from '../../domain/organization/organization.entity';
 
 export const ORGANIZATION_REPO = Symbol('ORGANIZATION_REPO');
 

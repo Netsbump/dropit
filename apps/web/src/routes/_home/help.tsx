@@ -2,7 +2,13 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { useEffect, useState } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -51,14 +57,18 @@ function RouteComponent() {
                   <Mail className="h-5 w-5 text-primary" />
                   <CardTitle>{t('help.contact.title')}</CardTitle>
                 </div>
-                <CardDescription>{t('help.contact.description')}</CardDescription>
+                <CardDescription>
+                  {t('help.contact.description')}
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="bg-muted p-4 rounded-lg space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">
                     {t('help.contact.email.label')}
                   </p>
-                  <p className="text-lg font-semibold">{t('help.contact.email.value')}</p>
+                  <p className="text-lg font-semibold">
+                    {t('help.contact.email.value')}
+                  </p>
                   <Button asChild className="w-full mt-2">
                     <a href={`mailto:${t('help.contact.email.value')}`}>
                       {t('help.contact.email.action')}
@@ -86,7 +96,9 @@ function RouteComponent() {
                     <div className="flex items-start gap-2">
                       <Shield className="h-5 w-5 text-primary mt-0.5" />
                       <div className="flex-1 space-y-1">
-                        <h4 className="font-semibold">{t('help.legal.privacy.title')}</h4>
+                        <h4 className="font-semibold">
+                          {t('help.legal.privacy.title')}
+                        </h4>
                         <p className="text-sm text-muted-foreground">
                           {t('help.legal.privacy.description')}
                         </p>
@@ -105,7 +117,9 @@ function RouteComponent() {
                     <div className="flex items-start gap-2">
                       <FileText className="h-5 w-5 text-primary mt-0.5" />
                       <div className="flex-1 space-y-1">
-                        <h4 className="font-semibold">{t('help.legal.terms.title')}</h4>
+                        <h4 className="font-semibold">
+                          {t('help.legal.terms.title')}
+                        </h4>
                         <p className="text-sm text-muted-foreground">
                           {t('help.legal.terms.description')}
                         </p>
@@ -135,28 +149,36 @@ function RouteComponent() {
             <CardContent>
               <Accordion type="single" collapsible className="w-full">
                 <AccordionItem value="account">
-                  <AccordionTrigger>{t('help.faq.items.account.question')}</AccordionTrigger>
+                  <AccordionTrigger>
+                    {t('help.faq.items.account.question')}
+                  </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
                     {t('help.faq.items.account.answer')}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="athlete">
-                  <AccordionTrigger>{t('help.faq.items.athlete.question')}</AccordionTrigger>
+                  <AccordionTrigger>
+                    {t('help.faq.items.athlete.question')}
+                  </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
                     {t('help.faq.items.athlete.answer')}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="data">
-                  <AccordionTrigger>{t('help.faq.items.data.question')}</AccordionTrigger>
+                  <AccordionTrigger>
+                    {t('help.faq.items.data.question')}
+                  </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
                     {t('help.faq.items.data.answer')}
                   </AccordionContent>
                 </AccordionItem>
 
                 <AccordionItem value="support">
-                  <AccordionTrigger>{t('help.faq.items.support.question')}</AccordionTrigger>
+                  <AccordionTrigger>
+                    {t('help.faq.items.support.question')}
+                  </AccordionTrigger>
                   <AccordionContent className="text-muted-foreground">
                     {t('help.faq.items.support.answer')}
                   </AccordionContent>
@@ -213,7 +235,9 @@ function PrivacyContent() {
 
       {/* Data Controller */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">{t('sections.responsable.title')}</h3>
+        <h3 className="text-lg font-semibold">
+          {t('sections.responsable.title')}
+        </h3>
         <p>{t('sections.responsable.content')}</p>
         <div className="bg-muted p-3 rounded-md space-y-1">
           <p className="font-semibold">{t('sections.responsable.name')}</p>
@@ -223,7 +247,9 @@ function PrivacyContent() {
 
       {/* Personal Data Collected */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">{t('sections.donneesCollectees.title')}</h3>
+        <h3 className="text-lg font-semibold">
+          {t('sections.donneesCollectees.title')}
+        </h3>
         <p>{t('sections.donneesCollectees.intro')}</p>
         <div className="space-y-2">
           <div>
@@ -245,14 +271,20 @@ function PrivacyContent() {
 
       {/* Processing Purposes */}
       <div className="space-y-2">
-        <h3 className="text-lg font-semibold">{t('sections.finalites.title')}</h3>
+        <h3 className="text-lg font-semibold">
+          {t('sections.finalites.title')}
+        </h3>
         <div className="space-y-2">
           {(
-            t('sections.finalites.items', { returnObjects: true }) as ProcessingPurpose[]
+            t('sections.finalites.items', {
+              returnObjects: true,
+            }) as ProcessingPurpose[]
           ).map((item) => (
             <div key={item.purpose} className="bg-muted p-2 rounded-md">
               <p className="font-semibold">{item.purpose}</p>
-              <p className="text-xs text-muted-foreground">Données: {item.data}</p>
+              <p className="text-xs text-muted-foreground">
+                Données: {item.data}
+              </p>
             </div>
           ))}
         </div>
@@ -263,7 +295,9 @@ function PrivacyContent() {
         <h3 className="text-lg font-semibold">{t('sections.droits.title')}</h3>
         <p>{t('sections.droits.intro')}</p>
         <div className="space-y-2">
-          {(t('sections.droits.rights', { returnObjects: true }) as GdprRight[]).map((right) => (
+          {(
+            t('sections.droits.rights', { returnObjects: true }) as GdprRight[]
+          ).map((right) => (
             <div key={right.name} className="bg-muted p-2 rounded-md">
               <p className="font-semibold">{right.name}</p>
               <p className="text-xs">{right.description}</p>
@@ -306,7 +340,9 @@ function TermsContent() {
         </div>
 
         <div>
-          <h3 className="text-lg font-semibold mb-2">{t('terms.sections.yourAccount.title')}</h3>
+          <h3 className="text-lg font-semibold mb-2">
+            {t('terms.sections.yourAccount.title')}
+          </h3>
           <p>{t('terms.sections.yourAccount.description')}</p>
         </div>
 

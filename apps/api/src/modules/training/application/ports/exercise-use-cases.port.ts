@@ -17,7 +17,11 @@ export interface IExerciseUseCases {
   /**
    * Get one exercise by ID
    */
-  getOne(exerciseId: string, organizationId: string, userId: string): Promise<Exercise>;
+  getOne(
+    exerciseId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<Exercise>;
 
   /**
    * Get all exercises for an organization
@@ -27,22 +31,39 @@ export interface IExerciseUseCases {
   /**
    * Create a new exercise
    */
-  create(data: CreateExerciseInput, userId: string, organizationId: string): Promise<Exercise>;
+  create(
+    data: CreateExerciseInput,
+    userId: string,
+    organizationId: string
+  ): Promise<Exercise>;
 
   /**
    * Update an exercise
    */
-  update(exerciseId: string, data: UpdateExerciseInput, userId: string, organizationId: string): Promise<Exercise>;
+  update(
+    exerciseId: string,
+    data: UpdateExerciseInput,
+    userId: string,
+    organizationId: string
+  ): Promise<Exercise>;
 
   /**
    * Search exercises by name
    */
-  search(query: string, organizationId: string, userId: string): Promise<Exercise[]>;
+  search(
+    query: string,
+    organizationId: string,
+    userId: string
+  ): Promise<Exercise[]>;
 
   /**
    * Delete an exercise
    */
-  delete(exerciseId: string, userId: string, organizationId: string): Promise<void>;
+  delete(
+    exerciseId: string,
+    userId: string,
+    organizationId: string
+  ): Promise<void>;
 }
 
 /**

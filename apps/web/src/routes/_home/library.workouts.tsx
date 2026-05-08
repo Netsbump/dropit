@@ -29,7 +29,6 @@ function WorkoutPage() {
     setPageMeta({ title: t('library.title') });
   }, [setPageMeta, t]);
 
-
   const { data: workouts, isLoading } = useQuery({
     queryKey: ['workouts'],
     queryFn: async () => {
@@ -52,15 +51,15 @@ function WorkoutPage() {
     queryKey: ['trainingSessions'],
     queryFn: async () => {
       const response = await api.trainingSession.getTrainingSessions();
-      if (response.status !== 200) throw new Error('Failed to load training sessions');
+      if (response.status !== 200)
+        throw new Error('Failed to load training sessions');
       return response.body;
     },
   });
 
   const filteredWorkouts = workouts?.filter((workout) => {
-    const matchesSearch = workout.description
-      ?.toLowerCase()
-      .includes(filter.toLowerCase()) ?? true;
+    const matchesSearch =
+      workout.description?.toLowerCase().includes(filter.toLowerCase()) ?? true;
     const matchesCategory =
       categoryFilter === 'all' || workout.workoutCategory === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -98,8 +97,8 @@ function WorkoutPage() {
               onClick: () => {
                 // TODO: Ouvrir une popup avec vidéo explicative
                 console.log('Open workout tutorial video');
-              }
-            }
+              },
+            },
           }}
         />
 

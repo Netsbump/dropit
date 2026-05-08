@@ -32,7 +32,7 @@ export class Exercise {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade' })
   createdBy!: User | null;
 
   @ManyToOne(() => ExerciseCategory)

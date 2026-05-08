@@ -1,6 +1,6 @@
-import { Entity, ManyToOne, PrimaryKey, Property } from "@mikro-orm/core";
-import { User } from "../auth/user.entity";
-import { Organization } from "./organization.entity";
+import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
+import { User } from '../auth/user.entity';
+import { Organization } from './organization.entity';
 
 /**
  * Store invitations to join an organization
@@ -30,4 +30,4 @@ export class Invitation {
 
   @Property({ fieldName: 'expiresAt' })
   expiresAt!: Date;
-} 
+}

@@ -17,7 +17,7 @@ import { TestUseCaseFactory } from './utils/test-use-cases';
  */
 export async function runComplexTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running complex integration tests...');
-  
+
   let organizationUseCases: OrganizationUseCases;
   let exerciseCategoryUseCase: ExerciseCategoryUseCase;
   let exerciseUseCase: ExerciseUseCase;
@@ -30,10 +30,10 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
   try {
     // Clean the database
     await cleanDatabase(orm);
-    
+
     // Setup organization (dependency)
     testData = await setupOrganization(orm);
-    
+
     // Use the factory to create use cases
     const factory = new TestUseCaseFactory(orm);
     organizationUseCases = factory.createOrganizationUseCases();
@@ -44,22 +44,34 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
 
     // Create an exercise category via use case
     try {
-      exerciseCategory = await exerciseCategoryUseCase.create({ 
-        name: 'Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      exerciseCategory = await exerciseCategoryUseCase.create(
+        {
+          name: 'Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise category: ${(error as Error).message}`
+      );
     }
 
     // Create a complex category via use case
     try {
-      complexCategory = await complexCategoryUseCase.create({ 
-        name: 'Complexes Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      complexCategory = await complexCategoryUseCase.create(
+        {
+          name: 'Complexes Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create complex category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create complex category: ${(error as Error).message}`
+      );
     }
-    
+
     expect(complexCategory).toBeDefined();
     expect(complexCategory.id).toBeDefined();
     expect(complexCategory.name).toBe('Complexes Haltérophilie');
@@ -70,22 +82,36 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     let exercise2: Exercise;
     let exercise3: Exercise;
     try {
-      exercise1 = await exerciseUseCase.create({
-        name: 'Squat',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise1 = await exerciseUseCase.create(
+        {
+          name: 'Squat',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      exercise2 = await exerciseUseCase.create({
-        name: 'Deadlift',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise2 = await exerciseUseCase.create(
+        {
+          name: 'Deadlift',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      exercise3 = await exerciseUseCase.create({
-        name: 'Bench Press',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise3 = await exerciseUseCase.create(
+        {
+          name: 'Bench Press',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercises: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercises: ${(error as Error).message}`
+      );
     }
 
     expect(exercise1).toBeDefined();
@@ -96,23 +122,27 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing complex creation via use case...');
     let complex1: Complex;
     try {
-      complex1 = await complexUseCase.create({
-        complexCategory: complexCategory.id,
-        exercises: [
-          {
-            exerciseId: exercise1.id,
-            order: 1,
-          },
-          {
-            exerciseId: exercise2.id,
-            order: 2,
-          },
-          {
-            exerciseId: exercise3.id,
-            order: 3,
-          },
-        ],
-      }, testData.organization.id, testData.adminUser.id);
+      complex1 = await complexUseCase.create(
+        {
+          complexCategory: complexCategory.id,
+          exercises: [
+            {
+              exerciseId: exercise1.id,
+              order: 1,
+            },
+            {
+              exerciseId: exercise2.id,
+              order: 2,
+            },
+            {
+              exerciseId: exercise3.id,
+              order: 3,
+            },
+          ],
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to create complex: ${(error as Error).message}`);
     }
@@ -127,25 +157,39 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     let exercise5: Exercise;
     let complex2: Complex;
     try {
-      exercise4 = await exerciseUseCase.create({
-        name: 'Push-up',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise4 = await exerciseUseCase.create(
+        {
+          name: 'Push-up',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      exercise5 = await exerciseUseCase.create({
-        name: 'Pull-up',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise5 = await exerciseUseCase.create(
+        {
+          name: 'Pull-up',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      complex2 = await complexUseCase.create({
-        complexCategory: complexCategory.id,
-        exercises: [
-          { exerciseId: exercise4.id, order: 1 },
-          { exerciseId: exercise5.id, order: 2 },
-        ],
-      }, testData.organization.id, testData.adminUser.id);
+      complex2 = await complexUseCase.create(
+        {
+          complexCategory: complexCategory.id,
+          exercises: [
+            { exerciseId: exercise4.id, order: 1 },
+            { exerciseId: exercise5.id, order: 2 },
+          ],
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create second complex: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create second complex: ${(error as Error).message}`
+      );
     }
 
     expect(complex2).toBeDefined();
@@ -155,7 +199,10 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing complex retrieval via use case...');
     let complexes: Complex[];
     try {
-      complexes = await complexUseCase.getAll(testData.organization.id, testData.adminUser.id);
+      complexes = await complexUseCase.getAll(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to get complexes: ${(error as Error).message}`);
     }
@@ -165,9 +212,15 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing single complex retrieval via use case...');
     let singleComplex: Complex;
     try {
-      singleComplex = await complexUseCase.getOne(complex1.id, testData.organization.id, testData.adminUser.id);
+      singleComplex = await complexUseCase.getOne(
+        complex1.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get single complex: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get single complex: ${(error as Error).message}`
+      );
     }
     expect(singleComplex.id).toBe(complex1.id);
 
@@ -200,23 +253,31 @@ export async function runComplexTests(orm: MikroORM): Promise<void> {
     // Test 7: Delete a complex via use case
     console.log('🧪 Testing complex deletion via use case...');
     try {
-      await complexUseCase.delete(complex2.id, testData.organization.id, testData.adminUser.id);
+      await complexUseCase.delete(
+        complex2.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to delete complex: ${(error as Error).message}`);
     }
 
     let remainingComplexes: Complex[];
     try {
-      remainingComplexes = await complexUseCase.getAll(testData.organization.id, testData.adminUser.id);
+      remainingComplexes = await complexUseCase.getAll(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get remaining complexes: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get remaining complexes: ${(error as Error).message}`
+      );
     }
     expect(remainingComplexes.length).toBe(complexes.length - 1);
 
     console.log('✅ Complex integration tests completed successfully');
-
   } catch (error) {
     console.error('❌ Complex integration tests failed:', error);
     throw error;
   }
-} 
+}

@@ -1,15 +1,17 @@
 import { exerciseContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { IExerciseUseCases, EXERCISE_USE_CASES } from '../../application/ports/exercise-use-cases.port';
+import {
+  IExerciseUseCases,
+  EXERCISE_USE_CASES,
+} from '../../application/ports/exercise-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ExerciseMapper } from '../mappers/exercise.mapper';
 import { ExercisePresenter } from '../presenters/exercise.presenter';
 
@@ -17,16 +19,16 @@ const c = exerciseContract;
 
 /**
  * Exercise Controller
- * 
+ *
  * @description
  * Handles all exercise related operations including CRUD operations and search.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
- * 
+ *
  * @see {@link IExerciseUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -53,7 +55,10 @@ export class ExerciseController {
   ): ReturnType<typeof tsRestHandler<typeof c.getExercises>> {
     return tsRestHandler(c.getExercises, async () => {
       try {
-        const exercises = await this.exerciseUseCase.getAll(organizationId, user.id);
+        const exercises = await this.exerciseUseCase.getAll(
+          organizationId,
+          user.id
+        );
         const exercisesDto = ExerciseMapper.toDtoList(exercises);
         return ExercisePresenter.presentList(exercisesDto);
       } catch (error) {
@@ -77,7 +82,11 @@ export class ExerciseController {
   ): ReturnType<typeof tsRestHandler<typeof c.getExercise>> {
     return tsRestHandler(c.getExercise, async ({ params }) => {
       try {
-        const exercise = await this.exerciseUseCase.getOne(params.id, organizationId, user.id);
+        const exercise = await this.exerciseUseCase.getOne(
+          params.id,
+          organizationId,
+          user.id
+        );
         const exerciseDto = ExerciseMapper.toDto(exercise);
         return ExercisePresenter.presentOne(exerciseDto);
       } catch (error) {
@@ -102,7 +111,11 @@ export class ExerciseController {
   ): ReturnType<typeof tsRestHandler<typeof c.createExercise>> {
     return tsRestHandler(c.createExercise, async ({ body }) => {
       try {
-        const exercise = await this.exerciseUseCase.create(body, organizationId, user.id);
+        const exercise = await this.exerciseUseCase.create(
+          body,
+          organizationId,
+          user.id
+        );
         const exerciseDto = ExerciseMapper.toDto(exercise);
         return ExercisePresenter.presentCreationSuccess(exerciseDto);
       } catch (error) {
@@ -128,7 +141,12 @@ export class ExerciseController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateExercise>> {
     return tsRestHandler(c.updateExercise, async ({ params, body }) => {
       try {
-        const exercise = await this.exerciseUseCase.update(params.id, body, organizationId, user.id);
+        const exercise = await this.exerciseUseCase.update(
+          params.id,
+          body,
+          organizationId,
+          user.id
+        );
         const exerciseDto = ExerciseMapper.toDto(exercise);
         return ExercisePresenter.presentOne(exerciseDto);
       } catch (error) {
@@ -154,7 +172,9 @@ export class ExerciseController {
     return tsRestHandler(c.deleteExercise, async ({ params }) => {
       try {
         await this.exerciseUseCase.delete(params.id, organizationId, user.id);
-        return ExercisePresenter.presentSuccess('Exercise deleted successfully');
+        return ExercisePresenter.presentSuccess(
+          'Exercise deleted successfully'
+        );
       } catch (error) {
         return ExercisePresenter.presentError(error as Error);
       }
@@ -178,7 +198,11 @@ export class ExerciseController {
     return tsRestHandler(c.searchExercises, async ({ query }) => {
       try {
         // Contrat : query = { like: z.string() }
-        const exercises = await this.exerciseUseCase.search(query.like, organizationId, user.id);
+        const exercises = await this.exerciseUseCase.search(
+          query.like,
+          organizationId,
+          user.id
+        );
         const exercisesDto = ExerciseMapper.toDtoList(exercises);
         return ExercisePresenter.presentList(exercisesDto);
       } catch (error) {

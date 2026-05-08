@@ -111,17 +111,20 @@ export function DataTable<TValue>({
           <div className="flex items-center w-full justify-between pb-6">
             <div className="relative w-full">
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder={t('athletes:filters.search_placeholder')}
-                  value={globalFilter ?? ''}
-                  onChange={(event) => setGlobalFilter(event.target.value)}
-                  className="pl-8 bg-background max-w-lg"
-                />
+              <Input
+                placeholder={t('athletes:filters.search_placeholder')}
+                value={globalFilter ?? ''}
+                onChange={(event) => setGlobalFilter(event.target.value)}
+                className="pl-8 bg-background max-w-lg"
+              />
             </div>
             <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-card rounded-md shadow-none">
+                  <Button
+                    variant="outline"
+                    className="bg-card rounded-md shadow-none"
+                  >
                     {t('common:table.columns')}
                     <ChevronDown className="h-4 w-4 opacity-50" />
                   </Button>

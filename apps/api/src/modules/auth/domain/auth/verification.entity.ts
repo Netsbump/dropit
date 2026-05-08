@@ -1,8 +1,4 @@
-import {
-    Entity,
-    PrimaryKey,
-    Property,
-  } from '@mikro-orm/core';
+import { Entity, PrimaryKey, Property } from '@mikro-orm/core';
 
 /**
  * Store verification tokens (email, password reset, etc)
@@ -10,20 +6,20 @@ import {
 @Entity({ tableName: 'verification' })
 export class Verification {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string
+  id!: string;
 
   @Property()
-  identifier!: string
+  identifier!: string;
 
   @Property()
-  value!: string
+  value!: string;
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date
+  expiresAt!: Date;
 
   @Property({ fieldName: 'createdAt' })
-  createdAt: Date = new Date()
+  createdAt: Date = new Date();
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date()
+  updatedAt: Date = new Date();
 }

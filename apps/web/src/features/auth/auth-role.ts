@@ -3,7 +3,7 @@ import {
   ORGANIZATION_ROLE,
   type GlobalRole,
   type OrganizationRole,
-} from "@dropit/schemas";
+} from '@dropit/schemas';
 
 export function isSuperAdmin(params: { userRole: GlobalRole }): boolean {
   return params.userRole === GLOBAL_ROLE.ADMIN;

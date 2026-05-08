@@ -10,7 +10,7 @@ import { seedComplexes } from './complex.seeder';
 /** Demo workouts in seed order; category names are resolved against DB (migration). */
 const DEMO_WORKOUT_SEEDS = [
   {
-    description: 'Séance technique avec variations d\'intensité',
+    description: "Séance technique avec variations d'intensité",
     category: 'Saison',
   },
   {
@@ -26,7 +26,7 @@ const DEMO_WORKOUT_SEEDS = [
     category: 'Saison',
   },
   {
-    description: 'Variations de volume - Tirage Lourd d\'Arraché',
+    description: "Variations de volume - Tirage Lourd d'Arraché",
     category: 'Saison',
   },
   {
@@ -42,7 +42,7 @@ function workoutCategoryNamesFromDemoSeeds(): string[] {
 
 async function requireWorkoutCategories(
   em: EntityManager,
-  names: readonly string[],
+  names: readonly string[]
 ): Promise<Record<string, WorkoutCategory>> {
   const map: Record<string, WorkoutCategory> = {};
   const missing: string[] = [];
@@ -56,7 +56,9 @@ async function requireWorkoutCategories(
   }
   if (missing.length > 0) {
     throw new Error(
-      `Missing workout categories: ${missing.join(', ')}. Apply migrations first (e.g. pnpm --filter api db:migration:up), then seed.`,
+      `Missing workout categories: ${missing.join(
+        ', '
+      )}. Apply migrations first (e.g. pnpm --filter api db:migration:up), then seed.`
     );
   }
   return map;
@@ -73,7 +75,7 @@ async function allDemoWorkoutsPresent(em: EntityManager): Promise<boolean> {
 async function ensureWorkout(
   em: EntityManager,
   description: string,
-  category: WorkoutCategory,
+  category: WorkoutCategory
 ): Promise<Workout> {
   let w = await em.findOne(Workout, { description });
   if (w) return w;
@@ -101,14 +103,14 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
 
   const workoutCategoriesMap = await requireWorkoutCategories(
     em,
-    workoutCategoryNamesFromDemoSeeds(),
+    workoutCategoryNamesFromDemoSeeds()
   );
 
   // Based on the Monday 17 November session
   const workout1 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[0].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[0].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[0].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout1 })) === 0) {
     const element1 = new WorkoutElement();
@@ -128,7 +130,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         exercises: [
           { exerciseId: exercisesMap.Passage.id, reps: 2, order: 1 },
           { exerciseId: exercisesMap.Chute.id, reps: 2, order: 2 },
-          { exerciseId: exercisesMap['Flexion d\'Arraché'].id, reps: 2, order: 3 },
+          {
+            exerciseId: exercisesMap["Flexion d'Arraché"].id,
+            reps: 2,
+            order: 3,
+          },
         ],
       },
     ];
@@ -152,7 +158,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         },
         exercises: [
           { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 2, order: 1 },
-          { exerciseId: exercisesMap['Flexion d\'Arraché'].id, reps: 2, order: 2 },
+          {
+            exerciseId: exercisesMap["Flexion d'Arraché"].id,
+            reps: 2,
+            order: 2,
+          },
         ],
       },
       {
@@ -166,7 +176,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
         },
         exercises: [
           { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 1 },
-          { exerciseId: exercisesMap['Flexion d\'Arraché'].id, reps: 1, order: 2 },
+          {
+            exerciseId: exercisesMap["Flexion d'Arraché"].id,
+            reps: 1,
+            order: 2,
+          },
         ],
       },
     ];
@@ -222,7 +236,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   const workout2 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[1].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[1].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[1].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout2 })) === 0) {
     const workout2Element1 = new WorkoutElement();
@@ -331,7 +345,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   const workout3 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[2].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[2].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[2].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout3 })) === 0) {
     const workout3Element1 = new WorkoutElement();
@@ -361,14 +375,14 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   const workout4 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[3].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[3].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[3].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout4 })) === 0) {
     const workout4Element1 = new WorkoutElement();
     workout4Element1.type = WORKOUT_ELEMENT_TYPES.EXERCISE;
     workout4Element1.exercise = exercisesMap['Arraché Flexion'];
     workout4Element1.order = 0;
-    workout4Element1.commentary = 'Doublé Jusqu\'a 75%';
+    workout4Element1.commentary = "Doublé Jusqu'a 75%";
     workout4Element1.blocks = [
       {
         order: 1,
@@ -430,7 +444,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   const workout5 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[4].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[4].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[4].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout5 })) === 0) {
     const workout5Element1 = new WorkoutElement();
@@ -448,7 +462,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           type: 'percentage' as const,
         },
         exercises: [
-          { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 3, order: 1 },
+          {
+            exerciseId: exercisesMap["Tirage Lourd d'Arraché"].id,
+            reps: 3,
+            order: 1,
+          },
           { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 },
         ],
       },
@@ -462,7 +480,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           type: 'percentage' as const,
         },
         exercises: [
-          { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 2, order: 1 },
+          {
+            exerciseId: exercisesMap["Tirage Lourd d'Arraché"].id,
+            reps: 2,
+            order: 1,
+          },
           { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 },
         ],
       },
@@ -476,7 +498,11 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
           type: 'percentage' as const,
         },
         exercises: [
-          { exerciseId: exercisesMap['Tirage Lourd d\'Arraché'].id, reps: 1, order: 1 },
+          {
+            exerciseId: exercisesMap["Tirage Lourd d'Arraché"].id,
+            reps: 1,
+            order: 1,
+          },
           { exerciseId: exercisesMap['Arraché Flexion'].id, reps: 1, order: 2 },
         ],
       },
@@ -488,7 +514,7 @@ export async function seedWorkouts(em: EntityManager): Promise<void> {
   const workout6 = await ensureWorkout(
     em,
     DEMO_WORKOUT_SEEDS[5].description,
-    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[5].category],
+    workoutCategoriesMap[DEMO_WORKOUT_SEEDS[5].category]
   );
   if ((await em.count(WorkoutElement, { workout: workout6 })) === 0) {
     const workout6Element1 = new WorkoutElement();

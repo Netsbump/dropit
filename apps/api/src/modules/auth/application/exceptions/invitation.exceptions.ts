@@ -8,11 +8,17 @@ export class InvitationException extends Error {
   }
 
   static notFound(invitationId: string): InvitationException {
-    return new InvitationException(`Invitation with ID ${invitationId} not found`, 404);
+    return new InvitationException(
+      `Invitation with ID ${invitationId} not found`,
+      404
+    );
   }
 
   static expiredOrUsed(): InvitationException {
-    return new InvitationException('Invitation has expired or has already been used', 410);
+    return new InvitationException(
+      'Invitation has expired or has already been used',
+      410
+    );
   }
 
   static userNotFound(email: string): InvitationException {

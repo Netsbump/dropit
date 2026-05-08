@@ -30,7 +30,8 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
                   {
                     'bg-primary text-primary-foreground': currentStep >= index,
                     'bg-gray-100 text-gray-600 border': currentStep < index,
-                    'cursor-pointer hover:bg-primary/90': onStepClick && currentStep < index,
+                    'cursor-pointer hover:bg-primary/90':
+                      onStepClick && currentStep < index,
                     'cursor-default': !onStepClick,
                   }
                 )}
@@ -43,13 +44,14 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
               </button>
 
               <div className="ml-3">
-                <div className={cn(
-                  'text-sm font-medium whitespace-nowrap',
-                  {
-                    'text-[hsl(var(--appheader-foreground))]': currentStep >= index,
-                    'text-[hsl(var(--appheader-foreground))]/50': currentStep < index,
-                  }
-                )}>
+                <div
+                  className={cn('text-sm font-medium whitespace-nowrap', {
+                    'text-[hsl(var(--appheader-foreground))]':
+                      currentStep >= index,
+                    'text-[hsl(var(--appheader-foreground))]/50':
+                      currentStep < index,
+                  })}
+                >
                   {step.name}
                 </div>
               </div>
@@ -58,13 +60,12 @@ export function Steps({ steps, currentStep, onStepClick }: StepsProps) {
             {/* Trait de liaison */}
             {index < steps.length - 1 && (
               <div className="mx-3">
-                <div className={cn(
-                  'h-0.5 w-8 transition-colors duration-200',
-                  {
+                <div
+                  className={cn('h-0.5 w-8 transition-colors duration-200', {
                     'bg-primary': currentStep > index,
                     'bg-gray-300': currentStep <= index,
-                  }
-                )} />
+                  })}
+                />
               </div>
             )}
           </React.Fragment>

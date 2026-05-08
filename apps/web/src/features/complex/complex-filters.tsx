@@ -49,7 +49,9 @@ export function ComplexFilters({
               <SelectValue placeholder={t('complex.filters.all_categories')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('complex.filters.all_categories')}</SelectItem>
+              <SelectItem value="all">
+                {t('complex.filters.all_categories')}
+              </SelectItem>
               {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
@@ -58,7 +60,9 @@ export function ComplexFilters({
             </SelectContent>
           </Select>
           <Separator orientation="vertical" className="h-6" />
-          <Button onClick={onCreateClick}>{t('complex.filters.create_complex')}</Button>
+          <Button onClick={onCreateClick}>
+            {t('complex.filters.create_complex')}
+          </Button>
         </div>
       </div>
     </div>

@@ -1,4 +1,4 @@
-import { RequestAccessInput } from "@dropit/schemas";
+import { RequestAccessInput } from '@dropit/schemas';
 
 export type OrganizationInvitationParams = {
   organizationId: string;
@@ -14,7 +14,7 @@ export type OtpParams =
   | {
       otp: string;
       email: string;
-      type: "sign-in" | "email-verification" | "forget-password";
+      type: 'sign-in' | 'email-verification' | 'forget-password';
     }
   | { otp: string; phoneNumber: string };
 
@@ -42,7 +42,7 @@ export interface INotificationUseCases {
    * - If user doesn't exist: sends email only with signup link
    */
   sendOrganizationInvitation(
-    params: OrganizationInvitationParams,
+    params: OrganizationInvitationParams
   ): Promise<void>;
 
   /**
@@ -62,4 +62,4 @@ export interface INotificationUseCases {
  * Injection token for INotificationUseCases
  * Use this token in @Inject() decorators
  */
-export const NOTIFICATION_USE_CASES = Symbol("NOTIFICATION_USE_CASES");
+export const NOTIFICATION_USE_CASES = Symbol('NOTIFICATION_USE_CASES');

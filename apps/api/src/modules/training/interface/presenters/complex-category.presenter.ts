@@ -34,14 +34,14 @@ export const ComplexCategoryPresenter = {
     if (error instanceof ComplexCategoryException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
     console.error('ComplexCategory unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-} 
+  },
+};

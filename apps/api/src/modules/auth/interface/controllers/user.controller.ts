@@ -1,11 +1,14 @@
 import { userContract } from '@dropit/contract';
-import {
-  Controller,
-  Inject,
-} from '@nestjs/common';
+import { Controller, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { AuthenticatedUser, CurrentUser } from '../../infrastructure/decorators/auth.decorator';
-import { IUserUseCases, USER_USE_CASES } from '../../application/ports/user-use-cases.port';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../infrastructure/decorators/auth.decorator';
+import {
+  IUserUseCases,
+  USER_USE_CASES,
+} from '../../application/ports/user-use-cases.port';
 import { UserMapper } from '../mappers/user.mapper';
 import { UserPresenter } from '../presenters/user.presenter';
 import { UserException } from '../../application/exceptions/user.exceptions';
@@ -29,8 +32,8 @@ const c = userContract;
 export class UserController {
   constructor(
     @Inject(USER_USE_CASES)
-    private readonly userUseCases: IUserUseCases,
-  ) { }
+    private readonly userUseCases: IUserUseCases
+  ) {}
 
   /**
    * Get current user profile.
@@ -122,7 +125,9 @@ export class UserController {
         await this.userUseCases.remove(user.id);
 
         // 5. Return success
-        return UserPresenter.presentSuccess('User account deleted successfully');
+        return UserPresenter.presentSuccess(
+          'User account deleted successfully'
+        );
       } catch (error) {
         return UserPresenter.presentError(error as Error);
       }

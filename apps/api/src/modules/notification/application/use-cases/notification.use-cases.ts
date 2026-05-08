@@ -2,14 +2,14 @@ import {
   INotificationUseCases,
   OtpParams,
   OrganizationInvitationParams,
-} from "../ports/inbound/notification-use-cases.port";
+} from '../ports/inbound/notification-use-cases.port';
 import {
   INotificationPort,
   KIND,
   type NotificationRequest,
   RECIPIENT_TYPE,
-} from "../ports/outbound/notification.port";
-import { RequestAccessInput } from "@dropit/schemas";
+} from '../ports/outbound/notification.port';
+import { RequestAccessInput } from '@dropit/schemas';
 
 /**
  * Notification Use Cases Implementation
@@ -22,7 +22,7 @@ export class NotificationUseCase implements INotificationUseCases {
   constructor(private readonly notificationPort: INotificationPort) {}
 
   async sendOrganizationInvitation(
-    params: OrganizationInvitationParams,
+    params: OrganizationInvitationParams
   ): Promise<void> {
     try {
       const notificationRequest: NotificationRequest = {
@@ -39,7 +39,7 @@ export class NotificationUseCase implements INotificationUseCases {
       };
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
-      console.error("Failed to send organization invitation", error);
+      console.error('Failed to send organization invitation', error);
     }
   }
 
@@ -51,7 +51,7 @@ export class NotificationUseCase implements INotificationUseCases {
     try {
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
-      console.error("Failed to send OTP notification", error);
+      console.error('Failed to send OTP notification', error);
     }
   }
 
@@ -65,7 +65,7 @@ export class NotificationUseCase implements INotificationUseCases {
     try {
       await this.notificationPort.send(notificationRequest);
     } catch (error) {
-      console.error("Failed to send notification request access", error);
+      console.error('Failed to send notification request access', error);
     }
   }
 }

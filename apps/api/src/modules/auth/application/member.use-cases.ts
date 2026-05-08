@@ -1,5 +1,8 @@
-import { CoachFilterConditions, IMemberRepository } from "./ports/member.repository.port";
-import { IMemberUseCases } from "./ports/member-use-cases.port";
+import {
+  CoachFilterConditions,
+  IMemberRepository,
+} from './ports/member.repository.port';
+import { IMemberUseCases } from './ports/member-use-cases.port';
 import type { OrganizationRole } from '@dropit/schemas';
 
 /**
@@ -14,21 +17,22 @@ import type { OrganizationRole } from '@dropit/schemas';
  * All dependencies are interfaces (ports), not concrete implementations.
  */
 export class MemberUseCases implements IMemberUseCases {
-  constructor(
-    private readonly memberRepository: IMemberRepository,
-  ) {}
+  constructor(private readonly memberRepository: IMemberRepository) {}
 
-      /**
+  /**
    * Get the IDs of the coaches (admin/owner) of an organization
    * @param organizationId - ID of the organization
    * @returns Array of IDs of the coaches
    * @throws NotFoundException if no coach is found
    */
   async getCoachUserIds(organizationId: string): Promise<string[]> {
-    const coachMembers = await this.memberRepository.getCoachUserIds(organizationId);
+    const coachMembers =
+      await this.memberRepository.getCoachUserIds(organizationId);
 
     if (coachMembers.length === 0) {
-      throw new Error(`Coach members with organization id ${organizationId} not found`);
+      throw new Error(
+        `Coach members with organization id ${organizationId} not found`
+      );
     }
 
     return coachMembers.map((member) => member.user.id);
@@ -41,10 +45,13 @@ export class MemberUseCases implements IMemberUseCases {
    * @throws Error if no athlete is found
    */
   async getAthleteUserIds(organizationId: string): Promise<string[]> {
-    const athleteMembers = await this.memberRepository.getAthleteUserIds(organizationId);
+    const athleteMembers =
+      await this.memberRepository.getAthleteUserIds(organizationId);
 
     if (athleteMembers.length === 0) {
-      throw new Error(`Athlete members with organization id ${organizationId} not found`);
+      throw new Error(
+        `Athlete members with organization id ${organizationId} not found`
+      );
     }
 
     return athleteMembers.map((member) => member.user.id);
@@ -55,9 +62,15 @@ export class MemberUseCases implements IMemberUseCases {
    * @param userId - ID of the user
    * @param organizationId - ID of the organization
    * @returns true if the user is a coach in the organization
-  */
-  async isUserCoachInOrganization(userId: string, organizationId: string): Promise<boolean> {
-    return await this.memberRepository.isUserCoachInOrganization(userId, organizationId);
+   */
+  async isUserCoachInOrganization(
+    userId: string,
+    organizationId: string
+  ): Promise<boolean> {
+    return await this.memberRepository.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
   }
 
   /**
@@ -66,16 +79,24 @@ export class MemberUseCases implements IMemberUseCases {
    * @param organizationId - ID of the organization
    * @returns true if the user is an athlete in the organization
    */
-  async isUserAthleteInOrganization(athleteId: string, organizationId: string): Promise<boolean> {
-    return await this.memberRepository.isUserAthleteInOrganization(athleteId, organizationId);
+  async isUserAthleteInOrganization(
+    athleteId: string,
+    organizationId: string
+  ): Promise<boolean> {
+    return await this.memberRepository.isUserAthleteInOrganization(
+      athleteId,
+      organizationId
+    );
   }
 
   /**
    * Generate the filter conditions for entities created by coaches
    * @param organizationId - ID of the organization
    * @returns Filter conditions for MikroORM
-  */
-  async getCoachFilterConditions(organizationId: string): Promise<CoachFilterConditions> {
+   */
+  async getCoachFilterConditions(
+    organizationId: string
+  ): Promise<CoachFilterConditions> {
     const coachUserIds = await this.getCoachUserIds(organizationId);
 
     return {
@@ -91,7 +112,10 @@ export class MemberUseCases implements IMemberUseCases {
     return member?.organization.id ?? null;
   }
 
-  async getMemberRole(userId: string, organizationId: string): Promise<OrganizationRole | null> {
+  async getMemberRole(
+    userId: string,
+    organizationId: string
+  ): Promise<OrganizationRole | null> {
     const member = await this.memberRepository.findByUserId(userId);
     if (!member || member.organization.id !== organizationId) return null;
     return member.role;

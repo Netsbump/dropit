@@ -1,9 +1,12 @@
-import { Athlete } from "../../domain/athlete.entity";
-import { CreateAthleteInput, UpdateAthleteInput } from "@dropit/schemas";
-import { IAthleteUseCases } from "../ports/athlete-use-cases.port";
-import { IAthleteRepository, AthleteDetails } from "../ports/athlete.repository.port";
-import { IUserUseCases } from "../../../auth/application/ports/user-use-cases.port";
-import { IMemberUseCases } from "../../../auth/application/ports/member-use-cases.port";
+import { Athlete } from '../../domain/athlete.entity';
+import { CreateAthleteInput, UpdateAthleteInput } from '@dropit/schemas';
+import { IAthleteUseCases } from '../ports/athlete-use-cases.port';
+import {
+  IAthleteRepository,
+  AthleteDetails,
+} from '../ports/athlete.repository.port';
+import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
+import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import {
   AthleteNotFoundException,
   AthleteAccessDeniedException,
@@ -11,7 +14,7 @@ import {
   AthleteAlreadyExistsException,
   AthleteValidationException,
   UserDoesNotBelongToOrganizationException,
-} from "../exceptions/athlete.exceptions";
+} from '../exceptions/athlete.exceptions';
 
 /**
  * Athlete Use Cases Implementation
@@ -31,48 +34,74 @@ export class AthleteUseCases implements IAthleteUseCases {
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<Athlete> {
+  async findOne(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<Athlete> {
     // 1. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new AthleteNotFoundException(
+        `Athlete with ID ${athleteId} not found`
+      );
     }
 
     // 2. Validate user access
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
     if (!isUserCoach && currentUserId !== athlete.user.id) {
       throw new AthleteAccessDeniedException(
-        "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
+        'Access denied. You can only access your own athlete or the athlete of an athlete you are coaching'
       );
     }
 
     // 3. Check if athleteId is in organization
-    await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
+    await this.memberUseCases.isUserAthleteInOrganization(
+      athlete.user.id,
+      organizationId
+    );
 
     return athlete;
   }
 
-  async findOneWithDetails(athleteId: string, currentUserId: string, organizationId: string): Promise<AthleteDetails> {
+  async findOneWithDetails(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<AthleteDetails> {
     // 1. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(athleteId);
     if (!athlete) {
-      throw new AthleteNotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new AthleteNotFoundException(
+        `Athlete with ID ${athleteId} not found`
+      );
     }
 
     // 2. Validate user access
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
     if (!isUserCoach && currentUserId !== athlete.user.id) {
       throw new AthleteAccessDeniedException(
-        "Access denied. You can only access your own athlete or the athlete of an athlete you are coaching"
+        'Access denied. You can only access your own athlete or the athlete of an athlete you are coaching'
       );
     }
 
     // 3. Check if athleteId is in organization
-    await this.memberUseCases.isUserAthleteInOrganization(athlete.user.id, organizationId);
+    await this.memberUseCases.isUserAthleteInOrganization(
+      athlete.user.id,
+      organizationId
+    );
 
     // 4. Get athlete with details from repository
-    const athleteWithDetails = await this.athleteRepository.findOneWithDetails(athlete.user.id);
+    const athleteWithDetails = await this.athleteRepository.findOneWithDetails(
+      athlete.user.id
+    );
 
     if (!athleteWithDetails) {
       throw new AthleteNotFoundException('Athlete not found');
@@ -81,18 +110,28 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athleteWithDetails;
   }
 
-  async findAllWithDetails(currentUserId: string, organizationId: string): Promise<AthleteDetails[]> {
+  async findAllWithDetails(
+    currentUserId: string,
+    organizationId: string
+  ): Promise<AthleteDetails[]> {
     // 1. Verify user belongs to the organization (either as coach or athlete)
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-    const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
+    const athleteUserIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
     const isUserAthlete = athleteUserIds.includes(currentUserId);
 
     if (!isUserCoach && !isUserAthlete) {
-      throw new UserDoesNotBelongToOrganizationException('User does not belong to this organization');
+      throw new UserDoesNotBelongToOrganizationException(
+        'User does not belong to this organization'
+      );
     }
 
     // 2. Get athletes from repository
-    const athletes = await this.athleteRepository.findAllWithDetails(athleteUserIds);
+    const athletes =
+      await this.athleteRepository.findAllWithDetails(athleteUserIds);
     if (!athletes) {
       throw new AthleteNotFoundException('Athletes not found');
     }
@@ -100,14 +139,23 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athletes;
   }
 
-  async findAll(currentUserId: string, organizationId: string): Promise<Athlete[]> {
+  async findAll(
+    currentUserId: string,
+    organizationId: string
+  ): Promise<Athlete[]> {
     // 1. Verify user belongs to the organization (either as coach or athlete)
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
-    const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
+    const athleteUserIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
     const isUserAthlete = athleteUserIds.includes(currentUserId);
 
     if (!isUserCoach && !isUserAthlete) {
-      throw new UserDoesNotBelongToOrganizationException('User does not belong to this organization');
+      throw new UserDoesNotBelongToOrganizationException(
+        'User does not belong to this organization'
+      );
     }
 
     // 2. Get athletes from repository
@@ -130,7 +178,9 @@ export class AthleteUseCases implements IAthleteUseCases {
     // 2. Check if User already has an athlete profile
     const existingAthlete = await this.athleteRepository.getOne(userId);
     if (existingAthlete) {
-      throw new AthleteAlreadyExistsException('User already has an athlete profile');
+      throw new AthleteAlreadyExistsException(
+        'User already has an athlete profile'
+      );
     }
 
     //3. Create Athlete
@@ -138,7 +188,7 @@ export class AthleteUseCases implements IAthleteUseCases {
     athlete.firstName = data.firstName;
     athlete.lastName = data.lastName;
     if (data.birthday) {
-    athlete.birthday = new Date(data.birthday);
+      athlete.birthday = new Date(data.birthday);
     }
     if (data.country) {
       athlete.country = data.country;
@@ -151,7 +201,11 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athlete;
   }
 
-  async update(idAthlete: string, data: UpdateAthleteInput, userId: string): Promise<Athlete> {
+  async update(
+    idAthlete: string,
+    data: UpdateAthleteInput,
+    userId: string
+  ): Promise<Athlete> {
     //1. Get Athlete
     const athlete = await this.athleteRepository.getOne(idAthlete);
 

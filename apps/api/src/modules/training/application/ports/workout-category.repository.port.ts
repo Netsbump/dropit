@@ -1,11 +1,16 @@
-import { WorkoutCategory } from "../../domain/workout-category.entity";
-import { CoachFilterConditions } from "../../../auth/application/ports/member.repository.port";
+import { WorkoutCategory } from '../../domain/workout-category.entity';
+import { CoachFilterConditions } from '../../../auth/application/ports/member.repository.port';
 
 export const WORKOUT_CATEGORY_REPO = Symbol('WORKOUT_CATEGORY_REPO');
 
 export interface IWorkoutCategoryRepository {
-  getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<WorkoutCategory | null>;
-  getAll(coachFilterConditions: CoachFilterConditions): Promise<WorkoutCategory[]>;
+  getOne(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<WorkoutCategory | null>;
+  getAll(
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<WorkoutCategory[]>;
   save(workoutCategory: WorkoutCategory): Promise<void>;
   remove(workoutCategory: WorkoutCategory): Promise<void>;
-} 
+}

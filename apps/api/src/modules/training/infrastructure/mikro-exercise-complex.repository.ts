@@ -4,7 +4,9 @@ import { IExerciseComplexRepository } from '../application/ports/exercise-comple
 import { ExerciseComplex } from '../domain/exercise-complex.entity';
 
 @Injectable()
-export class MikroExerciseComplexRepository implements IExerciseComplexRepository {
+export class MikroExerciseComplexRepository
+  implements IExerciseComplexRepository
+{
   constructor(private readonly em: EntityManager) {}
 
   async remove(exerciseComplex: ExerciseComplex): Promise<void> {
@@ -18,4 +20,4 @@ export class MikroExerciseComplexRepository implements IExerciseComplexRepositor
     }
     await this.em.flush();
   }
-} 
+}

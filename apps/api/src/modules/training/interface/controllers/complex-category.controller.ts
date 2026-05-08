@@ -1,15 +1,17 @@
 import { complexCategoryContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { IComplexCategoryUseCases, COMPLEX_CATEGORY_USE_CASES } from '../../application/ports/complex-category-use-cases.port';
+import {
+  IComplexCategoryUseCases,
+  COMPLEX_CATEGORY_USE_CASES,
+} from '../../application/ports/complex-category-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ComplexCategoryMapper } from '../mappers/complex-category.mapper';
 import { ComplexCategoryPresenter } from '../presenters/complex-category.presenter';
 
@@ -17,16 +19,16 @@ const c = complexCategoryContract;
 
 /**
  * Complex Category Controller
- * 
+ *
  * @description
  * Handles all complex category related operations including CRUD operations.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
- * 
+ *
  * @see {@link ComplexCategoryUseCase} for business logic implementation
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -53,8 +55,12 @@ export class ComplexCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategories>> {
     return tsRestHandler(c.getComplexCategories, async () => {
       try {
-        const complexCategories = await this.complexCategoryUseCase.getAll(organizationId, user.id);
-        const complexCategoriesDto = ComplexCategoryMapper.toDtoList(complexCategories);
+        const complexCategories = await this.complexCategoryUseCase.getAll(
+          organizationId,
+          user.id
+        );
+        const complexCategoriesDto =
+          ComplexCategoryMapper.toDtoList(complexCategories);
         return ComplexCategoryPresenter.present(complexCategoriesDto);
       } catch (error) {
         return ComplexCategoryPresenter.presentError(error as Error);
@@ -78,7 +84,11 @@ export class ComplexCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.getComplexCategory>> {
     return tsRestHandler(c.getComplexCategory, async ({ params }) => {
       try {
-        const complexCategory = await this.complexCategoryUseCase.getOne(params.id, organizationId, user.id);
+        const complexCategory = await this.complexCategoryUseCase.getOne(
+          params.id,
+          organizationId,
+          user.id
+        );
         const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
         return ComplexCategoryPresenter.presentOne(complexCategoryDto);
       } catch (error) {
@@ -103,7 +113,11 @@ export class ComplexCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.createComplexCategory>> {
     return tsRestHandler(c.createComplexCategory, async ({ body }) => {
       try {
-        const complexCategory = await this.complexCategoryUseCase.create(body, organizationId, user.id);
+        const complexCategory = await this.complexCategoryUseCase.create(
+          body,
+          organizationId,
+          user.id
+        );
         const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
         return ComplexCategoryPresenter.presentOne(complexCategoryDto);
       } catch (error) {
@@ -129,7 +143,12 @@ export class ComplexCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateComplexCategory>> {
     return tsRestHandler(c.updateComplexCategory, async ({ params, body }) => {
       try {
-        const complexCategory = await this.complexCategoryUseCase.update(params.id, body, organizationId, user.id);
+        const complexCategory = await this.complexCategoryUseCase.update(
+          params.id,
+          body,
+          organizationId,
+          user.id
+        );
         const complexCategoryDto = ComplexCategoryMapper.toDto(complexCategory);
         return ComplexCategoryPresenter.presentOne(complexCategoryDto);
       } catch (error) {
@@ -154,8 +173,14 @@ export class ComplexCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.deleteComplexCategory>> {
     return tsRestHandler(c.deleteComplexCategory, async ({ params }) => {
       try {
-        await this.complexCategoryUseCase.delete(params.id, organizationId, user.id);
-        return ComplexCategoryPresenter.presentSuccess('Complex category deleted successfully');
+        await this.complexCategoryUseCase.delete(
+          params.id,
+          organizationId,
+          user.id
+        );
+        return ComplexCategoryPresenter.presentSuccess(
+          'Complex category deleted successfully'
+        );
       } catch (error) {
         return ComplexCategoryPresenter.presentError(error as Error);
       }

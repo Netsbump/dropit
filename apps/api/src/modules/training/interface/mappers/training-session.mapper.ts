@@ -22,6 +22,8 @@ export const TrainingSessionMapper = {
   },
 
   toDtoList(trainingSessions: TrainingSession[]): TrainingSessionDto[] {
-    return trainingSessions.map((trainingSession) => TrainingSessionMapper.toDto(trainingSession));
+    return trainingSessions.map((trainingSession) =>
+      TrainingSessionMapper.toDto(trainingSession)
+    );
   },
 };

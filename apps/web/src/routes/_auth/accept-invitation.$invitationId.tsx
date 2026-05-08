@@ -1,5 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { XCircle } from 'lucide-react';
 import { useTranslation } from '@dropit/i18n';
 import { api } from '@/lib/api';

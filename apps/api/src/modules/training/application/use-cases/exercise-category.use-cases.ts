@@ -1,7 +1,10 @@
 import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
-import { CreateExerciseCategoryInput, UpdateExerciseCategoryInput } from '@dropit/schemas';
+import {
+  CreateExerciseCategoryInput,
+  UpdateExerciseCategoryInput,
+} from '@dropit/schemas';
 import { ExerciseCategory } from '../../domain/exercise-category.entity';
 import { IExerciseCategoryUseCases } from '../ports/exercise-category-use-cases.port';
 import {
@@ -28,56 +31,93 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async getOne(exerciseCategoryId: string, organizationId: string, userId: string): Promise<ExerciseCategory> {
+  async getOne(
+    exerciseCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory> {
     // 1. Check if the user is coach of this organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException(
+        'User is not coach of this organization'
+      );
     }
 
     // 2. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     // 3. Get exercise category from repository
-    const exerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
+    const exerciseCategory = await this.exerciseCategoryRepository.getOne(
+      exerciseCategoryId,
+      coachFilterConditions
+    );
 
     // 4. Validate exercise category
     if (!exerciseCategory) {
-      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException(
+        'Exercise category not found or access denied'
+      );
     }
 
     return exerciseCategory;
   }
 
-  async getAll(organizationId: string, userId: string): Promise<ExerciseCategory[]> {
+  async getAll(
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory[]> {
     // 1. Check if the user is coach of this organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException(
+        'User is not coach of this organization'
+      );
     }
 
     // 2. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     // 3. Get exercise categories from repository
-    const exerciseCategories = await this.exerciseCategoryRepository.getAll(coachFilterConditions);
+    const exerciseCategories = await this.exerciseCategoryRepository.getAll(
+      coachFilterConditions
+    );
 
     return exerciseCategories;
   }
 
-  async create(data: CreateExerciseCategoryInput, organizationId: string, userId: string): Promise<ExerciseCategory> {
+  async create(
+    data: CreateExerciseCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory> {
     // 1. Check if the user is coach of this organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException(
+        'User is not coach of this organization'
+      );
     }
 
     // 2. Validate data
     if (!data.name) {
-      throw new ExerciseCategoryValidationException('Exercise category name is required');
+      throw new ExerciseCategoryValidationException(
+        'Exercise category name is required'
+      );
     }
 
     // 3. Create exercise category
@@ -91,34 +131,58 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     await this.exerciseCategoryRepository.save(exerciseCategory);
 
     // 5. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     // 6. Get created exercise category from repository
-    const createdExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategory.id, coachFilterConditions);
+    const createdExerciseCategory =
+      await this.exerciseCategoryRepository.getOne(
+        exerciseCategory.id,
+        coachFilterConditions
+      );
 
     if (!createdExerciseCategory) {
-      throw new ExerciseCategoryNotFoundException('Exercise category not found');
+      throw new ExerciseCategoryNotFoundException(
+        'Exercise category not found'
+      );
     }
 
     return createdExerciseCategory;
   }
 
-  async update(exerciseCategoryId: string, data: UpdateExerciseCategoryInput, organizationId: string, userId: string): Promise<ExerciseCategory> {
+  async update(
+    exerciseCategoryId: string,
+    data: UpdateExerciseCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory> {
     // 1. Check if the user is coach of this organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException(
+        'User is not coach of this organization'
+      );
     }
 
     // 2. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     // 3. Get exercise category to update from repository
-    const exerciseCategoryToUpdate = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
+    const exerciseCategoryToUpdate =
+      await this.exerciseCategoryRepository.getOne(
+        exerciseCategoryId,
+        coachFilterConditions
+      );
 
     if (!exerciseCategoryToUpdate) {
-      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException(
+        'Exercise category not found or access denied'
+      );
     }
 
     // 4. Update exercise category
@@ -130,31 +194,53 @@ export class ExerciseCategoryUseCase implements IExerciseCategoryUseCases {
     await this.exerciseCategoryRepository.save(exerciseCategoryToUpdate);
 
     // 6. Get updated exercise category from repository
-    const updatedExerciseCategory = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
+    const updatedExerciseCategory =
+      await this.exerciseCategoryRepository.getOne(
+        exerciseCategoryId,
+        coachFilterConditions
+      );
 
     if (!updatedExerciseCategory) {
-      throw new ExerciseCategoryNotFoundException('Updated exercise category not found');
+      throw new ExerciseCategoryNotFoundException(
+        'Updated exercise category not found'
+      );
     }
 
     return updatedExerciseCategory;
   }
 
-  async delete(exerciseCategoryId: string, organizationId: string, userId: string): Promise<void> {
+  async delete(
+    exerciseCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void> {
     // 1. Check if the user is coach of this organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new ExerciseCategoryAccessDeniedException('User is not coach of this organization');
+      throw new ExerciseCategoryAccessDeniedException(
+        'User is not coach of this organization'
+      );
     }
 
     // 2. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     // 3. Get exercise category to delete from repository
-    const exerciseCategoryToDelete = await this.exerciseCategoryRepository.getOne(exerciseCategoryId, coachFilterConditions);
+    const exerciseCategoryToDelete =
+      await this.exerciseCategoryRepository.getOne(
+        exerciseCategoryId,
+        coachFilterConditions
+      );
 
     if (!exerciseCategoryToDelete) {
-      throw new ExerciseCategoryNotFoundException('Exercise category not found or access denied');
+      throw new ExerciseCategoryNotFoundException(
+        'Exercise category not found or access denied'
+      );
     }
 
     // 4. Delete exercise category

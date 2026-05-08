@@ -1,3 +1,1 @@
-export class FirebaseAdapter {
-    
-}
+export class FirebaseAdapter {}

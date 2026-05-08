@@ -10,7 +10,7 @@ import { DialogCreation } from '@/features/athletes/dialog-creation';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { Button } from '@/components/ui/button';
 import { HeroCard } from '@/components/ui/hero-card';
-import { Users } from 'lucide-react';    // Route racine : toujours rediriger vers login
+import { Users } from 'lucide-react'; // Route racine : toujours rediriger vers login
 // C'est la route /login qui gérera la redirection si l'utilisateur est déjà connecté
 
 export const Route = createFileRoute('/_home/athletes')({
@@ -68,8 +68,8 @@ function AthletesPage() {
               text: t('athletes:hero.stat_cta'),
               onClick: () => {
                 console.log('Open athletes tutorial video');
-              }
-            }
+              },
+            },
           }}
         />
       </div>

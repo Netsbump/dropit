@@ -10,7 +10,7 @@ async function ensureMember(
   em: EntityManager,
   user: User,
   organization: Organization,
-  role: OrganizationRole,
+  role: OrganizationRole
 ): Promise<Member> {
   const existing = await em.findOne(Member, { user, organization });
   if (existing) {
@@ -25,7 +25,7 @@ async function ensureMember(
 }
 
 export async function seedOrganizations(
-  em: EntityManager,
+  em: EntityManager
 ): Promise<{ organization: Organization; coachMember: Member }> {
   console.log('Seeding organizations...');
 
@@ -36,7 +36,7 @@ export async function seedOrganizations(
     organization.slug = ORG_SLUG;
     organization.metadata = JSON.stringify({
       description:
-        'Organisation de coaching pour la gestion des athlètes et des programmes d\'entraînement',
+        "Organisation de coaching pour la gestion des athlètes et des programmes d'entraînement",
       type: 'coaching',
       createdAt: new Date().toISOString(),
     });
@@ -56,7 +56,12 @@ export async function seedOrganizations(
   if (!coachUser) {
     throw new Error('Coach user not found. Run seedAthletes first.');
   }
-  const coachMember = await ensureMember(em, coachUser, organization, ORGANIZATION_ROLE.ADMIN);
+  const coachMember = await ensureMember(
+    em,
+    coachUser,
+    organization,
+    ORGANIZATION_ROLE.ADMIN
+  );
 
   const athleteUsers = await em.find(User, {
     $or: [{ role: { $ne: 'admin' } }, { role: null }],

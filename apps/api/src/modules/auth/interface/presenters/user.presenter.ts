@@ -21,7 +21,7 @@ export const UserPresenter = {
     if (error instanceof UserException) {
       return {
         status: error.statusCode as 400 | 401 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
@@ -29,7 +29,7 @@ export const UserPresenter = {
     console.error('User unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
+  },
 };

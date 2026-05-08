@@ -7,12 +7,12 @@ import { PersonalRecord } from '../../domain/personal-record.entity';
 
 /**
  * Personal Record Use Cases Port
- * 
+ *
  * @description
  * Interface defining the contract for personal record business logic operations.
  * This port follows the hexagonal architecture pattern by defining the
  * business logic interface without framework dependencies.
- * 
+ *
  * @remarks
  * All methods return raw entities or throw errors. Presentation logic
  * (HTTP responses, DTOs) is handled by controllers, not use cases.
@@ -26,7 +26,10 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  getAll(currentUserId: string, organizationId: string): Promise<PersonalRecord[]>;
+  getAll(
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecord[]>;
 
   /**
    * Retrieves a specific personal record by ID
@@ -35,7 +38,11 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Personal record entity
    */
-  getOne(id: string, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
+  getOne(
+    id: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecord>;
 
   /**
    * Retrieves all personal records for a specific athlete
@@ -44,7 +51,11 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  getAllByAthleteId(athleteId: string, currentUserId: string, organizationId: string): Promise<PersonalRecord[]>;
+  getAllByAthleteId(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecord[]>;
 
   /**
    * Retrieves personal records summary for a specific athlete
@@ -53,7 +64,11 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Personal records summary
    */
-  getAllPersonalRecordsSummaryByAthleteId(athleteId: string, currentUserId: string, organizationId: string): Promise<PersonalRecordsSummary>;
+  getAllPersonalRecordsSummaryByAthleteId(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecordsSummary>;
 
   /**
    * Creates a new personal record
@@ -62,7 +77,11 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Created personal record entity
    */
-  create(data: CreatePersonalRecordInput, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
+  create(
+    data: CreatePersonalRecordInput,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecord>;
 
   /**
    * Updates an existing personal record
@@ -72,7 +91,12 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Updated personal record entity
    */
-  update(id: string, data: UpdatePersonalRecordInput, currentUserId: string, organizationId: string): Promise<PersonalRecord>;
+  update(
+    id: string,
+    data: UpdatePersonalRecordInput,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<PersonalRecord>;
 
   /**
    * Deletes a personal record
@@ -80,5 +104,9 @@ export interface IPersonalRecordUseCases {
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
    */
-  delete(id: string, currentUserId: string, organizationId: string): Promise<void>;
+  delete(
+    id: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<void>;
 }

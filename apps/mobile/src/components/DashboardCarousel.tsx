@@ -40,7 +40,7 @@ const cards: CarouselCard[] = [
   {
     id: 'history',
     title: 'Historique',
-    subtitle: 'Résultats d\'entraînement',
+    subtitle: "Résultats d'entraînement",
     backgroundColor: '#3498DB',
   },
 ];
@@ -49,7 +49,9 @@ interface DashboardCarouselProps {
   onTrainingPress?: () => void;
 }
 
-export default function DashboardCarousel({ onTrainingPress }: DashboardCarouselProps) {
+export default function DashboardCarousel({
+  onTrainingPress,
+}: DashboardCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -81,7 +83,7 @@ export default function DashboardCarousel({ onTrainingPress }: DashboardCarousel
         ],
         opacity: isActive ? 1 : 0.7, // Side cards are more transparent
         marginRight: CARD_SPACING,
-      }
+      },
     ];
 
     // Use ImageBackground for all cards with their respective images
@@ -165,7 +167,12 @@ export default function DashboardCarousel({ onTrainingPress }: DashboardCarousel
           key={card.id}
           style={[
             styles.dot,
-            { opacity: currentIndex === cards.findIndex(c => c.id === card.id) ? 1 : 0.3 }
+            {
+              opacity:
+                currentIndex === cards.findIndex((c) => c.id === card.id)
+                  ? 1
+                  : 0.3,
+            },
           ]}
         />
       ))}
@@ -190,9 +197,7 @@ export default function DashboardCarousel({ onTrainingPress }: DashboardCarousel
           {cards.map((card, index) => renderCard(card, index))}
         </ScrollView>
       </View>
-      <View style={styles.dotsWrapper}>
-        {renderDots()}
-      </View>
+      <View style={styles.dotsWrapper}>{renderDots()}</View>
     </View>
   );
 }

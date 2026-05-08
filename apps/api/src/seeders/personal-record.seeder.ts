@@ -68,7 +68,7 @@ async function createPR(
   em: EntityManager,
   athlete: Athlete,
   exercise: Exercise,
-  weight: number,
+  weight: number
 ): Promise<void> {
   const existing = await em.findOne(PersonalRecord, { athlete, exercise });
   if (existing) return;

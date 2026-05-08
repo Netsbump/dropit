@@ -1,8 +1,4 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useTranslation } from '@dropit/i18n';
@@ -16,23 +12,23 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
     id: 'select',
     header: ({ table }) => (
       <div className="flex items-center justify-start pl-4">
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && 'indeterminate')
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && 'indeterminate')
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
       </div>
     ),
     cell: ({ row }) => (
       <div className="flex items-center justify-start pl-4">
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
       </div>
     ),
     enableSorting: false,
@@ -74,8 +70,14 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
       const sexCategory = row.original.competitorStatus?.sexCategory;
       if (!sexCategory) return <div className="text-center">-</div>;
 
-      const isMale = sexCategory.toLowerCase() === 'men' || sexCategory.toLowerCase() === 'male' || sexCategory.toLowerCase() === 'm';
-      const isFemale = sexCategory.toLowerCase() === 'women' || sexCategory.toLowerCase() === 'female' || sexCategory.toLowerCase() === 'f';
+      const isMale =
+        sexCategory.toLowerCase() === 'men' ||
+        sexCategory.toLowerCase() === 'male' ||
+        sexCategory.toLowerCase() === 'm';
+      const isFemale =
+        sexCategory.toLowerCase() === 'women' ||
+        sexCategory.toLowerCase() === 'female' ||
+        sexCategory.toLowerCase() === 'f';
 
       return (
         <div className="flex items-center justify-center">
@@ -149,11 +151,7 @@ export const columns: ColumnDef<AthleteDetailsDto>[] = [
 
       const badgeVariant = getLevelBadgeVariant(level);
 
-      return (
-        <Badge className={badgeVariant}>
-          {level}
-        </Badge>
-      );
+      return <Badge className={badgeVariant}>{level}</Badge>;
     },
   },
   {

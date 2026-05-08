@@ -1,4 +1,4 @@
-import { User } from "../../domain/auth/user.entity";
+import { User } from '../../domain/auth/user.entity';
 
 export const USER_REPO = Symbol('USER_REPO');
 
@@ -8,4 +8,3 @@ export interface IUserRepository {
   remove(user: User): Promise<void>;
   save(user: User): Promise<void>;
 }
-

@@ -15,11 +15,12 @@ import { IOrganizationUseCases } from './ports/organization-use-cases.port';
  */
 export class OrganizationUseCases implements IOrganizationUseCases {
   constructor(
-    private readonly organizationRepository: IOrganizationRepository,
+    private readonly organizationRepository: IOrganizationRepository
   ) {}
 
   async getOne(organizationId: string): Promise<Organization> {
-    const organization = await this.organizationRepository.getOne(organizationId);
+    const organization =
+      await this.organizationRepository.getOne(organizationId);
 
     if (!organization) {
       throw new Error(`Organization with ID ${organizationId} not found`);
@@ -27,5 +28,4 @@ export class OrganizationUseCases implements IOrganizationUseCases {
 
     return organization;
   }
-
-} 
+}

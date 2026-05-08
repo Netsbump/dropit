@@ -37,13 +37,21 @@ export function SignupForm({
 }: SignupFormProps) {
   const { t } = useTranslation(['auth']);
 
-  const formSchema = useMemo(() => z.object({
-    email: z.string().email({ message: t('common.validation.emailRequired') }),
-    name: z.string().min(1, { message: t('common.validation.nameRequired') }),
-    dataConsent: z.boolean().refine((val) => val === true, {
-      message: t('signup.dataConsent.required'),
-    }),
-  }), [t]);
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email({ message: t('common.validation.emailRequired') }),
+        name: z
+          .string()
+          .min(1, { message: t('common.validation.nameRequired') }),
+        dataConsent: z.boolean().refine((val) => val === true, {
+          message: t('signup.dataConsent.required'),
+        }),
+      }),
+    [t]
+  );
 
   const form = useForm<SignupFormData>({
     resolver: zodResolver(formSchema),
@@ -56,7 +64,9 @@ export function SignupForm({
 
   const signupMutation = useMutation({
     mutationFn: async (values: SignupFormData) => {
-      return await api.onboarding.requestCoachAccess({ body: { email: values.email, name: values.name } });
+      return await api.onboarding.requestCoachAccess({
+        body: { email: values.email, name: values.name },
+      });
     },
     onSuccess: () => {
       toast({
@@ -82,7 +92,10 @@ export function SignupForm({
               <FormItem>
                 <FormLabel>{t('signup.email')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('common.placeholders.email')} {...field} />
+                  <Input
+                    placeholder={t('common.placeholders.email')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -95,7 +108,10 @@ export function SignupForm({
               <FormItem>
                 <FormLabel>{t('signup.name')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('common.placeholders.name')} {...field} />
+                  <Input
+                    placeholder={t('common.placeholders.name')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -167,4 +183,4 @@ export function SignupForm({
       )}
     </div>
   );
-} 
+}

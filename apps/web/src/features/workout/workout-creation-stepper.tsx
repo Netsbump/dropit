@@ -75,7 +75,10 @@ export function WorkoutCreationStepper({
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="h-full flex flex-col">
+      <form
+        onSubmit={form.handleSubmit(handleSubmit)}
+        className="h-full flex flex-col"
+      >
         <div className="flex-1 min-h-0">
           {currentStep === 0 && (
             <WorkoutInfoStep

@@ -9,7 +9,7 @@ import {
 import { TrainingSession } from './training-session.entity';
 import { WorkoutCategory } from './workout-category.entity';
 import { WorkoutElement } from './workout-element.entity';
-import { User } from '../../auth/domain/auth/user.entity'
+import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity()
 export class Workout {
@@ -22,7 +22,7 @@ export class Workout {
   @ManyToOne(() => WorkoutCategory)
   category!: WorkoutCategory;
 
-  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade' })
   createdBy!: User | null;
 
   @OneToMany(

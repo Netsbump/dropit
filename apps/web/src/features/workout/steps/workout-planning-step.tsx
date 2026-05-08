@@ -141,7 +141,9 @@ export function WorkoutPlanningStep({
           <div className="mb-4">
             <div className="flex items-center justify-between">
               <div>
-                <h4 className="text-md font-medium">Planifier l'entraînement</h4>
+                <h4 className="text-md font-medium">
+                  Planifier l'entraînement
+                </h4>
                 <p className="text-sm text-muted-foreground">
                   Programmer une session avec vos athlètes
                 </p>
@@ -154,11 +156,17 @@ export function WorkoutPlanningStep({
             </div>
           </div>
 
-          <Card className={`flex-1 flex flex-col min-h-0 shadow-none ${!isScheduled ? 'opacity-50 pointer-events-none' : ''}`}>
+          <Card
+            className={`flex-1 flex flex-col min-h-0 shadow-none ${
+              !isScheduled ? 'opacity-50 pointer-events-none' : ''
+            }`}
+          >
             <CardContent className="p-6 flex-1 flex flex-col min-h-0">
               {!isScheduled ? (
                 <div className="flex items-center justify-center h-32 text-center text-muted-foreground">
-                  <p className="text-sm">Activez le switch pour planifier l'entraînement</p>
+                  <p className="text-sm">
+                    Activez le switch pour planifier l'entraînement
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-6 flex-1 flex flex-col">
@@ -242,7 +250,9 @@ export function WorkoutPlanningStep({
                               >
                                 <Checkbox
                                   id={`athlete-${athlete.id}`}
-                                  checked={selectedAthletes.includes(athlete.id)}
+                                  checked={selectedAthletes.includes(
+                                    athlete.id
+                                  )}
                                   onCheckedChange={() =>
                                     handleAthleteToggle(athlete.id)
                                   }
@@ -262,7 +272,10 @@ export function WorkoutPlanningStep({
 
                       {form.formState.errors.trainingSession?.athleteIds && (
                         <div className="px-3 py-2 text-sm text-destructive">
-                          {form.formState.errors.trainingSession.athleteIds.message}
+                          {
+                            form.formState.errors.trainingSession.athleteIds
+                              .message
+                          }
                         </div>
                       )}
                     </div>

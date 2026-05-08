@@ -79,7 +79,9 @@ export function DataTable<TData extends { id: string }, TValue>({
               <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input
                 placeholder={t('exercise.filters.search_placeholder')}
-                value={(table.getColumn('name')?.getFilterValue() as string) ?? ''}
+                value={
+                  (table.getColumn('name')?.getFilterValue() as string) ?? ''
+                }
                 onChange={(event) =>
                   table.getColumn('name')?.setFilterValue(event.target.value)
                 }
@@ -89,7 +91,10 @@ export function DataTable<TData extends { id: string }, TValue>({
             <div className="flex items-center gap-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" className="bg-card rounded-md shadow-none">
+                  <Button
+                    variant="outline"
+                    className="bg-card rounded-md shadow-none"
+                  >
                     {t('common:table.columns')}
                     <ChevronDown className="h-4 w-4 opacity-50" />
                   </Button>
@@ -185,7 +190,7 @@ export function DataTable<TData extends { id: string }, TValue>({
             <div className="flex-1 text-sm text-muted-foreground">
               {t('exercise.table.selected_rows', {
                 count: table.getFilteredSelectedRowModel().rows.length,
-                total: table.getFilteredRowModel().rows.length
+                total: table.getFilteredRowModel().rows.length,
               })}
             </div>
             <div className="flex items-center justify-end space-x-2">

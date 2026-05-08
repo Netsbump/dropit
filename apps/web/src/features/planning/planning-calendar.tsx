@@ -1,10 +1,21 @@
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useTranslation } from '@dropit/i18n';
 import { TrainingSessionDto } from '@dropit/schemas';
-import { Duration, EventApi, EventClickArg, EventContentArg } from '@fullcalendar/core';
+import {
+  Duration,
+  EventApi,
+  EventClickArg,
+  EventContentArg,
+} from '@fullcalendar/core';
 import enLocale from '@fullcalendar/core/locales/en-gb';
 import frLocale from '@fullcalendar/core/locales/fr';
 import dayGridPlugin from '@fullcalendar/daygrid';
@@ -126,7 +137,8 @@ export function PlanningCalendar({
   const renderEventContent = (eventInfo: EventContentArg) => {
     // Rendu personnalisé pour la vue semaine
     if (eventInfo.view.type === 'dayGridWeek') {
-      const trainingSession = eventInfo.event.extendedProps.trainingSession as TrainingSessionDto;
+      const trainingSession = eventInfo.event.extendedProps
+        .trainingSession as TrainingSessionDto;
       if (trainingSession) {
         return <TrainingSessionWeekView trainingSession={trainingSession} />;
       }
@@ -135,7 +147,9 @@ export function PlanningCalendar({
     // Rendu par défaut pour les autres vues
     return (
       <div className="p-1">
-        <div className="font-medium text-xs line-clamp-2">{eventInfo.event.title}</div>
+        <div className="font-medium text-xs line-clamp-2">
+          {eventInfo.event.title}
+        </div>
       </div>
     );
   };
@@ -155,7 +169,7 @@ export function PlanningCalendar({
             <ChevronLeft className="h-4 w-4" />
             <span className="sr-only">{t('common:previous')}</span>
           </Button>
-          
+
           <Button
             variant="outline"
             size="icon"
@@ -165,12 +179,8 @@ export function PlanningCalendar({
             <ChevronRight className="h-4 w-4" />
             <span className="sr-only">{t('common:next')}</span>
           </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handleToday}
-            className="ml-2"
-          >
+
+          <Button variant="outline" onClick={handleToday} className="ml-2">
             {t('today')}
           </Button>
         </div>
@@ -179,20 +189,12 @@ export function PlanningCalendar({
         <div className="flex items-center gap-2">
           <Select value={currentView} onValueChange={handleViewChange}>
             <SelectTrigger className="w-[140px] bg-background">
-              <SelectValue>
-                {getViewLabel(currentView)}
-              </SelectValue>
+              <SelectValue>{getViewLabel(currentView)}</SelectValue>
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="dayGridMonth">
-                {t('month')}
-              </SelectItem>
-              <SelectItem value="dayGridWeek">
-                {t('week')}
-              </SelectItem>
-              <SelectItem value="multiMonthYear">
-                {t('year')}
-              </SelectItem>
+              <SelectItem value="dayGridMonth">{t('month')}</SelectItem>
+              <SelectItem value="dayGridWeek">{t('week')}</SelectItem>
+              <SelectItem value="multiMonthYear">{t('year')}</SelectItem>
             </SelectContent>
           </Select>
         </div>

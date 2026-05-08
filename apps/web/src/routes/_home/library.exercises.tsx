@@ -1,30 +1,30 @@
-import { ExerciseDetail } from '@/features/exercises/exercise-detail'
-import { api } from '@/lib/api'
-import { useTranslation } from '@dropit/i18n'
-import { useQuery, useQueryClient } from '@tanstack/react-query'
-import { createFileRoute } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
-import { columns } from '@/features/exercises/columns'
-import { DataTable } from '@/features/exercises/data-table'
-import { DialogCreation } from '@/features/exercises/dialog-creation'
-import { ExerciseCreationForm } from '@/features/exercises/exercise-creation-form'
-import { Button } from '@/components/ui/button'
-import { DetailsPanel } from '@/components/ui/details-panel'
-import { HeroCard } from '@/components/ui/hero-card'
-import { Spinner } from '@/components/ui/spinner'
-import { usePageMeta } from '@/hooks/use-page-meta'
-import { Library } from 'lucide-react'
+import { ExerciseDetail } from '@/features/exercises/exercise-detail';
+import { api } from '@/lib/api';
+import { useTranslation } from '@dropit/i18n';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { createFileRoute } from '@tanstack/react-router';
+import { useState, useEffect } from 'react';
+import { columns } from '@/features/exercises/columns';
+import { DataTable } from '@/features/exercises/data-table';
+import { DialogCreation } from '@/features/exercises/dialog-creation';
+import { ExerciseCreationForm } from '@/features/exercises/exercise-creation-form';
+import { Button } from '@/components/ui/button';
+import { DetailsPanel } from '@/components/ui/details-panel';
+import { HeroCard } from '@/components/ui/hero-card';
+import { Spinner } from '@/components/ui/spinner';
+import { usePageMeta } from '@/hooks/use-page-meta';
+import { Library } from 'lucide-react';
 
 export const Route = createFileRoute('/_home/library/exercises')({
   component: ExercisesPage,
-})
+});
 
 function ExercisesPage() {
   const { t } = useTranslation();
   const { setPageMeta } = usePageMeta();
-  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false)
-  const [selectedExercise, setSelectedExercise] = useState<string | null>(null)
-  const queryClient = useQueryClient()
+  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     setPageMeta({ title: t('library.title') });
@@ -33,30 +33,32 @@ function ExercisesPage() {
   const { data: exercises, isLoading: exercisesLoading } = useQuery({
     queryKey: ['exercises'],
     queryFn: async () => {
-      const response = await api.exercise.getExercises()
-      if (response.status !== 200) throw new Error('Failed to load exercises')
-      return response.body
+      const response = await api.exercise.getExercises();
+      if (response.status !== 200) throw new Error('Failed to load exercises');
+      return response.body;
     },
-  })
+  });
 
-  const { data: exerciseDetails, isLoading: exerciseDetailsLoading } = useQuery({
-    queryKey: ['exercise', selectedExercise],
-    queryFn: async () => {
-      if (!selectedExercise) return null
-      const response = await api.exercise.getExercise({
-        params: { id: selectedExercise },
-      })
-      if (response.status !== 200)
-        throw new Error('Failed to load exercise details')
-      return response.body
-    },
-    enabled: !!selectedExercise,
-  })
+  const { data: exerciseDetails, isLoading: exerciseDetailsLoading } = useQuery(
+    {
+      queryKey: ['exercise', selectedExercise],
+      queryFn: async () => {
+        if (!selectedExercise) return null;
+        const response = await api.exercise.getExercise({
+          params: { id: selectedExercise },
+        });
+        if (response.status !== 200)
+          throw new Error('Failed to load exercise details');
+        return response.body;
+      },
+      enabled: !!selectedExercise,
+    }
+  );
 
   const handleCreationSuccess = () => {
-    setCreateExerciseModalOpen(false)
-    queryClient.invalidateQueries({ queryKey: ['exercises'] })
-  }
+    setCreateExerciseModalOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['exercises'] });
+  };
 
   return (
     <div className="h-full flex gap-6 p-4">
@@ -76,8 +78,8 @@ function ExercisesPage() {
                 text: t('exercise.hero.stat_cta'),
                 onClick: () => {
                   console.log('Open exercises tutorial video');
-                }
-              }
+                },
+              },
             }}
           />
         </div>
@@ -133,5 +135,5 @@ function ExercisesPage() {
         />
       </DialogCreation>
     </div>
-  )
+  );
 }

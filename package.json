@@ -11,7 +11,7 @@
     "typecheck": "pnpm --recursive --filter '{apps/*}' typecheck",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",
-    "format": "biome format .",
+    "format": "biome format --write .",
     "clean": "pnpm --recursive --filter '{apps/*}' clean && rm -rf node_modules",
     "test:api:unit": "dotenv -e .env -- pnpm --filter api test:unit",
     "test:api:integration": "dotenv -e .env -- pnpm --filter api test:integration:docker"

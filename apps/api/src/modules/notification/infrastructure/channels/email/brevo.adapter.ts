@@ -16,7 +16,7 @@ export class BrevoAdapter implements IEmailTransport {
   constructor(
     private readonly apiKey: string,
     private readonly fromEmail: string,
-    private readonly fromName: string,
+    private readonly fromName: string
   ) {
     this.brevoApi = new SibApiV3Sdk.TransactionalEmailsApi();
     this.brevoApi.setApiKey(
@@ -34,18 +34,22 @@ export class BrevoAdapter implements IEmailTransport {
       sendSmtpEmail.htmlContent = emailData.htmlContent;
       sendSmtpEmail.sender = {
         name: this.fromName,
-        email: this.fromEmail
+        email: this.fromEmail,
       };
 
       const result = await this.brevoApi.sendTransacEmail(sendSmtpEmail);
       console.log('📧 [BrevoAdapter] Email sent successfully:', {
         messageId: result.body.messageId,
         to: emailData.to,
-        subject: emailData.subject
+        subject: emailData.subject,
       });
     } catch (error) {
       console.error('❌ [BrevoAdapter] Error sending email:', error);
-      throw new EmailSendFailedException(`Failed to send email via Brevo: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new EmailSendFailedException(
+        `Failed to send email via Brevo: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     }
   }
 }

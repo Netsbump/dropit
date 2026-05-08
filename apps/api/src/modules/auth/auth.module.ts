@@ -19,11 +19,26 @@ import { MemberUseCases } from './application/member.use-cases';
 import { OnboardingUseCases } from './application/onboarding.use-cases';
 
 // Application - Ports
-import { USER_REPO, IUserRepository } from './application/ports/user.repository.port';
-import { ORGANIZATION_REPO, IOrganizationRepository } from './application/ports/organization.repository.port';
-import { MEMBER_REPO, IMemberRepository } from './application/ports/member.repository.port';
-import { INVITATION_REPO, IInvitationRepository } from './application/ports/invitation.repository.port';
-import { USER_USE_CASES, IUserUseCases } from './application/ports/user-use-cases.port';
+import {
+  USER_REPO,
+  IUserRepository,
+} from './application/ports/user.repository.port';
+import {
+  ORGANIZATION_REPO,
+  IOrganizationRepository,
+} from './application/ports/organization.repository.port';
+import {
+  MEMBER_REPO,
+  IMemberRepository,
+} from './application/ports/member.repository.port';
+import {
+  INVITATION_REPO,
+  IInvitationRepository,
+} from './application/ports/invitation.repository.port';
+import {
+  USER_USE_CASES,
+  IUserUseCases,
+} from './application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
 import { ONBOARDING_USE_CASES } from './application/ports/onboarding-use-cases.port';
@@ -40,9 +55,15 @@ import { OnboardingController } from './interface/controllers/onboarding.control
 
 // External modules
 import { NotificationModule } from '../notification/notification.module';
-import { INotificationUseCases, NOTIFICATION_USE_CASES } from '../notification/application/ports/inbound/notification-use-cases.port';
+import {
+  INotificationUseCases,
+  NOTIFICATION_USE_CASES,
+} from '../notification/application/ports/inbound/notification-use-cases.port';
 import { AthletesModule } from '../athletes/athletes.module';
-import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/ports/athlete-use-cases.port';
+import {
+  ATHLETE_USE_CASES,
+  IAthleteUseCases,
+} from '../athletes/application/ports/athlete-use-cases.port';
 
 /**
  * AuthModule - Main authentication and identity module
@@ -100,12 +121,14 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
     },
     {
       provide: MEMBER_USE_CASES,
-      useFactory: (memberRepo: IMemberRepository) => new MemberUseCases(memberRepo),
+      useFactory: (memberRepo: IMemberRepository) =>
+        new MemberUseCases(memberRepo),
       inject: [MEMBER_REPO],
     },
     {
       provide: ORGANIZATION_USE_CASES,
-      useFactory: (organizationRepo: IOrganizationRepository) => new OrganizationUseCases(organizationRepo),
+      useFactory: (organizationRepo: IOrganizationRepository) =>
+        new OrganizationUseCases(organizationRepo),
       inject: [ORGANIZATION_REPO],
     },
     {
@@ -115,9 +138,22 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
         invitationRepo: IInvitationRepository,
         memberRepo: IMemberRepository,
         userUseCases: IUserUseCases,
-        athleteUseCases: IAthleteUseCases,
-      ) => new OnboardingUseCases(notificationUseCases, invitationRepo, memberRepo, userUseCases, athleteUseCases),
-      inject: [NOTIFICATION_USE_CASES, INVITATION_REPO, MEMBER_REPO, USER_USE_CASES, ATHLETE_USE_CASES],
+        athleteUseCases: IAthleteUseCases
+      ) =>
+        new OnboardingUseCases(
+          notificationUseCases,
+          invitationRepo,
+          memberRepo,
+          userUseCases,
+          athleteUseCases
+        ),
+      inject: [
+        NOTIFICATION_USE_CASES,
+        INVITATION_REPO,
+        MEMBER_REPO,
+        USER_USE_CASES,
+        ATHLETE_USE_CASES,
+      ],
     },
 
     // Global guard - validates session on all routes
@@ -161,11 +197,9 @@ export class AuthModule implements NestModule {
 
     const handler = toNodeHandler(this.betterAuthAdapter.auth);
 
-    consumer
-      .apply(handler)
-      .forRoutes({
-        path: '/auth/*',
-        method: RequestMethod.ALL,
-      });
+    consumer.apply(handler).forRoutes({
+      path: '/auth/*',
+      method: RequestMethod.ALL,
+    });
   }
 }

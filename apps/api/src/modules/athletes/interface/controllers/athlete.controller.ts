@@ -1,15 +1,20 @@
 import { athleteContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
-import { NoOrganization, RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import {
+  NoOrganization,
+  RequirePermissions,
+} from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
-import { IAthleteUseCases, ATHLETE_USE_CASES } from '../../application/ports/athlete-use-cases.port';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  IAthleteUseCases,
+  ATHLETE_USE_CASES,
+} from '../../application/ports/athlete-use-cases.port';
 import { AthleteMapper } from '../mappers/athlete.mapper';
 import { AthletePresenter } from '../presenter/athlete.presenter';
 
@@ -17,18 +22,18 @@ const c = athleteContract;
 
 /**
  * Athlete Controller
- * 
+ *
  * @description
  * Handles all athlete related operations including CRUD operations
  * for managing athletes, their profiles, and associated data.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization, except for create and update
  * operations which use @NoOrganization() decorator.
- * 
+ *
  * @see {@link IAthleteUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -54,7 +59,10 @@ export class AthleteController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
-        const athletes = await this.athleteUseCases.findAllWithDetails(user.id, organizationId);
+        const athletes = await this.athleteUseCases.findAllWithDetails(
+          user.id,
+          organizationId
+        );
         const athletesDto = AthleteMapper.toDtoListDetails(athletes);
         return AthletePresenter.presentListDetails(athletesDto);
       } catch (error) {
@@ -79,7 +87,11 @@ export class AthleteController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
-        const athlete = await this.athleteUseCases.findOneWithDetails(params.id, user.id, organizationId);
+        const athlete = await this.athleteUseCases.findOneWithDetails(
+          params.id,
+          user.id,
+          organizationId
+        );
         const athleteDto = AthleteMapper.toDtoDetails(athlete);
         return AthletePresenter.presentOneDetails(athleteDto);
       } catch (error) {
@@ -128,10 +140,16 @@ export class AthleteController {
   @TsRestHandler(c.updateAthlete)
   @RequirePermissions('update')
   @NoOrganization()
-  updateAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
+  updateAthlete(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       try {
-        const athlete = await this.athleteUseCases.update(params.id, body, user.id);
+        const athlete = await this.athleteUseCases.update(
+          params.id,
+          body,
+          user.id
+        );
         const athleteDto = AthleteMapper.toDto(athlete);
         return AthletePresenter.presentOne(athleteDto);
       } catch (error) {
@@ -151,7 +169,9 @@ export class AthleteController {
    */
   @TsRestHandler(c.deleteAthlete)
   @RequirePermissions('delete')
-  deleteAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
+  deleteAthlete(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
       try {
         await this.athleteUseCases.delete(params.id, user.id);

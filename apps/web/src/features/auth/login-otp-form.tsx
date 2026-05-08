@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,26 +16,29 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useTranslation } from "@dropit/i18n";
+import { useTranslation } from '@dropit/i18n';
 
 type LoginOtpFormData = {
-  otp: string
-}
+  otp: string;
+};
 
 interface LoginOtpFormProps {
   email: string;
   onSuccess: () => void;
 }
 
-export function LoginOtpForm({
-  email,
-  onSuccess,
-}: LoginOtpFormProps) {
+export function LoginOtpForm({ email, onSuccess }: LoginOtpFormProps) {
   const { t } = useTranslation(['auth']);
 
-  const otpFormSchema = useMemo(() => z.object({
-    otp: z.string().length(6, { message: t('login.validation.otpRequired') }),
-  }), [t]);
+  const otpFormSchema = useMemo(
+    () =>
+      z.object({
+        otp: z
+          .string()
+          .length(6, { message: t('login.validation.otpRequired') }),
+      }),
+    [t]
+  );
 
   const otpForm = useForm<LoginOtpFormData>({
     resolver: zodResolver(otpFormSchema),
@@ -52,7 +54,7 @@ export function LoginOtpForm({
         otp: values.otp,
       });
       if (error) throw new Error(error.code ?? error.message);
-      return data
+      return data;
     },
     onSuccess: () => {
       toast({
@@ -68,7 +70,7 @@ export function LoginOtpForm({
         variant: 'destructive',
       });
     },
-  })
+  });
 
   function onSubmitOtp(values: LoginOtpFormData) {
     loginOtpMutation.mutate(values);
@@ -77,7 +79,10 @@ export function LoginOtpForm({
   return (
     <div>
       <Form {...otpForm}>
-        <form onSubmit={otpForm.handleSubmit(onSubmitOtp)} className="space-y-4">
+        <form
+          onSubmit={otpForm.handleSubmit(onSubmitOtp)}
+          className="space-y-4"
+        >
           <FormField
             control={otpForm.control}
             name="otp"
@@ -110,4 +115,3 @@ export function LoginOtpForm({
     </div>
   );
 }
-

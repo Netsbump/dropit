@@ -22,27 +22,48 @@ export interface IWorkoutUseCases {
   /**
    * Get one workout by ID
    */
-  getWorkout(workoutId: string, organizationId: string, userId: string): Promise<Workout>;
+  getWorkout(
+    workoutId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<Workout>;
 
   /**
    * Get workout with details by ID
    */
-  getWorkoutWithDetails(id: string, organizationId: string, userId: string): Promise<Workout>;
+  getWorkoutWithDetails(
+    id: string,
+    organizationId: string,
+    userId: string
+  ): Promise<Workout>;
 
   /**
    * Create a new workout
    */
-  createWorkout(workout: CreateWorkoutInput, organizationId: string, userId: string): Promise<Workout>;
+  createWorkout(
+    workout: CreateWorkoutInput,
+    organizationId: string,
+    userId: string
+  ): Promise<Workout>;
 
   /**
    * Update a workout
    */
-  updateWorkout(id: string, workout: UpdateWorkoutInput, organizationId: string, userId: string): Promise<Workout>;
+  updateWorkout(
+    id: string,
+    workout: UpdateWorkoutInput,
+    organizationId: string,
+    userId: string
+  ): Promise<Workout>;
 
   /**
    * Delete a workout
    */
-  deleteWorkout(workoutId: string, organizationId: string, userId: string): Promise<void>;
+  deleteWorkout(
+    workoutId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void>;
 }
 
 /**

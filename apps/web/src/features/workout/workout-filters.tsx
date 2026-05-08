@@ -48,7 +48,9 @@ export function WorkoutFilters({
               <SelectValue placeholder={t('workout.filters.all_categories')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">{t('workout.filters.all_categories')}</SelectItem>
+              <SelectItem value="all">
+                {t('workout.filters.all_categories')}
+              </SelectItem>
               {categories?.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}

@@ -10,6 +10,8 @@ export const ComplexCategoryMapper = {
   },
 
   toDtoList(complexCategories: ComplexCategory[]): ComplexCategoryDto[] {
-    return complexCategories.map((complexCategory) => ComplexCategoryMapper.toDto(complexCategory));
+    return complexCategories.map((complexCategory) =>
+      ComplexCategoryMapper.toDto(complexCategory)
+    );
   },
-}; 
+};

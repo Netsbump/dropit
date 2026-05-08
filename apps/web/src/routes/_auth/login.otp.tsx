@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute } from '@tanstack/react-router';
 import { useAuthRedirect } from '@/features/auth/use-auth-redirect';
 import { AuthLogo } from '@/features/auth/auth-logo';
 import { LoginOtpForm } from '@/features/auth/login-otp-form';
@@ -9,10 +9,10 @@ import { useTranslation } from '@dropit/i18n';
 
 export const Route = createFileRoute('/_auth/login/otp')({
   validateSearch: z.object({
-    email: z.string().email()
+    email: z.string().email(),
   }),
   component: LoginOtp,
-})
+});
 
 function LoginOtp() {
   const { email } = Route.useSearch();
@@ -27,12 +27,12 @@ function LoginOtp() {
         <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
           <AuthLogo />
 
-          <AuthFormHeader title={t('login.title')} description={t('login.otpDescription')} />
-
-          <LoginOtpForm
-            email={email}
-            onSuccess={redirectBasedOnRole}
+          <AuthFormHeader
+            title={t('login.title')}
+            description={t('login.otpDescription')}
           />
+
+          <LoginOtpForm email={email} onSuccess={redirectBasedOnRole} />
         </div>
       </div>
     </div>

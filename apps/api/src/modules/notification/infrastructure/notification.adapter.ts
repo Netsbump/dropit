@@ -4,8 +4,14 @@ import {
   KIND,
   NotificationRequest,
 } from '../application/ports/outbound/notification.port';
-import { EMAIL_CHANNEL_PORT, IEmailChannel } from './channels/email/email-channel.port';
-import { PUSH_CHANNEL_PORT, IPushChannel } from './channels/push/push-channel.port';
+import {
+  EMAIL_CHANNEL_PORT,
+  IEmailChannel,
+} from './channels/email/email-channel.port';
+import {
+  PUSH_CHANNEL_PORT,
+  IPushChannel,
+} from './channels/push/push-channel.port';
 import { SMS_CHANNEL_PORT, ISmsChannel } from './channels/sms/sms-channel.port';
 import { Transport, TRANSPORT } from './notification.types';
 
@@ -30,16 +36,19 @@ export class NotificationAdapter implements INotificationPort {
     @Inject(SMS_CHANNEL_PORT)
     private readonly smsChannel: ISmsChannel,
     @Inject(PUSH_CHANNEL_PORT)
-    private readonly pushChannel: IPushChannel,
-  ) { }
+    private readonly pushChannel: IPushChannel
+  ) {}
 
   async send(request: NotificationRequest): Promise<void> {
-    const channel = this.resolveChannel(request)
+    const channel = this.resolveChannel(request);
 
     switch (channel) {
-      case TRANSPORT.EMAIL: return await this.emailChannel.send(request);
-      case TRANSPORT.SMS: return await this.smsChannel.send(request);
-      case TRANSPORT.PUSH: return await this.pushChannel.send(request);
+      case TRANSPORT.EMAIL:
+        return await this.emailChannel.send(request);
+      case TRANSPORT.SMS:
+        return await this.smsChannel.send(request);
+      case TRANSPORT.PUSH:
+        return await this.pushChannel.send(request);
     }
   }
 
@@ -51,12 +60,12 @@ export class NotificationAdapter implements INotificationPort {
    * 3. User preferences if applicable
    */
   private resolveChannel(request: NotificationRequest): Transport {
-
     if (request.kind === KIND.OTP) {
       if ('email' in request.otpParams) {
-        return TRANSPORT.EMAIL
-      } if ('phoneNumber' in request.otpParams) {
-        return TRANSPORT.SMS
+        return TRANSPORT.EMAIL;
+      }
+      if ('phoneNumber' in request.otpParams) {
+        return TRANSPORT.SMS;
       }
     }
 

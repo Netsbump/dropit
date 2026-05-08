@@ -67,4 +67,4 @@ describe('Integration Tests Suite', () => {
       await runWorkoutTests(orm);
     });
   });
-}); 
+});

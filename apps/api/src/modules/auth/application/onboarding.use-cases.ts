@@ -1,13 +1,13 @@
-import { RequestAccessInput } from "@dropit/schemas";
-import { IOnboardingUseCases } from "./ports/onboarding-use-cases.port";
-import { INotificationUseCases } from "../../notification/application/ports/inbound/notification-use-cases.port";
-import { IInvitationRepository } from "./ports/invitation.repository.port";
-import { IMemberRepository } from "./ports/member.repository.port";
-import { IUserUseCases } from "./ports/user-use-cases.port";
-import { IAthleteUseCases } from "../../athletes/application/ports/athlete-use-cases.port";
-import { Member } from "../domain/organization/member.entity";
+import { RequestAccessInput } from '@dropit/schemas';
+import { IOnboardingUseCases } from './ports/onboarding-use-cases.port';
+import { INotificationUseCases } from '../../notification/application/ports/inbound/notification-use-cases.port';
+import { IInvitationRepository } from './ports/invitation.repository.port';
+import { IMemberRepository } from './ports/member.repository.port';
+import { IUserUseCases } from './ports/user-use-cases.port';
+import { IAthleteUseCases } from '../../athletes/application/ports/athlete-use-cases.port';
+import { Member } from '../domain/organization/member.entity';
 import { organizationRoleSchema } from '@dropit/schemas';
-import { InvitationException } from "./exceptions/invitation.exceptions";
+import { InvitationException } from './exceptions/invitation.exceptions';
 
 export class OnboardingUseCases implements IOnboardingUseCases {
   constructor(
@@ -15,7 +15,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     private readonly invitationRepository: IInvitationRepository,
     private readonly memberRepository: IMemberRepository,
     private readonly userUseCases: IUserUseCases,
-    private readonly athleteUseCases: IAthleteUseCases,
+    private readonly athleteUseCases: IAthleteUseCases
   ) {}
 
   async createCoachAccessRequest(data: RequestAccessInput): Promise<void> {
@@ -24,7 +24,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
 
   async prepareUserForInvitation(
     email: string,
-    organizationId: string,
+    organizationId: string
   ): Promise<{ isNewUser: boolean; hasOtherOrganization: boolean }> {
     const existingUser = await this.userUseCases.getByEmail(email);
 
@@ -35,14 +35,14 @@ export class OnboardingUseCases implements IOnboardingUseCases {
         emailVerified: false,
       });
       await this.athleteUseCases.create(
-        { firstName: "", lastName: "" },
-        user.id,
+        { firstName: '', lastName: '' },
+        user.id
       );
       return { isNewUser: true, hasOtherOrganization: false };
     }
 
     const existingMember = await this.memberRepository.findByUserId(
-      existingUser.id,
+      existingUser.id
     );
     const hasOtherOrganization =
       existingMember !== null &&
@@ -58,7 +58,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
       throw InvitationException.notFound(invitationId);
     }
 
-    if (invitation.status !== "pending" || invitation.expiresAt < new Date()) {
+    if (invitation.status !== 'pending' || invitation.expiresAt < new Date()) {
       throw InvitationException.expiredOrUsed();
     }
 
@@ -85,7 +85,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     member.createdAt = new Date();
     await this.memberRepository.save(member);
 
-    invitation.status = "accepted";
+    invitation.status = 'accepted';
     await this.invitationRepository.save(invitation);
   }
 }

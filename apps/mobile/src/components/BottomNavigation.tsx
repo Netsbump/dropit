@@ -1,9 +1,5 @@
 import React from 'react';
-import {
-  View,
-  TouchableOpacity,
-  StyleSheet,
-} from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Notebook, User, Dumbbell } from 'lucide-react-native';
 
 interface BottomNavigationProps {
@@ -11,7 +7,10 @@ interface BottomNavigationProps {
   onTabPress: (tab: 'pr' | 'dashboard' | 'account') => void;
 }
 
-export default function BottomNavigation({ activeTab, onTabPress }: BottomNavigationProps) {
+export default function BottomNavigation({
+  activeTab,
+  onTabPress,
+}: BottomNavigationProps) {
   return (
     <View style={styles.container}>
       <View style={styles.navigationBar}>
@@ -34,7 +33,9 @@ export default function BottomNavigation({ activeTab, onTabPress }: BottomNaviga
           activeOpacity={0.7}
         >
           <Dumbbell
-            color={activeTab === 'dashboard' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}
+            color={
+              activeTab === 'dashboard' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'
+            }
             size={24}
           />
         </TouchableOpacity>
@@ -46,7 +47,9 @@ export default function BottomNavigation({ activeTab, onTabPress }: BottomNaviga
           activeOpacity={0.7}
         >
           <User
-            color={activeTab === 'account' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}
+            color={
+              activeTab === 'account' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'
+            }
             size={24}
           />
         </TouchableOpacity>
@@ -69,7 +72,7 @@ const styles = StyleSheet.create({
     paddingTop: 0,
     paddingHorizontal: 20,
     marginHorizontal: 0,
-    paddingBottom: 0
+    paddingBottom: 0,
   },
   tabButton: {
     alignItems: 'center',

@@ -6,13 +6,17 @@ export const createAthleteTrainingSessionSchema = z.object({
   notes_athlete: z.string().optional(),
 });
 
-export type CreateAthleteTrainingSessionInput = z.infer<typeof createAthleteTrainingSessionSchema>;
+export type CreateAthleteTrainingSessionInput = z.infer<
+  typeof createAthleteTrainingSessionSchema
+>;
 
 export const updateAthleteTrainingSessionSchema = z.object({
   notes_athlete: z.string().optional(),
 });
 
-export type UpdateAthleteTrainingSessionInput = z.infer<typeof updateAthleteTrainingSessionSchema>;
+export type UpdateAthleteTrainingSessionInput = z.infer<
+  typeof updateAthleteTrainingSessionSchema
+>;
 
 export const athleteTrainingSessionSchema = z.object({
   athleteId: z.string(),
@@ -22,4 +26,6 @@ export const athleteTrainingSessionSchema = z.object({
   updatedAt: z.string().or(z.date()),
 });
 
-export type AthleteTrainingSessionDto = z.infer<typeof athleteTrainingSessionSchema>;
+export type AthleteTrainingSessionDto = z.infer<
+  typeof athleteTrainingSessionSchema
+>;

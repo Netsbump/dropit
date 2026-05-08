@@ -8,4 +8,3 @@ export const Route = createFileRoute('/_auth')({
   },
   component: () => <Outlet />,
 });
-

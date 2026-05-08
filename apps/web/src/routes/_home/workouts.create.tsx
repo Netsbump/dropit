@@ -1,4 +1,7 @@
-import { WorkoutCreationStepper, workoutCreationSteps } from '@/features/workout/workout-creation-stepper';
+import {
+  WorkoutCreationStepper,
+  workoutCreationSteps,
+} from '@/features/workout/workout-creation-stepper';
 import { api } from '@/lib/api';
 import { Steps } from '@/components/ui/steps';
 import { useToast } from '@/hooks/use-toast';
@@ -55,7 +58,11 @@ function CreateWorkoutPage() {
   const handleCreationSuccess = (data: CreateWorkoutInput) => {
     createWorkoutMutation(data);
     if (data.trainingSession?.scheduledDate) {
-      navigate({ to: '/planning', replace: true, search: { date: data.trainingSession.scheduledDate } });
+      navigate({
+        to: '/planning',
+        replace: true,
+        search: { date: data.trainingSession.scheduledDate },
+      });
     } else {
       navigate({ to: '/library/workouts', replace: true });
     }

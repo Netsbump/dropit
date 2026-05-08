@@ -1,10 +1,4 @@
-import {
-    Check,
-    Entity,
-    PrimaryKey,
-    Property,
-    Unique,
-  } from '@mikro-orm/core';
+import { Check, Entity, PrimaryKey, Property, Unique } from '@mikro-orm/core';
 import { GLOBAL_ROLE, type GlobalRole } from '@dropit/schemas';
 
 /**
@@ -24,27 +18,27 @@ export class User {
   email!: string;
 
   @Property({ fieldName: 'emailVerified' })
-  emailVerified = false
+  emailVerified = false;
 
   @Property({ nullable: true })
-  image!: string | null
+  image!: string | null;
 
   @Property({ fieldName: 'createdAt' })
-  createdAt: Date = new Date()
+  createdAt: Date = new Date();
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date()
+  updatedAt: Date = new Date();
 
   // Admin plugin fields (app-level: admin = super admin, user = all others)
   @Property({ default: GLOBAL_ROLE.USER })
-  role: GlobalRole = GLOBAL_ROLE.USER
+  role: GlobalRole = GLOBAL_ROLE.USER;
 
   @Property({ nullable: true })
-  banned!: boolean | null
+  banned!: boolean | null;
 
   @Property({ fieldName: 'banReason', nullable: true })
-  banReason!: string | null
+  banReason!: string | null;
 
   @Property({ fieldName: 'banExpires', nullable: true })
-  banExpires!: Date | null
+  banExpires!: Date | null;
 }

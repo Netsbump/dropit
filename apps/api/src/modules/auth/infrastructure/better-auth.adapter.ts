@@ -1,7 +1,10 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { Auth } from 'better-auth';
 import { createAuthConfig } from '../better-auth.config';
-import type { CustomSessionContext, EnrichedSessionResult } from '../better-auth.config';
+import type {
+  CustomSessionContext,
+  EnrichedSessionResult,
+} from '../better-auth.config';
 import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
@@ -45,12 +48,14 @@ export class BetterAuthAdapter implements OnModuleInit {
   private static initPromise: Promise<void> | null = null;
 
   constructor(
-    @Inject(NOTIFICATION_USE_CASES) private notificationUseCase: INotificationUseCases,
-    @Inject(ONBOARDING_USE_CASES) private onboardingUseCases: IOnboardingUseCases,
+    @Inject(NOTIFICATION_USE_CASES)
+    private notificationUseCase: INotificationUseCases,
+    @Inject(ONBOARDING_USE_CASES)
+    private onboardingUseCases: IOnboardingUseCases,
     @Inject(MEMBER_USE_CASES) private memberUseCases: IMemberUseCases,
     @Inject(ATHLETE_USE_CASES) private athleteUseCases: IAthleteUseCases,
-    @Inject(USER_USE_CASES) private userUseCases: IUserUseCases,
-  ) { }
+    @Inject(USER_USE_CASES) private userUseCases: IUserUseCases
+  ) {}
 
   /**
    * NestJS lifecycle hook called automatically when the module starts.
@@ -79,18 +84,29 @@ export class BetterAuthAdapter implements OnModuleInit {
    * Enriches the session returned by getSession with organizationRole and athleteId.
    * Called by customSession plugin on each getSession(); no extra DB columns.
    */
-  private async enrichSession(ctx: CustomSessionContext): Promise<EnrichedSessionResult> {
+  private async enrichSession(
+    ctx: CustomSessionContext
+  ): Promise<EnrichedSessionResult> {
     const { user, session } = ctx;
     const activeOrganizationId = session.activeOrganizationId;
-    const activeOrgId = typeof activeOrganizationId === 'string' ? activeOrganizationId : undefined;
+    const activeOrgId =
+      typeof activeOrganizationId === 'string'
+        ? activeOrganizationId
+        : undefined;
     let organizationRole: OrganizationRole | null = null;
     let athleteId: string | null = null;
 
     if (user?.id) {
       if (activeOrgId) {
-        const rawOrganizationRole = await this.memberUseCases.getMemberRole(user.id, activeOrgId);
-        const parsedOrganizationRole = organizationRoleSchema.safeParse(rawOrganizationRole);
-        organizationRole = parsedOrganizationRole.success ? parsedOrganizationRole.data : null;
+        const rawOrganizationRole = await this.memberUseCases.getMemberRole(
+          user.id,
+          activeOrgId
+        );
+        const parsedOrganizationRole =
+          organizationRoleSchema.safeParse(rawOrganizationRole);
+        organizationRole = parsedOrganizationRole.success
+          ? parsedOrganizationRole.data
+          : null;
       }
       athleteId = await this.athleteUseCases.getAthleteId(user.id);
     }
@@ -120,7 +136,7 @@ export class BetterAuthAdapter implements OnModuleInit {
         const { isNewUser, hasOtherOrganization } =
           await this.onboardingUseCases.prepareUserForInvitation(
             data.invitation.email,
-            data.organization.id,
+            data.organization.id
           );
 
         this.notificationUseCase.sendOrganizationInvitation({
@@ -134,7 +150,11 @@ export class BetterAuthAdapter implements OnModuleInit {
         });
       },
       sendVerificationOTP: (data) => {
-        this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type });
+        this.notificationUseCase.sendOtp({
+          otp: data.otp,
+          email: data.email,
+          type: data.type,
+        });
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       checkIsSuperAdminByEmail: (email) => this.checkIsSuperAdminByEmail(email),
@@ -144,11 +164,16 @@ export class BetterAuthAdapter implements OnModuleInit {
             before: async (session) => {
               try {
                 const activeOrganizationId =
-                  await this.memberUseCases.getActiveOrganizationId(session.userId);
-                console.log('🔧 [BetterAuth Hook] Setting session activeOrganizationId:', {
-                  userId: session.userId,
-                  activeOrganizationId,
-                });
+                  await this.memberUseCases.getActiveOrganizationId(
+                    session.userId
+                  );
+                console.log(
+                  '🔧 [BetterAuth Hook] Setting session activeOrganizationId:',
+                  {
+                    userId: session.userId,
+                    activeOrganizationId,
+                  }
+                );
                 return {
                   data: {
                     ...session,
@@ -156,7 +181,10 @@ export class BetterAuthAdapter implements OnModuleInit {
                   },
                 };
               } catch (error) {
-                console.error('❌ [BetterAuth Hook] Error setting session data:', error);
+                console.error(
+                  '❌ [BetterAuth Hook] Error setting session data:',
+                  error
+                );
                 return { data: session };
               }
             },
@@ -178,7 +206,9 @@ export class BetterAuthAdapter implements OnModuleInit {
       console.error(
         'BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first'
       );
-      throw new Error('BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first');
+      throw new Error(
+        'BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first'
+      );
     }
     return this._auth;
   }

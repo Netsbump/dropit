@@ -71,7 +71,9 @@ export function ExerciseCreationForm({
     },
   });
 
-  const handleSubmit = async (formValues: z.infer<typeof formExerciseSchema>) => {
+  const handleSubmit = async (
+    formValues: z.infer<typeof formExerciseSchema>
+  ) => {
     setIsLoading(true);
 
     try {

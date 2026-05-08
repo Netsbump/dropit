@@ -1,12 +1,19 @@
 import { Module } from '@nestjs/common';
 import { NotificationUseCase } from './application/use-cases/notification.use-cases';
 import { NOTIFICATION_USE_CASES } from './application/ports/inbound/notification-use-cases.port';
-import { type INotificationPort, NOTIFICATION_PORT } from './application/ports/outbound/notification.port';
+import {
+  type INotificationPort,
+  NOTIFICATION_PORT,
+} from './application/ports/outbound/notification.port';
 import { NotificationAdapter } from './infrastructure/notification.adapter';
 import { config } from '../../config/env.config';
 
 // Email channel
-import { EMAIL_CHANNEL_PORT, EMAIL_TRANSPORT, IEmailTransport } from './infrastructure/channels/email/email-channel.port';
+import {
+  EMAIL_CHANNEL_PORT,
+  EMAIL_TRANSPORT,
+  IEmailTransport,
+} from './infrastructure/channels/email/email-channel.port';
 import { BrevoAdapter } from './infrastructure/channels/email/brevo.adapter';
 import { EmailAdapter } from './infrastructure/channels/email/email.adapter';
 import { MaildevAdapter } from './infrastructure/channels/email/maildev.adapter';
@@ -64,7 +71,7 @@ import { PushAdapter } from './infrastructure/channels/push/push.adapter';
             config.email.sender.fromEmail,
             config.email.sender.fromName,
             config.email.maildev.user,
-            config.email.maildev.pass,
+            config.email.maildev.pass
           );
         }
 
@@ -75,7 +82,7 @@ import { PushAdapter } from './infrastructure/channels/push/push.adapter';
         return new BrevoAdapter(
           config.email.brevo.apiKey,
           config.email.sender.fromEmail,
-          config.email.sender.fromName,
+          config.email.sender.fromName
         );
       },
     },
@@ -96,8 +103,6 @@ import { PushAdapter } from './infrastructure/channels/push/push.adapter';
       useClass: PushAdapter,
     },
   ],
-  exports: [
-    NOTIFICATION_USE_CASES,
-  ],
+  exports: [NOTIFICATION_USE_CASES],
 })
 export class NotificationModule {}

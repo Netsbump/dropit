@@ -10,7 +10,10 @@ import { CreateWorkoutInput } from '@dropit/schemas';
 import { format } from 'date-fns';
 import { enGB, fr } from 'date-fns/locale';
 import { useState } from 'react';
-import { WorkoutCreationStepper, workoutCreationSteps } from '../workout/workout-creation-stepper';
+import {
+  WorkoutCreationStepper,
+  workoutCreationSteps,
+} from '../workout/workout-creation-stepper';
 
 interface CreateWorkoutModalProps {
   isOpen: boolean;

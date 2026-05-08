@@ -2,7 +2,6 @@ import { CompetitorStatusDto } from '@dropit/schemas';
 import { CompetitorStatusException } from '../../application/exceptions/competitor-status.exceptions';
 
 export const CompetitorStatusPresenter = {
-
   present(competitorStatuses: CompetitorStatusDto[]) {
     return {
       status: 200 as const,
@@ -29,7 +28,7 @@ export const CompetitorStatusPresenter = {
     if (error instanceof CompetitorStatusException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
@@ -37,7 +36,7 @@ export const CompetitorStatusPresenter = {
     console.error('CompetitorStatus unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
   },
 
@@ -46,7 +45,7 @@ export const CompetitorStatusPresenter = {
     if (error instanceof CompetitorStatusException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
@@ -54,9 +53,7 @@ export const CompetitorStatusPresenter = {
     console.error('CompetitorStatus unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-
-
-}
+  },
+};

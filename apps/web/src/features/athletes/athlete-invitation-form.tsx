@@ -60,7 +60,9 @@ export function AthleteInvitationForm({
     onError: (error) => {
       toast({
         title: t('invitation.error_title'),
-        description: t(getAuthErrorKey(error instanceof Error ? error.message : undefined)),
+        description: t(
+          getAuthErrorKey(error instanceof Error ? error.message : undefined)
+        ),
         variant: 'destructive',
       });
     },
@@ -91,9 +93,7 @@ export function AthleteInvitationForm({
           <UserPlus className="w-6 h-6 text-blue-600" />
         </div>
         <h3 className="text-lg font-semibold">{t('invitation.title')}</h3>
-        <p className="text-sm text-gray-600">
-          {t('invitation.description')}
-        </p>
+        <p className="text-sm text-gray-600">{t('invitation.description')}</p>
       </div>
 
       <Form {...form}>
@@ -105,13 +105,14 @@ export function AthleteInvitationForm({
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  {t('invitation.email')} <span className="text-destructive ml-1">*</span>
+                  {t('invitation.email')}{' '}
+                  <span className="text-destructive ml-1">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t('invitation.email_placeholder')} 
-                    {...field} 
+                  <Input
+                    type="email"
+                    placeholder={t('invitation.email_placeholder')}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -120,7 +121,9 @@ export function AthleteInvitationForm({
           />
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">{t('invitation.how_it_works')}</h4>
+            <h4 className="font-medium text-blue-900 mb-2">
+              {t('invitation.how_it_works')}
+            </h4>
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• {t('invitation.how_it_works_steps.0')}</li>
               <li>• {t('invitation.how_it_works_steps.1')}</li>
@@ -130,16 +133,16 @@ export function AthleteInvitationForm({
           </div>
 
           <div className="flex justify-end gap-2 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onCancel} 
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
               disabled={isLoading}
             >
               {t('invitation.button_cancel')}
             </Button>
-            <Button 
-              type="submit" 
+            <Button
+              type="submit"
               disabled={isLoading}
               className="flex items-center gap-2"
             >
@@ -160,4 +163,4 @@ export function AthleteInvitationForm({
       </Form>
     </div>
   );
-} 
+}

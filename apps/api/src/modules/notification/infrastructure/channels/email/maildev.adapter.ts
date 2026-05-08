@@ -21,18 +21,19 @@ export class MaildevAdapter implements IEmailTransport {
     private readonly fromEmail: string,
     private readonly fromName: string,
     private readonly user?: string,
-    private readonly pass?: string,
+    private readonly pass?: string
   ) {
     this.transporter = nodemailer.createTransport({
       host: this.host,
       port: this.smtpPort,
       ignoreTLS: true,
-      auth: this.user && this.pass
-        ? {
-          user: this.user,
-          pass: this.pass,
-        }
-        : undefined,
+      auth:
+        this.user && this.pass
+          ? {
+              user: this.user,
+              pass: this.pass,
+            }
+          : undefined,
     });
 
     console.log('📧 [MaildevAdapter] Initialized with Maildev SMTP:', {
@@ -59,7 +60,11 @@ export class MaildevAdapter implements IEmailTransport {
       });
     } catch (error) {
       console.error('❌ [MaildevAdapter] Error sending email:', error);
-      throw new EmailSendFailedException(`Failed to send email via Maildev: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new EmailSendFailedException(
+        `Failed to send email via Maildev: ${
+          error instanceof Error ? error.message : 'Unknown error'
+        }`
+      );
     }
   }
 }
