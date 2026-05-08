@@ -5,6 +5,7 @@ import { Member } from '../../domain/organization/member.entity';
 import type { AuthenticatedUser } from '../decorators/auth.decorator';
 import { NO_ORGANIZATION } from '../decorators/permissions.decorator';
 import { hasPermission } from '../../permissions.config';
+import { organizationRoleSchema } from '@dropit/schemas';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
@@ -69,7 +70,11 @@ export class PermissionsGuard implements CanActivate {
         throw new ForbiddenException('User is not a member of this organization');
       }
 
-      const organizationRole = memberRecord.role;
+      const parsedOrganizationRole = organizationRoleSchema.safeParse(memberRecord.role);
+      if (!parsedOrganizationRole.success) {
+        throw new ForbiddenException('Invalid organization role');
+      }
+      const organizationRole = parsedOrganizationRole.data;
 
       // 8. Check permissions (athlete vs coach) via permissions.config
       const granted = hasPermission(organizationRole, resource, requiredPermissions);

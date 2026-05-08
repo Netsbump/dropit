@@ -158,8 +158,8 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       workoutElement.type = element.type;
       workoutElement.order = element.order;
       workoutElement.blocks = element.blocks;
-      workoutElement.tempo = element.tempo;
-      workoutElement.commentary = element.commentary;
+      workoutElement.tempo = element.tempo ?? null;
+      workoutElement.commentary = element.commentary ?? null;
 
       if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {
         const exercise = await this.exerciseRepository.getOne(element.exerciseId, coachFilterConditions);
@@ -281,8 +281,8 @@ export class WorkoutUseCases implements IWorkoutUseCases {
         workoutElement.type = element.type;
         workoutElement.order = element.order;
         workoutElement.blocks = element.blocks;
-        workoutElement.tempo = element.tempo;
-        workoutElement.commentary = element.commentary;
+        workoutElement.tempo = element.tempo ?? null;
+        workoutElement.commentary = element.commentary ?? null;
         workoutElement.workout = workoutToUpdate;
 
         if (element.type === WORKOUT_ELEMENT_TYPES.EXERCISE) {

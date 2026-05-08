@@ -8,7 +8,7 @@ export const UserMapper = {
       name: user.name,
       email: user.email,
       emailVerified: user.emailVerified,
-      image: user.image,
+      image: user.image ?? undefined,
       role: user.role ?? 'user',
       createdAt: user.createdAt,
       updatedAt: user.updatedAt,

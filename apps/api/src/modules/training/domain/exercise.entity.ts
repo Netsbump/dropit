@@ -21,10 +21,10 @@ export class Exercise {
   name!: string;
 
   @Property({ nullable: true })
-  englishName?: string;
+  englishName!: string | null;
 
   @Property({ nullable: true })
-  shortName?: string;
+  shortName!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
@@ -39,7 +39,7 @@ export class Exercise {
   exerciseCategory!: ExerciseCategory;
 
   @ManyToOne(() => Media, { nullable: true })
-  video?: Media;
+  video!: Media | null;
 
   @OneToMany(
     () => ExerciseComplex,

@@ -29,16 +29,16 @@ export class Session {
   updatedAt: Date = new Date()
 
   @Property({ fieldName: 'ipAddress', nullable: true })
-  ipAddress?: string
+  ipAddress!: string | null
 
   @Property({ fieldName: 'userAgent', nullable: true })
-  userAgent?: string
+  userAgent!: string | null
 
   @Property({ fieldName: 'activeOrganizationId', nullable: true })
-  activeOrganizationId?: string
+  activeOrganizationId!: string | null
 
   @Property({ fieldName: 'impersonatedBy', nullable: true })
-  impersonatedBy?: string
+  impersonatedBy!: string | null
 
   @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
   user!: User

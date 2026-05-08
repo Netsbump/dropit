@@ -24,10 +24,10 @@ export class Athlete {
   lastName!: string;
 
   @Property({ nullable: true })
-  birthday?: Date;
+  birthday!: Date | null;
 
   @Property({ nullable: true })
-  country?: string;
+  country!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

@@ -6,6 +6,7 @@ import { IMemberRepository } from "./ports/member.repository.port";
 import { IUserUseCases } from "./ports/user-use-cases.port";
 import { IAthleteUseCases } from "../../athletes/application/ports/athlete-use-cases.port";
 import { Member } from "../domain/organization/member.entity";
+import { organizationRoleSchema } from '@dropit/schemas';
 import { InvitationException } from "./exceptions/invitation.exceptions";
 
 export class OnboardingUseCases implements IOnboardingUseCases {
@@ -76,7 +77,11 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     const member = new Member();
     member.user = user;
     member.organization = invitation.organization;
-    member.role = invitation.role;
+    const parsedRole = organizationRoleSchema.safeParse(invitation.role);
+    if (!parsedRole.success) {
+      throw new Error(`Invalid invitation role: ${invitation.role}`);
+    }
+    member.role = parsedRole.data;
     member.createdAt = new Date();
     await this.memberRepository.save(member);
 

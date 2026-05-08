@@ -254,8 +254,9 @@
           "unsigned": false,
           "autoincrement": false,
           "primary": false,
-          "nullable": true,
+          "nullable": false,
           "length": 255,
+          "default": "'user'",
           "mappedType": "string"
         },
         "banned": {
@@ -312,7 +313,13 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "user_role_check",
+          "expression": "\"role\" in ('user', 'admin')",
+          "definition": "check ((\"role\" in ('user', 'admin')))"
+        }
+      ],
       "foreignKeys": {},
       "nativeEnums": {}
     },
@@ -526,7 +533,13 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "member_role_check",
+          "expression": "\"role\" in ('member', 'admin', 'owner')",
+          "definition": "check ((\"role\" in ('member', 'admin', 'owner')))"
+        }
+      ],
       "foreignKeys": {
         "member_userId_foreign": {
           "constraintName": "member_userId_foreign",

@@ -7,11 +7,11 @@ import { Complex } from '../../domain/complex.entity';
 
 // Type guards for WorkoutElement discrimination
 const isExerciseElement = (element: WorkoutElement): element is WorkoutElement & { exercise: Exercise } => {
-  return element.type === 'exercise' && element.exercise !== undefined;
+  return element.type === 'exercise' && element.exercise !== null;
 };
 
 const isComplexElement = (element: WorkoutElement): element is WorkoutElement & { complex: Complex } => {
-  return element.type === 'complex' && element.complex !== undefined;
+  return element.type === 'complex' && element.complex !== null;
 };
 
 export const WorkoutMapper = {
@@ -20,8 +20,8 @@ export const WorkoutMapper = {
       const baseElement = {
         id: element.id,
         order: element.order,
-        tempo: element.tempo,
-        commentary: element.commentary,
+        tempo: element.tempo ?? undefined,
+        commentary: element.commentary ?? undefined,
         blocks: element.blocks,
       };
 
@@ -37,8 +37,8 @@ export const WorkoutMapper = {
               name: element.exercise.exerciseCategory.name,
             },
             video: element.exercise.video?.id,
-            englishName: element.exercise.englishName,
-            shortName: element.exercise.shortName,
+            englishName: element.exercise.englishName ?? undefined,
+            shortName: element.exercise.shortName ?? undefined,
           },
         };
       }
@@ -61,8 +61,8 @@ export const WorkoutMapper = {
                 name: ex.exercise.exerciseCategory.name,
               },
               video: ex.exercise.video?.id,
-              englishName: ex.exercise.englishName,
-              shortName: ex.exercise.shortName,
+               englishName: ex.exercise.englishName ?? undefined,
+               shortName: ex.exercise.shortName ?? undefined,
               order: ex.order,
             })),
           },

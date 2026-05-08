@@ -24,25 +24,25 @@ export class Account {
   user!: User
 
   @Property({ fieldName: 'accessToken', nullable: true })
-  accessToken?: string
+  accessToken!: string | null
 
   @Property({ fieldName: 'refreshToken', nullable: true })
-  refreshToken?: string
+  refreshToken!: string | null
 
   @Property({ fieldName: 'idToken', nullable: true })
-  idToken?: string
+  idToken!: string | null
 
   @Property({ fieldName: 'accessTokenExpiresAt', nullable: true })
-  accessTokenExpiresAt?: Date
+  accessTokenExpiresAt!: Date | null
 
   @Property({ fieldName: 'refreshTokenExpiresAt', nullable: true })
-  refreshTokenExpiresAt?: Date
+  refreshTokenExpiresAt!: Date | null
 
   @Property({ nullable: true })
-  scope?: string
+  scope!: string | null
 
   @Property({ nullable: true })
-  password?: string
+  password!: string | null
 
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date()

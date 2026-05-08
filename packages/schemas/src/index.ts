@@ -10,5 +10,6 @@ export * from './workout.schema';
 export * from './competitor-status.schema';
 export * from './personal-record.schema';
 export * from './common.schema';
+export * from './role.schema';
 export * from './user.schema';
 export * from './access.schema';

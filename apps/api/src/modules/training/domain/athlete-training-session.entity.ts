@@ -11,7 +11,7 @@ export class AthleteTrainingSession {
   trainingSession!: TrainingSession;
 
   @Property({ nullable: true })
-  notes_athlete?: string;
+  notes_athlete!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

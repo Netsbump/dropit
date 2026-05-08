@@ -1,4 +1,5 @@
 import { CoachFilterConditions } from './member.repository.port';
+import type { OrganizationRole } from '@dropit/schemas';
 
 /**
  * Member Use Cases Port
@@ -42,7 +43,7 @@ export interface IMemberUseCases {
   /**
    * Get the role of a user in a specific organization, null if not a member
    */
-  getMemberRole(userId: string, organizationId: string): Promise<string | null>;
+  getMemberRole(userId: string, organizationId: string): Promise<OrganizationRole | null>;
 }
 
 /**

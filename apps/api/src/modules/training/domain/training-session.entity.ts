@@ -31,7 +31,7 @@ export class TrainingSession {
   scheduledDate!: Date;
 
   @Property({ nullable: true })
-  completedDate?: Date;
+  completedDate!: Date | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

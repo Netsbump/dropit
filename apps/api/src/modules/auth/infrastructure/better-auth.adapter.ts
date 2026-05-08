@@ -22,6 +22,7 @@ import {
   IAthleteUseCases,
   ATHLETE_USE_CASES,
 } from '../../athletes/application/ports/athlete-use-cases.port';
+import { organizationRoleSchema, type OrganizationRole } from '@dropit/schemas';
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -80,13 +81,16 @@ export class BetterAuthAdapter implements OnModuleInit {
    */
   private async enrichSession(ctx: CustomSessionContext): Promise<EnrichedSessionResult> {
     const { user, session } = ctx;
-    const activeOrgId = session.activeOrganizationId as string | undefined;
-    let organizationRole: string | null = null;
+    const activeOrganizationId = session.activeOrganizationId;
+    const activeOrgId = typeof activeOrganizationId === 'string' ? activeOrganizationId : undefined;
+    let organizationRole: OrganizationRole | null = null;
     let athleteId: string | null = null;
 
     if (user?.id) {
       if (activeOrgId) {
-        organizationRole = await this.memberUseCases.getMemberRole(user.id, activeOrgId);
+        const rawOrganizationRole = await this.memberUseCases.getMemberRole(user.id, activeOrgId);
+        const parsedOrganizationRole = organizationRoleSchema.safeParse(rawOrganizationRole);
+        organizationRole = parsedOrganizationRole.success ? parsedOrganizationRole.data : null;
       }
       athleteId = await this.athleteUseCases.getAthleteId(user.id);
     }

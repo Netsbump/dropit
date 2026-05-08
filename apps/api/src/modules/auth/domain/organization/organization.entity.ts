@@ -14,13 +14,13 @@ export class Organization {
   name!: string;
 
   @Property({ nullable: true })
-  slug?: string;
+  slug!: string | null;
 
   @Property({ nullable: true })
-  logo?: string;
+  logo!: string | null;
 
   @Property({ nullable: true })
-  metadata?: string;
+  metadata!: string | null;
 
   @Property({ fieldName: 'createdAt' })
   createdAt: Date = new Date();

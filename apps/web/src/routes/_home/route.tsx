@@ -4,6 +4,8 @@ import { AppHeader } from '@/components/layout/app-header';
 import { useTranslation } from '@dropit/i18n';
 import { PageMetaProvider } from '@/hooks/use-page-meta';
 import { getMemberRole, getSession } from '@/features/auth/auth-queries';
+import { GLOBAL_ROLE, ORGANIZATION_ROLE, globalRoleSchema, organizationRoleSchema } from '@dropit/schemas';
+import { canAccessBackOffice } from '@/features/auth/auth-role';
 
 export const Route = createFileRoute('/_home')({
   beforeLoad: async () => {
@@ -13,11 +15,16 @@ export const Route = createFileRoute('/_home')({
     }
 
     const memberRole = await getMemberRole();
-    const isCoach = memberRole.data?.role === 'admin';
-    const isSuperAdmin = session.data.user.role === 'admin';
+    const parsedUserRole = globalRoleSchema.safeParse(session.data.user.role);
+    const parsedOrganizationRole = organizationRoleSchema.safeParse(memberRole.data?.role);
+
+    const hasBackOfficeAccess = canAccessBackOffice({
+      userRole: parsedUserRole.success ? parsedUserRole.data : GLOBAL_ROLE.USER,
+      organizationRole: parsedOrganizationRole.success ? parsedOrganizationRole.data : ORGANIZATION_ROLE.MEMBER,
+    });
 
     // Only coaches (org admin) and super admins can access the dashboard
-    if (!isCoach && !isSuperAdmin) {
+    if (!hasBackOfficeAccess) {
       throw redirect({ to: '/download-app' });
     }
   },

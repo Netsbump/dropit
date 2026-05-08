@@ -6,7 +6,7 @@ export const AthleteTrainingSessionMapper = {
     return {
     athleteId: athleteTrainingSession.athlete.id,
     trainingSessionId: athleteTrainingSession.trainingSession.id,
-    notes_athlete: athleteTrainingSession.notes_athlete,
+    notes_athlete: athleteTrainingSession.notes_athlete ?? undefined,
     createdAt: athleteTrainingSession.createdAt,
     updatedAt: athleteTrainingSession.updatedAt,
     };

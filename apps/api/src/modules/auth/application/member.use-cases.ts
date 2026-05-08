@@ -1,5 +1,6 @@
 import { CoachFilterConditions, IMemberRepository } from "./ports/member.repository.port";
 import { IMemberUseCases } from "./ports/member-use-cases.port";
+import type { OrganizationRole } from '@dropit/schemas';
 
 /**
  * Member Use Cases Implementation
@@ -90,7 +91,7 @@ export class MemberUseCases implements IMemberUseCases {
     return member?.organization.id ?? null;
   }
 
-  async getMemberRole(userId: string, organizationId: string): Promise<string | null> {
+  async getMemberRole(userId: string, organizationId: string): Promise<OrganizationRole | null> {
     const member = await this.memberRepository.findByUserId(userId);
     if (!member || member.organization.id !== organizationId) return null;
     return member.role;

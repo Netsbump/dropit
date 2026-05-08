@@ -12,10 +12,10 @@ export class Media {
   bucket!: string;
 
   @Property({ nullable: true })
-  fileName?: string;
+  fileName!: string | null;
 
   @Property({ nullable: true })
-  mimeType?: string;
+  mimeType!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

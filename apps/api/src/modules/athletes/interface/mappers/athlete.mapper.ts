@@ -12,7 +12,7 @@ export const AthleteMapper = {
       birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
       email: athlete.email ?? '',
       image: athlete.image ?? '',
-      country: athlete.country,
+      country: athlete.country ?? undefined,
       metrics: athlete.weight ? { weight: athlete.weight } : undefined,
       personalRecords:
         athlete.pr_snatch || athlete.pr_cleanAndJerk
