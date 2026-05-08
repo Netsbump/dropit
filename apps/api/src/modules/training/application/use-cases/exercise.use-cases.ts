@@ -1,6 +1,6 @@
 import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IExerciseCategoryRepository } from '../ports/exercise-category.repository.port';
-import { CreateExercise, UpdateExercise } from '@dropit/schemas';
+import { CreateExerciseInput, UpdateExerciseInput } from '@dropit/schemas';
 import { Exercise } from '../../domain/exercise.entity';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
@@ -98,7 +98,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     return exercises;
   }
 
-  async create(data: CreateExercise, organizationId: string, userId: string): Promise<Exercise> {
+  async create(data: CreateExerciseInput, organizationId: string, userId: string): Promise<Exercise> {
     //1. Check if the user is admin of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
@@ -152,7 +152,7 @@ export class ExerciseUseCase implements IExerciseUseCases {
     return createdExercise;
   }
 
-  async update(exerciseId: string, data: UpdateExercise, organizationId: string, userId: string): Promise<Exercise> {
+  async update(exerciseId: string, data: UpdateExerciseInput, organizationId: string, userId: string): Promise<Exercise> {
     //1. Check if the user is admin of this organization
     const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 

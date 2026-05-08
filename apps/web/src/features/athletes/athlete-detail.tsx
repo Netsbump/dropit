@@ -19,10 +19,10 @@ import { useTranslation } from '@dropit/i18n';
 import {
   AthleteDetailsDto,
   CompetitorLevel,
-  CreateCompetitorStatus,
+  CreateCompetitorStatusInput,
   PersonalRecordDto,
   SexCategory,
-  UpdateCompetitorStatus,
+  UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
 import { Label } from '@radix-ui/react-dropdown-menu';
 import {
@@ -46,14 +46,14 @@ type AthleteDetailProps = {
   isCreatingCompetitorStatus: boolean;
   setIsCreatingCompetitorStatus: (isCreating: boolean) => void;
   updateCompetitorStatusForm: ReturnType<
-    typeof useForm<UpdateCompetitorStatus>
+    typeof useForm<UpdateCompetitorStatusInput>
   >;
   createCompetitorStatusForm: ReturnType<
-    typeof useForm<CreateCompetitorStatus>
+    typeof useForm<CreateCompetitorStatusInput>
   >;
   isLoading: boolean;
-  onUpdateCompetitorStatus: (data: UpdateCompetitorStatus) => void;
-  onCreateCompetitorStatus: (data: CreateCompetitorStatus) => void;
+  onUpdateCompetitorStatus: (data: UpdateCompetitorStatusInput) => void;
+  onCreateCompetitorStatus: (data: CreateCompetitorStatusInput) => void;
 };
 
 export function AthleteDetail({

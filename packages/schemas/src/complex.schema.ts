@@ -11,14 +11,14 @@ export const createComplexSchema = z.object({
   exercises: z.array(createExerciseComplexSchema),
 });
 
-export type CreateComplex = z.infer<typeof createComplexSchema>;
+export type CreateComplexInput = z.infer<typeof createComplexSchema>;
 
 export const updateComplexSchema = z.object({
   complexCategory: z.string().optional(),
   exercises: z.array(createExerciseComplexSchema).optional(),
 });
 
-export type UpdateComplex = z.infer<typeof updateComplexSchema>;
+export type UpdateComplexInput = z.infer<typeof updateComplexSchema>;
 
 const exerciseComplexSchema = exerciseSchema.extend({
   order: z.number(),

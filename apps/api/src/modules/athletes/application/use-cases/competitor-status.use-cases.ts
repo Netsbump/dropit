@@ -1,6 +1,6 @@
 import {
-  CreateCompetitorStatus,
-  UpdateCompetitorStatus,
+  CreateCompetitorStatusInput,
+  UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
 import { ICompetitorStatusUseCases } from '../ports/competitor-status-use-cases.port';
@@ -78,7 +78,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
   }
 
   async create(
-    data: CreateCompetitorStatus,
+    data: CreateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus> {
@@ -129,7 +129,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
 
   async update(
     id: string,
-    data: UpdateCompetitorStatus,
+    data: UpdateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus> {

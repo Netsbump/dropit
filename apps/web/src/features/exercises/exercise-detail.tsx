@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from '@/hooks/use-toast';
-import { UpdateExercise, updateExerciseSchema } from '@dropit/schemas';
+import { UpdateExerciseInput, updateExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { format } from 'date-fns';
@@ -61,7 +61,7 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
   });
 
   const { mutate: updateExerciseMutation } = useMutation({
-    mutationFn: async (data: UpdateExercise) => {
+    mutationFn: async (data: UpdateExerciseInput) => {
       const response = await api.exercise.updateExercise({
         params: { id: exercise.id },
         body: data,

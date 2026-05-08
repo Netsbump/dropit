@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /**
  * Reusable schema for date filtering
@@ -17,5 +17,5 @@ export const dateRangeFilterSchema = z.object({
   endDate: z.string().date().optional(),
 });
 
-export type DateFilter = z.infer<typeof dateFilterSchema>;
-export type DateRangeFilter = z.infer<typeof dateRangeFilterSchema>;
+export type DateFilterInput = z.infer<typeof dateFilterSchema>;
+export type DateRangeFilterInput = z.infer<typeof dateRangeFilterSchema>;

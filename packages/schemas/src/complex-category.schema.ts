@@ -4,11 +4,11 @@ export const createComplexCategorySchema = z.object({
   name: z.string(),
 });
 
-export type CreateComplexCategory = z.infer<typeof createComplexCategorySchema>;
+export type CreateComplexCategoryInput = z.infer<typeof createComplexCategorySchema>;
 
 export const updateComplexCategorySchema = createComplexCategorySchema;
 
-export type UpdateComplexCategory = z.infer<typeof updateComplexCategorySchema>;
+export type UpdateComplexCategoryInput = z.infer<typeof updateComplexCategorySchema>;
 
 export const complexCategorySchema = z.object({
   id: z.string(),

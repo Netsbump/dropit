@@ -20,14 +20,14 @@ export const createCompetitorStatusSchema = z.object({
   athleteId: z.string(),
 });
 
-export type CreateCompetitorStatus = z.infer<
+export type CreateCompetitorStatusInput = z.infer<
   typeof createCompetitorStatusSchema
 >;
 
 export const updateCompetitorStatusSchema =
   createCompetitorStatusSchema.partial();
 
-export type UpdateCompetitorStatus = z.infer<
+export type UpdateCompetitorStatusInput = z.infer<
   typeof updateCompetitorStatusSchema
 >;
 

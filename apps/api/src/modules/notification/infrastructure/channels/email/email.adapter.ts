@@ -1,7 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { config } from "src/config/env.config";
-import { KIND, NotificationRequest } from "../../../application/ports/outbound/notification.port";
-import { EMAIL_TRANSPORT, EmailData, IEmailChannel, IEmailTransport } from "./email-channel.port";
+import {
+  KIND,
+  NotificationRequest,
+} from "../../../application/ports/outbound/notification.port";
+import {
+  EMAIL_TRANSPORT,
+  EmailData,
+  IEmailChannel,
+  IEmailTransport,
+} from "./email-channel.port";
 import { renderEmailLayout } from "./email-template";
 
 @Injectable()
@@ -9,7 +17,7 @@ export class EmailAdapter implements IEmailChannel {
   constructor(
     @Inject(EMAIL_TRANSPORT)
     private readonly transport: IEmailTransport,
-  ) { }
+  ) {}
 
   async send(request: NotificationRequest): Promise<void> {
     const emailData = this.buildEmail(request);
@@ -22,16 +30,18 @@ export class EmailAdapter implements IEmailChannel {
         return {
           to: request.email,
           subject: `Invitation à rejoindre ${request.organizationName}`,
-          htmlContent: this.renderOrganizationInvitation(request)
-        }
+          htmlContent: this.renderOrganizationInvitation(request),
+        };
 
       case KIND.OTP: {
-        if (!('email' in request.otpParams)) {
-          throw new Error('Otp notification routed to email channel without email address');
+        if (!("email" in request.otpParams)) {
+          throw new Error(
+            "Otp notification routed to email channel without email address",
+          );
         }
         return {
           to: request.otpParams.email,
-          subject: 'Votre code de vérification DropIt',
+          subject: "Votre code de vérification DropIt",
           htmlContent: this.renderOtpCode(request),
         };
       }
@@ -39,9 +49,9 @@ export class EmailAdapter implements IEmailChannel {
       case KIND.REQUEST_ACCESS:
         return {
           to: config.email.sender.fromEmail,
-          subject: 'Demande de nouvel accès coach',
+          subject: "Demande de nouvel accès coach",
           htmlContent: this.renderRequestAccess(request),
-        }
+        };
 
       default: {
         const _exhaustive: never = request;
@@ -50,14 +60,19 @@ export class EmailAdapter implements IEmailChannel {
     }
   }
 
-  private renderOrganizationInvitation(request: Extract<NotificationRequest, { kind: typeof KIND.ORGANIZATION_INVITATION }>): string {
+  private renderOrganizationInvitation(
+    request: Extract<
+      NotificationRequest,
+      { kind: typeof KIND.ORGANIZATION_INVITATION }
+    >,
+  ): string {
     const inviteLink = `${config.appUrl}/accept-invitation/${request.invitationToken}`;
 
     const warningBlock = request.hasOtherOrganization
       ? `<p style="margin-top: 20px; padding: 12px 16px; background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: 4px; color: #92400e; font-size: 14px;">
           ⚠️ <strong>Attention :</strong> En acceptant cette invitation, vous quitterez votre club actuel.
         </p>`
-      : '';
+      : "";
 
     return renderEmailLayout({
       title: `Invitation à rejoindre ${request.organizationName}`,
@@ -88,12 +103,14 @@ export class EmailAdapter implements IEmailChannel {
     });
   }
 
-  private renderRequestAccess(request: Extract<NotificationRequest, { kind: typeof KIND.REQUEST_ACCESS }>): string {
+  private renderRequestAccess(
+    request: Extract<NotificationRequest, { kind: typeof KIND.REQUEST_ACCESS }>,
+  ): string {
     const name = this.escapeHtml(request.name);
     const email = this.escapeHtml(request.email);
 
     return renderEmailLayout({
-      title: 'Nouvelle demande d\'accès coach',
+      title: "Nouvelle demande d'accès coach",
       headerContent: `
         <h1>DropIt</h1>
         <h2>Nouvelle demande d'accès coach</h2>
@@ -112,22 +129,25 @@ export class EmailAdapter implements IEmailChannel {
           </tr>
         </table>
       `,
-      footerContent: '<p>Cet email a été généré automatiquement par DropIt.</p>',
+      footerContent:
+        "<p>Cet email a été généré automatiquement par DropIt.</p>",
     });
   }
 
   private escapeHtml(value: string): string {
     return value
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#x27;');
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#x27;");
   }
 
-  private renderOtpCode(request: Extract<NotificationRequest, { kind: typeof KIND.OTP }>): string {
+  private renderOtpCode(
+    request: Extract<NotificationRequest, { kind: typeof KIND.OTP }>,
+  ): string {
     return renderEmailLayout({
-      title: 'Votre code de vérification',
+      title: "Votre code de vérification",
       headerContent: "<h1>Code de vérification</h1>",
       extraStyles:
         ".otp-code { font-size: 32px; font-weight: bold; text-align: center; background: white; padding: 20px; border-radius: 8px; letter-spacing: 8px; }",
@@ -144,4 +164,3 @@ export class EmailAdapter implements IEmailChannel {
     });
   }
 }
-

@@ -1,4 +1,4 @@
-import { CreateWorkout, UpdateWorkout } from '@dropit/schemas';
+import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
 import { Workout } from '../../domain/workout.entity';
 
 /**
@@ -32,12 +32,12 @@ export interface IWorkoutUseCases {
   /**
    * Create a new workout
    */
-  createWorkout(workout: CreateWorkout, organizationId: string, userId: string): Promise<Workout>;
+  createWorkout(workout: CreateWorkoutInput, organizationId: string, userId: string): Promise<Workout>;
 
   /**
    * Update a workout
    */
-  updateWorkout(id: string, workout: UpdateWorkout, organizationId: string, userId: string): Promise<Workout>;
+  updateWorkout(id: string, workout: UpdateWorkoutInput, organizationId: string, userId: string): Promise<Workout>;
 
   /**
    * Delete a workout

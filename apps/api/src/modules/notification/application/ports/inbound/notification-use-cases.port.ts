@@ -1,4 +1,4 @@
-import { RequestAccess } from "@dropit/schemas";
+import { RequestAccessInput } from "@dropit/schemas";
 
 export type OrganizationInvitationParams = {
   organizationId: string;
@@ -8,11 +8,15 @@ export type OrganizationInvitationParams = {
   invitationToken: string;
   isNewUser: boolean;
   hasOtherOrganization: boolean;
-}
+};
 
 export type OtpParams =
-  | { otp: string, email: string, type: 'sign-in' | 'email-verification' | 'forget-password' }
-  | { otp: string, phoneNumber: string };
+  | {
+      otp: string;
+      email: string;
+      type: "sign-in" | "email-verification" | "forget-password";
+    }
+  | { otp: string; phoneNumber: string };
 
 /**
  * Notification Use Cases Port (Port IN)
@@ -28,7 +32,6 @@ export type OtpParams =
  * via dependency injection.
  */
 export interface INotificationUseCases {
-
   /**
    * Send an invitation email to join an organization
    *
@@ -38,24 +41,25 @@ export interface INotificationUseCases {
    * - If user exists: sends email + push notification
    * - If user doesn't exist: sends email only with signup link
    */
-  sendOrganizationInvitation(params: OrganizationInvitationParams): Promise<void>;
+  sendOrganizationInvitation(
+    params: OrganizationInvitationParams,
+  ): Promise<void>;
 
-  /** 
+  /**
    * Send a one-time password (OTP) code
    *
    * @description
    */
-  sendOtp(params: OtpParams): Promise<void>
+  sendOtp(params: OtpParams): Promise<void>;
 
   /**
    * Send a notification to super admin to new request access from backoffice form
    */
-  sendRequestAccess(params: RequestAccess): Promise<void>;
+  sendRequestAccess(params: RequestAccessInput): Promise<void>;
 }
-
 
 /**
  * Injection token for INotificationUseCases
  * Use this token in @Inject() decorators
  */
-export const NOTIFICATION_USE_CASES = Symbol('NOTIFICATION_USE_CASES');
+export const NOTIFICATION_USE_CASES = Symbol("NOTIFICATION_USE_CASES");

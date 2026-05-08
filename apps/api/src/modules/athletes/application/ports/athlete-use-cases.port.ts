@@ -1,4 +1,4 @@
-import { CreateAthlete, UpdateAthlete } from '@dropit/schemas';
+import { CreateAthleteInput, UpdateAthleteInput } from '@dropit/schemas';
 import { Athlete } from '../../domain/athlete.entity';
 import { AthleteDetails } from './athlete.repository.port';
 
@@ -38,12 +38,12 @@ export interface IAthleteUseCases {
   /**
    * Create a new athlete
    */
-  create(data: CreateAthlete, userId: string): Promise<Athlete>;
+  create(data: CreateAthleteInput, userId: string): Promise<Athlete>;
 
   /**
    * Update an existing athlete
    */
-  update(idAthlete: string, data: UpdateAthlete, userId: string): Promise<Athlete>;
+  update(idAthlete: string, data: UpdateAthleteInput, userId: string): Promise<Athlete>;
 
   /**
    * Delete an athlete

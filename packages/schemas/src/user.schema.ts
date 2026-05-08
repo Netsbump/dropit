@@ -6,7 +6,7 @@ export const updateUserSchema = z.object({
   image: z.string().optional(),
 });
 
-export type UpdateUser = z.infer<typeof updateUserSchema>;
+export type UpdateUserInput = z.infer<typeof updateUserSchema>;
 
 export const userSchema = z.object({
   id: z.string(),
@@ -27,4 +27,4 @@ export const deleteUserSchema = z.object({
   confirmation: z.string().min(1, 'Confirmation is required'),
 });
 
-export type DeleteUser = z.infer<typeof deleteUserSchema>;
+export type DeleteUserInput = z.infer<typeof deleteUserSchema>;

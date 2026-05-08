@@ -1,4 +1,4 @@
-import { CreateWorkoutCategory, UpdateWorkoutCategory } from '@dropit/schemas';
+import { CreateWorkoutCategoryInput, UpdateWorkoutCategoryInput } from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 
 /**
@@ -27,12 +27,12 @@ export interface IWorkoutCategoryUseCases {
   /**
    * Create a new workout category
    */
-  create(data: CreateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory>;
+  create(data: CreateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory>;
 
   /**
    * Update a workout category
    */
-  update(workoutCategoryId: string, data: UpdateWorkoutCategory, organizationId: string, userId: string): Promise<WorkoutCategory>;
+  update(workoutCategoryId: string, data: UpdateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory>;
 
   /**
    * Delete a workout category

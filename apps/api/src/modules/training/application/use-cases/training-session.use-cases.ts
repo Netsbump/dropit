@@ -1,6 +1,6 @@
 import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
 import { IOrganizationUseCases } from '../../../auth/application/ports/organization-use-cases.port';
-import { CreateTrainingSession, UpdateAthleteTrainingSession, UpdateTrainingSession } from '@dropit/schemas';
+import { CreateTrainingSessionInput, UpdateAthleteTrainingSessionInput, UpdateTrainingSessionInput } from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
@@ -157,7 +157,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return athleteTrainingSession;
   }
 
-  async create(data: CreateTrainingSession, organizationId: string, userId: string): Promise<TrainingSession> {
+  async create(data: CreateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession> {
     //1. Get organization from repository
     const organization = await this.organizationUseCases.getOne(organizationId);
 
@@ -222,7 +222,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return createdTrainingSession;
   }
 
-  async update(sessionId: string, data: UpdateTrainingSession, organizationId: string, userId: string): Promise<TrainingSession> {
+  async update(sessionId: string, data: UpdateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession> {
     //1. Check if the user is admin of this organization
     const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
 
@@ -302,7 +302,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return updatedTrainingSession;
   }
 
-  async updateAthleteTrainingSession(athleteId: string, athleteTrainingSessionId: string, data: UpdateAthleteTrainingSession, userId: string): Promise<AthleteTrainingSession> {
+  async updateAthleteTrainingSession(athleteId: string, athleteTrainingSessionId: string, data: UpdateAthleteTrainingSessionInput, userId: string): Promise<AthleteTrainingSession> {
     //1. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 

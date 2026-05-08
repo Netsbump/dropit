@@ -5,6 +5,4 @@ export const accessSchema = z.object({
   name: z.string().min(1, 'Name is required'),
 })
 
-export type RequestAccess = z.infer<typeof accessSchema>;
-
-
+export type RequestAccessInput = z.infer<typeof accessSchema>;

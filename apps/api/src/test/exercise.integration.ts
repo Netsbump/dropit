@@ -1,4 +1,4 @@
-import { CreateExercise, ExerciseCategoryDto, ExerciseDto } from '@dropit/schemas';
+import { CreateExerciseInput, ExerciseCategoryDto, ExerciseDto } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';

@@ -1,4 +1,4 @@
-import { CreateExercise, UpdateExercise } from '@dropit/schemas';
+import { CreateExerciseInput, UpdateExerciseInput } from '@dropit/schemas';
 import { Exercise } from '../../domain/exercise.entity';
 
 /**
@@ -27,12 +27,12 @@ export interface IExerciseUseCases {
   /**
    * Create a new exercise
    */
-  create(data: CreateExercise, userId: string, organizationId: string): Promise<Exercise>;
+  create(data: CreateExerciseInput, userId: string, organizationId: string): Promise<Exercise>;
 
   /**
    * Update an exercise
    */
-  update(exerciseId: string, data: UpdateExercise, userId: string, organizationId: string): Promise<Exercise>;
+  update(exerciseId: string, data: UpdateExerciseInput, userId: string, organizationId: string): Promise<Exercise>;
 
   /**
    * Search exercises by name
