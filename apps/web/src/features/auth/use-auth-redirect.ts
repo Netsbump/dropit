@@ -1,33 +1,25 @@
 import { useNavigate } from '@tanstack/react-router';
-import { getSession, getMemberRole } from './auth-queries';
-import {
-  GLOBAL_ROLE,
-  ORGANIZATION_ROLE,
-  globalRoleSchema,
-  organizationRoleSchema,
-} from '@dropit/schemas';
-import { canAccessBackOffice } from './auth-role';
+import { getBackOfficeAccessState } from './auth-access';
 
+/**
+ * Handles post-login navigation from UI flows (e.g. admin login, OTP login).
+ *
+ * This hook is a UX helper used after authentication succeeds in a component.
+ * It does not replace route-level guards: `beforeLoad` guards remain the
+ * source of truth and will re-validate session and role permissions.
+ */
 export function useAuthRedirect() {
   const navigate = useNavigate();
 
+  /**
+   * Resolves current access state and redirects users to their landing page:
+   * - Back-office users (coach/super admin): /dashboard
+   * - Other authenticated users: /download-app
+   */
   const redirectBasedOnRole = async () => {
-    const { data: session } = await getSession();
-    const { data: memberRole } = await getMemberRole();
+    const accessState = await getBackOfficeAccessState();
 
-    const parsedUserRole = globalRoleSchema.safeParse(session?.user?.role);
-    const parsedOrganizationRole = organizationRoleSchema.safeParse(
-      memberRole?.role
-    );
-
-    const hasBackOfficeAccess = canAccessBackOffice({
-      userRole: parsedUserRole.success ? parsedUserRole.data : GLOBAL_ROLE.USER,
-      organizationRole: parsedOrganizationRole.success
-        ? parsedOrganizationRole.data
-        : ORGANIZATION_ROLE.MEMBER,
-    });
-
-    if (hasBackOfficeAccess) {
+    if (accessState.hasBackOfficeAccess) {
       navigate({ to: '/dashboard', replace: true });
     } else {
       navigate({ to: '/download-app', replace: true });
