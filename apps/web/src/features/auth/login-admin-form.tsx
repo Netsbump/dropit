@@ -1,12 +1,12 @@
-import { useMemo } from 'react';
-import { toast } from '@/hooks/use-toast';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
-import { useForm } from 'react-hook-form';
-import { z } from 'zod';
-import { authClient } from '@/lib/auth-client';
-import { getAuthErrorKey } from '@/lib/auth-errors';
-import { Button } from '@/components/ui/button';
+import { useMemo } from "react";
+import { toast } from "@/hooks/use-toast";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { authClient } from "@/lib/auth-client";
+import { getAuthErrorKey } from "@/lib/auth-errors";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -14,9 +14,9 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useTranslation } from '@dropit/i18n';
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { useTranslation } from "@dropit/i18n";
 
 type LoginFormData = {
   email: string;
@@ -28,26 +28,26 @@ interface LoginFormProps {
 }
 
 export function LoginAdminForm({ onSuccess }: LoginFormProps) {
-  const { t } = useTranslation(['auth']);
+  const { t } = useTranslation(["auth"]);
 
   const formSchema = useMemo(
     () =>
       z.object({
         email: z
           .string()
-          .email({ message: t('common.validation.emailRequired') }),
+          .email({ message: t("common.validation.emailRequired") }),
         password: z
           .string()
-          .min(6, { message: t('common.validation.passwordMinLength') }),
+          .min(6, { message: t("common.validation.passwordMinLength") }),
       }),
-    [t]
+    [t],
   );
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      email: '',
-      password: '',
+      email: "",
+      password: "",
     },
   });
 
@@ -56,7 +56,7 @@ export function LoginAdminForm({ onSuccess }: LoginFormProps) {
       const response = await authClient.signIn.email({
         email: values.email,
         password: values.password,
-        callbackURL: '/dashboard',
+        callbackURL: "/dashboard",
         rememberMe: true,
       });
 
@@ -67,16 +67,16 @@ export function LoginAdminForm({ onSuccess }: LoginFormProps) {
     },
     onSuccess: () => {
       toast({
-        title: t('login.toast.success.title'),
-        description: t('login.toast.success.description'),
+        title: t("login.toast.success.title"),
+        description: t("login.toast.success.description"),
       });
       onSuccess?.();
     },
     onError: (error: Error) => {
       toast({
-        title: t('login.toast.error.title'),
+        title: t("login.toast.error.title"),
         description: t(getAuthErrorKey(error.message)),
-        variant: 'destructive',
+        variant: "destructive",
       });
     },
   });
@@ -94,10 +94,10 @@ export function LoginAdminForm({ onSuccess }: LoginFormProps) {
             name="email"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('login.email')}</FormLabel>
+                <FormLabel>{t("login.email")}</FormLabel>
                 <FormControl>
                   <Input
-                    placeholder={t('common.placeholders.email')}
+                    placeholder={t("common.placeholders.email")}
                     {...field}
                   />
                 </FormControl>
@@ -110,11 +110,11 @@ export function LoginAdminForm({ onSuccess }: LoginFormProps) {
             name="password"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>{t('login.password')}</FormLabel>
+                <FormLabel>{t("login.password")}</FormLabel>
                 <FormControl>
                   <Input
                     type="password"
-                    placeholder={t('common.placeholders.password')}
+                    placeholder={t("common.placeholders.password")}
                     {...field}
                   />
                 </FormControl>
@@ -128,8 +128,8 @@ export function LoginAdminForm({ onSuccess }: LoginFormProps) {
             disabled={loginMutation.isPending}
           >
             {loginMutation.isPending
-              ? t('login.buttonLoading')
-              : t('login.button')}
+              ? t("login.buttonLoading")
+              : t("login.buttonAdmin")}
           </Button>
         </form>
       </Form>
