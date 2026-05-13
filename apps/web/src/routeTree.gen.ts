@@ -21,6 +21,7 @@ import { Route as HomeLibraryRouteImport } from './routes/_home/library'
 import { Route as HomeHelpRouteImport } from './routes/_home/help'
 import { Route as HomeDashboardRouteImport } from './routes/_home/dashboard'
 import { Route as HomeAthletesRouteImport } from './routes/_home/athletes'
+import { Route as HomeAdminRouteImport } from './routes/_home/admin'
 import { Route as HomeWorkoutsCreateRouteImport } from './routes/_home/workouts.create'
 import { Route as HomeWorkoutsWorkoutIdRouteImport } from './routes/_home/workouts.$workoutId'
 import { Route as HomeLibraryWorkoutsRouteImport } from './routes/_home/library.workouts'
@@ -99,6 +100,11 @@ const HomeAthletesRoute = HomeAthletesRouteImport.update({
   path: '/athletes',
   getParentRoute: () => HomeRouteRoute,
 } as any)
+const HomeAdminRoute = HomeAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => HomeRouteRoute,
+} as any)
 const AuthLoginIndexLazyRoute = AuthLoginIndexLazyRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -158,6 +164,7 @@ const AuthAcceptInvitationInvitationIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/download-app': typeof DownloadAppRoute
+  '/admin': typeof HomeAdminRoute
   '/athletes': typeof HomeAthletesRouteWithChildren
   '/dashboard': typeof HomeDashboardRoute
   '/help': typeof HomeHelpRoute
@@ -181,6 +188,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/download-app': typeof DownloadAppRoute
+  '/admin': typeof HomeAdminRoute
   '/athletes': typeof HomeAthletesRouteWithChildren
   '/dashboard': typeof HomeDashboardRoute
   '/help': typeof HomeHelpRoute
@@ -207,6 +215,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_home': typeof HomeRouteRouteWithChildren
   '/download-app': typeof DownloadAppRoute
+  '/_home/admin': typeof HomeAdminRoute
   '/_home/athletes': typeof HomeAthletesRouteWithChildren
   '/_home/dashboard': typeof HomeDashboardRoute
   '/_home/help': typeof HomeHelpRoute
@@ -232,6 +241,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/download-app'
+    | '/admin'
     | '/athletes'
     | '/dashboard'
     | '/help'
@@ -255,6 +265,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/download-app'
+    | '/admin'
     | '/athletes'
     | '/dashboard'
     | '/help'
@@ -280,6 +291,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_home'
     | '/download-app'
+    | '/_home/admin'
     | '/_home/athletes'
     | '/_home/dashboard'
     | '/_home/help'
@@ -399,6 +411,13 @@ declare module '@tanstack/react-router' {
       path: '/athletes'
       fullPath: '/athletes'
       preLoaderRoute: typeof HomeAthletesRouteImport
+      parentRoute: typeof HomeRouteRoute
+    }
+    '/_home/admin': {
+      id: '/_home/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof HomeAdminRouteImport
       parentRoute: typeof HomeRouteRoute
     }
     '/_auth/login/': {
@@ -527,6 +546,7 @@ const HomeLibraryRouteWithChildren = HomeLibraryRoute._addFileChildren(
 )
 
 interface HomeRouteRouteChildren {
+  HomeAdminRoute: typeof HomeAdminRoute
   HomeAthletesRoute: typeof HomeAthletesRouteWithChildren
   HomeDashboardRoute: typeof HomeDashboardRoute
   HomeHelpRoute: typeof HomeHelpRoute
@@ -538,6 +558,7 @@ interface HomeRouteRouteChildren {
 }
 
 const HomeRouteRouteChildren: HomeRouteRouteChildren = {
+  HomeAdminRoute: HomeAdminRoute,
   HomeAthletesRoute: HomeAthletesRouteWithChildren,
   HomeDashboardRoute: HomeDashboardRoute,
   HomeHelpRoute: HomeHelpRoute,

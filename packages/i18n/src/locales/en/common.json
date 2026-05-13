@@ -35,6 +35,7 @@
       "library": "Library",
       "calendar": "Calendar",
       "athletes": "Athletes",
+      "admin": "Admin",
       "help": "Help",
       "settings": "Settings"
     },

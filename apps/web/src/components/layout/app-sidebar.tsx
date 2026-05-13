@@ -1,6 +1,8 @@
 import { authClient } from '@/lib/auth-client';
 import { useToast } from '@/hooks/use-toast';
+import { useCanSeeAdminLink } from '@/features/auth/use-can-see-admin-link';
 import { useTranslation } from '@dropit/i18n';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useMatches, useNavigate } from '@tanstack/react-router';
 import {
   BicepsFlexed,
@@ -10,19 +12,25 @@ import {
   BookOpen,
   CircleQuestionMark,
   LogOut,
+  Shield,
 } from 'lucide-react';
 
 export function AppSidebar() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const matches = useMatches();
   const { toast } = useToast();
+  const { canSeeAdminLink } = useCanSeeAdminLink();
 
   const handleLogout = async () => {
     try {
       // Call the API directly to logout
       // With credentials: 'include', the cookies will be automatically sent
       await authClient.signOut();
+      await queryClient.invalidateQueries({
+        queryKey: ['auth', 'backoffice-access'],
+      });
 
       // Redirect to the login page
       toast({
@@ -65,6 +73,15 @@ export function AppSidebar() {
       url: '/athletes',
       icon: GraduationCap,
     },
+    ...(canSeeAdminLink
+      ? [
+          {
+            title: t('sidebar.menu.admin'),
+            url: '/admin',
+            icon: Shield,
+          },
+        ]
+      : []),
   ];
 
   const secondaryItems = [
@@ -93,6 +110,10 @@ export function AppSidebar() {
 
     if (itemUrl === '/dashboard') {
       return currentPath === '/dashboard' || currentPath === '/';
+    }
+
+    if (itemUrl === '/admin') {
+      return currentPath.startsWith('/admin');
     }
 
     return currentPath === itemUrl;
@@ -127,7 +148,7 @@ export function AppSidebar() {
                   isActive ? 'text-purple-700' : 'text-sidebar-foreground'
                 }`}
               />
-              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+              <span className="text-md font-normal">
                 <span
                   className={`${
                     isActive ? 'text-purple-700' : 'text-sidebar-foreground'
@@ -160,7 +181,7 @@ export function AppSidebar() {
                   isActive ? 'text-purple-700' : 'text-sidebar-foreground'
                 }`}
               />
-              <span className="text-md font-normal isActive ? 'text-purple-600' : 'text-sidebar-foreground'">
+              <span className="text-md font-normal">
                 <span
                   className={`${
                     isActive ? 'text-purple-700' : 'text-sidebar-foreground'
