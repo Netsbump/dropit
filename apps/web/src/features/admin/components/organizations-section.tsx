@@ -1,22 +1,26 @@
 import { DataTable } from '@/components/ui/data-table';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { useTranslation } from '@dropit/i18n';
 import { type ColumnDef } from '@tanstack/react-table';
 import { useMemo, useState } from 'react';
 import { Search } from 'lucide-react';
+import { CreateOrganizationDialogForm } from './create-organization-dialog-form';
 import { useOrganizationsQuery } from '../hooks/use-organizations-query';
 import { useUpdateOrganization } from '../hooks/use-update-organization';
 
 type OrganizationRow = { id: string; name: string };
 
 export function OrganizationsSection() {
-  const { t } = useTranslation('common');
+  const { t } = useTranslation(['admin']);
   const { data = [], isLoading } = useOrganizationsQuery();
   const updateOrganization = useUpdateOrganization();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingName, setEditingName] = useState('');
   const [search, setSearch] = useState('');
+  const [createOpen, setCreateOpen] = useState(false);
+  const createOrganizationFormId = 'create-organization-form';
 
   const filteredData = data.filter((organization) =>
     organization.name.toLowerCase().includes(search.toLowerCase())
@@ -24,11 +28,11 @@ export function OrganizationsSection() {
 
   const columns = useMemo<ColumnDef<OrganizationRow>[]>(
     () => [
-      { accessorKey: 'name', header: t('admin.organizations.columns.name') },
-      { accessorKey: 'id', header: t('admin.organizations.columns.id') },
+      { accessorKey: 'name', header: t('admin:organizations.columns.name') },
+      { accessorKey: 'id', header: t('admin:organizations.columns.id') },
       {
         id: 'actions',
-        header: t('admin.organizations.columns.actions'),
+        header: t('admin:organizations.columns.actions'),
         cell: ({ row }) => {
           const org = row.original;
           const isEditing = editingId === org.id;
@@ -52,7 +56,7 @@ export function OrganizationsSection() {
                     setEditingName('');
                   }}
                 >
-                  {t('admin.actions.save')}
+                  {t('admin:actions.save')}
                 </Button>
               </div>
             );
@@ -67,7 +71,7 @@ export function OrganizationsSection() {
                 setEditingName(org.name);
               }}
             >
-              {t('admin.actions.rename')}
+              {t('admin:actions.rename')}
             </Button>
           );
         },
@@ -79,8 +83,11 @@ export function OrganizationsSection() {
   return (
     <section className="flex min-h-0 flex-1 flex-col rounded-2xl border bg-card p-4">
       <h2 className="text-lg font-semibold">
-        {t('admin.organizations.list_title')}
+        {t('admin:organizations.list_title')}
       </h2>
+      <p className="text-sm text-muted-foreground">
+        {t('admin:organizations.description')}
+      </p>
       <div className="mt-4 min-h-0 flex-1">
         {isLoading ? (
           <div className="flex h-24 items-center justify-center">
@@ -88,14 +95,19 @@ export function OrganizationsSection() {
           </div>
         ) : (
           <>
-            <div className="relative max-w-lg pb-6">
-              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-              <Input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                placeholder={t('admin.organizations.search_placeholder')}
-                className="bg-background pl-8"
-              />
+            <div className="flex items-center justify-between pb-6">
+              <div className="relative w-full max-w-lg">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  placeholder={t('admin:organizations.search_placeholder')}
+                  className="bg-background pl-8"
+                />
+              </div>
+              <Button onClick={() => setCreateOpen(true)}>
+                {t('admin:organizations.create_button')}
+              </Button>
             </div>
             <DataTable
               columns={columns}
@@ -107,6 +119,21 @@ export function OrganizationsSection() {
           </>
         )}
       </div>
+
+      <CreationDialog
+        open={createOpen}
+        onOpenChange={setCreateOpen}
+        title={t('admin:organizations.modal.title')}
+        description={t('admin:organizations.modal.description')}
+        cancelLabel={t('admin:organizations.modal.cancel')}
+        submitLabel={t('admin:organizations.modal.submit')}
+        submitFormId={createOrganizationFormId}
+      >
+        <CreateOrganizationDialogForm
+          formId={createOrganizationFormId}
+          onSuccess={() => setCreateOpen(false)}
+        />
+      </CreationDialog>
     </section>
   );
 }

@@ -3,6 +3,7 @@
     "loading": "Chargement...",
     "start_create": "Commencez par en créer un !",
     "back": "Retour",
+    "cancel": "Annuler",
     "error": {
       "generic": "Une erreur est survenue",
       "not_found": "Non trouvé"
@@ -147,7 +148,8 @@
     },
     "creation": {
       "title": "Créer un exercice",
-      "description": "Ajoutez un nouvel exercice à votre catalogue."
+      "description": "Ajoutez un nouvel exercice à votre catalogue.",
+      "cancel": "Annuler"
     },
     "table": {
       "no_results": "Aucun résultat.",
@@ -161,26 +163,6 @@
     "welcome": {
       "greeting": "Bonjour {{name}} !",
       "description": "Bienvenue sur votre tableau de bord. Gérez vos athlètes, programmez vos séances et suivez leurs performances."
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "actions": {
-      "save": "Enregistrer",
-      "rename": "Renommer"
-    },
-    "organizations": {
-      "title": "Clubs",
-      "description": "Créez et gérez les organizations du backoffice.",
-      "create_placeholder": "Nom du club",
-      "create_button": "Créer",
-      "list_title": "Liste des clubs",
-      "search_placeholder": "Rechercher un club",
-      "columns": {
-        "name": "Nom",
-        "id": "ID",
-        "actions": "Actions"
-      }
     }
   },
   "help": {

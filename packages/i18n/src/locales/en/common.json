@@ -3,6 +3,7 @@
     "loading": "Loading...",
     "start_create": "Start by creating one!",
     "back": "Back",
+    "cancel": "Cancel",
     "error": {
       "generic": "An error occurred",
       "not_found": "Not found"
@@ -150,7 +151,8 @@
     },
     "creation": {
       "title": "Create exercise",
-      "description": "Add a new exercise to your catalog."
+      "description": "Add a new exercise to your catalog.",
+      "cancel": "Cancel"
     },
     "table": {
       "no_results": "No results.",
@@ -164,26 +166,6 @@
     "welcome": {
       "greeting": "Hello {{name}}!",
       "description": "Welcome to your dashboard. Manage your athletes, schedule sessions, and track their performance."
-    }
-  },
-  "admin": {
-    "title": "Administration",
-    "actions": {
-      "save": "Save",
-      "rename": "Rename"
-    },
-    "organizations": {
-      "title": "Organizations",
-      "description": "Create and manage backoffice organizations.",
-      "create_placeholder": "Organization name",
-      "create_button": "Create",
-      "list_title": "Organizations list",
-      "search_placeholder": "Search organizations",
-      "columns": {
-        "name": "Name",
-        "id": "ID",
-        "actions": "Actions"
-      }
     }
   },
   "organization": {

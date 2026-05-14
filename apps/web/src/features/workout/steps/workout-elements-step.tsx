@@ -26,7 +26,7 @@ import { UseFormReturn, useFieldArray } from 'react-hook-form';
 import { useState } from 'react';
 import { z } from 'zod';
 import { SortableWorkoutElement } from '../sortable-workout-element';
-import { DialogCreation } from '../../exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { ExerciseCreationForm } from '../../exercises/exercise-creation-form';
 import { ComplexCreationForm } from '../../complex/complex-creation-form';
 
@@ -463,7 +463,7 @@ export function WorkoutElementsStep({
         </div>
 
         {/* Modales de création */}
-        <DialogCreation
+        <CreationDialog
           open={createExerciseModalOpen}
           onOpenChange={setCreateExerciseModalOpen}
           title="Créer un exercice"
@@ -473,9 +473,9 @@ export function WorkoutElementsStep({
             onSuccess={handleExerciseCreationSuccess}
             onCancel={() => setCreateExerciseModalOpen(false)}
           />
-        </DialogCreation>
+        </CreationDialog>
 
-        <DialogCreation
+        <CreationDialog
           open={createComplexModalOpen}
           onOpenChange={setCreateComplexModalOpen}
           title="Créer un complexe"
@@ -486,7 +486,7 @@ export function WorkoutElementsStep({
             onSuccess={handleComplexCreationSuccess}
             onCancel={() => setCreateComplexModalOpen(false)}
           />
-        </DialogCreation>
+        </CreationDialog>
       </div>
     </TooltipProvider>
   );

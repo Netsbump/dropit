@@ -7,12 +7,14 @@ import en from './locales/en/common.json';
 import enPlanning from './locales/en/planning.json';
 import enOnboarding from './locales/en/onboarding.json';
 import enAuth from './locales/en/auth.json';
+import enAdmin from './locales/en/admin.json';
 import enProfile from './locales/en/profile.json';
 import enPrivacy from './locales/en/privacy.json';
 import frAthletes from './locales/fr/athletes.json';
 import fr from './locales/fr/common.json';
 import frPlanning from './locales/fr/planning.json';
 import frAuth from './locales/fr/auth.json';
+import frAdmin from './locales/fr/admin.json';
 import frOnboarding from './locales/fr/onboarding.json';
 import frProfile from './locales/fr/profile.json';
 import frPrivacy from './locales/fr/privacy.json';
@@ -24,6 +26,7 @@ export const resources = {
     athletes: enAthletes,
     planning: enPlanning,
     auth: enAuth,
+    admin: enAdmin,
     onboarding: enOnboarding,
     profile: enProfile,
     privacy: enPrivacy,
@@ -33,6 +36,7 @@ export const resources = {
     athletes: frAthletes,
     planning: frPlanning,
     auth: frAuth,
+    admin: frAdmin,
     onboarding: frOnboarding,
     profile: frProfile,
     privacy: frPrivacy,

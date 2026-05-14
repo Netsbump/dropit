@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,23 +11,21 @@ import { useTranslation } from '@dropit/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
-import { Mail, UserPlus, Send } from 'lucide-react';
+import { Mail, UserPlus } from 'lucide-react';
 import { authClient } from '@/lib/auth-client';
 import { getAuthErrorKey } from '@/lib/auth-errors';
 
 type AthleteInvitationFormProps = {
+  formId: string;
   onSuccess: () => void;
-  onCancel: () => void;
 };
 
 export function AthleteInvitationForm({
+  formId,
   onSuccess,
-  onCancel,
 }: AthleteInvitationFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation(['athletes']);
 
   const invitationSchema = z.object({
@@ -76,14 +73,7 @@ export function AthleteInvitationForm({
   });
 
   async function onSubmit(values: InvitationFormData) {
-    try {
-      setIsLoading(true);
-      sendInvitationMutation(values);
-    } catch (error) {
-      console.error('Failed to send invitation:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    sendInvitationMutation(values);
   }
 
   return (
@@ -97,7 +87,11 @@ export function AthleteInvitationForm({
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          id={formId}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
           <FormField
             control={form.control}
             name="email"
@@ -130,34 +124,6 @@ export function AthleteInvitationForm({
               <li>• {t('invitation.how_it_works_steps.2')}</li>
               <li>• {t('invitation.how_it_works_steps.3')}</li>
             </ul>
-          </div>
-
-          <div className="flex justify-end gap-2 pt-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={onCancel}
-              disabled={isLoading}
-            >
-              {t('invitation.button_cancel')}
-            </Button>
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {t('invitation.sending')}
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  {t('invitation.button_send')}
-                </>
-              )}
-            </Button>
           </div>
         </form>
       </Form>

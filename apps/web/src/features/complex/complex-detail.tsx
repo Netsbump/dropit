@@ -47,7 +47,7 @@ import { GripVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { DialogCreation } from '../exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
 import { getCategoryBadgeVariant } from '@/utils';
@@ -425,7 +425,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           </div>
         </form>
 
-        <DialogCreation
+        <CreationDialog
           open={createExerciseModalOpen}
           onOpenChange={(open) => {
             setCreateExerciseModalOpen(open);
@@ -441,9 +441,9 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
               setCurrentEditingIndex(null);
             }}
           />
-        </DialogCreation>
+        </CreationDialog>
 
-        <DialogCreation
+        <CreationDialog
           open={createCategoryModalOpen}
           onOpenChange={setCreateCategoryModalOpen}
           title="Créer une catégorie"
@@ -453,7 +453,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
             onSuccess={handleCategoryCreationSuccess}
             onCancel={() => setCreateCategoryModalOpen(false)}
           />
-        </DialogCreation>
+        </CreationDialog>
       </Form>
     );
   }

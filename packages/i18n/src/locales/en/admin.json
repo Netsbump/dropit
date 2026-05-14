@@ -1,0 +1,32 @@
+{
+  "title": "Administration",
+  "actions": {
+    "save": "Save",
+    "rename": "Rename"
+  },
+  "organizations": {
+    "title": "Organizations",
+    "description": "Create and manage backoffice organizations.",
+    "create_placeholder": "Organization name",
+    "create_button": "Create",
+    "list_title": "Organizations list",
+    "search_placeholder": "Search organizations",
+    "fields": {
+      "name": "Organization name"
+    },
+    "validation": {
+      "name_required": "Organization name is required"
+    },
+    "modal": {
+      "title": "Create organization",
+      "description": "Add a new organization to your backoffice.",
+      "cancel": "Cancel",
+      "submit": "Create organization"
+    },
+    "columns": {
+      "name": "Name",
+      "id": "ID",
+      "actions": "Actions"
+    }
+  }
+}

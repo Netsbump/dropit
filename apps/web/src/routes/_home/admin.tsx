@@ -1,5 +1,4 @@
 import { getBackOfficeAccessState } from '@/features/auth/auth-access';
-import { CreateOrganizationForm } from '@/features/admin/components/create-organization-form';
 import { OrganizationsSection } from '@/features/admin/components/organizations-section';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
@@ -19,16 +18,15 @@ export const Route = createFileRoute('/_home/admin')({
 });
 
 function AdminPage() {
-  const { t } = useTranslation(['common']);
+  const { t } = useTranslation(['admin']);
   const { setPageMeta } = usePageMeta();
 
   useEffect(() => {
-    setPageMeta({ title: t('admin.title') });
+    setPageMeta({ title: t('title') });
   }, [setPageMeta, t]);
 
   return (
     <div className="flex h-full flex-col gap-6 p-4">
-      <CreateOrganizationForm />
       <OrganizationsSection />
     </div>
   );

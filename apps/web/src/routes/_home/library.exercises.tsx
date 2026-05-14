@@ -6,7 +6,7 @@ import { createFileRoute } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { columns } from '@/features/exercises/columns';
 import { DataTable } from '@/components/ui/data-table';
-import { DialogCreation } from '@/features/exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { ExerciseCreationForm } from '@/features/exercises/exercise-creation-form';
 import { Button } from '@/components/ui/button';
 import { DetailsPanel } from '@/components/ui/details-panel';
@@ -24,6 +24,7 @@ function ExercisesPage() {
   const { t } = useTranslation();
   const { setPageMeta } = usePageMeta();
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const exerciseCreateFormId = 'exercise-create-form';
   const [search, setSearch] = useState('');
   const [selectedExercise, setSelectedExercise] = useState<string | null>(null);
   const queryClient = useQueryClient();
@@ -150,17 +151,20 @@ function ExercisesPage() {
         ) : null}
       </DetailsPanel>
 
-      <DialogCreation
+      <CreationDialog
         open={createExerciseModalOpen}
         onOpenChange={setCreateExerciseModalOpen}
         title={t('exercise.creation.title')}
         description={t('exercise.creation.description')}
+        cancelLabel={t('exercise.creation.cancel')}
+        submitLabel={t('exercise.filters.create_exercise')}
+        submitFormId={exerciseCreateFormId}
       >
         <ExerciseCreationForm
+          formId={exerciseCreateFormId}
           onSuccess={handleCreationSuccess}
-          onCancel={() => setCreateExerciseModalOpen(false)}
         />
-      </DialogCreation>
+      </CreationDialog>
     </div>
   );
 }

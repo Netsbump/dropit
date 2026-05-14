@@ -11,7 +11,7 @@ import { ComplexCreationForm } from '@/features/complex/complex-creation-form';
 import { ComplexDetail } from '@/features/complex/complex-detail';
 import { ComplexFilters } from '@/features/complex/complex-filters';
 import { ComplexGrid } from '@/features/complex/complex-grid';
-import { DialogCreation } from '@/features/exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { Button } from '@/components/ui/button';
 import { Zap } from 'lucide-react';
@@ -149,7 +149,7 @@ function ComplexPage() {
         ) : null}
       </DetailsPanel>
 
-      <DialogCreation
+      <CreationDialog
         open={createComplexModalOpen}
         onOpenChange={setCreateComplexModalOpen}
         title={t('complex.creation.title')}
@@ -159,7 +159,7 @@ function ComplexPage() {
           onSuccess={handleCreationSuccess}
           onCancel={() => setCreateComplexModalOpen(false)}
         />
-      </DialogCreation>
+      </CreationDialog>
     </div>
   );
 }

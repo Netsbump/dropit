@@ -13,7 +13,7 @@ import { useState, useEffect } from 'react';
 import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
 import { columns } from '@/features/athletes/columns';
 import { DataTable } from '@/components/ui/data-table';
-import { DialogCreation } from '@/features/athletes/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { Button } from '@/components/ui/button';
 import { HeroCard } from '@/components/ui/hero-card';
@@ -39,6 +39,7 @@ function AthletesPage() {
   const { setPageMeta } = usePageMeta();
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const invitationFormId = 'athlete-invitation-form';
   const queryClient = useQueryClient();
   const navigate = Route.useNavigate();
   const matches = useMatches();
@@ -144,17 +145,20 @@ function AthletesPage() {
         )}
       </div>
 
-      <DialogCreation
+      <CreationDialog
         open={createAthleteModalOpen}
         onOpenChange={setCreateAthleteModalOpen}
         title={t('athletes:invitation.title')}
         description={t('athletes:invitation.description')}
+        cancelLabel={t('athletes:invitation.button_cancel')}
+        submitLabel={t('athletes:invitation.button_send')}
+        submitFormId={invitationFormId}
       >
         <AthleteInvitationForm
+          formId={invitationFormId}
           onSuccess={handleCreationSuccess}
-          onCancel={() => setCreateAthleteModalOpen(false)}
         />
-      </DialogCreation>
+      </CreationDialog>
     </div>
   );
 }

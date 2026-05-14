@@ -1,0 +1,32 @@
+{
+  "title": "Administration",
+  "actions": {
+    "save": "Enregistrer",
+    "rename": "Renommer"
+  },
+  "organizations": {
+    "title": "Clubs",
+    "description": "Créez et gérez les organizations du backoffice.",
+    "create_placeholder": "Nom du club",
+    "create_button": "Créer",
+    "list_title": "Liste des clubs",
+    "search_placeholder": "Rechercher un club",
+    "fields": {
+      "name": "Nom du club"
+    },
+    "validation": {
+      "name_required": "Le nom du club est requis"
+    },
+    "modal": {
+      "title": "Créer un club",
+      "description": "Ajoutez un nouveau club à votre backoffice.",
+      "cancel": "Annuler",
+      "submit": "Créer un club"
+    },
+    "columns": {
+      "name": "Nom",
+      "id": "ID",
+      "actions": "Actions"
+    }
+  }
+}
