@@ -38,7 +38,7 @@ function WorkoutDetailPage() {
   // Update page meta with title and back button
   useEffect(() => {
     setPageMeta({
-      title: t('workout.detail.title'),
+      title: t('workout:detail.title'),
       showBackButton: true,
       onBackClick: () => navigate({ to: '/library/workouts' }),
     });
@@ -46,7 +46,7 @@ function WorkoutDetailPage() {
     // Cleanup: reset to default when leaving the page
     return () => {
       setPageMeta({
-        title: t('library.title'),
+        title: t('library:title'),
         showBackButton: false,
         onBackClick: undefined,
       });

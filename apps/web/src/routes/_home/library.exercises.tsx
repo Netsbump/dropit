@@ -30,7 +30,7 @@ function ExercisesPage() {
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    setPageMeta({ title: t('library.title') });
+    setPageMeta({ title: t('library:title') });
   }, [setPageMeta, t]);
 
   const { data: exercises, isLoading: exercisesLoading } = useQuery({
@@ -74,15 +74,15 @@ function ExercisesPage() {
         <div className="flex-none">
           <HeroCard
             variant="exercise"
-            title={t('exercise.hero.title')}
-            description={t('exercise.hero.description')}
+            title={t('exercise:hero.title')}
+            description={t('exercise:hero.description')}
             stat={{
-              label: t('exercise.hero.stat_label'),
+              label: t('exercise:hero.stat_label'),
               value: exercises?.length || 0,
               icon: Library,
-              description: t('exercise.hero.stat_description'),
+              description: t('exercise:hero.stat_description'),
               callToAction: {
-                text: t('exercise.hero.stat_cta'),
+                text: t('exercise:hero.stat_cta'),
                 onClick: () => {
                   console.log('Open exercises tutorial video');
                 },
@@ -99,10 +99,10 @@ function ExercisesPage() {
             </div>
           ) : !exercises?.length ? (
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-              <p>{t('exercise.filters.no_results')}</p>
+              <p>{t('exercise:filters.no_results')}</p>
               <p className="text-sm">{t('common.start_create')}</p>
               <Button onClick={() => setCreateExerciseModalOpen(true)}>
-                {t('exercise.filters.create_exercise')}
+                {t('exercise:filters.create_exercise')}
               </Button>
             </div>
           ) : (
@@ -111,14 +111,14 @@ function ExercisesPage() {
                 <div className="relative w-full max-w-lg">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
-                    placeholder={t('exercise.filters.search_placeholder')}
+                    placeholder={t('exercise:filters.search_placeholder')}
                     value={search}
                     onChange={(event) => setSearch(event.target.value)}
                     className="bg-background pl-8"
                   />
                 </div>
                 <Button onClick={() => setCreateExerciseModalOpen(true)}>
-                  {t('exercise.filters.create_exercise')}
+                  {t('exercise:filters.create_exercise')}
                 </Button>
               </div>
 
@@ -140,7 +140,7 @@ function ExercisesPage() {
       <DetailsPanel
         open={!!selectedExercise}
         onClose={() => setSelectedExercise(null)}
-        title={t('exercise.details.title')}
+        title={t('exercise:details.title')}
       >
         {exerciseDetailsLoading ? (
           <div className="flex items-center justify-center h-32">
@@ -154,10 +154,10 @@ function ExercisesPage() {
       <CreationDialog
         open={createExerciseModalOpen}
         onOpenChange={setCreateExerciseModalOpen}
-        title={t('exercise.creation.title')}
-        description={t('exercise.creation.description')}
-        cancelLabel={t('exercise.creation.cancel')}
-        submitLabel={t('exercise.filters.create_exercise')}
+        title={t('exercise:creation.title')}
+        description={t('exercise:creation.description')}
+        cancelLabel={t('exercise:creation.cancel')}
+        submitLabel={t('exercise:creation.submit')}
         submitFormId={exerciseCreateFormId}
       >
         <ExerciseCreationForm

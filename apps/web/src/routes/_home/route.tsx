@@ -36,9 +36,9 @@ function HomeLayout() {
   const getTabs = () => {
     if (currentPath.startsWith('/library')) {
       return [
-        { label: t('library.tabs.workouts'), path: '/library/workouts' },
-        { label: t('library.tabs.complex'), path: '/library/complex' },
-        { label: t('library.tabs.exercises'), path: '/library/exercises' },
+        { label: t('library:tabs.workouts'), path: '/library/workouts' },
+        { label: t('library:tabs.complex'), path: '/library/complex' },
+        { label: t('library:tabs.exercises'), path: '/library/exercises' },
       ];
     }
     // We can add other conditions for other sections with tabs

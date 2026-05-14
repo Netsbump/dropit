@@ -1,0 +1,29 @@
+{
+  "hero": {
+    "title": "Movement Library",
+    "description": "All your exercises organized and accessible",
+    "stat_label": "exercises",
+    "stat_description": "Fundamental movements to build your programs",
+    "stat_cta": "Learn more about the exercise library and how to use them effectively"
+  },
+  "filters": {
+    "search_placeholder": "Search for an exercise...",
+    "all_categories": "All categories",
+    "create_exercise": "Create exercise",
+    "no_results": "No exercise found"
+  },
+  "details": {
+    "title": "Exercise details"
+  },
+  "creation": {
+    "title": "Create exercise",
+    "description": "Add a new exercise to your catalog.",
+    "cancel": "Cancel",
+    "submit": "Create exercise"
+  },
+  "table": {
+    "no_results": "No results.",
+    "columns": "Columns",
+    "selected_rows": "{{count}} of {{total}} column(s) selected."
+  }
+}

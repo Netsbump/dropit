@@ -31,6 +31,7 @@ import {
 import { CreateComplexInput, createComplexSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@dropit/i18n';
 import { PlusCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
@@ -49,8 +50,10 @@ export function ComplexCreationForm({
   onSuccess,
   onCancel,
 }: ComplexCreationFormProps) {
+  const { t } = useTranslation(['exercise']);
   const [isLoading, setIsLoading] = useState(false);
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const createExerciseFormId = 'complex-create-exercise-form';
   const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -324,15 +327,15 @@ export function ComplexCreationForm({
           setCreateExerciseModalOpen(open);
           if (!open) setCurrentEditingIndex(null);
         }}
-        title="Créer un exercice"
-        description="Ajoutez un nouvel exercice à votre catalogue."
+        title={t('exercise:creation.title')}
+        description={t('exercise:creation.description')}
+        cancelLabel={t('exercise:creation.cancel')}
+        submitLabel={t('exercise:creation.submit')}
+        submitFormId={createExerciseFormId}
       >
         <ExerciseCreationForm
+          formId={createExerciseFormId}
           onSuccess={handleExerciseCreationSuccess}
-          onCancel={() => {
-            setCreateExerciseModalOpen(false);
-            setCurrentEditingIndex(null);
-          }}
         />
       </CreationDialog>
 

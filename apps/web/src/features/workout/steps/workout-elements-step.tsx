@@ -20,6 +20,7 @@ import { verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableContext } from '@dnd-kit/sortable';
 import { WORKOUT_ELEMENT_TYPES } from '@dropit/schemas';
 import { createWorkoutSchema } from '@dropit/schemas';
+import { useTranslation } from '@dropit/i18n';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { UseFormReturn, useFieldArray } from 'react-hook-form';
@@ -55,12 +56,14 @@ export function WorkoutElementsStep({
   onNext,
   onCancel,
 }: WorkoutElementsStepProps) {
+  const { t } = useTranslation(['exercise']);
   const [exerciseSearch, setExerciseSearch] = useState('');
   const [complexSearch, setComplexSearch] = useState('');
   const [activeTab, setActiveTab] = useState<'exercise' | 'complex'>(
     'exercise'
   );
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const createExerciseFormId = 'workout-elements-create-exercise-form';
   const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
@@ -466,12 +469,15 @@ export function WorkoutElementsStep({
         <CreationDialog
           open={createExerciseModalOpen}
           onOpenChange={setCreateExerciseModalOpen}
-          title="Créer un exercice"
-          description="Ajoutez un nouvel exercice à votre catalogue."
+          title={t('exercise:creation.title')}
+          description={t('exercise:creation.description')}
+          cancelLabel={t('exercise:creation.cancel')}
+          submitLabel={t('exercise:creation.submit')}
+          submitFormId={createExerciseFormId}
         >
           <ExerciseCreationForm
+            formId={createExerciseFormId}
             onSuccess={handleExerciseCreationSuccess}
-            onCancel={() => setCreateExerciseModalOpen(false)}
           />
         </CreationDialog>
 

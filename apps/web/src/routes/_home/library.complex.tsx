@@ -30,7 +30,7 @@ function ComplexPage() {
   const [selectedComplex, setSelectedComplex] = useState<string | null>(null);
 
   useEffect(() => {
-    setPageMeta({ title: t('library.title') });
+    setPageMeta({ title: t('library:title') });
   }, [setPageMeta, t]);
 
   const { data: complexes, isLoading } = useQuery({
@@ -87,15 +87,15 @@ function ComplexPage() {
         <div className="flex-none space-y-6">
           <HeroCard
             variant="complex"
-            title={t('complex.hero.title')}
-            description={t('complex.hero.description')}
+            title={t('complex:hero.title')}
+            description={t('complex:hero.description')}
             stat={{
-              label: t('complex.hero.stat_label'),
+              label: t('complex:hero.stat_label'),
               value: complexes?.length || 0,
               icon: Zap,
-              description: t('complex.hero.stat_description'),
+              description: t('complex:hero.stat_description'),
               callToAction: {
-                text: t('complex.hero.stat_cta'),
+                text: t('complex:hero.stat_cta'),
                 onClick: () => {
                   console.log('Open complex tutorial video');
                 },
@@ -120,10 +120,10 @@ function ComplexPage() {
             </div>
           ) : !complexes?.length ? (
             <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-              <p>{t('complex.filters.no_results')}</p>
+              <p>{t('complex:filters.no_results')}</p>
               <p className="text-sm">{t('common.start_create')}</p>
               <Button onClick={() => setCreateComplexModalOpen(true)}>
-                {t('complex.filters.create_complex')}
+                {t('complex:filters.create_complex')}
               </Button>
             </div>
           ) : (
@@ -138,7 +138,7 @@ function ComplexPage() {
       <DetailsPanel
         open={!!selectedComplex}
         onClose={() => setSelectedComplex(null)}
-        title={t('complex.details.title')}
+        title={t('complex:details.title')}
       >
         {complexDetailsLoading ? (
           <div className="flex items-center justify-center h-32">
@@ -152,8 +152,8 @@ function ComplexPage() {
       <CreationDialog
         open={createComplexModalOpen}
         onOpenChange={setCreateComplexModalOpen}
-        title={t('complex.creation.title')}
-        description={t('complex.creation.description')}
+        title={t('complex:creation.title')}
+        description={t('complex:creation.description')}
       >
         <ComplexCreationForm
           onSuccess={handleCreationSuccess}

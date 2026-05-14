@@ -162,7 +162,7 @@ export function SortableWorkoutElement({
     return (
       <div key={blockIndex} className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground">
-          {t('workout.block')} {block.order}:
+          {t('workout:block')} {block.order}:
         </span>
 
         {/* Nombre de séries */}
@@ -186,7 +186,7 @@ export function SortableWorkoutElement({
           )}
         />
         <span className="text-muted-foreground">
-          {t('workout.series')} {t('workout.sets_of')}
+          {t('workout:series')} {t('workout:sets_of')}
         </span>
 
         {/* Reps */}
@@ -209,7 +209,7 @@ export function SortableWorkoutElement({
             </FormItem>
           )}
         />
-        <span className="text-muted-foreground">{t('workout.reps')} @</span>
+        <span className="text-muted-foreground">{t('workout:reps')} @</span>
 
         {/* Intensité */}
         <FormField
@@ -263,7 +263,7 @@ export function SortableWorkoutElement({
             onClick={() => toggleRest(blockIndex)}
             className="h-8 text-xs rounded-full"
           >
-            {t('workout.add_rest')}
+            {t('workout:add_rest')}
           </Button>
         )}
 
@@ -294,7 +294,7 @@ export function SortableWorkoutElement({
               )}
             />
             <span className="text-muted-foreground">
-              {t('workout.seconds')}
+              {t('workout:seconds')}
             </span>
             <Button
               type="button"
@@ -329,7 +329,7 @@ export function SortableWorkoutElement({
     return (
       <div key={blockIndex} className="flex items-center gap-2 text-sm">
         <span className="text-muted-foreground">
-          {t('workout.block')} {block.order}:
+          {t('workout:block')} {block.order}:
         </span>
 
         {/* Nombre de séries */}
@@ -353,7 +353,7 @@ export function SortableWorkoutElement({
           )}
         />
         <span className="text-muted-foreground">
-          {t('workout.series')} {t('workout.sets_of')}
+          {t('workout:series')} {t('workout:sets_of')}
         </span>
 
         {/* Reps pour chaque exercice du complex */}
@@ -388,7 +388,7 @@ export function SortableWorkoutElement({
             </div>
           );
         })}
-        <span className="text-muted-foreground">{t('workout.reps')} @</span>
+        <span className="text-muted-foreground">{t('workout:reps')} @</span>
 
         {/* Intensité */}
         <FormField
@@ -442,7 +442,7 @@ export function SortableWorkoutElement({
             onClick={() => toggleRest(blockIndex)}
             className="h-8 text-xs rounded-full"
           >
-            {t('workout.add_rest')}
+            {t('workout:add_rest')}
           </Button>
         )}
 
@@ -473,7 +473,7 @@ export function SortableWorkoutElement({
               )}
             />
             <span className="text-muted-foreground">
-              {t('workout.seconds')}
+              {t('workout:seconds')}
             </span>
             <Button
               type="button"
@@ -533,10 +533,10 @@ export function SortableWorkoutElement({
                   variant="secondary"
                   className="bg-muted text-tertiary-foreground hover:bg-muted"
                 >
-                  {t('workout.exercise_label')}
+                  {t('workout:exercise_label')}
                 </Badge>
                 <span className="font-medium">
-                  {selectedExercise?.name || t('workout.exercise_not_found')}
+                  {selectedExercise?.name || t('workout:exercise_not_found')}
                 </span>
               </>
             ) : (
@@ -545,12 +545,12 @@ export function SortableWorkoutElement({
                   variant="secondary"
                   className="bg-muted text-secondary-foreground hover:bg-muted"
                 >
-                  {t('workout.complex_label')}
+                  {t('workout:complex_label')}
                 </Badge>
                 <span className="font-medium">
                   {selectedComplex?.exercises
                     .map((ex) => ex.name)
-                    .join(' + ') || t('workout.complex_not_found')}
+                    .join(' + ') || t('workout:complex_not_found')}
                 </span>
               </>
             )}
@@ -572,7 +572,7 @@ export function SortableWorkoutElement({
               onClick={handleAddBlock}
               className="mt-2 rounded-full"
             >
-              {t('workout.add_block')}
+              {t('workout:add_block')}
             </Button>
           </div>
 
@@ -588,7 +588,7 @@ export function SortableWorkoutElement({
                   onClick={() => setShowCommentary(true)}
                   className="h-8 text-xs rounded-full"
                 >
-                  {t('workout.add_commentary')}
+                  {t('workout:add_commentary')}
                 </Button>
               )}
               {!showTempo && (
@@ -599,7 +599,7 @@ export function SortableWorkoutElement({
                   onClick={() => setShowTempo(true)}
                   className="h-8 text-xs rounded-full"
                 >
-                  {t('workout.add_tempo')}
+                  {t('workout:add_tempo')}
                 </Button>
               )}
             </div>
@@ -613,7 +613,7 @@ export function SortableWorkoutElement({
                   <FormItem>
                     <div className="flex items-center justify-between">
                       <FormLabel className="text-xs text-muted-foreground">
-                        {t('workout.commentary_optional')}
+                        {t('workout:commentary_optional')}
                       </FormLabel>
                       <Button
                         type="button"
@@ -630,7 +630,7 @@ export function SortableWorkoutElement({
                     </div>
                     <FormControl>
                       <Textarea
-                        placeholder={t('workout.commentary_placeholder')}
+                        placeholder={t('workout:commentary_placeholder')}
                         className="min-h-[60px] text-sm"
                         {...field}
                       />
@@ -658,7 +658,7 @@ export function SortableWorkoutElement({
                       <FormItem>
                         <div className="flex items-center justify-between">
                           <FormLabel className="text-xs text-muted-foreground">
-                            {t('workout.tempo_optional')}
+                            {t('workout:tempo_optional')}
                           </FormLabel>
                           <Button
                             type="button"
@@ -675,7 +675,7 @@ export function SortableWorkoutElement({
                         </div>
                         <FormControl>
                           <Input
-                            placeholder={t('workout.tempo_placeholder')}
+                            placeholder={t('workout:tempo_placeholder')}
                             className="h-8 text-sm bg-white"
                             {...field}
                           />
@@ -693,7 +693,7 @@ export function SortableWorkoutElement({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel className="text-xs text-muted-foreground">
-                          {t('workout.max_reference')}
+                          {t('workout:max_reference')}
                         </FormLabel>
                         <Select
                           onValueChange={field.onChange}
@@ -702,7 +702,7 @@ export function SortableWorkoutElement({
                           <FormControl>
                             <SelectTrigger className="h-8 text-sm bg-white">
                               <SelectValue
-                                placeholder={t('workout.select_placeholder')}
+                                placeholder={t('workout:select_placeholder')}
                               />
                             </SelectTrigger>
                           </FormControl>

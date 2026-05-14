@@ -1,0 +1,21 @@
+{
+  "hero": {
+    "title": "Enchaînements techniques",
+    "description": "Créez des enchaînements d'exercices spécifiques pour vos athlètes",
+    "stat_label": "complexes",
+    "stat_cta": "Découvrez comment les complexes peuvent transformer vos séances d'entraînement"
+  },
+  "filters": {
+    "search_placeholder": "Rechercher un complex...",
+    "all_categories": "Toutes les catégories",
+    "create_complex": "Créer un complex",
+    "no_results": "Aucun complex trouvé"
+  },
+  "details": {
+    "title": "Détails du complex"
+  },
+  "creation": {
+    "title": "Créer un complex",
+    "description": "Ajoutez un nouveau complex à votre catalogue."
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "hero": {
+    "title": "Technical Sequences",
+    "description": "Create complexes to work on fluidity",
+    "stat_label": "complexes",
+    "stat_description": "Exercise combinations to maximize intensity",
+    "stat_cta": "Discover how complexes can transform your training sessions"
+  },
+  "filters": {
+    "search_placeholder": "Search for a complex...",
+    "all_categories": "All categories",
+    "create_complex": "Create complex",
+    "no_results": "No complex found"
+  },
+  "details": {
+    "title": "Complex details"
+  },
+  "creation": {
+    "title": "Create complex",
+    "description": "Add a new complex to your catalog."
+  }
+}

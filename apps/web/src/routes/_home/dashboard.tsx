@@ -21,11 +21,11 @@ export const Route = createFileRoute('/_home/dashboard')({
 });
 
 function Dashboard() {
-  const { t } = useTranslation();
+  const { t } = useTranslation(['dashboard']);
   const { setPageMeta } = usePageMeta();
 
   useEffect(() => {
-    setPageMeta({ title: t('dashboard.title') });
+    setPageMeta({ title: t('dashboard:title') });
   }, [setPageMeta, t]);
 
   // Données pour le graphique de participation (6 derniers mois)

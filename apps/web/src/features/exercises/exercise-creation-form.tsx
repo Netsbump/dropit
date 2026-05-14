@@ -26,13 +26,11 @@ import { z } from 'zod';
 type ExerciseCreationFormProps = {
   formId?: string;
   onSuccess?: (exerciseId: string) => void;
-  onCancel?: () => void;
 };
 
 export function ExerciseCreationForm({
   formId,
   onSuccess,
-  onCancel: _onCancel,
 }: ExerciseCreationFormProps) {
   const { toast } = useToast();
 
