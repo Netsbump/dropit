@@ -166,6 +166,26 @@
       "description": "Welcome to your dashboard. Manage your athletes, schedule sessions, and track their performance."
     }
   },
+  "admin": {
+    "title": "Administration",
+    "actions": {
+      "save": "Save",
+      "rename": "Rename"
+    },
+    "organizations": {
+      "title": "Organizations",
+      "description": "Create and manage backoffice organizations.",
+      "create_placeholder": "Organization name",
+      "create_button": "Create",
+      "list_title": "Organizations list",
+      "search_placeholder": "Search organizations",
+      "columns": {
+        "name": "Name",
+        "id": "ID",
+        "actions": "Actions"
+      }
+    }
+  },
   "organization": {
     "setup": {
       "title": "Create Your Organization",

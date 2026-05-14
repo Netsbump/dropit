@@ -163,6 +163,26 @@
       "description": "Bienvenue sur votre tableau de bord. Gérez vos athlètes, programmez vos séances et suivez leurs performances."
     }
   },
+  "admin": {
+    "title": "Administration",
+    "actions": {
+      "save": "Enregistrer",
+      "rename": "Renommer"
+    },
+    "organizations": {
+      "title": "Clubs",
+      "description": "Créez et gérez les organizations du backoffice.",
+      "create_placeholder": "Nom du club",
+      "create_button": "Créer",
+      "list_title": "Liste des clubs",
+      "search_placeholder": "Rechercher un club",
+      "columns": {
+        "name": "Nom",
+        "id": "ID",
+        "actions": "Actions"
+      }
+    }
+  },
   "help": {
     "title": "Centre d'aide",
     "description": "Besoin d'assistance ? Consultez nos ressources ou contactez-nous",

@@ -1,19 +1,36 @@
 import { api } from '@/lib/api';
+import { getBackOfficeAccessState } from '@/features/auth/auth-access';
 import { useTranslation } from '@dropit/i18n';
+import { GLOBAL_ROLE, ORGANIZATION_ROLE } from '@dropit/schemas';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Outlet, createFileRoute, useMatches } from '@tanstack/react-router';
+import {
+  Outlet,
+  createFileRoute,
+  redirect,
+  useMatches,
+} from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
 import { columns } from '@/features/athletes/columns';
-import { DataTable } from '@/features/athletes/data-table';
+import { DataTable } from '@/components/ui/data-table';
 import { DialogCreation } from '@/features/athletes/dialog-creation';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { Button } from '@/components/ui/button';
 import { HeroCard } from '@/components/ui/hero-card';
-import { Users } from 'lucide-react'; // Route racine : toujours rediriger vers login
-// C'est la route /login qui gérera la redirection si l'utilisateur est déjà connecté
+import { Input } from '@/components/ui/input';
+import { Search, Users } from 'lucide-react';
 
 export const Route = createFileRoute('/_home/athletes')({
+  beforeLoad: async () => {
+    const accessState = await getBackOfficeAccessState();
+
+    if (accessState.organizationRole !== ORGANIZATION_ROLE.ADMIN) {
+      throw redirect({
+        to:
+          accessState.userRole === GLOBAL_ROLE.ADMIN ? '/admin' : '/dashboard',
+      });
+    }
+  },
   component: AthletesPage,
 });
 
@@ -21,6 +38,7 @@ function AthletesPage() {
   const { t } = useTranslation(['common', 'athletes']);
   const { setPageMeta } = usePageMeta();
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const queryClient = useQueryClient();
   const navigate = Route.useNavigate();
   const matches = useMatches();
@@ -45,6 +63,11 @@ function AthletesPage() {
     setCreateAthleteModalOpen(false);
     queryClient.invalidateQueries({ queryKey: ['athletes'] });
   };
+
+  const filteredAthletes = (athletes ?? []).filter((athlete) => {
+    const fullName = `${athlete.firstName} ${athlete.lastName}`.toLowerCase();
+    return fullName.includes(search.toLowerCase());
+  });
 
   // Si on est sur un détail d'athlète, on affiche directement le contenu
   if (isAthleteDetail) {
@@ -89,14 +112,35 @@ function AthletesPage() {
             </Button>
           </div>
         ) : (
-          <DataTable
-            columns={columns}
-            data={athletes}
-            onDialogCreation={setCreateAthleteModalOpen}
-            onRowClick={(athleteId) =>
-              navigate({ to: `/athletes/${athleteId}` })
-            }
-          />
+          <>
+            <div className="flex items-center justify-between pb-6">
+              <div className="relative w-full max-w-lg">
+                <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder={t('athletes:filters.search_placeholder')}
+                  value={search}
+                  onChange={(event) => setSearch(event.target.value)}
+                  className="bg-background pl-8"
+                />
+              </div>
+              <Button onClick={() => setCreateAthleteModalOpen(true)}>
+                {t('athletes:filters.create_athlete')}
+              </Button>
+            </div>
+
+            <DataTable
+              columns={columns}
+              data={filteredAthletes}
+              pagination={
+                filteredAthletes.length > 10
+                  ? { initialPageSize: 10 }
+                  : undefined
+              }
+              onRowClick={(athleteId) =>
+                navigate({ to: `/athletes/${athleteId}` })
+              }
+            />
+          </>
         )}
       </div>
 

@@ -1,6 +1,7 @@
 import { authClient } from '@/lib/auth-client';
 import { useToast } from '@/hooks/use-toast';
 import { useCanSeeAdminLink } from '@/features/auth/use-can-see-admin-link';
+import { useCanSeeAthletesLink } from '@/features/auth/use-can-see-athletes-link';
 import { useTranslation } from '@dropit/i18n';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useMatches, useNavigate } from '@tanstack/react-router';
@@ -22,6 +23,7 @@ export function AppSidebar() {
   const matches = useMatches();
   const { toast } = useToast();
   const { canSeeAdminLink } = useCanSeeAdminLink();
+  const { canSeeAthletesLink } = useCanSeeAthletesLink();
 
   const handleLogout = async () => {
     try {
@@ -68,11 +70,15 @@ export function AppSidebar() {
       url: '/planning',
       icon: Calendar,
     },
-    {
-      title: t('sidebar.menu.athletes'),
-      url: '/athletes',
-      icon: GraduationCap,
-    },
+    ...(canSeeAthletesLink
+      ? [
+          {
+            title: t('sidebar.menu.athletes'),
+            url: '/athletes',
+            icon: GraduationCap,
+          },
+        ]
+      : []),
     ...(canSeeAdminLink
       ? [
           {
