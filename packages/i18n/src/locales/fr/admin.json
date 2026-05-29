@@ -2,7 +2,9 @@
   "title": "Administration",
   "actions": {
     "save": "Enregistrer",
-    "rename": "Renommer"
+    "rename": "Renommer",
+    "view_details": "Voir le detail",
+    "delete": "Supprimer"
   },
   "organizations": {
     "title": "Clubs",
@@ -27,6 +29,11 @@
       "name": "Nom",
       "id": "ID",
       "actions": "Actions"
+    },
+    "details": {
+      "title": "Detail du club",
+      "athletes_title": "Athletes associes",
+      "no_athletes": "Aucun athlete associe pour le moment"
     }
   }
 }

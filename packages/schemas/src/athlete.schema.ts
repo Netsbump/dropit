@@ -53,6 +53,26 @@ export const athleteDetailsSchema = z.object({
 
 export type AthleteDetailsDto = z.infer<typeof athleteDetailsSchema>;
 
+export const athletesByOrganizationParamsSchema = z.object({
+  organizationId: z.string(),
+});
+
+export type AthletesByOrganizationParamsDto = z.infer<
+  typeof athletesByOrganizationParamsSchema
+>;
+
+export const adminOrganizationAthleteSchema = z.object({
+  id: z.string(),
+  firstName: z.string(),
+  lastName: z.string(),
+  email: z.string().email(),
+  birthday: z.date().optional(),
+});
+
+export type AdminOrganizationAthleteDto = z.infer<
+  typeof adminOrganizationAthleteSchema
+>;
+
 // Schéma simplifié pour l'affichage dans les listes
 export const athleteListItemSchema = z.object({
   id: z.string(),

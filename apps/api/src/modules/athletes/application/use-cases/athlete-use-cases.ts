@@ -139,6 +139,21 @@ export class AthleteUseCases implements IAthleteUseCases {
     return athletes;
   }
 
+  async findAllWithDetailsByOrganization(
+    organizationId: string
+  ): Promise<AthleteDetails[]> {
+    const athleteUserIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
+    const athletes =
+      await this.athleteRepository.findAllWithDetails(athleteUserIds);
+
+    if (!athletes) {
+      throw new AthleteNotFoundException('Athletes not found');
+    }
+
+    return athletes;
+  }
+
   async findAll(
     currentUserId: string,
     organizationId: string

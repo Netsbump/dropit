@@ -2,7 +2,9 @@
   "title": "Administration",
   "actions": {
     "save": "Save",
-    "rename": "Rename"
+    "rename": "Rename",
+    "view_details": "View details",
+    "delete": "Delete"
   },
   "organizations": {
     "title": "Organizations",
@@ -27,6 +29,11 @@
       "name": "Name",
       "id": "ID",
       "actions": "Actions"
+    },
+    "details": {
+      "title": "Club details",
+      "athletes_title": "Associated athletes",
+      "no_athletes": "No associated athletes yet"
     }
   }
 }

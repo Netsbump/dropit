@@ -47,6 +47,13 @@ export interface IAthleteUseCases {
   ): Promise<AthleteDetails[]>;
 
   /**
+   * Find all athletes with details for a given organization (super admin)
+   */
+  findAllWithDetailsByOrganization(
+    organizationId: string
+  ): Promise<AthleteDetails[]>;
+
+  /**
    * Create a new athlete
    */
   create(data: CreateAthleteInput, userId: string): Promise<Athlete>;

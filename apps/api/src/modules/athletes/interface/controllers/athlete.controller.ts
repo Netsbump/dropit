@@ -71,6 +71,41 @@ export class AthleteController {
     });
   }
 
+  @TsRestHandler(c.getAthletesByOrganization)
+  @RequirePermissions('read')
+  @NoOrganization()
+  getAthletesByOrganization(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.getAthletesByOrganization>> {
+    return tsRestHandler(c.getAthletesByOrganization, async ({ params }) => {
+      try {
+        if (user.role !== 'admin') {
+          return { status: 403, body: { message: 'Forbidden' } };
+        }
+
+        const athletes =
+          await this.athleteUseCases.findAllWithDetailsByOrganization(
+            params.organizationId
+          );
+        const athletesDto = AthleteMapper.toDtoListDetails(athletes).map(
+          (athlete) => ({
+            id: athlete.id,
+            firstName: athlete.firstName,
+            lastName: athlete.lastName,
+            email: athlete.email,
+            birthday: athlete.birthday,
+          })
+        );
+        return {
+          status: 200 as const,
+          body: athletesDto,
+        };
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
+    });
+  }
+
   /**
    * Retrieves a specific athlete by ID.
    *
