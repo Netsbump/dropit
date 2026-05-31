@@ -35,5 +35,41 @@
       "athletes_title": "Athletes associes",
       "no_athletes": "Aucun athlete associe pour le moment"
     }
+  },
+  "users": {
+    "list_title": "Utilisateurs",
+    "search_placeholder": "Rechercher un utilisateur",
+    "create_button": "Creer un user",
+    "columns": {
+      "first_name": "Prenom",
+      "last_name": "Nom",
+      "club": "Club",
+      "role": "Role",
+      "email": "Email",
+      "birthday": "Date de naissance"
+    },
+    "roles": {
+      "coach": "Coach",
+      "athlete": "Athlète"
+    },
+    "modal": {
+      "title": "Creer un user",
+      "description": "Renseignez les informations du nouvel utilisateur",
+      "cancel": "Annuler",
+      "submit": "Creer",
+      "organization_placeholder": "Selectionner un club",
+      "labels": {
+        "first_name": "Prenom",
+        "last_name": "Nom",
+        "email": "Email",
+        "organization_role": "Role dans le club",
+        "organization": "Club"
+      },
+      "placeholders": {
+        "first_name": "Prenom",
+        "last_name": "Nom",
+        "email": "Email"
+      }
+    }
   }
 }

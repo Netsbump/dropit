@@ -1,6 +1,6 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Auth } from 'better-auth';
 import { createAuthConfig } from '../better-auth.config';
+import type { BetterAuthInstance } from '../better-auth.config';
 import type {
   CustomSessionContext,
   EnrichedSessionResult,
@@ -26,6 +26,7 @@ import {
   ATHLETE_USE_CASES,
 } from '../../athletes/application/ports/athlete-use-cases.port';
 import { organizationRoleSchema, type OrganizationRole } from '@dropit/schemas';
+import type { Invitation } from 'better-auth/plugins/organization';
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -44,7 +45,7 @@ import { organizationRoleSchema, type OrganizationRole } from '@dropit/schemas';
  */
 @Injectable()
 export class BetterAuthAdapter implements OnModuleInit {
-  private _auth: Auth | null = null;
+  private _auth: BetterAuthInstance | null = null;
   private static initPromise: Promise<void> | null = null;
 
   constructor(
@@ -132,7 +133,11 @@ export class BetterAuthAdapter implements OnModuleInit {
     }
 
     this._auth = createAuthConfig({
-      afterCreateInvitation: async (data) => {
+      afterCreateInvitation: async (data: {
+        invitation: Invitation;
+        inviter: { name: string };
+        organization: { id: string; name: string };
+      }) => {
         const { isNewUser, hasOtherOrganization } =
           await this.onboardingUseCases.prepareUserForInvitation(
             data.invitation.email,
@@ -191,7 +196,7 @@ export class BetterAuthAdapter implements OnModuleInit {
           },
         },
       },
-    }) as unknown as Auth;
+    });
   }
 
   /**

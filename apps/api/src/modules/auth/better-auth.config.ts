@@ -119,3 +119,5 @@ export function createAuthConfig(deps: BetterAuthDeps) {
     ],
   });
 }
+
+export type BetterAuthInstance = ReturnType<typeof createAuthConfig>;

@@ -7,4 +7,8 @@ export const adminQueryKeys = {
     all: () => ['admin', 'users'] as const,
     list: () => ['admin', 'users', 'list'] as const,
   },
+  invitations: {
+    all: () => ['admin', 'invitations'] as const,
+    list: () => ['admin', 'invitations', 'list'] as const,
+  },
 };

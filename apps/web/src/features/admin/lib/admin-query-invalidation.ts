@@ -12,3 +12,9 @@ export async function invalidateUsers(queryClient: QueryClient) {
     queryKey: adminQueryKeys.users.all(),
   });
 }
+
+export async function invalidateInvitations(queryClient: QueryClient) {
+  await queryClient.invalidateQueries({
+    queryKey: adminQueryKeys.invitations.all(),
+  });
+}

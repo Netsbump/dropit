@@ -13,3 +13,4 @@ export * from './common.schema';
 export * from './role.schema';
 export * from './user.schema';
 export * from './access.schema';
+export * from './admin.schema';

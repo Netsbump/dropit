@@ -31,8 +31,7 @@ const c = userContract;
 @Controller()
 export class UserController {
   constructor(
-    @Inject(USER_USE_CASES)
-    private readonly userUseCases: IUserUseCases
+    @Inject(USER_USE_CASES) private readonly userUseCases: IUserUseCases
   ) {}
 
   /**

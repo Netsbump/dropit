@@ -7,6 +7,8 @@ import { toNodeHandler } from 'better-auth/node';
 // Infrastructure
 import { BetterAuthAdapter } from './infrastructure/better-auth.adapter';
 import { AuthGuard } from './infrastructure/guards/auth.guard';
+import { SuperAdminGuard } from './infrastructure/guards/super-admin.guard';
+import { PermissionsGuard } from './infrastructure/guards/permissions.guard';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
 import { MikroOrganizationRepository } from './infrastructure/orm/mikro-organization.repository';
 import { MikroMemberRepository } from './infrastructure/orm/mikro-member.repository';
@@ -95,6 +97,8 @@ import {
   providers: [
     // Better-auth adapter
     BetterAuthAdapter,
+    SuperAdminGuard,
+    PermissionsGuard,
 
     // MikroORM implementations
     MikroUserRepository,
@@ -162,6 +166,8 @@ import {
   exports: [
     // Better-auth adapter for other modules that need session info
     BetterAuthAdapter,
+    SuperAdminGuard,
+    PermissionsGuard,
 
     // Repositories
     USER_REPO,

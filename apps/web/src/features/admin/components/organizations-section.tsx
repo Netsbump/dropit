@@ -182,7 +182,10 @@ export function OrganizationsSection() {
                       organizationId: selectedOrganization.id,
                       name: editingName,
                     });
-                    setSelectedOrganization({ ...selectedOrganization, name: editingName });
+                    setSelectedOrganization({
+                      ...selectedOrganization,
+                      name: editingName,
+                    });
                   }}
                 >
                   {t('admin:actions.save')}
@@ -196,14 +199,19 @@ export function OrganizationsSection() {
               {associatedAthletes.length ? (
                 <div className="space-y-2">
                   {associatedAthletes.map((athlete) => (
-                    <div key={athlete.id} className="rounded-md border p-2 text-sm">
+                    <div
+                      key={athlete.id}
+                      className="rounded-md border p-2 text-sm"
+                    >
                       <p className="font-mono text-xs text-muted-foreground">
                         {athlete.id}
                       </p>
                       <p>{athlete.name}</p>
                       <p className="text-xs text-muted-foreground">
                         {athlete.birthday
-                          ? new Date(athlete.birthday).toLocaleDateString('fr-FR')
+                          ? new Date(athlete.birthday).toLocaleDateString(
+                              'fr-FR'
+                            )
                           : '-'}
                       </p>
                     </div>

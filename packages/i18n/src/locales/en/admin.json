@@ -35,5 +35,41 @@
       "athletes_title": "Associated athletes",
       "no_athletes": "No associated athletes yet"
     }
+  },
+  "users": {
+    "list_title": "Users",
+    "search_placeholder": "Search users",
+    "create_button": "Create user",
+    "columns": {
+      "first_name": "First name",
+      "last_name": "Last name",
+      "club": "Club",
+      "role": "Role",
+      "email": "Email",
+      "birthday": "Birthday"
+    },
+    "roles": {
+      "coach": "Coach",
+      "athlete": "Athlete"
+    },
+    "modal": {
+      "title": "Create user",
+      "description": "Fill in the new user information",
+      "cancel": "Cancel",
+      "submit": "Create",
+      "organization_placeholder": "Select a club",
+      "labels": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "email": "Email",
+        "organization_role": "Club role",
+        "organization": "Club"
+      },
+      "placeholders": {
+        "first_name": "First name",
+        "last_name": "Last name",
+        "email": "Email"
+      }
+    }
   }
 }
