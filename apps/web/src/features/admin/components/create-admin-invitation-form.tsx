@@ -1,5 +1,12 @@
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import {
   Select,
   SelectContent,
@@ -7,9 +14,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from '@dropit/i18n';
-import type { InvitableOrganizationRole } from '@dropit/schemas';
-import { useState } from 'react';
+import {
+  createAdminInvitationSchema,
+  type InvitableOrganizationRole,
+} from '@dropit/schemas';
+import type { ReactNode } from 'react';
+import { ControllerRenderProps, useForm } from 'react-hook-form';
+import { z } from 'zod';
 
 interface OrganizationOption {
   id: string;
@@ -30,103 +43,144 @@ interface CreateAdminInvitationFormProps {
   onSubmit: (input: CreateAdminInvitationInput) => void;
 }
 
+type CreateAdminInvitationFormValues = z.infer<typeof createAdminInvitationSchema>;
+
+function SelectField({
+  field,
+  placeholder,
+  children,
+}: {
+  field: ControllerRenderProps<CreateAdminInvitationFormValues>;
+  placeholder?: string;
+  children: ReactNode;
+}) {
+  return (
+    <Select value={field.value} onValueChange={field.onChange}>
+      <FormControl>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+      </FormControl>
+      <SelectContent>{children}</SelectContent>
+    </Select>
+  );
+}
+
 export function CreateAdminInvitationForm({
   formId,
   organizations,
   onSubmit,
 }: CreateAdminInvitationFormProps) {
   const { t } = useTranslation(['admin']);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [organizationId, setOrganizationId] = useState('');
-  const [organizationRole, setOrganizationRole] =
-    useState<InvitableOrganizationRole>('member');
+  const form = useForm<CreateAdminInvitationFormValues>({
+    resolver: zodResolver(createAdminInvitationSchema),
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      organizationId: '',
+      organizationRole: 'member' satisfies InvitableOrganizationRole,
+    },
+  });
 
   return (
-    <form
-      id={formId}
-      className="space-y-3"
-      onSubmit={(e) => {
-        e.preventDefault();
-        onSubmit({
-          firstName,
-          lastName,
-          email,
-          organizationId,
-          organizationRole,
-        });
-      }}
-    >
-      <div className="space-y-2">
-        <Label htmlFor="firstName">
-          {t('admin:users.modal.labels.first_name')}
-        </Label>
-        <Input
-          id="firstName"
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-          placeholder={t('admin:users.modal.placeholders.first_name')}
+    <Form {...form}>
+      <form
+        id={formId}
+        className="space-y-3"
+        autoComplete="off"
+        onSubmit={form.handleSubmit(onSubmit)}
+      >
+        <FormField
+          control={form.control}
+          name="firstName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('admin:users.modal.labels.first_name')}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  name="firstName"
+                  autoComplete="given-name"
+                  placeholder={t('admin:users.modal.placeholders.first_name')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="lastName">
-          {t('admin:users.modal.labels.last_name')}
-        </Label>
-        <Input
-          id="lastName"
-          value={lastName}
-          onChange={(e) => setLastName(e.target.value)}
-          placeholder={t('admin:users.modal.placeholders.last_name')}
+        <FormField
+          control={form.control}
+          name="lastName"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('admin:users.modal.labels.last_name')}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  name="lastName"
+                  autoComplete="family-name"
+                  placeholder={t('admin:users.modal.placeholders.last_name')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="email">{t('admin:users.modal.labels.email')}</Label>
-        <Input
-          id="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t('admin:users.modal.placeholders.email')}
+        <FormField
+          control={form.control}
+          name="email"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('admin:users.modal.labels.email')}</FormLabel>
+              <FormControl>
+                <Input
+                  {...field}
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder={t('admin:users.modal.placeholders.email')}
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
         />
-      </div>
-      <div className="space-y-2">
-        <Label>{t('admin:users.modal.labels.organization_role')}</Label>
-        <Select
-          value={organizationRole}
-          onValueChange={(value: InvitableOrganizationRole) =>
-            setOrganizationRole(value)
-          }
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="member">
-              {t('admin:users.roles.athlete')}
-            </SelectItem>
-            <SelectItem value="admin">
-              {t('admin:users.roles.coach')}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <div className="space-y-2">
-        <Label>{t('admin:users.modal.labels.organization')}</Label>
-        <Select value={organizationId} onValueChange={setOrganizationId}>
-          <SelectTrigger>
-            <SelectValue
-              placeholder={t('admin:users.modal.organization_placeholder')}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {organizations.map((organization) => (
-              <SelectItem key={organization.id} value={organization.id}>
-                {organization.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-    </form>
+        <FormField
+          control={form.control}
+          name="organizationRole"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('admin:users.modal.labels.organization_role')}</FormLabel>
+              <SelectField field={field}>
+                <SelectItem value="member">{t('admin:users.roles.athlete')}</SelectItem>
+                <SelectItem value="admin">{t('admin:users.roles.coach')}</SelectItem>
+              </SelectField>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="organizationId"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>{t('admin:users.modal.labels.organization')}</FormLabel>
+              <SelectField
+                field={field}
+                placeholder={t('admin:users.modal.organization_placeholder')}
+              >
+                {organizations.map((organization) => (
+                  <SelectItem key={organization.id} value={organization.id}>
+                    {organization.name}
+                  </SelectItem>
+                ))}
+              </SelectField>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+      </form>
+    </Form>
   );
 }

@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { accessSchema } from '@dropit/schemas';
+import { accessSchema, invitableOrganizationRoleSchema } from '@dropit/schemas';
 
 export const onboardingContract = {
   requestCoachAccess: {
@@ -23,7 +23,7 @@ export const onboardingContract = {
     body: z.object({}),
     responses: {
       200: z.object({
-        joined: z.literal(true),
+        organizationRole: invitableOrganizationRoleSchema,
       }),
       404: z.object({
         message: z.string(),

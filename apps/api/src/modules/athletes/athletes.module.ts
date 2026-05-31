@@ -20,6 +20,10 @@ import {
   IPersonalRecordRepository,
 } from './application/ports/personal-record.repository.port';
 import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
+import {
+  ATHLETE_INVITATION_SERVICE,
+  IAthleteInvitationService,
+} from './application/ports/athlete-invitation-service.port';
 import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
 import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
 
@@ -27,6 +31,7 @@ import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-stat
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
 import { MikroCompetitorStatusRepository } from './infrastructure/mikro-competitor-status.repository';
 import { MikroPersonalRecordRepository } from './infrastructure/mikro-personal-record.repository';
+import { BetterAuthAthleteInvitationAdapter } from './infrastructure/better-auth-athlete-invitation.adapter';
 
 // Controllers & use-cases
 import { AthleteController } from './interface/controllers/athlete.controller';
@@ -45,6 +50,10 @@ import {
   MEMBER_USE_CASES,
   IMemberUseCases,
 } from '../auth/application/ports/member-use-cases.port';
+import {
+  INVITATION_USE_CASES,
+  IInvitationUseCases,
+} from '../auth/application/ports/invitation-use-cases.port';
 import {
   EXERCISE_REPO,
   IExerciseRepository,
@@ -71,6 +80,7 @@ import {
     MikroAthleteRepository,
     MikroCompetitorStatusRepository,
     MikroPersonalRecordRepository,
+    BetterAuthAthleteInvitationAdapter,
 
     // Port to implementation bindings (repositories)
     { provide: ATHLETE_REPO, useClass: MikroAthleteRepository },
@@ -79,6 +89,10 @@ import {
       useClass: MikroCompetitorStatusRepository,
     },
     { provide: PERSONAL_RECORD_REPO, useClass: MikroPersonalRecordRepository },
+    {
+      provide: ATHLETE_INVITATION_SERVICE,
+      useClass: BetterAuthAthleteInvitationAdapter,
+    },
 
     // use-cases (concrete implementations)
     AthleteUseCases,
@@ -91,11 +105,25 @@ import {
       useFactory: (
         athleteRepo: IAthleteRepository,
         userUseCases: IUserUseCases,
-        memberUseCases: IMemberUseCases
+        memberUseCases: IMemberUseCases,
+        invitationUseCases: IInvitationUseCases,
+        athleteInvitationService: IAthleteInvitationService
       ) => {
-        return new AthleteUseCases(athleteRepo, userUseCases, memberUseCases);
+        return new AthleteUseCases(
+          athleteRepo,
+          userUseCases,
+          memberUseCases,
+          invitationUseCases,
+          athleteInvitationService
+        );
       },
-      inject: [ATHLETE_REPO, USER_USE_CASES, MEMBER_USE_CASES],
+      inject: [
+        ATHLETE_REPO,
+        USER_USE_CASES,
+        MEMBER_USE_CASES,
+        INVITATION_USE_CASES,
+        ATHLETE_INVITATION_SERVICE,
+      ],
     },
     {
       provide: PERSONAL_RECORD_USE_CASES,

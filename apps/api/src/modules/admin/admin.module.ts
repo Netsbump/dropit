@@ -12,6 +12,18 @@ import { MikroAdminRepository } from './infrastructure/mikro-admin.repository';
 import { ADMIN_REPOSITORY } from './application/ports/admin.repository.port';
 import { AdminUseCases } from './application/use-cases/admin.use-cases';
 import { ADMIN_USE_CASES } from './application/ports/admin-use-cases.port';
+import {
+  INVITATION_USE_CASES,
+  IInvitationUseCases,
+} from '../auth/application/ports/invitation-use-cases.port';
+import {
+  ADMIN_REPOSITORY as ADMIN_REPOSITORY_TOKEN,
+  IAdminRepository,
+} from './application/ports/admin.repository.port';
+import {
+  ADMIN_INVITATION_SERVICE as ADMIN_INVITATION_SERVICE_TOKEN,
+  IAdminInvitationService,
+} from './application/ports/admin-invitation-service.port';
 
 @Module({
   imports: [
@@ -25,15 +37,36 @@ import { ADMIN_USE_CASES } from './application/ports/admin-use-cases.port';
   ],
   controllers: [AdminController],
   providers: [
+    // Infrastructure implementations
     BetterAuthInvitationAdapter,
     MikroAdminRepository,
-    AdminUseCases,
+
+    // Port -> implementation bindings
     { provide: ADMIN_REPOSITORY, useClass: MikroAdminRepository },
     {
       provide: ADMIN_INVITATION_SERVICE,
       useClass: BetterAuthInvitationAdapter,
     },
-    { provide: ADMIN_USE_CASES, useClass: AdminUseCases },
+
+    // Use-case binding
+    {
+      provide: ADMIN_USE_CASES,
+      useFactory: (
+        adminRepository: IAdminRepository,
+        adminInvitationService: IAdminInvitationService,
+        invitationUseCases: IInvitationUseCases
+      ) =>
+        new AdminUseCases(
+          adminRepository,
+          adminInvitationService,
+          invitationUseCases
+        ),
+      inject: [
+        ADMIN_REPOSITORY_TOKEN,
+        ADMIN_INVITATION_SERVICE_TOKEN,
+        INVITATION_USE_CASES,
+      ],
+    },
   ],
 })
 export class AdminModule {}

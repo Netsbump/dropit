@@ -11,6 +11,10 @@ import {
   IAdminUseCases,
   InviteAdminUserInput,
 } from '../ports/admin-use-cases.port';
+import {
+  IInvitationUseCases,
+  INVITATION_USE_CASES,
+} from '../../../auth/application/ports/invitation-use-cases.port';
 
 @Injectable()
 export class AdminUseCases implements IAdminUseCases {
@@ -18,7 +22,9 @@ export class AdminUseCases implements IAdminUseCases {
     @Inject(ADMIN_REPOSITORY)
     private readonly adminRepository: IAdminRepository,
     @Inject(ADMIN_INVITATION_SERVICE)
-    private readonly adminInvitationService: IAdminInvitationService
+    private readonly adminInvitationService: IAdminInvitationService,
+    @Inject(INVITATION_USE_CASES)
+    private readonly invitationUseCases: IInvitationUseCases
   ) {}
 
   getUsers() {
@@ -30,10 +36,20 @@ export class AdminUseCases implements IAdminUseCases {
   }
 
   async inviteUser(input: InviteAdminUserInput) {
+    await this.invitationUseCases.prepareRecipient(
+      input.email,
+      input.organizationId,
+      {
+        firstName: input.firstName,
+        lastName: input.lastName,
+      }
+    );
+
     await this.adminInvitationService.inviteUser({
       email: input.email,
       organizationId: input.organizationId,
       role: input.organizationRole,
+      headers: input.headers,
     });
   }
 }

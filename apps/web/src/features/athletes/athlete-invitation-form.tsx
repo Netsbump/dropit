@@ -14,7 +14,7 @@ import * as z from 'zod';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { Mail, UserPlus } from 'lucide-react';
-import { authClient } from '@/lib/auth-client';
+import { api } from '@/lib/api';
 import { getAuthErrorKey } from '@/lib/auth-errors';
 
 type AthleteInvitationFormProps = {
@@ -29,6 +29,8 @@ export function AthleteInvitationForm({
   const { t } = useTranslation(['athletes']);
 
   const invitationSchema = z.object({
+    firstName: z.string().min(1, t('invitation.first_name_required')),
+    lastName: z.string().min(1, t('invitation.last_name_required')),
     email: z.string().email(t('invitation.email_required')),
   });
 
@@ -36,16 +38,15 @@ export function AthleteInvitationForm({
 
   const { mutate: sendInvitationMutation } = useMutation({
     mutationFn: async (data: InvitationFormData) => {
-      const response = await authClient.organization.inviteMember({
-        email: data.email,
-        role: 'member',
+      const response = await api.athlete.inviteAthlete({
+        body: data,
       });
 
-      if (response.error) {
-        throw new Error(response.error.code ?? response.error.message);
+      if (response.status !== 201) {
+        throw new Error('Failed to send invitation');
       }
 
-      return response.data;
+      return data;
     },
     onSuccess: (data) => {
       toast({
@@ -67,7 +68,9 @@ export function AthleteInvitationForm({
 
   const form = useForm<InvitationFormData>({
     resolver: zodResolver(invitationSchema),
-    defaultValues: {
+      defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
     },
   });
@@ -92,6 +95,46 @@ export function AthleteInvitationForm({
           onSubmit={form.handleSubmit(onSubmit)}
           className="space-y-4"
         >
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('invitation.first_name')}{' '}
+                  <span className="text-destructive ml-1">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('invitation.first_name_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('invitation.last_name')}{' '}
+                  <span className="text-destructive ml-1">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('invitation.last_name_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="email"

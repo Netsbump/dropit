@@ -1,4 +1,5 @@
 import { InvitationException } from '../../application/exceptions/invitation.exceptions';
+import type { InvitableOrganizationRole } from '@dropit/schemas';
 
 export const OnboardingPresenter = {
   presentCoachAccessAccepted() {
@@ -8,10 +9,10 @@ export const OnboardingPresenter = {
     };
   },
 
-  presentInvitationAccepted() {
+  presentInvitationAccepted(organizationRole: InvitableOrganizationRole) {
     return {
       status: 200 as const,
-      body: { joined: true as const },
+      body: { organizationRole },
     };
   },
 

@@ -1,4 +1,5 @@
 import { RequestAccessInput } from '@dropit/schemas';
+import type { InvitableOrganizationRole } from '@dropit/schemas';
 
 export type OrganizationInvitationParams = {
   organizationId: string;
@@ -6,6 +7,7 @@ export type OrganizationInvitationParams = {
   email: string;
   invitedBy: string;
   invitationToken: string;
+  organizationRole: InvitableOrganizationRole;
   isNewUser: boolean;
   hasOtherOrganization: boolean;
 };

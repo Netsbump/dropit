@@ -45,6 +45,28 @@ export class AthleteController {
     private readonly athleteUseCases: IAthleteUseCases
   ) {}
 
+  @TsRestHandler(c.inviteAthlete)
+  @RequirePermissions('create')
+  inviteAthlete(
+    @CurrentOrganization() organizationId: string
+  ): ReturnType<typeof tsRestHandler<typeof c.inviteAthlete>> {
+    return tsRestHandler(c.inviteAthlete, async ({ body, headers }) => {
+      try {
+        await this.athleteUseCases.inviteAthlete({
+          firstName: body.firstName,
+          lastName: body.lastName,
+          email: body.email,
+          organizationId,
+          headers,
+        });
+
+        return { status: 201 as const, body: { message: 'Invitation sent' } };
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
+    });
+  }
+
   /**
    * Retrieves all athletes in the current organization.
    *

@@ -37,11 +37,14 @@ export class AdminController {
   createInvitation(): ReturnType<
     typeof tsRestHandler<typeof c.createInvitation>
   > {
-    return tsRestHandler(c.createInvitation, async ({ body }) => {
+    return tsRestHandler(c.createInvitation, async ({ body, headers }) => {
       await this.adminUseCases.inviteUser({
+        firstName: body.firstName,
+        lastName: body.lastName,
         email: body.email,
         organizationId: body.organizationId,
         organizationRole: body.organizationRole,
+        headers,
       });
       return { status: 201, body: { message: 'Invitation sent' } };
     });

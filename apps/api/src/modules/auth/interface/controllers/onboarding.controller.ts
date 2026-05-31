@@ -39,8 +39,10 @@ export class OnboardingController {
   > {
     return tsRestHandler(c.acceptInvitation, async ({ params }) => {
       try {
-        await this.onboardingUseCases.acceptInvitation(params.invitationId);
-        return OnboardingPresenter.presentInvitationAccepted();
+        const organizationRole = await this.onboardingUseCases.acceptInvitation(
+          params.invitationId
+        );
+        return OnboardingPresenter.presentInvitationAccepted(organizationRole);
       } catch (error) {
         return OnboardingPresenter.presentError(error as Error);
       }

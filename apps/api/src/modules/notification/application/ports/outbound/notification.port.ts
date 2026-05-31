@@ -1,4 +1,5 @@
 import { OtpParams } from '../inbound/notification-use-cases.port';
+import type { InvitableOrganizationRole } from '@dropit/schemas';
 
 export const KIND = {
   OTP: 'otp',
@@ -25,6 +26,7 @@ export type NotificationRequest =
       email: string;
       invitedBy: string;
       invitationToken: string;
+      organizationRole: InvitableOrganizationRole;
       recipientType: RecipientType;
       hasOtherOrganization: boolean;
     }

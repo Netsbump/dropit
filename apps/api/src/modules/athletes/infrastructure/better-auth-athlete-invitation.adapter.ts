@@ -2,20 +2,22 @@ import { Injectable } from '@nestjs/common';
 import { fromNodeHeaders } from 'better-auth/node';
 import { BetterAuthAdapter } from '../../auth/infrastructure/better-auth.adapter';
 import {
-  IAdminInvitationService,
-  InviteAdminUserParams,
-} from '../application/ports/admin-invitation-service.port';
+  IAthleteInvitationService,
+  InviteAthleteParams,
+} from '../application/ports/athlete-invitation-service.port';
 
 @Injectable()
-export class BetterAuthInvitationAdapter implements IAdminInvitationService {
+export class BetterAuthAthleteInvitationAdapter
+  implements IAthleteInvitationService
+{
   constructor(private readonly betterAuthAdapter: BetterAuthAdapter) {}
 
-  async inviteUser(params: InviteAdminUserParams): Promise<void> {
+  async inviteUser(params: InviteAthleteParams): Promise<void> {
     await this.betterAuthAdapter.api.createInvitation({
       headers: fromNodeHeaders(params.headers),
       body: {
         email: params.email,
-        role: params.role,
+        role: 'member',
         organizationId: params.organizationId,
       },
     });

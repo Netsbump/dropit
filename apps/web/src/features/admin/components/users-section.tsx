@@ -99,7 +99,11 @@ export function UsersSection() {
           isLoading ? (
             <div>{t('loading')}</div>
           ) : (
-            <DataTable columns={columns} data={filtered} />
+            <DataTable
+              columns={columns}
+              data={filtered}
+              pagination={{ initialPageSize: 10, pageSizeOptions: [10, 20, 50] }}
+            />
           )
         ) : (
           <DataTable
@@ -110,6 +114,7 @@ export function UsersSection() {
               { accessorKey: 'inviterName', header: 'Invite par' },
             ]}
             data={invitations}
+            pagination={{ initialPageSize: 10, pageSizeOptions: [10, 20, 50] }}
           />
         )}
       </div>

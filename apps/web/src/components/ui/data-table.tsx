@@ -52,20 +52,24 @@ export function DataTable<TData extends { id: string }, TValue>({
   const pageSizeOptions = pagination?.pageSizeOptions ?? [10, 20, 30, 40, 50];
   const defaultPageSize =
     pagination?.initialPageSize ?? pageSizeOptions[0] ?? 10;
-  const [pageSize, setPageSize] = useState(defaultPageSize);
+  const [paginationState, setPaginationState] = useState({
+    pageIndex: 0,
+    pageSize: defaultPageSize,
+  });
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
+    onPaginationChange: setPaginationState,
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onRowSelectionChange: setRowSelection,
     state: {
       sorting,
       rowSelection,
-      pagination: { pageIndex: 0, pageSize },
+      pagination: paginationState,
     },
   });
 
@@ -140,11 +144,16 @@ export function DataTable<TData extends { id: string }, TValue>({
                 <div className="flex items-center gap-2">
                   <span>{t('table.rows_per_page')}</span>
                   <Select
-                    value={pageSize.toString()}
-                    onValueChange={(value) => setPageSize(Number(value))}
+                    value={paginationState.pageSize.toString()}
+                    onValueChange={(value) => {
+                      setPaginationState({
+                        pageIndex: 0,
+                        pageSize: Number(value),
+                      });
+                    }}
                   >
                     <SelectTrigger className="h-8 w-[70px]">
-                      <SelectValue placeholder={pageSize} />
+                      <SelectValue placeholder={paginationState.pageSize} />
                     </SelectTrigger>
                     <SelectContent side="top">
                       {pageSizeOptions.map((size) => (

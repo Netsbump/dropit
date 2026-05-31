@@ -36,6 +36,7 @@ export class NotificationUseCase implements INotificationUseCases {
         email: params.email,
         invitedBy: params.invitedBy,
         invitationToken: params.invitationToken,
+        organizationRole: params.organizationRole,
       };
       await this.notificationPort.send(notificationRequest);
     } catch (error) {

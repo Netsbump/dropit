@@ -4,9 +4,12 @@ import { INotificationUseCases } from '../../notification/application/ports/inbo
 import { IInvitationRepository } from './ports/invitation.repository.port';
 import { IMemberRepository } from './ports/member.repository.port';
 import { IUserUseCases } from './ports/user-use-cases.port';
-import { IAthleteUseCases } from '../../athletes/application/ports/athlete-use-cases.port';
 import { Member } from '../domain/organization/member.entity';
-import { organizationRoleSchema } from '@dropit/schemas';
+import {
+  invitableOrganizationRoleSchema,
+  organizationRoleSchema,
+  type InvitableOrganizationRole,
+} from '@dropit/schemas';
 import { InvitationException } from './exceptions/invitation.exceptions';
 
 export class OnboardingUseCases implements IOnboardingUseCases {
@@ -14,44 +17,16 @@ export class OnboardingUseCases implements IOnboardingUseCases {
     private readonly notificationUseCases: INotificationUseCases,
     private readonly invitationRepository: IInvitationRepository,
     private readonly memberRepository: IMemberRepository,
-    private readonly userUseCases: IUserUseCases,
-    private readonly athleteUseCases: IAthleteUseCases
+    private readonly userUseCases: IUserUseCases
   ) {}
 
   async createCoachAccessRequest(data: RequestAccessInput): Promise<void> {
     await this.notificationUseCases.sendRequestAccess(data);
   }
 
-  async prepareUserForInvitation(
-    email: string,
-    organizationId: string
-  ): Promise<{ isNewUser: boolean; hasOtherOrganization: boolean }> {
-    const existingUser = await this.userUseCases.getByEmail(email);
-
-    if (!existingUser) {
-      const user = await this.userUseCases.create({
-        name: email,
-        email,
-        emailVerified: false,
-      });
-      await this.athleteUseCases.create(
-        { firstName: '', lastName: '' },
-        user.id
-      );
-      return { isNewUser: true, hasOtherOrganization: false };
-    }
-
-    const existingMember = await this.memberRepository.findByUserId(
-      existingUser.id
-    );
-    const hasOtherOrganization =
-      existingMember !== null &&
-      existingMember.organization.id !== organizationId;
-
-    return { isNewUser: false, hasOtherOrganization };
-  }
-
-  async acceptInvitation(invitationId: string): Promise<void> {
+  async acceptInvitation(
+    invitationId: string
+  ): Promise<InvitableOrganizationRole> {
     const invitation = await this.invitationRepository.findById(invitationId);
 
     if (!invitation) {
@@ -87,5 +62,7 @@ export class OnboardingUseCases implements IOnboardingUseCases {
 
     invitation.status = 'accepted';
     await this.invitationRepository.save(invitation);
+
+    return invitableOrganizationRoleSchema.parse(member.role);
   }
 }

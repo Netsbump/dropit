@@ -3,6 +3,7 @@ import {
   athleteDetailsSchema,
   athleteSchema,
   athletesByOrganizationParamsSchema,
+  createAthleteInvitationSchema,
   createAthleteSchema,
   updateAthleteSchema,
 } from '@dropit/schemas';
@@ -80,6 +81,19 @@ export const athleteContract = {
       500: z.object({
         message: z.string(),
       }),
+    },
+  },
+
+  inviteAthlete: {
+    method: 'POST',
+    path: '/athlete/invitations',
+    summary: 'Invite an athlete by email',
+    body: createAthleteInvitationSchema,
+    responses: {
+      201: z.object({ message: z.string() }),
+      400: z.object({ message: z.string() }),
+      403: z.object({ message: z.string() }),
+      500: z.object({ message: z.string() }),
     },
   },
 

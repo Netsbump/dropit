@@ -19,6 +19,7 @@ import { UserUseCases } from './application/user.use-cases';
 import { OrganizationUseCases } from './application/organization.use-cases';
 import { MemberUseCases } from './application/member.use-cases';
 import { OnboardingUseCases } from './application/onboarding.use-cases';
+import { InvitationUseCases } from './application/invitation.use-cases';
 
 // Application - Ports
 import {
@@ -44,6 +45,7 @@ import {
 import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
 import { ONBOARDING_USE_CASES } from './application/ports/onboarding-use-cases.port';
+import { INVITATION_USE_CASES } from './application/ports/invitation-use-cases.port';
 
 // Domain - Entities
 import { Organization } from './domain/organization/organization.entity';
@@ -63,9 +65,9 @@ import {
 } from '../notification/application/ports/inbound/notification-use-cases.port';
 import { AthletesModule } from '../athletes/athletes.module';
 import {
-  ATHLETE_USE_CASES,
-  IAthleteUseCases,
-} from '../athletes/application/ports/athlete-use-cases.port';
+  ATHLETE_REPO,
+  IAthleteRepository,
+} from '../athletes/application/ports/athlete.repository.port';
 
 /**
  * AuthModule - Main authentication and identity module
@@ -116,6 +118,7 @@ import {
     UserUseCases,
     OrganizationUseCases,
     MemberUseCases,
+    InvitationUseCases,
 
     // Port -> Implementation bindings (use-cases)
     {
@@ -141,23 +144,30 @@ import {
         notificationUseCases: INotificationUseCases,
         invitationRepo: IInvitationRepository,
         memberRepo: IMemberRepository,
-        userUseCases: IUserUseCases,
-        athleteUseCases: IAthleteUseCases
+        userUseCases: IUserUseCases
       ) =>
         new OnboardingUseCases(
           notificationUseCases,
           invitationRepo,
           memberRepo,
-          userUseCases,
-          athleteUseCases
+          userUseCases
         ),
       inject: [
         NOTIFICATION_USE_CASES,
         INVITATION_REPO,
         MEMBER_REPO,
         USER_USE_CASES,
-        ATHLETE_USE_CASES,
       ],
+    },
+    {
+      provide: INVITATION_USE_CASES,
+      useFactory: (
+        memberRepo: IMemberRepository,
+        userUseCases: IUserUseCases,
+        athleteRepository: IAthleteRepository
+      ) =>
+        new InvitationUseCases(memberRepo, userUseCases, athleteRepository),
+      inject: [MEMBER_REPO, USER_USE_CASES, ATHLETE_REPO],
     },
 
     // Global guard - validates session on all routes
@@ -178,6 +188,8 @@ import {
     USER_USE_CASES,
     MEMBER_USE_CASES,
     ORGANIZATION_USE_CASES,
+    ONBOARDING_USE_CASES,
+    INVITATION_USE_CASES,
 
     // Entities for other modules
     MikroOrmModule.forFeature([Organization, Member, User]),
