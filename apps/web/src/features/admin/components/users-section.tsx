@@ -102,7 +102,10 @@ export function UsersSection() {
             <DataTable
               columns={columns}
               data={filtered}
-              pagination={{ initialPageSize: 10, pageSizeOptions: [10, 20, 50] }}
+              pagination={{
+                initialPageSize: 10,
+                pageSizeOptions: [10, 20, 50],
+              }}
             />
           )
         ) : (

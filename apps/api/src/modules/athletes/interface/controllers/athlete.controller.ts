@@ -15,6 +15,10 @@ import {
   IAthleteUseCases,
   ATHLETE_USE_CASES,
 } from '../../application/ports/athlete-use-cases.port';
+import {
+  IInvitationUseCases,
+  INVITATION_USE_CASES,
+} from '../../../invitations/application/ports/invitation-use-cases.port';
 import { AthleteMapper } from '../mappers/athlete.mapper';
 import { AthletePresenter } from '../presenter/athlete.presenter';
 
@@ -42,23 +46,33 @@ const c = athleteContract;
 export class AthleteController {
   constructor(
     @Inject(ATHLETE_USE_CASES)
-    private readonly athleteUseCases: IAthleteUseCases
+    private readonly athleteUseCases: IAthleteUseCases,
+    @Inject(INVITATION_USE_CASES)
+    private readonly invitationUseCases: IInvitationUseCases
   ) {}
 
   @TsRestHandler(c.inviteAthlete)
   @RequirePermissions('create')
   inviteAthlete(
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.inviteAthlete>> {
     return tsRestHandler(c.inviteAthlete, async ({ body, headers }) => {
       try {
-        await this.athleteUseCases.inviteAthlete({
-          firstName: body.firstName,
-          lastName: body.lastName,
-          email: body.email,
-          organizationId,
-          headers,
-        });
+        await this.invitationUseCases.inviteAthlete(
+          {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email,
+            organizationId,
+            headers,
+          },
+          {
+            userId: user.id,
+            isSuperAdmin: user.role === 'admin',
+            organizationId,
+          }
+        );
 
         return { status: 201 as const, body: { message: 'Invitation sent' } };
       } catch (error) {

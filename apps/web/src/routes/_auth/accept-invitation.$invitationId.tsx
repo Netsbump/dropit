@@ -20,7 +20,9 @@ export const Route = createFileRoute('/_auth/accept-invitation/$invitationId')({
     if (response.status === 200) {
       throw redirect({
         to:
-          response.body.organizationRole === 'admin' ? '/login' : '/download-app',
+          response.body.organizationRole === 'admin'
+            ? '/login'
+            : '/download-app',
       });
     }
 

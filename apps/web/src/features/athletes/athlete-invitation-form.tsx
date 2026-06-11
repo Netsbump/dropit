@@ -68,7 +68,7 @@ export function AthleteInvitationForm({
 
   const form = useForm<InvitationFormData>({
     resolver: zodResolver(invitationSchema),
-      defaultValues: {
+    defaultValues: {
       firstName: '',
       lastName: '',
       email: '',

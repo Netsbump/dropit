@@ -1,15 +1,6 @@
 import { CreateAthleteInput, UpdateAthleteInput } from '@dropit/schemas';
 import { Athlete } from '../../domain/athlete.entity';
 import { AthleteDetails } from './athlete.repository.port';
-import type { IncomingHttpHeaders } from 'node:http';
-
-export interface InviteAthleteInput {
-  firstName: string;
-  lastName: string;
-  email: string;
-  organizationId: string;
-  headers: IncomingHttpHeaders;
-}
 
 /**
  * Athlete Use Cases Port
@@ -66,8 +57,6 @@ export interface IAthleteUseCases {
    * Create a new athlete
    */
   create(data: CreateAthleteInput, userId: string): Promise<Athlete>;
-
-  inviteAthlete(input: InviteAthleteInput): Promise<void>;
 
   /**
    * Update an existing athlete

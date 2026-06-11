@@ -1,14 +1,14 @@
 import { Athlete } from '../../athletes/domain/athlete.entity';
 import { IAthleteRepository } from '../../athletes/application/ports/athlete.repository.port';
-import { IMemberRepository } from './ports/member.repository.port';
+import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
+import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
 import {
-  IInvitationUseCases,
   InvitationNotificationContext,
   InvitationRecipientProfile,
 } from './ports/invitation-use-cases.port';
-import { IUserUseCases } from './ports/user-use-cases.port';
+import { IInvitationRecipientService } from './ports/invitation-recipient.port';
 
-export class InvitationUseCases implements IInvitationUseCases {
+export class InvitationRecipientService implements IInvitationRecipientService {
   constructor(
     private readonly memberRepository: IMemberRepository,
     private readonly userUseCases: IUserUseCases,

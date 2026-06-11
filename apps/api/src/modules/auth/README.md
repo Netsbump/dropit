@@ -102,7 +102,7 @@ Better-auth handles authentication (sessions, organization plugin, admin plugin,
 
 - **`better-auth.config.ts`** contains the static configuration (secret, cookies, database, rate limiting, plugins: `openAPI`, `admin`, `emailOTP`, `organization`, `customSession`). It is a pure function that receives callbacks as parameters.
 
-- **`BetterAuthAdapter`** initializes better-auth at startup and wires callbacks: invitation emails via `INotificationUseCases.sendOrganizationInvitation`, **OTP emails** via `INotificationUseCases.sendOtp` (from the `emailOTP` plugin’s `sendVerificationOTP`), session enrichment, and database hooks.
+- **`BetterAuthAdapter`** initializes better-auth at startup and wires callbacks: invitation notification context via `InvitationRecipientService`, invitation emails via `INotificationUseCases.sendOrganizationInvitation`, **OTP emails** via `INotificationUseCases.sendOtp` (from the `emailOTP` plugin’s `sendVerificationOTP`), session enrichment, and database hooks.
 
 For roadmap tasks (deep links, SMS preferences, admin 2FA / password reset), see [`docs/task-management/deep-links-mobile-download-app.md`](../../../../../docs/task-management/deep-links-mobile-download-app.md), [`mobile-notification-preferences-phonenumber.md`](../../../../../docs/task-management/mobile-notification-preferences-phonenumber.md), [`super-admin-2fa-password-reset.md`](../../../../../docs/task-management/super-admin-2fa-password-reset.md). For how notifications are wired (ports, invitation pipeline), see the [Notification module README](../notification/README.md).
 
@@ -151,7 +151,8 @@ Note: `athleteId` is enriched at read-time via the `customSession` plugin, not s
 Nest `imports` and cross-module wiring (see `auth.module.ts`):
 
 - **[NotificationModule](../notification/notification.module.ts)** (`forwardRef`): `BetterAuthAdapter` and **`OnboardingUseCases`** use **`INotificationUseCases`** for invitation emails, OTP email (`sendOtp`), and coach access requests (`sendRequestAccess`).
-- **[AthletesModule](../athletes/)** (`forwardRef`): **`IAthleteUseCases`** for `OnboardingUseCases` (athlete stub when inviting by email) and for **`BetterAuthAdapter.enrichSession`** (`athleteId` on the session).
+- **[InvitationsModule](../invitations/)** (`forwardRef`): `BetterAuthAdapter` uses `InvitationRecipientService` in the better-auth invitation hook.
+- **[AthletesModule](../athletes/)** (`forwardRef`): **`BetterAuthAdapter.enrichSession`** reads `athleteId` for the session.
 - **MikroORM** (`MikroOrmModule.forFeature`): entities **User**, **Organization**, **Member**, **Invitation** and their repositories.
 
 ## Related docs
@@ -159,5 +160,6 @@ Nest `imports` and cross-module wiring (see `auth.module.ts`):
 - **[Hexagonal architecture](../../../../../docs/architecture-hexagonale.md)** (French) — ports & adapters, token-based injection, `useFactory`, channel vs transport composition
 - **[Task management (auth & mobile)](../../../../../docs/task-management/)** — [`deep-links-mobile-download-app.md`](../../../../../docs/task-management/deep-links-mobile-download-app.md), [`mobile-notification-preferences-phonenumber.md`](../../../../../docs/task-management/mobile-notification-preferences-phonenumber.md), [`super-admin-2fa-password-reset.md`](../../../../../docs/task-management/super-admin-2fa-password-reset.md)
 - **[Onboarding](./README-onboarding.md)** — clubs, coaches, invitations, acceptance flow
+- **[Invitations](../invitations/README.md)** — athlete/admin invitation orchestration
 - **[Permissions](./README-permissions.md)** — `PermissionsGuard`, `@RequirePermissions`, role matrix
 - **[Notification module](../notification/README.md)** — `NotificationRequest` / `KIND`, email channel, Maildev/Brevo; generic DI patterns in the hexagonal doc above

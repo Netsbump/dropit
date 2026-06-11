@@ -43,7 +43,9 @@ interface CreateAdminInvitationFormProps {
   onSubmit: (input: CreateAdminInvitationInput) => void;
 }
 
-type CreateAdminInvitationFormValues = z.infer<typeof createAdminInvitationSchema>;
+type CreateAdminInvitationFormValues = z.infer<
+  typeof createAdminInvitationSchema
+>;
 
 function SelectField({
   field,
@@ -151,10 +153,16 @@ export function CreateAdminInvitationForm({
           name="organizationRole"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('admin:users.modal.labels.organization_role')}</FormLabel>
+              <FormLabel>
+                {t('admin:users.modal.labels.organization_role')}
+              </FormLabel>
               <SelectField field={field}>
-                <SelectItem value="member">{t('admin:users.roles.athlete')}</SelectItem>
-                <SelectItem value="admin">{t('admin:users.roles.coach')}</SelectItem>
+                <SelectItem value="member">
+                  {t('admin:users.roles.athlete')}
+                </SelectItem>
+                <SelectItem value="admin">
+                  {t('admin:users.roles.coach')}
+                </SelectItem>
               </SelectField>
               <FormMessage />
             </FormItem>
@@ -165,7 +173,9 @@ export function CreateAdminInvitationForm({
           name="organizationId"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>{t('admin:users.modal.labels.organization')}</FormLabel>
+              <FormLabel>
+                {t('admin:users.modal.labels.organization')}
+              </FormLabel>
               <SelectField
                 field={field}
                 placeholder={t('admin:users.modal.organization_placeholder')}

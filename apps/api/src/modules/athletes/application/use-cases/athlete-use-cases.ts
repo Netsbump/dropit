@@ -7,9 +7,6 @@ import {
 } from '../ports/athlete.repository.port';
 import { IUserUseCases } from '../../../auth/application/ports/user-use-cases.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
-import { IInvitationUseCases } from '../../../auth/application/ports/invitation-use-cases.port';
-import { IAthleteInvitationService } from '../ports/athlete-invitation-service.port';
-import { InviteAthleteInput } from '../ports/athlete-use-cases.port';
 import {
   AthleteNotFoundException,
   AthleteAccessDeniedException,
@@ -34,27 +31,8 @@ export class AthleteUseCases implements IAthleteUseCases {
   constructor(
     private readonly athleteRepository: IAthleteRepository,
     private readonly userUseCases: IUserUseCases,
-    private readonly memberUseCases: IMemberUseCases,
-    private readonly invitationUseCases: IInvitationUseCases,
-    private readonly athleteInvitationService: IAthleteInvitationService
+    private readonly memberUseCases: IMemberUseCases
   ) {}
-
-  async inviteAthlete(input: InviteAthleteInput): Promise<void> {
-    await this.invitationUseCases.prepareRecipient(
-      input.email,
-      input.organizationId,
-      {
-        firstName: input.firstName,
-        lastName: input.lastName,
-      }
-    );
-
-    await this.athleteInvitationService.inviteUser({
-      email: input.email,
-      organizationId: input.organizationId,
-      headers: input.headers,
-    });
-  }
 
   async findOne(
     athleteId: string,
