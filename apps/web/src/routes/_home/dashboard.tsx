@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { Link, createFileRoute } from '@tanstack/react-router';
 import { useTranslation } from '@dropit/i18n';
 import { usePageMeta } from '@/hooks/use-page-meta';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
@@ -15,6 +15,7 @@ import {
   Pie,
   Cell,
 } from 'recharts';
+import { ArrowRight } from 'lucide-react';
 
 export const Route = createFileRoute('/_home/dashboard')({
   component: Dashboard,
@@ -80,10 +81,14 @@ function Dashboard() {
                     <p className="font-bold text-gray-800 text-3xl">24</p>
                   </div>
                   <Button
+                    asChild
                     variant="outline"
-                    className="w-full text-md h-10 rounded-full"
+                    className="w-full text-md h-10 rounded-full gap-2"
                   >
-                    Inviter un athlète
+                    <Link to="/athletes">
+                      Inviter un athlète
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
@@ -100,10 +105,14 @@ function Dashboard() {
                     <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
                   <Button
+                    asChild
                     variant="outline"
-                    className="w-full text-md h-10 rounded-full"
+                    className="w-full text-md h-10 rounded-full gap-2"
                   >
-                    Ajouter une séance
+                    <Link to="/planning">
+                      Ajouter une séance
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
@@ -120,10 +129,14 @@ function Dashboard() {
                     <p className="font-bold text-gray-800 text-3xl">12</p>
                   </div>
                   <Button
+                    asChild
                     variant="outline"
-                    className="w-full text-md h-10 rounded-full"
+                    className="w-full text-md h-10 rounded-full gap-2"
                   >
-                    Créer un entraînement
+                    <Link to="/library/workouts">
+                      Créer un entraînement
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
                   </Button>
                 </div>
               </CardContent>
