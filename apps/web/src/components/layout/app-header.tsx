@@ -47,6 +47,9 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   };
 
   const currentPath = matches[matches.length - 1]?.pathname || '';
+  const activeTabIndex = tabs?.findIndex(
+    (tab) => currentPath === tab.path || currentPath.startsWith(`${tab.path}/`)
+  );
 
   return (
     <header className="h-20 flex items-center justify-between pr-3 pl-4">
@@ -82,7 +85,22 @@ export function AppHeader({ tabs }: AppHeaderProps) {
           {pageTitle}
         </h1>
       ) : tabs && tabs.length > 0 ? (
-        <nav className="flex gap-6 h-16 items-center absolute left-1/2 -translate-x-1/2">
+        <nav
+          className="absolute left-1/2 -translate-x-1/2 inline-grid rounded-full border bg-outlet p-1"
+          style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+        >
+          {activeTabIndex !== undefined && activeTabIndex >= 0 ? (
+            <span
+              className="absolute bottom-1 top-1 rounded-full bg-purple-600 transition-transform duration-300 ease-out"
+              style={{
+                left: '0.25rem',
+                width: `calc((100% - 0.5rem) / ${tabs.length})`,
+                transform: `translateX(${activeTabIndex * 100}%)`,
+              }}
+              aria-hidden="true"
+            />
+          ) : null}
+
           {tabs.map((tab) => {
             const isActive =
               currentPath === tab.path ||
@@ -91,10 +109,10 @@ export function AppHeader({ tabs }: AppHeaderProps) {
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`px-3 transition-all uppercase text-sm ${
+                className={`relative z-10 min-w-32 rounded-full px-5 py-3 text-center transition-colors text-sm ${
                   isActive
-                    ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
-                    : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
+                    ? 'text-white font-semibold'
+                    : 'text-[hsl(var(--appheader-tab-inactive))] hover:bg-purple-100 hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
                 }`}
               >
                 {tab.label}
