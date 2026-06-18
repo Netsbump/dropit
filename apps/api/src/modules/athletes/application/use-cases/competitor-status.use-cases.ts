@@ -34,39 +34,55 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
 
   async findAll(organizationId: string): Promise<CompetitorStatus[]> {
     // 1. Get ids of athletes in the organization
-    const athleteUserIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const athleteUserIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
 
     if (athleteUserIds.length === 0) {
-      throw new NoAthletesFoundException('No athletes found in the organization');
+      throw new NoAthletesFoundException(
+        'No athletes found in the organization'
+      );
     }
 
     // 2. Get competitor statuses
-    const competitorStatuses = await this.competitorStatusRepository.getAll(athleteUserIds);
+    const competitorStatuses =
+      await this.competitorStatusRepository.getAll(athleteUserIds);
 
     if (!competitorStatuses || competitorStatuses.length === 0) {
-      throw new CompetitorStatusNotFoundException('No competitor statuses found');
+      throw new CompetitorStatusNotFoundException(
+        'No competitor statuses found'
+      );
     }
 
     return competitorStatuses;
   }
 
-  async findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<CompetitorStatus> {
+  async findOne(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<CompetitorStatus> {
     // 1. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(athleteId);
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException(`Athlete with ID ${athleteId} not found`);
+      throw new AthleteNotFoundException(
+        `Athlete with ID ${athleteId} not found`
+      );
     }
 
     // 2. Validate user access
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
     if (!isUserCoach && currentUserId !== athlete.user.id) {
       throw new CompetitorStatusAccessDeniedException(
-        "Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching"
+        'Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching'
       );
     }
 
     // 3. Get competitor status using repository
-    const competitorStatus = await this.competitorStatusRepository.getOne(athleteId);
+    const competitorStatus =
+      await this.competitorStatusRepository.getOne(athleteId);
 
     if (!competitorStatus) {
       throw new CompetitorStatusNotFoundException(
@@ -83,15 +99,21 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     organizationId: string
   ): Promise<CompetitorStatus> {
     // 1. Validate user access - only admin/owner can create competitor status
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
     if (!isUserCoach) {
       throw new CompetitorStatusAccessDeniedException(
-        "Access denied. Only coaches can create competitor status"
+        'Access denied. Only coaches can create competitor status'
       );
     }
 
     // 2. Verify athlete belongs to organization
-    await this.memberUseCases.isUserAthleteInOrganization(data.athleteId, organizationId);
+    await this.memberUseCases.isUserAthleteInOrganization(
+      data.athleteId,
+      organizationId
+    );
 
     // 3. Get athlete to verify it exists and get the entity
     const athlete = await this.athleteRepository.getOne(data.athleteId);
@@ -102,7 +124,9 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     }
 
     // 4. Close previous active competitor status if exists
-    const lastCompetitorStatus = await this.competitorStatusRepository.getOne(data.athleteId);
+    const lastCompetitorStatus = await this.competitorStatusRepository.getOne(
+      data.athleteId
+    );
     if (lastCompetitorStatus) {
       lastCompetitorStatus.endDate = new Date();
       await this.competitorStatusRepository.save(lastCompetitorStatus);
@@ -118,10 +142,13 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     await this.competitorStatusRepository.save(competitorStatusToCreate);
 
     // 6. Get created competitor status
-    const competitorStatusCreated = await this.competitorStatusRepository.getOne(data.athleteId);
+    const competitorStatusCreated =
+      await this.competitorStatusRepository.getOne(data.athleteId);
 
     if (!competitorStatusCreated) {
-      throw new CompetitorStatusNotFoundException('Competitor status not found');
+      throw new CompetitorStatusNotFoundException(
+        'Competitor status not found'
+      );
     }
 
     return competitorStatusCreated;
@@ -134,22 +161,31 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     organizationId: string
   ): Promise<CompetitorStatus> {
     // 1. Validate user access - only coaches can update competitor status
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(currentUserId, organizationId);
+    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
+      currentUserId,
+      organizationId
+    );
     if (!isUserCoach) {
       throw new CompetitorStatusAccessDeniedException(
-        "Access denied. Only coaches can update competitor status"
+        'Access denied. Only coaches can update competitor status'
       );
     }
 
     // 2. Get competitor status to update
-    const competitorStatusToUpdate = await this.competitorStatusRepository.getOne(id);
+    const competitorStatusToUpdate =
+      await this.competitorStatusRepository.getOne(id);
 
     if (!competitorStatusToUpdate) {
-      throw new CompetitorStatusNotFoundException(`Competitor status with ID ${id} not found`);
+      throw new CompetitorStatusNotFoundException(
+        `Competitor status with ID ${id} not found`
+      );
     }
 
     // 3. Verify athlete still belongs to organization
-    await this.memberUseCases.isUserAthleteInOrganization(competitorStatusToUpdate.athlete.id, organizationId);
+    await this.memberUseCases.isUserAthleteInOrganization(
+      competitorStatusToUpdate.athlete.id,
+      organizationId
+    );
 
     // 4. Update competitor status fields
     if (data.level) {
@@ -166,10 +202,13 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     await this.competitorStatusRepository.save(competitorStatusToUpdate);
 
     // 6. Get updated competitor status
-    const competitorStatusUpdated = await this.competitorStatusRepository.getOne(id);
+    const competitorStatusUpdated =
+      await this.competitorStatusRepository.getOne(id);
 
     if (!competitorStatusUpdated) {
-      throw new CompetitorStatusNotFoundException('Competitor status not found');
+      throw new CompetitorStatusNotFoundException(
+        'Competitor status not found'
+      );
     }
 
     return competitorStatusUpdated;

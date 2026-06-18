@@ -3,7 +3,6 @@ import { AthleteDetails } from '../../application/ports/athlete.repository.port'
 import { Athlete } from '../../domain/athlete.entity';
 
 export const AthleteMapper = {
-    
   toDtoDetails(athlete: AthleteDetails): AthleteDetailsDto {
     return {
       id: athlete.id,
@@ -12,7 +11,7 @@ export const AthleteMapper = {
       birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
       email: athlete.email ?? '',
       image: athlete.image ?? '',
-      country: athlete.country,
+      country: athlete.country ?? undefined,
       metrics: athlete.weight ? { weight: athlete.weight } : undefined,
       personalRecords:
         athlete.pr_snatch || athlete.pr_cleanAndJerk

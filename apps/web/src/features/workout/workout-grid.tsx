@@ -7,12 +7,16 @@ interface WorkoutGridProps {
   onWorkoutClick: (id: string) => void;
 }
 
-export function WorkoutGrid({ workouts, trainingSessions, onWorkoutClick }: WorkoutGridProps) {
+export function WorkoutGrid({
+  workouts,
+  trainingSessions,
+  onWorkoutClick,
+}: WorkoutGridProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-6xl">
       {workouts.map((workout) => {
         const workoutSessions = trainingSessions.filter(
-          session => session.workout.id === workout.id
+          (session) => session.workout.id === workout.id
         );
 
         return (

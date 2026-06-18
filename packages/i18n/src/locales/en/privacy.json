@@ -127,12 +127,20 @@
         {
           "type": "Contract performance (Art. 6.1.b GDPR)",
           "description": "The processing is necessary for the performance of the service you requested: managing your sports training and tracking your performance.",
-          "examples": ["Access to application features", "Training tracking", "Statistics calculation"]
+          "examples": [
+            "Access to application features",
+            "Training tracking",
+            "Statistics calculation"
+          ]
         },
         {
           "type": "Legitimate interest (Art. 6.1.f GDPR)",
           "description": "We have a legitimate interest in processing certain data to ensure platform security and prevent fraud.",
-          "examples": ["Security logs", "Detection of suspicious activities", "Service improvement"]
+          "examples": [
+            "Security logs",
+            "Detection of suspicious activities",
+            "Service improvement"
+          ]
         }
       ]
     },

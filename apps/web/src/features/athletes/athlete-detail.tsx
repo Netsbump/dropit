@@ -9,12 +9,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
-} from '@/components/ui/tabs';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useTranslation } from '@dropit/i18n';
 import {
   AthleteDetailsDto,
@@ -96,7 +91,9 @@ export function AthleteDetail({
             <div className="space-y-2">
               <Label>{t('athletes:details.birthday')}</Label>
               <p className="text-sm">
-                {athlete.birthday ? formatDate(new Date(athlete.birthday), 'Pp', { locale: fr }) : '-'}
+                {athlete.birthday
+                  ? formatDate(new Date(athlete.birthday), 'Pp', { locale: fr })
+                  : '-'}
               </p>
             </div>
 
@@ -109,7 +106,6 @@ export function AthleteDetail({
               <Label>{t('athletes:details.email')}</Label>
               <p className="text-sm">{athlete.email}</p>
             </div>
-
           </CardContent>
         </Card>
 
@@ -286,7 +282,11 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button type="submit" variant="default" disabled={isLoading}>
+                      <Button
+                        type="submit"
+                        variant="default"
+                        disabled={isLoading}
+                      >
                         {t('athletes:details.edit')}
                       </Button>
                     </div>
@@ -398,7 +398,11 @@ export function AthleteDetail({
                       >
                         {t('athletes:details.cancel')}
                       </Button>
-                      <Button variant="default" type="submit" disabled={isLoading}>
+                      <Button
+                        variant="default"
+                        type="submit"
+                        disabled={isLoading}
+                      >
                         {t('athletes:details.create_new_status')}
                       </Button>
                     </div>
@@ -508,7 +512,10 @@ export function AthleteDetail({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {personalRecords ? (
                     personalRecords.map((record) => (
-                      <Card key={record.id} className="bg-gray-50 rounded-xl shadow-none">
+                      <Card
+                        key={record.id}
+                        className="bg-gray-50 rounded-xl shadow-none"
+                      >
                         <CardContent className="pt-6">
                           <div className="text-sm font-medium">
                             {record.exerciseName ||

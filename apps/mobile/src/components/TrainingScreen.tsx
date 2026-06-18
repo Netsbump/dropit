@@ -38,8 +38,29 @@ const formatDateForAPI = (date: Date): string => {
 
 // Format date to "LUNDI 6 OCTOBRE 2025"
 const formatDateFull = (date: Date): string => {
-  const days = ['DIMANCHE', 'LUNDI', 'MARDI', 'MERCREDI', 'JEUDI', 'VENDREDI', 'SAMEDI'];
-  const months = ['JANVIER', 'FÉVRIER', 'MARS', 'AVRIL', 'MAI', 'JUIN', 'JUILLET', 'AOÛT', 'SEPTEMBRE', 'OCTOBRE', 'NOVEMBRE', 'DÉCEMBRE'];
+  const days = [
+    'DIMANCHE',
+    'LUNDI',
+    'MARDI',
+    'MERCREDI',
+    'JEUDI',
+    'VENDREDI',
+    'SAMEDI',
+  ];
+  const months = [
+    'JANVIER',
+    'FÉVRIER',
+    'MARS',
+    'AVRIL',
+    'MAI',
+    'JUIN',
+    'JUILLET',
+    'AOÛT',
+    'SEPTEMBRE',
+    'OCTOBRE',
+    'NOVEMBRE',
+    'DÉCEMBRE',
+  ];
 
   const dayName = days[date.getDay()];
   const day = date.getDate();
@@ -53,10 +74,16 @@ const formatDateFull = (date: Date): string => {
 const dateRange = generateDateRange(new Date());
 
 export default function TrainingScreen({ onBack }: TrainingScreenProps) {
-  const [selectedElement, setSelectedElement] = useState<WorkoutDto['elements'][number] | null>(null);
+  const [selectedElement, setSelectedElement] = useState<
+    WorkoutDto['elements'][number] | null
+  >(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [allTrainingSessions, setAllTrainingSessions] = useState<TrainingSessionDto[]>([]);
-  const [trainingData, setTrainingData] = useState<TrainingSessionDto | null>(null);
+  const [allTrainingSessions, setAllTrainingSessions] = useState<
+    TrainingSessionDto[]
+  >([]);
+  const [trainingData, setTrainingData] = useState<TrainingSessionDto | null>(
+    null
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [athleteId, setAthleteId] = useState<string | null>(null);
 
@@ -85,12 +112,17 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
         const startDate = formatDateForAPI(dateRange[0]);
         const endDate = formatDateForAPI(dateRange[dateRange.length - 1]);
 
-        const response = await api.trainingSession.getTrainingSessionsByAthlete({
-          params: { athleteId },
-          query: { startDate, endDate },
-        });
+        const response = await api.trainingSession.getTrainingSessionsByAthlete(
+          {
+            params: { athleteId },
+            query: { startDate, endDate },
+          }
+        );
 
-        const data = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+        const data =
+          typeof response.body === 'string'
+            ? JSON.parse(response.body)
+            : response.body;
 
         if (response.status === 200) {
           setAllTrainingSessions(data);
@@ -121,10 +153,12 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
       return;
     }
 
-    const sessionForDate = allTrainingSessions.find((session: TrainingSessionDto) => {
-      const sessionDate = new Date(session.scheduledDate);
-      return sessionDate.toDateString() === selectedDate.toDateString();
-    });
+    const sessionForDate = allTrainingSessions.find(
+      (session: TrainingSessionDto) => {
+        const sessionDate = new Date(session.scheduledDate);
+        return sessionDate.toDateString() === selectedDate.toDateString();
+      }
+    );
 
     setTrainingData(sessionForDate || null);
   }, [selectedDate, allTrainingSessions]);
@@ -151,7 +185,16 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
     );
   }
 
-  const renderExerciseBlock = (element: WorkoutDto['elements'][number], displayInfo: { id: string; name: string; sets: string; weight: string; rest: string }) => (
+  const renderExerciseBlock = (
+    element: WorkoutDto['elements'][number],
+    displayInfo: {
+      id: string;
+      name: string;
+      sets: string;
+      weight: string;
+      rest: string;
+    }
+  ) => (
     <TouchableOpacity
       key={displayInfo.id}
       style={styles.exerciseBlock}
@@ -160,10 +203,14 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
     >
       {/* Exercise Image Placeholder */}
       <View style={styles.exerciseImage}>
-        <View style={[
-          styles.imagePlaceholder,
-          element.type === 'complex' ? styles.complexImagePlaceholder : styles.exerciseImagePlaceholder
-        ]} />
+        <View
+          style={[
+            styles.imagePlaceholder,
+            element.type === 'complex'
+              ? styles.complexImagePlaceholder
+              : styles.exerciseImagePlaceholder,
+          ]}
+        />
       </View>
 
       {/* Exercise Info */}
@@ -206,16 +253,32 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
           contentContainerStyle={styles.dateCarousel}
         >
           {dateRange.map((date) => {
-            const isSelected = date.toDateString() === selectedDate.toDateString();
+            const isSelected =
+              date.toDateString() === selectedDate.toDateString();
             const dayNumber = date.getDate();
-            const monthName = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC'][date.getMonth()];
+            const monthName = [
+              'JAN',
+              'FÉV',
+              'MAR',
+              'AVR',
+              'MAI',
+              'JUN',
+              'JUL',
+              'AOÛ',
+              'SEP',
+              'OCT',
+              'NOV',
+              'DÉC',
+            ][date.getMonth()];
             const dateKey = date.toISOString();
 
             // Check if this date has a training session
-            const hasTraining = allTrainingSessions.some((session: TrainingSessionDto) => {
-              const sessionDate = new Date(session.scheduledDate);
-              return sessionDate.toDateString() === date.toDateString();
-            });
+            const hasTraining = allTrainingSessions.some(
+              (session: TrainingSessionDto) => {
+                const sessionDate = new Date(session.scheduledDate);
+                return sessionDate.toDateString() === date.toDateString();
+              }
+            );
 
             return (
               <TouchableOpacity
@@ -223,15 +286,23 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
                 style={[styles.dateItem, isSelected && styles.dateItemSelected]}
                 onPress={() => handleDateSelect(date)}
               >
-                <Text style={[styles.dateNumber, isSelected && styles.dateNumberSelected]}>
+                <Text
+                  style={[
+                    styles.dateNumber,
+                    isSelected && styles.dateNumberSelected,
+                  ]}
+                >
                   {dayNumber}
                 </Text>
-                <Text style={[styles.dateMonth, isSelected && styles.dateMonthSelected]}>
+                <Text
+                  style={[
+                    styles.dateMonth,
+                    isSelected && styles.dateMonthSelected,
+                  ]}
+                >
                   {monthName}.
                 </Text>
-                {hasTraining && (
-                  <View style={styles.trainingIndicator} />
-                )}
+                {hasTraining && <View style={styles.trainingIndicator} />}
               </TouchableOpacity>
             );
           })}
@@ -248,40 +319,54 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
             {/* Training Info */}
             <View style={styles.trainingInfo}>
               {trainingData.workout?.description && (
-                <Text style={styles.trainingDescription}>{trainingData.workout.description}</Text>
+                <Text style={styles.trainingDescription}>
+                  {trainingData.workout.description}
+                </Text>
               )}
             </View>
 
             {/* Exercise List */}
             <View style={styles.exerciseList}>
-              {trainingData.workout?.elements?.map((element: WorkoutDto['elements'][number]) => {
-                const id = element.type === 'exercise' ? element.exercise.id : element.complex.id;
-                const name = element.type === 'exercise'
-                  ? element.exercise.name
-                  : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
+              {trainingData.workout?.elements?.map(
+                (element: WorkoutDto['elements'][number]) => {
+                  const id =
+                    element.type === 'exercise'
+                      ? element.exercise.id
+                      : element.complex.id;
+                  const name =
+                    element.type === 'exercise'
+                      ? element.exercise.name
+                      : element.complex.exercises
+                          .map((e: { name: string }) => e.name)
+                          .join(', ');
 
-                // Calculate from blocks
-                const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
-                const firstBlock = element.blocks[0];
-                const firstReps = firstBlock?.exercises[0]?.reps ?? 0;
-                const firstRest = firstBlock?.rest;
-                const firstIntensity = firstBlock?.intensity?.percentageOfMax;
+                  // Calculate from blocks
+                  const totalSets = element.blocks.reduce(
+                    (sum, block) => sum + block.numberOfSets,
+                    0
+                  );
+                  const firstBlock = element.blocks[0];
+                  const firstReps = firstBlock?.exercises[0]?.reps ?? 0;
+                  const firstRest = firstBlock?.rest;
+                  const firstIntensity = firstBlock?.intensity?.percentageOfMax;
 
-                return renderExerciseBlock(element, {
-                  id,
-                  name,
-                  sets: `${totalSets} x ${firstReps}`,
-                  weight: firstIntensity ? `${firstIntensity}%` : '-',
-                  rest: firstRest ? `${firstRest}sec` : '-',
-                });
-              })}
+                  return renderExerciseBlock(element, {
+                    id,
+                    name,
+                    sets: `${totalSets} x ${firstReps}`,
+                    weight: firstIntensity ? `${firstIntensity}%` : '-',
+                    rest: firstRest ? `${firstRest}sec` : '-',
+                  });
+                }
+              )}
             </View>
           </>
         ) : (
           <View style={styles.emptyState}>
             <Text style={styles.emptyStateTitle}>Pas d'entraînement</Text>
             <Text style={styles.emptyStateText}>
-              Vous n'avez pas encore d'entraînement de planifié pour cette date, veuillez attendre que votre coach vous en assigne.
+              Vous n'avez pas encore d'entraînement de planifié pour cette date,
+              veuillez attendre que votre coach vous en assigne.
             </Text>
           </View>
         )}
@@ -345,7 +430,7 @@ const styles = StyleSheet.create({
   dateItemSelected: {
     backgroundColor: '#282c38',
     borderWidth: 1,
-    borderColor: '#6387d9'
+    borderColor: '#6387d9',
   },
   dateNumber: {
     fontSize: 16,
@@ -435,7 +520,7 @@ const styles = StyleSheet.create({
     padding: 4,
     marginBottom: 12,
     borderWidth: 1,
-    borderColor: '#414551'
+    borderColor: '#414551',
   },
 
   // Exercise Image

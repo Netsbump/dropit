@@ -1,3 +1,1 @@
-export class TwilioAdapter {
-    
-}
+export class TwilioAdapter {}

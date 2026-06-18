@@ -31,11 +31,12 @@ import {
 import { CreateComplexInput, createComplexSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@dropit/i18n';
 import { PlusCircle } from 'lucide-react';
 import { useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { DialogCreation } from '../exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
 import { SortableExerciseItem } from './sortable-exercise-item';
@@ -49,8 +50,10 @@ export function ComplexCreationForm({
   onSuccess,
   onCancel,
 }: ComplexCreationFormProps) {
+  const { t } = useTranslation(['exercise']);
   const [isLoading, setIsLoading] = useState(false);
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const createExerciseFormId = 'complex-create-exercise-form';
   const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -103,12 +106,8 @@ export function ComplexCreationForm({
   );
 
   const handleExerciseCreationSuccess = async (exerciseId: string) => {
-    console.log('id de exercice créé', exerciseId);
-
-    // D'abord rafraîchir la liste des exercices
     await queryClient.invalidateQueries({ queryKey: ['exercises'] });
 
-    // Ensuite mettre à jour la sélection
     if (currentEditingIndex !== null) {
       form.setValue(`exercises.${currentEditingIndex}.exerciseId`, exerciseId, {
         shouldValidate: true,
@@ -117,16 +116,13 @@ export function ComplexCreationForm({
       });
     }
 
-    // Enfin fermer la modal
     setCreateExerciseModalOpen(false);
     setCurrentEditingIndex(null);
   };
 
   const handleCategoryCreationSuccess = async (categoryId: string) => {
-    // D'abord rafraîchir la liste des catégories
     await queryClient.invalidateQueries({ queryKey: ['complexCategories'] });
 
-    // Mettre à jour la sélection de la catégorie
     form.setValue('complexCategory', categoryId, {
       shouldValidate: true,
       shouldDirty: true,
@@ -190,7 +186,9 @@ export function ComplexCreationForm({
     });
   };
 
-  const handleSubmit = async (formValues: z.infer<typeof formComplexSchema>) => {
+  const handleSubmit = async (
+    formValues: z.infer<typeof formComplexSchema>
+  ) => {
     if (formValues.exercises.length < 2) {
       toast({
         title: 'Erreur',
@@ -323,25 +321,25 @@ export function ComplexCreationForm({
         </div>
       </form>
 
-      <DialogCreation
+      <CreationDialog
         open={createExerciseModalOpen}
         onOpenChange={(open) => {
           setCreateExerciseModalOpen(open);
           if (!open) setCurrentEditingIndex(null);
         }}
-        title="Créer un exercice"
-        description="Ajoutez un nouvel exercice à votre catalogue."
+        title={t('exercise:creation.title')}
+        description={t('exercise:creation.description')}
+        cancelLabel={t('exercise:creation.cancel')}
+        submitLabel={t('exercise:creation.submit')}
+        submitFormId={createExerciseFormId}
       >
         <ExerciseCreationForm
+          formId={createExerciseFormId}
           onSuccess={handleExerciseCreationSuccess}
-          onCancel={() => {
-            setCreateExerciseModalOpen(false);
-            setCurrentEditingIndex(null);
-          }}
         />
-      </DialogCreation>
+      </CreationDialog>
 
-      <DialogCreation
+      <CreationDialog
         open={createCategoryModalOpen}
         onOpenChange={setCreateCategoryModalOpen}
         title="Créer une catégorie"
@@ -351,7 +349,7 @@ export function ComplexCreationForm({
           onSuccess={handleCategoryCreationSuccess}
           onCancel={() => setCreateCategoryModalOpen(false)}
         />
-      </DialogCreation>
+      </CreationDialog>
     </Form>
   );
 }

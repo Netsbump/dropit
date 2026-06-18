@@ -3,10 +3,16 @@ import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Athlete } from '../domain/athlete.entity';
 import { PersonalRecord } from '../domain/personal-record.entity';
-import { AthleteDetails, IAthleteRepository } from '../application/ports/athlete.repository.port';
+import {
+  AthleteDetails,
+  IAthleteRepository,
+} from '../application/ports/athlete.repository.port';
 
 @Injectable()
-export class MikroAthleteRepository extends EntityRepository<Athlete> implements IAthleteRepository {
+export class MikroAthleteRepository
+  extends EntityRepository<Athlete>
+  implements IAthleteRepository
+{
   constructor(public readonly em: EntityManager) {
     super(em, Athlete);
   }
@@ -16,7 +22,10 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
     return this.em as unknown as SqlEntityManager;
   }
 
-  private getBaseQuery(athleteUserId?: string, athleteUserIds?: string[]): QueryBuilder<Athlete> {
+  private getBaseQuery(
+    athleteUserId?: string,
+    athleteUserIds?: string[]
+  ): QueryBuilder<Athlete> {
     const qb = this.sql.createQueryBuilder(Athlete, 'a');
 
     qb.select([
@@ -54,7 +63,7 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
         .select('pm.weight')
         .where({ 'pm.athlete': raw('a.id') })
         .orderBy([
-          { [raw(`ABS(EXTRACT(EPOCH FROM (pm.date - '${today}')))`)]: 'ASC' }
+          { [raw(`ABS(EXTRACT(EPOCH FROM (pm.date - '${today}')))`)]: 'ASC' },
         ])
         .limit(1)
         .as('pm_weight')
@@ -95,14 +104,20 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
     return qb;
   }
 
-  async findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]> {
+  async findAllWithDetails(
+    athleteUserIds: string[]
+  ): Promise<AthleteDetails[]> {
     // Get raw results (table format, non-hydrated) via execute('all')
-    const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute('all');
+    const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute(
+      'all'
+    );
     return athletes as AthleteDetails[];
   }
 
   async findOneWithDetails(athleteUserId: string): Promise<AthleteDetails> {
-    const athletes = await this.getBaseQuery(athleteUserId, undefined).execute('all');
+    const athletes = await this.getBaseQuery(athleteUserId, undefined).execute(
+      'all'
+    );
 
     if (!athletes || athletes.length === 0) {
       throw new NotFoundException('Athlete not found');
@@ -112,7 +127,11 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
   }
 
   async getOne(athleteId: string): Promise<Athlete | null> {
-    return await this.em.findOne(Athlete, { id: athleteId }, { populate: ['user.id'] });
+    return await this.em.findOne(
+      Athlete,
+      { id: athleteId },
+      { populate: ['user.id'] }
+    );
   }
 
   async findByUserId(userId: string): Promise<Athlete | null> {
@@ -120,7 +139,11 @@ export class MikroAthleteRepository extends EntityRepository<Athlete> implements
   }
 
   async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
-    return await this.em.find(Athlete, { id: { $in: athleteUserIds } }, { populate: ['user.id'] });
+    return await this.em.find(
+      Athlete,
+      { id: { $in: athleteUserIds } },
+      { populate: ['user.id'] }
+    );
   }
 
   async save(athlete: Athlete) {

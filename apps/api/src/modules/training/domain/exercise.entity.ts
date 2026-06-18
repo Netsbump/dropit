@@ -21,10 +21,10 @@ export class Exercise {
   name!: string;
 
   @Property({ nullable: true })
-  englishName?: string;
+  englishName!: string | null;
 
   @Property({ nullable: true })
-  shortName?: string;
+  shortName!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();
@@ -32,14 +32,14 @@ export class Exercise {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade'})
+  @ManyToOne(() => User, { nullable: true, deleteRule: 'cascade' })
   createdBy!: User | null;
 
   @ManyToOne(() => ExerciseCategory)
   exerciseCategory!: ExerciseCategory;
 
   @ManyToOne(() => Media, { nullable: true })
-  video?: Media;
+  video!: Media | null;
 
   @OneToMany(
     () => ExerciseComplex,

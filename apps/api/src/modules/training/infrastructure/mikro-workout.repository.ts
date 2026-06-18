@@ -5,12 +5,17 @@ import { IWorkoutRepository } from '../application/ports/workout.repository.port
 import { CoachFilterConditions } from '../../auth/application/ports/member.repository.port';
 
 @Injectable()
-export class MikroWorkoutRepository extends EntityRepository<Workout> implements IWorkoutRepository {
+export class MikroWorkoutRepository
+  extends EntityRepository<Workout>
+  implements IWorkoutRepository
+{
   constructor(public readonly em: EntityManager) {
     super(em, Workout);
   }
 
-  async getAll(coachFilterConditions: CoachFilterConditions): Promise<Workout[]> {
+  async getAll(
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<Workout[]> {
     return await this.em.find(Workout, coachFilterConditions, {
       populate: [
         'category',
@@ -22,33 +27,15 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
         'elements.complex.exercises',
         'elements.complex.exercises.exercise',
         'elements.complex.exercises.exercise.exerciseCategory',
-        'createdBy'
+        'createdBy',
       ],
     });
   }
 
-  async getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null> {
-    return await this.em.findOne(
-      Workout, 
-      { id, $or: coachFilterConditions.$or },
-      {
-        populate: [
-          'category',
-          'elements',
-          'elements.exercise',
-          'elements.exercise.exerciseCategory',
-          'elements.complex',
-          'elements.complex.complexCategory',
-          'elements.complex.exercises',
-          'elements.complex.exercises.exercise',
-          'elements.complex.exercises.exercise.exerciseCategory',
-          'createdBy'
-        ]
-      }
-    );
-  }
-
-  async getOneWithDetails(id: string, coachFilterConditions: CoachFilterConditions): Promise<Workout | null> {
+  async getOne(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<Workout | null> {
     return await this.em.findOne(
       Workout,
       { id, $or: coachFilterConditions.$or },
@@ -63,7 +50,31 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
           'elements.complex.exercises',
           'elements.complex.exercises.exercise',
           'elements.complex.exercises.exercise.exerciseCategory',
-          'createdBy'
+          'createdBy',
+        ],
+      }
+    );
+  }
+
+  async getOneWithDetails(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<Workout | null> {
+    return await this.em.findOne(
+      Workout,
+      { id, $or: coachFilterConditions.$or },
+      {
+        populate: [
+          'category',
+          'elements',
+          'elements.exercise',
+          'elements.exercise.exerciseCategory',
+          'elements.complex',
+          'elements.complex.complexCategory',
+          'elements.complex.exercises',
+          'elements.complex.exercises.exercise',
+          'elements.complex.exercises.exercise.exerciseCategory',
+          'createdBy',
         ],
       }
     );
@@ -74,13 +85,16 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
     return workout;
   }
 
-  async remove(id: string, coachFilterConditions: CoachFilterConditions): Promise<void> {
+  async remove(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<void> {
     const workoutToDelete = await this.em.findOne(
       Workout,
       { id, $or: coachFilterConditions.$or },
       { populate: ['elements'] }
     );
-    
+
     if (!workoutToDelete) {
       return;
     }
@@ -93,4 +107,4 @@ export class MikroWorkoutRepository extends EntityRepository<Workout> implements
 
     await this.em.removeAndFlush(workoutToDelete);
   }
-} 
+}

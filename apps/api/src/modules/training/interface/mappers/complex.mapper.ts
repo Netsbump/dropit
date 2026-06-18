@@ -19,8 +19,8 @@ export const ComplexMapper = {
             name: exercise.exerciseCategory.name,
           },
           video: exercise.video?.id,
-          englishName: exercise.englishName,
-          shortName: exercise.shortName,
+          englishName: exercise.englishName ?? undefined,
+          shortName: exercise.shortName ?? undefined,
           order: exerciseComplex.order,
         };
       }),
@@ -30,4 +30,4 @@ export const ComplexMapper = {
   toDtoList(complexes: Complex[]): ComplexDto[] {
     return complexes.map((complex) => ComplexMapper.toDto(complex));
   },
-}; 
+};

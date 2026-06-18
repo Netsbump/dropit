@@ -11,12 +11,12 @@ export const ExerciseMapper = {
         name: exercise.exerciseCategory.name,
       },
       video: exercise.video?.id,
-      englishName: exercise.englishName,
-      shortName: exercise.shortName,
+      englishName: exercise.englishName ?? undefined,
+      shortName: exercise.shortName ?? undefined,
     };
   },
 
   toDtoList(exercises: Exercise[]): ExerciseDto[] {
     return exercises.map((exercise) => ExerciseMapper.toDto(exercise));
   },
-}; 
+};

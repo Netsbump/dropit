@@ -38,14 +38,20 @@ export function SettingsSection() {
   return (
     <div>
       <div className="mb-4">
-        <h2 className="text-2xl font-semibold">{t('profile:settings.title')}</h2>
-        <p className="text-sm text-gray-600 mt-1">{t('profile:settings.description')}</p>
+        <h2 className="text-2xl font-semibold">
+          {t('profile:settings.title')}
+        </h2>
+        <p className="text-sm text-gray-600 mt-1">
+          {t('profile:settings.description')}
+        </p>
       </div>
       <div className="space-y-6">
         {/* Language Selection */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label className="text-base">{t('profile:settings.language.label')}</Label>
+            <Label className="text-base">
+              {t('profile:settings.language.label')}
+            </Label>
             <p className="text-sm text-gray-600">
               {t('profile:settings.language.description')}
             </p>
@@ -64,7 +70,9 @@ export function SettingsSection() {
         {/* Dark Mode Toggle */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
-            <Label className="text-base">{t('profile:settings.dark_mode.label')}</Label>
+            <Label className="text-base">
+              {t('profile:settings.dark_mode.label')}
+            </Label>
             <p className="text-sm text-gray-600">
               {t('profile:settings.dark_mode.description')}
             </p>

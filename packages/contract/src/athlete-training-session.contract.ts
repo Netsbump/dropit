@@ -27,7 +27,8 @@ export const athleteTrainingSessionContract = {
   getAthleteTrainingSession: {
     method: 'GET',
     path: '/athlete-training-session/athlete/:athleteId/training-session/:trainingSessionId',
-    summary: 'Get an athlete training session by athlete and training session IDs',
+    summary:
+      'Get an athlete training session by athlete and training session IDs',
     pathParams: z.object({
       athleteId: z.string(),
       trainingSessionId: z.string(),

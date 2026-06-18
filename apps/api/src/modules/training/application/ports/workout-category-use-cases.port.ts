@@ -1,4 +1,7 @@
-import { CreateWorkoutCategoryInput, UpdateWorkoutCategoryInput } from '@dropit/schemas';
+import {
+  CreateWorkoutCategoryInput,
+  UpdateWorkoutCategoryInput,
+} from '@dropit/schemas';
 import { WorkoutCategory } from '../../domain/workout-category.entity';
 
 /**
@@ -17,7 +20,11 @@ export interface IWorkoutCategoryUseCases {
   /**
    * Get one workout category by ID
    */
-  getOne(workoutCategoryId: string, userId: string, organizationId: string): Promise<WorkoutCategory>;
+  getOne(
+    workoutCategoryId: string,
+    userId: string,
+    organizationId: string
+  ): Promise<WorkoutCategory>;
 
   /**
    * Get all workout categories for an organization
@@ -27,17 +34,30 @@ export interface IWorkoutCategoryUseCases {
   /**
    * Create a new workout category
    */
-  create(data: CreateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory>;
+  create(
+    data: CreateWorkoutCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<WorkoutCategory>;
 
   /**
    * Update a workout category
    */
-  update(workoutCategoryId: string, data: UpdateWorkoutCategoryInput, organizationId: string, userId: string): Promise<WorkoutCategory>;
+  update(
+    workoutCategoryId: string,
+    data: UpdateWorkoutCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<WorkoutCategory>;
 
   /**
    * Delete a workout category
    */
-  delete(workoutCategoryId: string, organizationId: string, userId: string): Promise<void>;
+  delete(
+    workoutCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void>;
 }
 
 /**

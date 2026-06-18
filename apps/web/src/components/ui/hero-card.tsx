@@ -1,10 +1,17 @@
-import { cn } from '@/lib/utils'
-import { Dumbbell, Library, Zap, Users, Play, type LucideIcon } from 'lucide-react'
-import { Button } from './button'
-import workoutImage from '@/assets/images/hero-pages/199309.svg'
-import complexImage from '@/assets/images/hero-pages/199307.svg'
-import exerciseImage from '@/assets/images/hero-pages/199308.svg'
-import athleteImage from '@/assets/images/hero-pages/199306.svg'
+import { cn } from '@/lib/utils';
+import {
+  Dumbbell,
+  Library,
+  Zap,
+  Users,
+  Play,
+  type LucideIcon,
+} from 'lucide-react';
+import { Button } from './button';
+import workoutImage from '@/assets/images/hero-pages/199309.svg';
+import complexImage from '@/assets/images/hero-pages/199307.svg';
+import exerciseImage from '@/assets/images/hero-pages/199308.svg';
+import athleteImage from '@/assets/images/hero-pages/199306.svg';
 
 const variantConfig = {
   workout: {
@@ -31,23 +38,23 @@ const variantConfig = {
     gradientClass: 'bg-gradient-to-br from-green-50 to-emerald-50',
     image: athleteImage,
   },
-}
+};
 
 export interface HeroCardProps {
-  variant: 'workout' | 'complex' | 'exercise' | 'athlete'
-  title: string
-  description: string
+  variant: 'workout' | 'complex' | 'exercise' | 'athlete';
+  title: string;
+  description: string;
   stat?: {
-    label: string
-    value: number | string
-    description?: string
-    icon?: LucideIcon
+    label: string;
+    value: number | string;
+    description?: string;
+    icon?: LucideIcon;
     callToAction?: {
-      text: string
-      onClick: () => void
-    }
-  }
-  className?: string
+      text: string;
+      onClick: () => void;
+    };
+  };
+  className?: string;
 }
 
 export function HeroCard({
@@ -57,7 +64,7 @@ export function HeroCard({
   stat,
   className,
 }: HeroCardProps) {
-  const config = variantConfig[variant]
+  const config = variantConfig[variant];
 
   return (
     <div className="flex gap-6 mb-12 shadow-none">
@@ -73,7 +80,9 @@ export function HeroCard({
         <div className="relative z-10 p-8 h-full flex items-center">
           <div className="flex-1 min-w-0 pr-40">
             <h2 className="text-2xl font-bold text-gray-800 mb-3">{title}</h2>
-            <p className="text-gray-600 text-sm leading-relaxed">{description}</p>
+            <p className="text-gray-600 text-sm leading-relaxed">
+              {description}
+            </p>
           </div>
 
           {/* Image qui déborde */}
@@ -83,8 +92,8 @@ export function HeroCard({
                 src={config.image}
                 alt=""
                 className={cn(
-                  "w-full h-full object-contain drop-shadow-lg",
-                  variant === 'complex' && "scale-x-[-1]"
+                  'w-full h-full object-contain drop-shadow-lg',
+                  variant === 'complex' && 'scale-x-[-1]'
                 )}
               />
             </div>
@@ -108,20 +117,22 @@ export function HeroCard({
 
           {/* Call to action optionnel */}
           {stat.callToAction && (
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={stat.callToAction.onClick}
-            className="bg-white hover:bg-gray-50 text-gray-700 text-xs border min-h-12 py-2 px-3 flex items-center gap-2 whitespace-normal rounded-xl max-w-[90%]"
-          >
-            <span className="text-center leading-snug flex-1">{stat.callToAction.text}</span>
-            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
-              <Play className="h-3 w-3 text-white fill-white" />
-            </div>
-          </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={stat.callToAction.onClick}
+              className="bg-white hover:bg-gray-50 text-gray-700 text-xs border min-h-12 py-2 px-3 flex items-center gap-2 whitespace-normal rounded-xl max-w-[90%]"
+            >
+              <span className="text-center leading-snug flex-1">
+                {stat.callToAction.text}
+              </span>
+              <div className="flex items-center justify-center w-8 h-8 rounded-full bg-purple-600 flex-shrink-0">
+                <Play className="h-3 w-3 text-white fill-white" />
+              </div>
+            </Button>
           )}
         </div>
       )}
     </div>
-  )
+  );
 }

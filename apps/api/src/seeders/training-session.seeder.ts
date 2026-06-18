@@ -8,10 +8,14 @@ import { Athlete } from '../modules/athletes/domain/athlete.entity';
 export async function seedTrainingSessions(em: EntityManager): Promise<void> {
   console.log('Seeding training sessions...');
 
-  const workouts = await em.find(Workout, {}, {
-    orderBy: { createdAt: 'ASC' },
-    limit: 1,
-  });
+  const workouts = await em.find(
+    Workout,
+    {},
+    {
+      orderBy: { createdAt: 'ASC' },
+      limit: 1,
+    }
+  );
 
   if (workouts.length === 0) {
     console.warn('No workouts found, skipping training session seeding');
@@ -44,7 +48,7 @@ export async function seedTrainingSessions(em: EntityManager): Promise<void> {
     trainingSession.workout = firstWorkout;
     trainingSession.organization = organization;
     trainingSession.scheduledDate = new Date(
-      Date.now() + 3 * 24 * 60 * 60 * 1000,
+      Date.now() + 3 * 24 * 60 * 60 * 1000
     );
     await em.persistAndFlush(trainingSession);
     console.log('Training session created for:', trainingSession.scheduledDate);

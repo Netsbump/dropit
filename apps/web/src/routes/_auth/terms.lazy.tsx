@@ -21,41 +21,35 @@ function Terms() {
         </div>
 
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">{t('terms.sections.introduction.title')}</h2>
-          <p>
-            {t('terms.sections.introduction.description')}
-          </p>
+          <h2 className="text-xl font-semibold">
+            {t('terms.sections.introduction.title')}
+          </h2>
+          <p>{t('terms.sections.introduction.description')}</p>
 
-          <h2 className="text-xl font-semibold">{t('terms.sections.usingOurService.title')}</h2>
-          <p>
-            {t('terms.sections.usingOurService.description')}
-          </p>
+          <h2 className="text-xl font-semibold">
+            {t('terms.sections.usingOurService.title')}
+          </h2>
+          <p>{t('terms.sections.usingOurService.description')}</p>
 
-          <h2 className="text-xl font-semibold">{t('terms.sections.yourAccount.title')}</h2>
-          <p>
-            {t('terms.sections.yourAccount.description')}
-          </p>
+          <h2 className="text-xl font-semibold">
+            {t('terms.sections.yourAccount.title')}
+          </h2>
+          <p>{t('terms.sections.yourAccount.description')}</p>
 
           <h2 className="text-xl font-semibold">
             {t('terms.sections.privacyAndCopyright.title')}
           </h2>
-          <p>
-            {t('terms.sections.privacyAndCopyright.description')}
-          </p>
+          <p>{t('terms.sections.privacyAndCopyright.description')}</p>
 
           <h2 className="text-xl font-semibold">
             {t('terms.sections.modifyingAndTerminating.title')}
           </h2>
-          <p>
-            {t('terms.sections.modifyingAndTerminating.description')}
-          </p>
+          <p>{t('terms.sections.modifyingAndTerminating.description')}</p>
 
           <h2 className="text-xl font-semibold">
             {t('terms.sections.warrantiesAndDisclaimers.title')}
           </h2>
-          <p>
-            {t('terms.sections.warrantiesAndDisclaimers.description')}
-          </p>
+          <p>{t('terms.sections.warrantiesAndDisclaimers.description')}</p>
         </div>
 
         <div className="flex justify-center gap-4">

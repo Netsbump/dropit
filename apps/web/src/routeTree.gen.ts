@@ -21,12 +21,15 @@ import { Route as HomeLibraryRouteImport } from './routes/_home/library'
 import { Route as HomeHelpRouteImport } from './routes/_home/help'
 import { Route as HomeDashboardRouteImport } from './routes/_home/dashboard'
 import { Route as HomeAthletesRouteImport } from './routes/_home/athletes'
+import { Route as HomeAdminRouteImport } from './routes/_home/admin'
 import { Route as HomeWorkoutsCreateRouteImport } from './routes/_home/workouts.create'
 import { Route as HomeWorkoutsWorkoutIdRouteImport } from './routes/_home/workouts.$workoutId'
 import { Route as HomeLibraryWorkoutsRouteImport } from './routes/_home/library.workouts'
 import { Route as HomeLibraryExercisesRouteImport } from './routes/_home/library.exercises'
 import { Route as HomeLibraryComplexRouteImport } from './routes/_home/library.complex'
 import { Route as HomeAthletesAthleteIdRouteImport } from './routes/_home/athletes.$athleteId'
+import { Route as HomeAdminUsersRouteImport } from './routes/_home/admin.users'
+import { Route as HomeAdminClubsRouteImport } from './routes/_home/admin.clubs'
 import { Route as AuthLoginOtpRouteImport } from './routes/_auth/login.otp'
 import { Route as AuthAcceptInvitationInvitationIdRouteImport } from './routes/_auth/accept-invitation.$invitationId'
 
@@ -99,6 +102,11 @@ const HomeAthletesRoute = HomeAthletesRouteImport.update({
   path: '/athletes',
   getParentRoute: () => HomeRouteRoute,
 } as any)
+const HomeAdminRoute = HomeAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => HomeRouteRoute,
+} as any)
 const AuthLoginIndexLazyRoute = AuthLoginIndexLazyRouteImport.update({
   id: '/login/',
   path: '/login/',
@@ -143,6 +151,16 @@ const HomeAthletesAthleteIdRoute = HomeAthletesAthleteIdRouteImport.update({
   path: '/$athleteId',
   getParentRoute: () => HomeAthletesRoute,
 } as any)
+const HomeAdminUsersRoute = HomeAdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
+  getParentRoute: () => HomeAdminRoute,
+} as any)
+const HomeAdminClubsRoute = HomeAdminClubsRouteImport.update({
+  id: '/clubs',
+  path: '/clubs',
+  getParentRoute: () => HomeAdminRoute,
+} as any)
 const AuthLoginOtpRoute = AuthLoginOtpRouteImport.update({
   id: '/login/otp',
   path: '/login/otp',
@@ -158,6 +176,7 @@ const AuthAcceptInvitationInvitationIdRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/download-app': typeof DownloadAppRoute
+  '/admin': typeof HomeAdminRouteWithChildren
   '/athletes': typeof HomeAthletesRouteWithChildren
   '/dashboard': typeof HomeDashboardRoute
   '/help': typeof HomeHelpRoute
@@ -169,6 +188,8 @@ export interface FileRoutesByFullPath {
   '/terms': typeof AuthTermsLazyRoute
   '/accept-invitation/$invitationId': typeof AuthAcceptInvitationInvitationIdRoute
   '/login/otp': typeof AuthLoginOtpRoute
+  '/admin/clubs': typeof HomeAdminClubsRoute
+  '/admin/users': typeof HomeAdminUsersRoute
   '/athletes/$athleteId': typeof HomeAthletesAthleteIdRoute
   '/library/complex': typeof HomeLibraryComplexRoute
   '/library/exercises': typeof HomeLibraryExercisesRoute
@@ -181,6 +202,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/download-app': typeof DownloadAppRoute
+  '/admin': typeof HomeAdminRouteWithChildren
   '/athletes': typeof HomeAthletesRouteWithChildren
   '/dashboard': typeof HomeDashboardRoute
   '/help': typeof HomeHelpRoute
@@ -192,6 +214,8 @@ export interface FileRoutesByTo {
   '/terms': typeof AuthTermsLazyRoute
   '/accept-invitation/$invitationId': typeof AuthAcceptInvitationInvitationIdRoute
   '/login/otp': typeof AuthLoginOtpRoute
+  '/admin/clubs': typeof HomeAdminClubsRoute
+  '/admin/users': typeof HomeAdminUsersRoute
   '/athletes/$athleteId': typeof HomeAthletesAthleteIdRoute
   '/library/complex': typeof HomeLibraryComplexRoute
   '/library/exercises': typeof HomeLibraryExercisesRoute
@@ -207,6 +231,7 @@ export interface FileRoutesById {
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_home': typeof HomeRouteRouteWithChildren
   '/download-app': typeof DownloadAppRoute
+  '/_home/admin': typeof HomeAdminRouteWithChildren
   '/_home/athletes': typeof HomeAthletesRouteWithChildren
   '/_home/dashboard': typeof HomeDashboardRoute
   '/_home/help': typeof HomeHelpRoute
@@ -218,6 +243,8 @@ export interface FileRoutesById {
   '/_auth/terms': typeof AuthTermsLazyRoute
   '/_auth/accept-invitation/$invitationId': typeof AuthAcceptInvitationInvitationIdRoute
   '/_auth/login/otp': typeof AuthLoginOtpRoute
+  '/_home/admin/clubs': typeof HomeAdminClubsRoute
+  '/_home/admin/users': typeof HomeAdminUsersRoute
   '/_home/athletes/$athleteId': typeof HomeAthletesAthleteIdRoute
   '/_home/library/complex': typeof HomeLibraryComplexRoute
   '/_home/library/exercises': typeof HomeLibraryExercisesRoute
@@ -232,6 +259,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/download-app'
+    | '/admin'
     | '/athletes'
     | '/dashboard'
     | '/help'
@@ -243,6 +271,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accept-invitation/$invitationId'
     | '/login/otp'
+    | '/admin/clubs'
+    | '/admin/users'
     | '/athletes/$athleteId'
     | '/library/complex'
     | '/library/exercises'
@@ -255,6 +285,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/download-app'
+    | '/admin'
     | '/athletes'
     | '/dashboard'
     | '/help'
@@ -266,6 +297,8 @@ export interface FileRouteTypes {
     | '/terms'
     | '/accept-invitation/$invitationId'
     | '/login/otp'
+    | '/admin/clubs'
+    | '/admin/users'
     | '/athletes/$athleteId'
     | '/library/complex'
     | '/library/exercises'
@@ -280,6 +313,7 @@ export interface FileRouteTypes {
     | '/_auth'
     | '/_home'
     | '/download-app'
+    | '/_home/admin'
     | '/_home/athletes'
     | '/_home/dashboard'
     | '/_home/help'
@@ -291,6 +325,8 @@ export interface FileRouteTypes {
     | '/_auth/terms'
     | '/_auth/accept-invitation/$invitationId'
     | '/_auth/login/otp'
+    | '/_home/admin/clubs'
+    | '/_home/admin/users'
     | '/_home/athletes/$athleteId'
     | '/_home/library/complex'
     | '/_home/library/exercises'
@@ -401,6 +437,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeAthletesRouteImport
       parentRoute: typeof HomeRouteRoute
     }
+    '/_home/admin': {
+      id: '/_home/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof HomeAdminRouteImport
+      parentRoute: typeof HomeRouteRoute
+    }
     '/_auth/login/': {
       id: '/_auth/login/'
       path: '/login'
@@ -457,6 +500,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof HomeAthletesAthleteIdRouteImport
       parentRoute: typeof HomeAthletesRoute
     }
+    '/_home/admin/users': {
+      id: '/_home/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof HomeAdminUsersRouteImport
+      parentRoute: typeof HomeAdminRoute
+    }
+    '/_home/admin/clubs': {
+      id: '/_home/admin/clubs'
+      path: '/clubs'
+      fullPath: '/admin/clubs'
+      preLoaderRoute: typeof HomeAdminClubsRouteImport
+      parentRoute: typeof HomeAdminRoute
+    }
     '/_auth/login/otp': {
       id: '/_auth/login/otp'
       path: '/login/otp'
@@ -498,6 +555,20 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface HomeAdminRouteChildren {
+  HomeAdminClubsRoute: typeof HomeAdminClubsRoute
+  HomeAdminUsersRoute: typeof HomeAdminUsersRoute
+}
+
+const HomeAdminRouteChildren: HomeAdminRouteChildren = {
+  HomeAdminClubsRoute: HomeAdminClubsRoute,
+  HomeAdminUsersRoute: HomeAdminUsersRoute,
+}
+
+const HomeAdminRouteWithChildren = HomeAdminRoute._addFileChildren(
+  HomeAdminRouteChildren,
+)
+
 interface HomeAthletesRouteChildren {
   HomeAthletesAthleteIdRoute: typeof HomeAthletesAthleteIdRoute
 }
@@ -527,6 +598,7 @@ const HomeLibraryRouteWithChildren = HomeLibraryRoute._addFileChildren(
 )
 
 interface HomeRouteRouteChildren {
+  HomeAdminRoute: typeof HomeAdminRouteWithChildren
   HomeAthletesRoute: typeof HomeAthletesRouteWithChildren
   HomeDashboardRoute: typeof HomeDashboardRoute
   HomeHelpRoute: typeof HomeHelpRoute
@@ -538,6 +610,7 @@ interface HomeRouteRouteChildren {
 }
 
 const HomeRouteRouteChildren: HomeRouteRouteChildren = {
+  HomeAdminRoute: HomeAdminRouteWithChildren,
   HomeAthletesRoute: HomeAthletesRouteWithChildren,
   HomeDashboardRoute: HomeDashboardRoute,
   HomeHelpRoute: HomeHelpRoute,

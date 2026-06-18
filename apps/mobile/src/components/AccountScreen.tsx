@@ -19,25 +19,21 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
   const { logout } = useAuth();
 
   const handleLogout = async () => {
-    Alert.alert(
-      'Déconnexion',
-      'Êtes-vous sûr de vouloir vous déconnecter ?',
-      [
-        { text: 'Annuler', style: 'cancel' },
-        {
-          text: 'Se déconnecter',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await logout();
-            } catch (error) {
-              console.error('Logout error:', error);
-              Alert.alert('Erreur', 'Erreur lors de la déconnexion');
-            }
-          },
+    Alert.alert('Déconnexion', 'Êtes-vous sûr de vouloir vous déconnecter ?', [
+      { text: 'Annuler', style: 'cancel' },
+      {
+        text: 'Se déconnecter',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await logout();
+          } catch (error) {
+            console.error('Logout error:', error);
+            Alert.alert('Erreur', 'Erreur lors de la déconnexion');
+          }
         },
-      ]
-    );
+      },
+    ]);
   };
 
   const handlePlaceholderPress = (feature: string) => {
@@ -54,7 +50,6 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-
         {/* Profile Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Profil</Text>
@@ -182,7 +177,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
           >
             <View style={styles.menuItemLeft}>
               <View style={[styles.menuIcon, styles.logoutIcon]} />
-              <Text style={[styles.menuItemText, styles.logoutText]}>Se déconnecter</Text>
+              <Text style={[styles.menuItemText, styles.logoutText]}>
+                Se déconnecter
+              </Text>
             </View>
           </TouchableOpacity>
         </View>
@@ -192,10 +189,7 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
       </ScrollView>
 
       {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab="account"
-        onTabPress={onTabPress}
-      />
+      <BottomNavigation activeTab="account" onTabPress={onTabPress} />
     </View>
   );
 }

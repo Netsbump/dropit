@@ -1,11 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -22,7 +17,6 @@ interface ComplexCardProps {
   onClick?: () => void;
 }
 
-
 export function ComplexCard({ complex, onClick }: ComplexCardProps) {
   return (
     <Card
@@ -31,7 +25,8 @@ export function ComplexCard({ complex, onClick }: ComplexCardProps) {
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {complex.exercises?.map(ex => ex.name).join(', ') || 'Aucun exercice'}
+          {complex.exercises?.map((ex) => ex.name).join(', ') ||
+            'Aucun exercice'}
         </CardTitle>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -50,8 +45,10 @@ export function ComplexCard({ complex, onClick }: ComplexCardProps) {
       </CardHeader>
       <CardContent>
         <div className="mt-4 flex items-center justify-between">
-          <Badge 
-            className={`text-xs border-0 ${getCategoryBadgeVariant(complex.complexCategory?.name || '')}`}
+          <Badge
+            className={`text-xs border-0 ${getCategoryBadgeVariant(
+              complex.complexCategory?.name || ''
+            )}`}
           >
             {complex.complexCategory?.name || 'Sans catégorie'}
           </Badge>

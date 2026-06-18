@@ -66,27 +66,19 @@ notification/
 
 ## Example: organization invitation email
 
-A coach invites an athlete from the backoffice. The frontend calls better-auth  
-`POST /auth/organization/invite-member`.
-
-```
-1. Better-auth (organization plugin)
-   │  Persists the invitation, then runs afterCreateInvitation.
-   ▼
-2. BetterAuthAdapter (afterCreateInvitation)
-   │  prepareUserForInvitation + INotificationUseCases.sendOrganizationInvitation()
-   ▼
-3. NotificationUseCase.sendOrganizationInvitation()
-   │  Builds NotificationRequest { kind: ORGANIZATION_INVITATION, ... }.
-   ▼
-4. NotificationAdapter.send(request)
-   │  resolveChannel() → email for this kind today.
-   ▼
-5. EmailAdapter.send(request)
-   │  Renders HTML → EmailData → BrevoAdapter (prod) or MaildevAdapter (dev).
+```mermaid
+flowchart TD
+  A[InvitationUseCases] --> B[BetterAuthAdapter.api.createInvitation]
+  B --> C[better-auth organization plugin]
+  C --> D[afterCreateInvitation hook]
+  D --> E[InvitationRecipientService.getNotificationContext]
+  E --> F[NotificationUseCase.sendOrganizationInvitation]
+  F --> G[NotificationAdapter]
+  G --> H[EmailAdapter]
+  H --> I[Brevo or Maildev]
 ```
 
-Onboarding flows (invitation + acceptance) are described in [`README-onboarding.md`](../auth/README-onboarding.md).
+Invitation creation is described in [`InvitationsModule`](../invitations/README.md). Invitation acceptance is described in [`README-onboarding.md`](../auth/README-onboarding.md).
 
 ## Wiring (Nest) — specifics of this module
 

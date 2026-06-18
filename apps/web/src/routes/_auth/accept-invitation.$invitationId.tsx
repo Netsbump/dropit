@@ -1,5 +1,11 @@
 import { createFileRoute, redirect } from '@tanstack/react-router';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { XCircle } from 'lucide-react';
 import { useTranslation } from '@dropit/i18n';
 import { api } from '@/lib/api';
@@ -12,7 +18,12 @@ export const Route = createFileRoute('/_auth/accept-invitation/$invitationId')({
     });
 
     if (response.status === 200) {
-      throw redirect({ to: '/download-app' });
+      throw redirect({
+        to:
+          response.body.organizationRole === 'admin'
+            ? '/login'
+            : '/download-app',
+      });
     }
 
     return { error: (response.body as { message: string }).message };

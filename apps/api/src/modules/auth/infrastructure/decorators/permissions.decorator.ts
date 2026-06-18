@@ -1,4 +1,4 @@
-import { SetMetadata } from "@nestjs/common";
+import { SetMetadata } from '@nestjs/common';
 
 /**
  * Decorator to specify the permissions required for a route
@@ -8,9 +8,8 @@ import { SetMetadata } from "@nestjs/common";
  * @RequirePermissions('read', 'create')
  * @RequirePermissions('*')
  */
-export const RequirePermissions = (...permissions: string[]) => 
+export const RequirePermissions = (...permissions: string[]) =>
   SetMetadata('REQUIRED_PERMISSIONS', permissions);
 
 export const NO_ORGANIZATION = 'NO_ORGANIZATION';
-export const NoOrganization = () => 
-  SetMetadata(NO_ORGANIZATION, true);
+export const NoOrganization = () => SetMetadata(NO_ORGANIZATION, true);

@@ -14,9 +14,7 @@ import { IUserUseCases } from './ports/user-use-cases.port';
  * All dependencies are interfaces (ports), not concrete implementations.
  */
 export class UserUseCases implements IUserUseCases {
-  constructor(
-    private readonly userRepository: IUserRepository,
-  ) {}
+  constructor(private readonly userRepository: IUserRepository) {}
 
   async getOne(userId: string): Promise<User> {
     const user = await this.userRepository.getOne(userId);
@@ -30,7 +28,11 @@ export class UserUseCases implements IUserUseCases {
     return await this.userRepository.getByEmail(email);
   }
 
-  async create(data: { name: string; email: string; emailVerified: boolean }): Promise<User> {
+  async create(data: {
+    name: string;
+    email: string;
+    emailVerified: boolean;
+  }): Promise<User> {
     const user = new User();
     user.name = data.name;
     user.email = data.email;
@@ -41,14 +43,14 @@ export class UserUseCases implements IUserUseCases {
 
   async update(userId: string, updateData: Partial<User>): Promise<User> {
     const user = await this.userRepository.getOne(userId);
-    
+
     if (!user) {
       throw new Error(`User with ID ${userId} not found`);
     }
 
     Object.assign(user, updateData);
     user.updatedAt = new Date();
-    
+
     await this.userRepository.save(user);
 
     return user;

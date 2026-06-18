@@ -41,13 +41,14 @@ import {
 } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from '@dropit/i18n';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { GripVertical, Trash2 } from 'lucide-react';
 import { useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
-import { DialogCreation } from '../exercises/dialog-creation';
+import { CreationDialog } from '@/components/shared/creation-dialog';
 import { ExerciseCreationForm } from '../exercises/exercise-creation-form';
 import { ComplexCategoryCreationForm } from './complex-category-creation-form';
 import { getCategoryBadgeVariant } from '@/utils';
@@ -115,11 +116,13 @@ function SortableExerciseItem({
 }
 
 export function ComplexDetail({ complex }: ComplexDetailProps) {
+  const { t } = useTranslation(['exercise']);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const createExerciseFormId = 'complex-detail-create-exercise-form';
   const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(
     null
   );
@@ -284,7 +287,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
               name="complexCategory"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className='text-gray-500'>Catégorie</FormLabel>
+                  <FormLabel className="text-gray-500">Catégorie</FormLabel>
                   <Select
                     onValueChange={(value) => {
                       if (value === 'new') {
@@ -320,7 +323,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           <Separator />
           {/* Liste des exercices avec drag & drop */}
           <CardHeader className="flex flex-row items-center justify-between p-0">
-            <Label className='text-gray-500'>Exercices ({fields.length})</Label>
+            <Label className="text-gray-500">Exercices ({fields.length})</Label>
             <Button
               type="button"
               variant="outline"
@@ -425,25 +428,25 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
           </div>
         </form>
 
-        <DialogCreation
+        <CreationDialog
           open={createExerciseModalOpen}
           onOpenChange={(open) => {
             setCreateExerciseModalOpen(open);
             if (!open) setCurrentEditingIndex(null);
           }}
-          title="Créer un exercice"
-          description="Ajoutez un nouvel exercice à votre catalogue."
+          title={t('exercise:creation.title')}
+          description={t('exercise:creation.description')}
+          cancelLabel={t('exercise:creation.cancel')}
+          submitLabel={t('exercise:creation.submit')}
+          submitFormId={createExerciseFormId}
         >
           <ExerciseCreationForm
+            formId={createExerciseFormId}
             onSuccess={handleExerciseCreationSuccess}
-            onCancel={() => {
-              setCreateExerciseModalOpen(false);
-              setCurrentEditingIndex(null);
-            }}
           />
-        </DialogCreation>
+        </CreationDialog>
 
-        <DialogCreation
+        <CreationDialog
           open={createCategoryModalOpen}
           onOpenChange={setCreateCategoryModalOpen}
           title="Créer une catégorie"
@@ -453,7 +456,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
             onSuccess={handleCategoryCreationSuccess}
             onCancel={() => setCreateCategoryModalOpen(false)}
           />
-        </DialogCreation>
+        </CreationDialog>
       </Form>
     );
   }
@@ -464,8 +467,12 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       <CardContent className="p-0">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <Label className='text-gray-500'>Catégorie</Label>
-            <Badge className={`text-xs border-0 ${getCategoryBadgeVariant(complex.complexCategory.name)}`}>
+            <Label className="text-gray-500">Catégorie</Label>
+            <Badge
+              className={`text-xs border-0 ${getCategoryBadgeVariant(
+                complex.complexCategory.name
+              )}`}
+            >
               {complex.complexCategory.name}
             </Badge>
           </div>
@@ -476,11 +483,18 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       {/* Liste des exercices */}
       <CardContent className="p-0">
         <div className="space-y-4">
-          <Label className='text-gray-500'>Exercices ({complex.exercises?.length || 0})</Label>
+          <Label className="text-gray-500">
+            Exercices ({complex.exercises?.length || 0})
+          </Label>
           <div className="space-y-3">
             {complex.exercises?.map((exercise) => (
-              <div key={exercise.id} className="bg-background rounded-xl p-4 border">
-                <p className="font-medium text-sm text-gray-700">{exercise.name}</p>
+              <div
+                key={exercise.id}
+                className="bg-background rounded-xl p-4 border"
+              >
+                <p className="font-medium text-sm text-gray-700">
+                  {exercise.name}
+                </p>
               </div>
             ))}
           </div>
@@ -493,13 +507,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className='text-gray-500'>Créé le</Label>
+              <Label className="text-gray-500">Créé le</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>
             </div>
             <div className="space-y-2">
-              <Label className='text-gray-500'>Dernière modification</Label>
+              <Label className="text-gray-500">Dernière modification</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>

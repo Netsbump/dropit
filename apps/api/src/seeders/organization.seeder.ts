@@ -2,6 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Organization } from '../modules/auth/domain/organization/organization.entity';
 import { Member } from '../modules/auth/domain/organization/member.entity';
 import { User } from '../modules/auth/domain/auth/user.entity';
+import { ORGANIZATION_ROLE, type OrganizationRole } from '@dropit/schemas';
 
 const ORG_SLUG = 'halterophilie-club';
 
@@ -9,7 +10,7 @@ async function ensureMember(
   em: EntityManager,
   user: User,
   organization: Organization,
-  role: string,
+  role: OrganizationRole
 ): Promise<Member> {
   const existing = await em.findOne(Member, { user, organization });
   if (existing) {
@@ -24,7 +25,7 @@ async function ensureMember(
 }
 
 export async function seedOrganizations(
-  em: EntityManager,
+  em: EntityManager
 ): Promise<{ organization: Organization; coachMember: Member }> {
   console.log('Seeding organizations...');
 
@@ -35,7 +36,7 @@ export async function seedOrganizations(
     organization.slug = ORG_SLUG;
     organization.metadata = JSON.stringify({
       description:
-        'Organisation de coaching pour la gestion des athlètes et des programmes d\'entraînement',
+        "Organisation de coaching pour la gestion des athlètes et des programmes d'entraînement",
       type: 'coaching',
       createdAt: new Date().toISOString(),
     });
@@ -49,13 +50,18 @@ export async function seedOrganizations(
   if (!superAdmin) {
     throw new Error('Super admin user not found. Run seedAthletes first.');
   }
-  await ensureMember(em, superAdmin, organization, 'owner');
+  await ensureMember(em, superAdmin, organization, ORGANIZATION_ROLE.OWNER);
 
   const coachUser = await em.findOne(User, { email: 'coach@example.com' });
   if (!coachUser) {
     throw new Error('Coach user not found. Run seedAthletes first.');
   }
-  const coachMember = await ensureMember(em, coachUser, organization, 'admin');
+  const coachMember = await ensureMember(
+    em,
+    coachUser,
+    organization,
+    ORGANIZATION_ROLE.ADMIN
+  );
 
   const athleteUsers = await em.find(User, {
     $or: [{ role: { $ne: 'admin' } }, { role: null }],
@@ -63,7 +69,7 @@ export async function seedOrganizations(
   });
   for (const user of athleteUsers) {
     if (user.email === 'coach@example.com') continue;
-    await ensureMember(em, user, organization, 'member');
+    await ensureMember(em, user, organization, ORGANIZATION_ROLE.MEMBER);
   }
 
   console.log('Organization seeding completed');

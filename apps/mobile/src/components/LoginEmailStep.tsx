@@ -34,7 +34,7 @@ export default function LoginEmailStep({ onSuccess }: LoginEmailStepProps) {
 
       if (error) {
         console.error('Send OTP error:', error);
-        Alert.alert('Erreur', error.message || 'Impossible d\'envoyer le code');
+        Alert.alert('Erreur', error.message || "Impossible d'envoyer le code");
         return;
       }
 
@@ -65,7 +65,10 @@ export default function LoginEmailStep({ onSuccess }: LoginEmailStepProps) {
       </View>
 
       <TouchableOpacity
-        style={[loginStyles.primaryButton, isLoading && loginStyles.primaryButtonDisabled]}
+        style={[
+          loginStyles.primaryButton,
+          isLoading && loginStyles.primaryButtonDisabled,
+        ]}
         onPress={handleSendOtp}
         disabled={isLoading}
       >

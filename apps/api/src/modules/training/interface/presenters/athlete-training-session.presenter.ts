@@ -19,7 +19,7 @@ export const AthleteTrainingSessionPresenter = {
     console.error('AthleteTrainingSession error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-}
+  },
+};

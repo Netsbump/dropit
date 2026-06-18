@@ -142,7 +142,9 @@ export function TrainingSessionDetail({
         {/* Athlètes */}
         {data.athletes && data.athletes.length > 0 && (
           <div className="space-y-2">
-            <h4 className="text-sm font-medium text-gray-500">{t('athletes')}</h4>
+            <h4 className="text-sm font-medium text-gray-500">
+              {t('athletes')}
+            </h4>
             <div className="flex flex-wrap gap-1.5">
               {data.athletes.slice(0, 3).map((athlete) => (
                 <Button
@@ -187,14 +189,24 @@ export function TrainingSessionDetail({
                     {element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? (
                       <div className="font-medium">{element.exercise.name}</div>
                     ) : (
-                      <div className="font-medium">{element.complex.complexCategory?.name || 'Complex'}</div>
+                      <div className="font-medium">
+                        {element.complex.complexCategory?.name || 'Complex'}
+                      </div>
                     )}
 
                     <div className="flex flex-wrap gap-1 mt-1">
                       {element.blocks.map((block) => (
-                        <Badge key={block.order} variant="outline" className="text-xs px-1">
-                          {block.numberOfSets}x{element.type === WORKOUT_ELEMENT_TYPES.EXERCISE ? block.exercises[0].reps : block.exercises.map(e => e.reps).join('+')}
-                          {block.intensity?.percentageOfMax && ` @ ${block.intensity.percentageOfMax}%`}
+                        <Badge
+                          key={block.order}
+                          variant="outline"
+                          className="text-xs px-1"
+                        >
+                          {block.numberOfSets}x
+                          {element.type === WORKOUT_ELEMENT_TYPES.EXERCISE
+                            ? block.exercises[0].reps
+                            : block.exercises.map((e) => e.reps).join('+')}
+                          {block.intensity?.percentageOfMax &&
+                            ` @ ${block.intensity.percentageOfMax}%`}
                           {block.rest && ` - ${block.rest}s`}
                         </Badge>
                       ))}

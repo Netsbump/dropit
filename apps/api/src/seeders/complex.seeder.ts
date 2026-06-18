@@ -10,14 +10,14 @@ const COMPLEX_SEED_DEFINITIONS = [
     exercises: [
       { name: 'Passage', order: 0 },
       { name: 'Chute', order: 1 },
-      { name: 'Flexion d\'Arraché', order: 2 },
+      { name: "Flexion d'Arraché", order: 2 },
     ],
   },
   {
     category: 'Arraché',
     exercises: [
       { name: 'Arraché Flexion', order: 0 },
-      { name: 'Flexion d\'Arraché', order: 1 },
+      { name: "Flexion d'Arraché", order: 1 },
     ],
   },
   {
@@ -46,7 +46,7 @@ const COMPLEX_SEED_DEFINITIONS = [
   {
     category: 'Arraché',
     exercises: [
-      { name: 'Tirage Lourd d\'Arraché', order: 0 },
+      { name: "Tirage Lourd d'Arraché", order: 0 },
       { name: 'Arraché Flexion', order: 1 },
     ],
   },
@@ -67,14 +67,18 @@ function complexCategoryNamesFromDefinitions(): string[] {
 async function findComplexByExerciseSequence(
   em: EntityManager,
   category: ComplexCategory,
-  exerciseNamesInOrder: string[],
+  exerciseNamesInOrder: string[]
 ): Promise<Complex | null> {
   const complexes = await em.find(Complex, { complexCategory: category });
   for (const c of complexes) {
-    const links = await em.find(ExerciseComplex, { complex: c }, {
-      orderBy: { order: 'ASC' },
-      populate: ['exercise'],
-    });
+    const links = await em.find(
+      ExerciseComplex,
+      { complex: c },
+      {
+        orderBy: { order: 'ASC' },
+        populate: ['exercise'],
+      }
+    );
     if (links.length !== exerciseNamesInOrder.length) continue;
     let match = true;
     for (let i = 0; i < links.length; i++) {
@@ -92,7 +96,7 @@ async function findComplexByExerciseSequence(
 
 async function requireComplexCategories(
   em: EntityManager,
-  names: readonly string[],
+  names: readonly string[]
 ): Promise<Record<string, ComplexCategory>> {
   const map: Record<string, ComplexCategory> = {};
   const missing: string[] = [];
@@ -106,26 +110,30 @@ async function requireComplexCategories(
   }
   if (missing.length > 0) {
     throw new Error(
-      `Missing complex categories: ${missing.join(', ')}. Apply migrations first (e.g. pnpm --filter api db:migration:up), then seed.`,
+      `Missing complex categories: ${missing.join(
+        ', '
+      )}. Apply migrations first (e.g. pnpm --filter api db:migration:up), then seed.`
     );
   }
   return map;
 }
 
-export async function seedComplexes(
-  em: EntityManager,
-): Promise<Complex[]> {
+export async function seedComplexes(em: EntityManager): Promise<Complex[]> {
   const exercisesMap = await seedExercises(em);
   const complexCategoriesMap = await requireComplexCategories(
     em,
-    complexCategoryNamesFromDefinitions(),
+    complexCategoryNamesFromDefinitions()
   );
 
   const complexesCreated: Complex[] = [];
   for (const complexData of COMPLEX_SEED_DEFINITIONS) {
     const category = complexCategoriesMap[complexData.category];
     const exerciseNames = complexData.exercises.map((e) => e.name);
-    let complex = await findComplexByExerciseSequence(em, category, exerciseNames);
+    let complex = await findComplexByExerciseSequence(
+      em,
+      category,
+      exerciseNames
+    );
     if (!complex) {
       complex = new Complex();
       complex.complexCategory = category;

@@ -1,6 +1,10 @@
 import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
 import { IOrganizationUseCases } from '../../../auth/application/ports/organization-use-cases.port';
-import { CreateTrainingSessionInput, UpdateAthleteTrainingSessionInput, UpdateTrainingSessionInput } from '@dropit/schemas';
+import {
+  CreateTrainingSessionInput,
+  UpdateAthleteTrainingSessionInput,
+  UpdateTrainingSessionInput,
+} from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
@@ -38,16 +42,29 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     private readonly memberUseCases: IMemberUseCases
   ) {}
 
-  async getOne(trainingSessionId: string, organizationId: string, userId: string): Promise<TrainingSession> {
+  async getOne(
+    trainingSessionId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession> {
     //1. Check if current user is coach of the organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new TrainingSessionAccessDeniedException('Only coaches can access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'Only coaches can access this resource'
+      );
     }
 
     //2. Get session from repository
-    const trainingSession = await this.trainingSessionRepository.getOneWithDetails(trainingSessionId, organizationId);
+    const trainingSession =
+      await this.trainingSessionRepository.getOneWithDetails(
+        trainingSessionId,
+        organizationId
+      );
 
     //3. Validate session
     if (!trainingSession) {
@@ -57,16 +74,25 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return trainingSession;
   }
 
-  async getAll(organizationId: string, userId: string): Promise<TrainingSession[]> {
+  async getAll(
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession[]> {
     //1. Check if current user is coach of the organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isCoach) {
-      throw new TrainingSessionAccessDeniedException('Only coaches can access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'Only coaches can access this resource'
+      );
     }
 
     //2. Get sessions from repository
-    const trainingSessions = await this.trainingSessionRepository.getAllWithDetails(organizationId);
+    const trainingSessions =
+      await this.trainingSessionRepository.getAllWithDetails(organizationId);
 
     //3. Validate sessions
     if (!trainingSessions) {
@@ -76,24 +102,43 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return trainingSessions;
   }
 
-  async getByAthlete(athleteId: string, organizationId: string, userId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]> {
+  async getByAthlete(
+    athleteId: string,
+    organizationId: string,
+    userId: string,
+    startDate?: string,
+    endDate?: string
+  ): Promise<TrainingSession[]> {
     //1. Check if current user is coach of the organization
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException(
+        'Athlete not found or not associated with a user'
+      );
     }
 
     //3. Check if current user is same as userId in athleteId or is coach of the organization
     if (athlete.user.id !== userId && !isCoach) {
-      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not authorized to access this resource'
+      );
     }
 
     //4. Get training sessions from repository
-    const trainingSessions = await this.trainingSessionRepository.getByAthleteWithDetails(athleteId, organizationId, startDate, endDate);
+    const trainingSessions =
+      await this.trainingSessionRepository.getByAthleteWithDetails(
+        athleteId,
+        organizationId,
+        startDate,
+        endDate
+      );
 
     //5. Validate sessions
     if (!trainingSessions) {
@@ -103,76 +148,121 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     return trainingSessions;
   }
 
-  async getAthleteTrainingSessions(athleteId: string, organizationId: string, userId: string): Promise<AthleteTrainingSession[]> {
+  async getAthleteTrainingSessions(
+    athleteId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<AthleteTrainingSession[]> {
     //1. Check if current user is admin of the organization
-    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException(
+        'Athlete not found or not associated with a user'
+      );
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
     if (athlete.user.id !== userId && !isAdmin) {
-      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not authorized to access this resource'
+      );
     }
 
     //4. Get athlete training sessions from repository
-    const athleteTrainingSessions = await this.athleteTrainingSessionRepository.getAllWithDetails(athleteId);
+    const athleteTrainingSessions =
+      await this.athleteTrainingSessionRepository.getAllWithDetails(athleteId);
 
     //5. Validate athlete training sessions
     if (!athleteTrainingSessions) {
-      throw new TrainingSessionNotFoundException('Athlete training sessions not found');
+      throw new TrainingSessionNotFoundException(
+        'Athlete training sessions not found'
+      );
     }
 
     return athleteTrainingSessions;
   }
 
-  async getOneAthleteTrainingSession(trainingSessionId: string, athleteId: string, organizationId: string, userId: string): Promise<AthleteTrainingSession> {
+  async getOneAthleteTrainingSession(
+    trainingSessionId: string,
+    athleteId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<AthleteTrainingSession> {
     //1. Check if current user is admin of the organization
-    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException(
+        'Athlete not found or not associated with a user'
+      );
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
     if (athlete.user.id !== userId && !isAdmin) {
-      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not authorized to access this resource'
+      );
     }
 
     //4. Get athlete training session from repository
-    const athleteTrainingSession = await this.athleteTrainingSessionRepository.getOneWithDetails(athleteId, trainingSessionId);
+    const athleteTrainingSession =
+      await this.athleteTrainingSessionRepository.getOneWithDetails(
+        athleteId,
+        trainingSessionId
+      );
 
     //5. Validate session
     if (!athleteTrainingSession) {
-      throw new TrainingSessionNotFoundException('Athlete training session not found');
+      throw new TrainingSessionNotFoundException(
+        'Athlete training session not found'
+      );
     }
 
     return athleteTrainingSession;
   }
 
-  async create(data: CreateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession> {
+  async create(
+    data: CreateTrainingSessionInput,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession> {
     //1. Get organization from repository
     const organization = await this.organizationUseCases.getOne(organizationId);
 
     //2. Check if the user is admin of this organization
-    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isAdmin) {
-      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not admin of this organization'
+      );
     }
 
     //3. Get filter conditions via use case
-    const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+    const coachFilterConditions =
+      await this.memberUseCases.getCoachFilterConditions(organizationId);
 
     //4. Check if workout exists
-    const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
+    const workout = await this.workoutRepository.getOne(
+      data.workoutId,
+      coachFilterConditions
+    );
 
     if (!workout) {
       throw new WorkoutNotFoundException(
@@ -181,13 +271,20 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     }
 
     //5. Get all athletes IDs from organization
-    const athleteIds = await this.memberUseCases.getAthleteUserIds(organizationId);
+    const athleteIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
 
     //5. Valide all requested athletes belong to this organization
-    const invalidAthleteIds = data.athleteIds.filter(athleteId => !athleteIds.includes(athleteId));
+    const invalidAthleteIds = data.athleteIds.filter(
+      (athleteId) => !athleteIds.includes(athleteId)
+    );
 
     if (invalidAthleteIds.length > 0) {
-      throw new AthletesNotInOrganizationException(`Athletes with IDs ${invalidAthleteIds.join(', ')} do not belong to this organization`);
+      throw new AthletesNotInOrganizationException(
+        `Athletes with IDs ${invalidAthleteIds.join(
+          ', '
+        )} do not belong to this organization`
+      );
     }
 
     //6. Create training session
@@ -199,7 +296,10 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     await this.trainingSessionRepository.save(trainingSession);
 
     //7. Get created training session from repository
-    const createdTrainingSession = await this.trainingSessionRepository.getOne(trainingSession.id, organizationId);
+    const createdTrainingSession = await this.trainingSessionRepository.getOne(
+      trainingSession.id,
+      organizationId
+    );
 
     if (!createdTrainingSession) {
       throw new TrainingSessionNotFoundException('Training session not found');
@@ -213,25 +313,42 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
         const athleteTrainingSession = new AthleteTrainingSession();
         athleteTrainingSession.athlete = a;
         athleteTrainingSession.trainingSession = createdTrainingSession;
-        await this.athleteTrainingSessionRepository.save(athleteTrainingSession);
+        await this.athleteTrainingSessionRepository.save(
+          athleteTrainingSession
+        );
       } catch (error) {
-        throw new TrainingSessionValidationException(`Error creating athlete training session for athlete ${a.id}: ${error}`);
+        throw new TrainingSessionValidationException(
+          `Error creating athlete training session for athlete ${a.id}: ${error}`
+        );
       }
     }
 
     return createdTrainingSession;
   }
 
-  async update(sessionId: string, data: UpdateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession> {
+  async update(
+    sessionId: string,
+    data: UpdateTrainingSessionInput,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession> {
     //1. Check if the user is admin of this organization
-    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isAdmin) {
-      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not admin of this organization'
+      );
     }
 
     //2. Get training session to update from repository
-    const trainingSessionToUpdate = await this.trainingSessionRepository.getOne(sessionId, organizationId);
+    const trainingSessionToUpdate = await this.trainingSessionRepository.getOne(
+      sessionId,
+      organizationId
+    );
 
     if (!trainingSessionToUpdate) {
       throw new TrainingSessionNotFoundException('TrainingSession not found');
@@ -240,10 +357,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //3. Update workout if needed
     if (data.workoutId) {
       //3. Get filter conditions via use case
-      const coachFilterConditions = await this.memberUseCases.getCoachFilterConditions(organizationId);
+      const coachFilterConditions =
+        await this.memberUseCases.getCoachFilterConditions(organizationId);
 
       //4. Get workout from repository
-      const workout = await this.workoutRepository.getOne(data.workoutId, coachFilterConditions);
+      const workout = await this.workoutRepository.getOne(
+        data.workoutId,
+        coachFilterConditions
+      );
 
       if (!workout) {
         throw new WorkoutNotFoundException(
@@ -256,18 +377,23 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //4. Update athletes if needed
     if (data.athleteIds) {
       // Delete existing athlete sessions
-      const existingAthleteSessions = trainingSessionToUpdate.athletes.getItems();
+      const existingAthleteSessions =
+        trainingSessionToUpdate.athletes.getItems();
       for (const athleteSession of existingAthleteSessions) {
         await this.athleteTrainingSessionRepository.remove(athleteSession);
       }
 
       // Validate all athletes exist before creating new sessions
       const athletes = await this.athleteRepository.getAll(data.athleteIds);
-      const foundAthleteIds = athletes.map(a => a.id);
-      const missingAthleteIds = data.athleteIds.filter(id => !foundAthleteIds.includes(id));
+      const foundAthleteIds = athletes.map((a) => a.id);
+      const missingAthleteIds = data.athleteIds.filter(
+        (id) => !foundAthleteIds.includes(id)
+      );
 
       if (missingAthleteIds.length > 0) {
-        throw new AthleteNotFoundException(`Athletes with IDs ${missingAthleteIds.join(', ')} not found`);
+        throw new AthleteNotFoundException(
+          `Athletes with IDs ${missingAthleteIds.join(', ')} not found`
+        );
       }
 
       // Create new athlete sessions
@@ -275,7 +401,9 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
         const athleteTrainingSession = new AthleteTrainingSession();
         athleteTrainingSession.athlete = athlete;
         athleteTrainingSession.trainingSession = trainingSessionToUpdate;
-        await this.athleteTrainingSessionRepository.save(athleteTrainingSession);
+        await this.athleteTrainingSessionRepository.save(
+          athleteTrainingSession
+        );
       }
     }
 
@@ -293,33 +421,54 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     await this.trainingSessionRepository.save(trainingSessionToUpdate);
 
     //8. Get updated training session with all details
-    const updatedTrainingSession = await this.trainingSessionRepository.getOneWithDetails(sessionId, organizationId);
+    const updatedTrainingSession =
+      await this.trainingSessionRepository.getOneWithDetails(
+        sessionId,
+        organizationId
+      );
 
     if (!updatedTrainingSession) {
-      throw new TrainingSessionNotFoundException('Updated training session not found');
+      throw new TrainingSessionNotFoundException(
+        'Updated training session not found'
+      );
     }
 
     return updatedTrainingSession;
   }
 
-  async updateAthleteTrainingSession(athleteId: string, athleteTrainingSessionId: string, data: UpdateAthleteTrainingSessionInput, userId: string): Promise<AthleteTrainingSession> {
+  async updateAthleteTrainingSession(
+    athleteId: string,
+    athleteTrainingSessionId: string,
+    data: UpdateAthleteTrainingSessionInput,
+    userId: string
+  ): Promise<AthleteTrainingSession> {
     //1. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
     if (!athlete || !athlete.user) {
-      throw new AthleteNotFoundException('Athlete not found or not associated with a user');
+      throw new AthleteNotFoundException(
+        'Athlete not found or not associated with a user'
+      );
     }
 
     //2. Check if current user is same as userId in athleteId
     if (athlete.user.id !== userId) {
-      throw new TrainingSessionAccessDeniedException('User is not authorized to access this resource');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not authorized to access this resource'
+      );
     }
 
     //3. Get athlete training session to update from repository
-    const athleteTrainingSessionToUpdate = await this.athleteTrainingSessionRepository.getOneWithDetails(athleteId, athleteTrainingSessionId);
+    const athleteTrainingSessionToUpdate =
+      await this.athleteTrainingSessionRepository.getOneWithDetails(
+        athleteId,
+        athleteTrainingSessionId
+      );
 
     if (!athleteTrainingSessionToUpdate) {
-      throw new TrainingSessionNotFoundException('Athlete training session not found');
+      throw new TrainingSessionNotFoundException(
+        'Athlete training session not found'
+      );
     }
 
     //4. Update notes_athlete if needed
@@ -328,28 +477,48 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     }
 
     //5. Update athlete training session in repository
-    await this.athleteTrainingSessionRepository.save(athleteTrainingSessionToUpdate);
+    await this.athleteTrainingSessionRepository.save(
+      athleteTrainingSessionToUpdate
+    );
 
     //6. Get updated athlete training session with all details
-    const updatedAthleteTrainingSession = await this.athleteTrainingSessionRepository.getOneWithDetails(athleteId, athleteTrainingSessionId);
+    const updatedAthleteTrainingSession =
+      await this.athleteTrainingSessionRepository.getOneWithDetails(
+        athleteId,
+        athleteTrainingSessionId
+      );
 
     if (!updatedAthleteTrainingSession) {
-      throw new TrainingSessionNotFoundException('Updated athlete training session not found');
+      throw new TrainingSessionNotFoundException(
+        'Updated athlete training session not found'
+      );
     }
 
     return updatedAthleteTrainingSession;
   }
 
-  async delete(trainingSessionId: string, organizationId: string, userId: string): Promise<void> {
+  async delete(
+    trainingSessionId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void> {
     //1. Check if the user is admin of this organization
-    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(userId, organizationId);
+    const isAdmin = await this.memberUseCases.isUserCoachInOrganization(
+      userId,
+      organizationId
+    );
 
     if (!isAdmin) {
-      throw new TrainingSessionAccessDeniedException('User is not admin of this organization');
+      throw new TrainingSessionAccessDeniedException(
+        'User is not admin of this organization'
+      );
     }
 
     //2. Get training session to delete from repository
-    const trainingSessionToDelete = await this.trainingSessionRepository.getOne(trainingSessionId, organizationId);
+    const trainingSessionToDelete = await this.trainingSessionRepository.getOne(
+      trainingSessionId,
+      organizationId
+    );
 
     if (!trainingSessionToDelete) {
       throw new TrainingSessionNotFoundException('Training session not found');

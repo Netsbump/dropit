@@ -1,4 +1,4 @@
-import { CompetitorStatus } from "../../domain/competitor-status.entity";
+import { CompetitorStatus } from '../../domain/competitor-status.entity';
 
 export const COMPETITOR_STATUS_REPO = Symbol('COMPETITOR_STATUS_REPO');
 

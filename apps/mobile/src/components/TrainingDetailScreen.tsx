@@ -19,19 +19,25 @@ interface TrainingDetailScreenProps {
 
 export default function TrainingDetailScreen({
   onBack,
-  element
+  element,
 }: TrainingDetailScreenProps) {
   const [isTimerActive, setIsTimerActive] = useState(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showTimer, setShowTimer] = useState(false);
 
   // Extract display info from element
-  const name = element.type === 'exercise'
-    ? element.exercise.name
-    : element.complex.exercises.map((e: { name: string }) => e.name).join(', ');
+  const name =
+    element.type === 'exercise'
+      ? element.exercise.name
+      : element.complex.exercises
+          .map((e: { name: string }) => e.name)
+          .join(', ');
 
   // Calculate totals from blocks
-  const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
+  const totalSets = element.blocks.reduce(
+    (sum, block) => sum + block.numberOfSets,
+    0
+  );
   const firstBlock = element.blocks[0];
   const firstReps = firstBlock?.exercises[0]?.reps ?? 0;
   const firstRest = firstBlock?.rest ?? 90;
@@ -42,7 +48,8 @@ export default function TrainingDetailScreen({
   const weight = firstIntensity ? `${firstIntensity}%` : '-';
   const recovery = `${firstRest}sec`;
   const instructions = element.commentary || `Instructions pour ${name}.`;
-  const videoUrl = element.type === 'exercise' ? element.exercise.video : undefined;
+  const videoUrl =
+    element.type === 'exercise' ? element.exercise.video : undefined;
 
   // Get default rest time in seconds (from first block rest or 90s default)
   const defaultRestTime = firstRest;
@@ -92,7 +99,11 @@ export default function TrainingDetailScreen({
         <View style={styles.placeholder} />
       </View>
 
-      <ScrollView style={styles.content} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        style={styles.content}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.topContent}>
           {/* Video Section */}
           <View style={styles.videoContainer}>
@@ -111,19 +122,13 @@ export default function TrainingDetailScreen({
           {/* Info Display */}
           <View style={styles.numbersContainer}>
             <View style={styles.numbersElement}>
-              <Text style={styles.numbersText}>
-                {sets}
-              </Text>
+              <Text style={styles.numbersText}>{sets}</Text>
             </View>
             <View style={styles.numbersElement}>
-              <Text style={styles.numbersText}>
-                {reps}
-              </Text>
+              <Text style={styles.numbersText}>{reps}</Text>
             </View>
             <View style={styles.numbersElement}>
-              <Text style={styles.numbersText}>
-                {weight}
-              </Text>
+              <Text style={styles.numbersText}>{weight}</Text>
             </View>
           </View>
 
@@ -131,9 +136,7 @@ export default function TrainingDetailScreen({
           <View style={styles.detailsContainer}>
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text style={styles.sectionTitle}>Instructions</Text>
-              <Text style={styles.sectionText}>
-                {instructions}
-              </Text>
+              <Text style={styles.sectionText}>{instructions}</Text>
 
               <Text style={styles.sectionTitle}>Montée en charge</Text>
               <View style={styles.listContainer}>
@@ -182,14 +185,14 @@ export default function TrainingDetailScreen({
                   strokeWidth={3}
                   fill="transparent"
                   strokeDasharray={`${2 * Math.PI * 29.5}`}
-                  strokeDashoffset={`${2 * Math.PI * 29.5 * (1 - timeLeft / defaultRestTime)}`}
+                  strokeDashoffset={`${
+                    2 * Math.PI * 29.5 * (1 - timeLeft / defaultRestTime)
+                  }`}
                   strokeLinecap="round"
                   transform="rotate(-90 32.5 32.5)"
                 />
               </Svg>
-              <Text style={styles.timerText}>
-                {timeLeft}
-              </Text>
+              <Text style={styles.timerText}>{timeLeft}</Text>
             </TouchableOpacity>
           ) : (
             <TouchableOpacity
@@ -200,7 +203,10 @@ export default function TrainingDetailScreen({
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity style={styles.fullscreenButton} onPress={handleResetTimer}>
+          <TouchableOpacity
+            style={styles.fullscreenButton}
+            onPress={handleResetTimer}
+          >
             <RotateCcw color="#e9edf5" size={24} />
           </TouchableOpacity>
         </View>
@@ -309,9 +315,9 @@ const styles = StyleSheet.create({
   numbersElement: {
     paddingHorizontal: 24,
     paddingVertical: 12,
-    borderWidth:1,
+    borderWidth: 1,
     borderRadius: 20,
-    borderColor: '#6387d9'
+    borderColor: '#6387d9',
   },
   numbersText: {
     fontSize: 12,

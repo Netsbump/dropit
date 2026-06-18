@@ -1,29 +1,35 @@
-import { EntityManager, EntityRepository } from "@mikro-orm/core";
-import { WorkoutCategory } from "../domain/workout-category.entity";
-import { IWorkoutCategoryRepository } from "../application/ports/workout-category.repository.port";
-import { Injectable } from "@nestjs/common";
-import { CoachFilterConditions } from "../../auth/application/ports/member.repository.port";
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { WorkoutCategory } from '../domain/workout-category.entity';
+import { IWorkoutCategoryRepository } from '../application/ports/workout-category.repository.port';
+import { Injectable } from '@nestjs/common';
+import { CoachFilterConditions } from '../../auth/application/ports/member.repository.port';
 
 @Injectable()
-export class MikroWorkoutCategoryRepository extends EntityRepository<WorkoutCategory> implements IWorkoutCategoryRepository {
+export class MikroWorkoutCategoryRepository
+  extends EntityRepository<WorkoutCategory>
+  implements IWorkoutCategoryRepository
+{
   constructor(public readonly em: EntityManager) {
     super(em, WorkoutCategory);
   }
 
-  async getOne(id: string, coachFilterConditions: CoachFilterConditions): Promise<WorkoutCategory | null> {
+  async getOne(
+    id: string,
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<WorkoutCategory | null> {
     return await this.em.findOne(
-      WorkoutCategory, 
+      WorkoutCategory,
       { id, $or: coachFilterConditions.$or },
       { populate: ['createdBy'] }
     );
   }
 
-  async getAll(coachFilterConditions: CoachFilterConditions): Promise<WorkoutCategory[]> {
-    return await this.em.find(
-      WorkoutCategory, 
-      coachFilterConditions,
-      { populate: ['createdBy'] }
-    );
+  async getAll(
+    coachFilterConditions: CoachFilterConditions
+  ): Promise<WorkoutCategory[]> {
+    return await this.em.find(WorkoutCategory, coachFilterConditions, {
+      populate: ['createdBy'],
+    });
   }
 
   async save(workoutCategory: WorkoutCategory): Promise<void> {
@@ -33,4 +39,4 @@ export class MikroWorkoutCategoryRepository extends EntityRepository<WorkoutCate
   async remove(workoutCategory: WorkoutCategory): Promise<void> {
     return await this.em.removeAndFlush(workoutCategory);
   }
-} 
+}

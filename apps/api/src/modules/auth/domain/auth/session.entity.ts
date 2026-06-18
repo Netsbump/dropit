@@ -1,10 +1,10 @@
 import {
-    Entity,
-    ManyToOne,
-    PrimaryKey,
-    Property,
-    Unique,
-  } from '@mikro-orm/core';
+  Entity,
+  ManyToOne,
+  PrimaryKey,
+  Property,
+  Unique,
+} from '@mikro-orm/core';
 import { User } from './user.entity';
 
 /**
@@ -13,33 +13,33 @@ import { User } from './user.entity';
 @Entity({ tableName: 'session' })
 export class Session {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
-  id!: string
+  id!: string;
 
   @Property({ fieldName: 'expiresAt' })
-  expiresAt!: Date
+  expiresAt!: Date;
 
   @Property()
   @Unique()
-  token!: string
+  token!: string;
 
   @Property({ fieldName: 'createdAt' })
-  createdAt: Date = new Date()
+  createdAt: Date = new Date();
 
   @Property({ fieldName: 'updatedAt', onUpdate: () => new Date() })
-  updatedAt: Date = new Date()
+  updatedAt: Date = new Date();
 
   @Property({ fieldName: 'ipAddress', nullable: true })
-  ipAddress?: string
+  ipAddress!: string | null;
 
   @Property({ fieldName: 'userAgent', nullable: true })
-  userAgent?: string
+  userAgent!: string | null;
 
   @Property({ fieldName: 'activeOrganizationId', nullable: true })
-  activeOrganizationId?: string
+  activeOrganizationId!: string | null;
 
   @Property({ fieldName: 'impersonatedBy', nullable: true })
-  impersonatedBy?: string
+  impersonatedBy!: string | null;
 
   @ManyToOne(() => User, { fieldName: 'userId', deleteRule: 'cascade' })
-  user!: User
+  user!: User;
 }

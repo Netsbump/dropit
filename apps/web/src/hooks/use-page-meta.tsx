@@ -12,7 +12,9 @@ interface PageMetaContextValue {
   setPageMeta: (meta: PageMeta) => void;
 }
 
-const PageMetaContext = createContext<PageMetaContextValue | undefined>(undefined);
+const PageMetaContext = createContext<PageMetaContextValue | undefined>(
+  undefined
+);
 
 export function PageMetaProvider({ children }: { children: ReactNode }) {
   const [pageMeta, setPageMeta] = useState<PageMeta>({});

@@ -15,7 +15,7 @@ function Login() {
 
   const handleSuccess = (email: string) => {
     navigate({ to: '/login/otp', search: { email } });
-  }
+  };
 
   return (
     <div className="w-full min-h-screen grid lg:grid-cols-2 gap-20 p-8">
@@ -25,11 +25,12 @@ function Login() {
         <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
           <AuthLogo />
 
-          <AuthFormHeader title={t('login.title')} description={t('login.description')} />
-
-          <LoginEmailForm
-            onSuccess={handleSuccess}
+          <AuthFormHeader
+            title={t('login.title')}
+            description={t('login.description')}
           />
+
+          <LoginEmailForm onSuccess={handleSuccess} />
         </div>
       </div>
     </div>

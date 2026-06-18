@@ -7,6 +7,8 @@ import { toNodeHandler } from 'better-auth/node';
 // Infrastructure
 import { BetterAuthAdapter } from './infrastructure/better-auth.adapter';
 import { AuthGuard } from './infrastructure/guards/auth.guard';
+import { SuperAdminGuard } from './infrastructure/guards/super-admin.guard';
+import { PermissionsGuard } from './infrastructure/guards/permissions.guard';
 import { MikroUserRepository } from './infrastructure/orm/mikro-user.repository';
 import { MikroOrganizationRepository } from './infrastructure/orm/mikro-organization.repository';
 import { MikroMemberRepository } from './infrastructure/orm/mikro-member.repository';
@@ -19,11 +21,26 @@ import { MemberUseCases } from './application/member.use-cases';
 import { OnboardingUseCases } from './application/onboarding.use-cases';
 
 // Application - Ports
-import { USER_REPO, IUserRepository } from './application/ports/user.repository.port';
-import { ORGANIZATION_REPO, IOrganizationRepository } from './application/ports/organization.repository.port';
-import { MEMBER_REPO, IMemberRepository } from './application/ports/member.repository.port';
-import { INVITATION_REPO, IInvitationRepository } from './application/ports/invitation.repository.port';
-import { USER_USE_CASES, IUserUseCases } from './application/ports/user-use-cases.port';
+import {
+  USER_REPO,
+  IUserRepository,
+} from './application/ports/user.repository.port';
+import {
+  ORGANIZATION_REPO,
+  IOrganizationRepository,
+} from './application/ports/organization.repository.port';
+import {
+  MEMBER_REPO,
+  IMemberRepository,
+} from './application/ports/member.repository.port';
+import {
+  INVITATION_REPO,
+  IInvitationRepository,
+} from './application/ports/invitation.repository.port';
+import {
+  USER_USE_CASES,
+  IUserUseCases,
+} from './application/ports/user-use-cases.port';
 import { MEMBER_USE_CASES } from './application/ports/member-use-cases.port';
 import { ORGANIZATION_USE_CASES } from './application/ports/organization-use-cases.port';
 import { ONBOARDING_USE_CASES } from './application/ports/onboarding-use-cases.port';
@@ -40,9 +57,12 @@ import { OnboardingController } from './interface/controllers/onboarding.control
 
 // External modules
 import { NotificationModule } from '../notification/notification.module';
-import { INotificationUseCases, NOTIFICATION_USE_CASES } from '../notification/application/ports/inbound/notification-use-cases.port';
+import {
+  INotificationUseCases,
+  NOTIFICATION_USE_CASES,
+} from '../notification/application/ports/inbound/notification-use-cases.port';
+import { InvitationsModule } from '../invitations/invitations.module';
 import { AthletesModule } from '../athletes/athletes.module';
-import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/ports/athlete-use-cases.port';
 
 /**
  * AuthModule - Main authentication and identity module
@@ -68,12 +88,15 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
   imports: [
     forwardRef(() => NotificationModule),
     forwardRef(() => AthletesModule),
+    forwardRef(() => InvitationsModule),
     MikroOrmModule.forFeature([Organization, Member, Invitation, User]),
   ],
   controllers: [UserController, OnboardingController],
   providers: [
     // Better-auth adapter
     BetterAuthAdapter,
+    SuperAdminGuard,
+    PermissionsGuard,
 
     // MikroORM implementations
     MikroUserRepository,
@@ -100,12 +123,14 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
     },
     {
       provide: MEMBER_USE_CASES,
-      useFactory: (memberRepo: IMemberRepository) => new MemberUseCases(memberRepo),
+      useFactory: (memberRepo: IMemberRepository) =>
+        new MemberUseCases(memberRepo),
       inject: [MEMBER_REPO],
     },
     {
       provide: ORGANIZATION_USE_CASES,
-      useFactory: (organizationRepo: IOrganizationRepository) => new OrganizationUseCases(organizationRepo),
+      useFactory: (organizationRepo: IOrganizationRepository) =>
+        new OrganizationUseCases(organizationRepo),
       inject: [ORGANIZATION_REPO],
     },
     {
@@ -114,18 +139,29 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
         notificationUseCases: INotificationUseCases,
         invitationRepo: IInvitationRepository,
         memberRepo: IMemberRepository,
-        userUseCases: IUserUseCases,
-        athleteUseCases: IAthleteUseCases,
-      ) => new OnboardingUseCases(notificationUseCases, invitationRepo, memberRepo, userUseCases, athleteUseCases),
-      inject: [NOTIFICATION_USE_CASES, INVITATION_REPO, MEMBER_REPO, USER_USE_CASES, ATHLETE_USE_CASES],
+        userUseCases: IUserUseCases
+      ) =>
+        new OnboardingUseCases(
+          notificationUseCases,
+          invitationRepo,
+          memberRepo,
+          userUseCases
+        ),
+      inject: [
+        NOTIFICATION_USE_CASES,
+        INVITATION_REPO,
+        MEMBER_REPO,
+        USER_USE_CASES,
+      ],
     },
-
     // Global guard - validates session on all routes
     { provide: APP_GUARD, useClass: AuthGuard },
   ],
   exports: [
     // Better-auth adapter for other modules that need session info
     BetterAuthAdapter,
+    SuperAdminGuard,
+    PermissionsGuard,
 
     // Repositories
     USER_REPO,
@@ -136,6 +172,7 @@ import { ATHLETE_USE_CASES, IAthleteUseCases } from '../athletes/application/por
     USER_USE_CASES,
     MEMBER_USE_CASES,
     ORGANIZATION_USE_CASES,
+    ONBOARDING_USE_CASES,
 
     // Entities for other modules
     MikroOrmModule.forFeature([Organization, Member, User]),
@@ -161,11 +198,9 @@ export class AuthModule implements NestModule {
 
     const handler = toNodeHandler(this.betterAuthAdapter.auth);
 
-    consumer
-      .apply(handler)
-      .forRoutes({
-        path: '/auth/*',
-        method: RequestMethod.ALL,
-      });
+    consumer.apply(handler).forRoutes({
+      path: '/auth/*',
+      method: RequestMethod.ALL,
+    });
   }
 }

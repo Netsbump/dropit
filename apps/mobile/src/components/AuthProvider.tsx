@@ -50,13 +50,13 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   const initializeAuth = async () => {
     try {
       setIsLoading(true);
-      
+
       // Attendre un peu pour éviter les erreurs d'initialisation
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
       // Récupérer la session actuelle
       const sessionData = await authClient.getSession();
-      
+
       if (sessionData.data) {
         console.log('Session found:', sessionData.data.user.email);
         setSession(sessionData.data);
@@ -107,9 +107,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
   // Session active, afficher l'app
   return (
     <AuthContext.Provider value={{ logout }}>
-      <View style={styles.container}>
-        {children}
-      </View>
+      <View style={styles.container}>{children}</View>
     </AuthContext.Provider>
   );
 }

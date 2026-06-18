@@ -1,4 +1,8 @@
-import { CreateExerciseInput, ExerciseCategoryDto, ExerciseDto } from '@dropit/schemas';
+import {
+  CreateExerciseInput,
+  ExerciseCategoryDto,
+  ExerciseDto,
+} from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
@@ -14,7 +18,7 @@ import { TestUseCaseFactory } from './utils/test-use-cases';
  */
 export async function runExerciseTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running exercise integration tests...');
-  
+
   let exerciseCategoryUseCase: ExerciseCategoryUseCase;
   let exerciseUseCase: ExerciseUseCase;
   let organizationUseCases: OrganizationUseCases;
@@ -24,7 +28,7 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
   try {
     // Clean the database
     await cleanDatabase(orm);
-    
+
     // Setup organization (dependency)
     testData = await setupOrganization(orm);
 
@@ -36,13 +40,19 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
 
     // Create an exercise category via use case
     try {
-      exerciseCategory = await exerciseCategoryUseCase.create({ 
-        name: 'Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      exerciseCategory = await exerciseCategoryUseCase.create(
+        {
+          name: 'Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise category: ${(error as Error).message}`
+      );
     }
-    
+
     expect(exerciseCategory).toBeDefined();
     expect(exerciseCategory.id).toBeDefined();
     expect(exerciseCategory.name).toBe('Haltérophilie');
@@ -51,12 +61,18 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing exercise creation via use case...');
     let exercise1: Exercise;
     try {
-      exercise1 = await exerciseUseCase.create({
-        name: 'Squat',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise1 = await exerciseUseCase.create(
+        {
+          name: 'Squat',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise1: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise1: ${(error as Error).message}`
+      );
     }
     expect(exercise1).toBeDefined();
     expect(exercise1.id).toBeDefined();
@@ -65,26 +81,38 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
 
     let exercise2: Exercise;
     try {
-      exercise2 = await exerciseUseCase.create({
-        name: 'Push-up',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise2 = await exerciseUseCase.create(
+        {
+          name: 'Push-up',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise2: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise2: ${(error as Error).message}`
+      );
     }
     expect(exercise2).toBeDefined();
     expect(exercise2.name).toBe('Push-up');
 
     let exercise3: Exercise;
     try {
-      exercise3 = await exerciseUseCase.create({
-        name: 'Squat Clavicule',
-        exerciseCategory: exerciseCategory.id,
-        englishName: 'Front Squat',
-        shortName: 'FS',
-      }, testData.organization.id, testData.adminUser.id);
+      exercise3 = await exerciseUseCase.create(
+        {
+          name: 'Squat Clavicule',
+          exerciseCategory: exerciseCategory.id,
+          englishName: 'Front Squat',
+          shortName: 'FS',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise3: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise3: ${(error as Error).message}`
+      );
     }
     expect(exercise3).toBeDefined();
     expect(exercise3.name).toBe('Squat Clavicule');
@@ -95,7 +123,10 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing exercise retrieval via use case...');
     let exercises: Exercise[];
     try {
-      exercises = await exerciseUseCase.getAll(testData.organization.id, testData.adminUser.id);
+      exercises = await exerciseUseCase.getAll(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to get exercises: ${(error as Error).message}`);
     }
@@ -105,9 +136,15 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing single exercise retrieval via use case...');
     let singleExercise: Exercise;
     try {
-      singleExercise = await exerciseUseCase.getOne(exercise1.id, testData.organization.id, testData.adminUser.id);
+      singleExercise = await exerciseUseCase.getOne(
+        exercise1.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get single exercise: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get single exercise: ${(error as Error).message}`
+      );
     }
     expect(singleExercise.id).toBe(exercise1.id);
     expect(singleExercise.name).toBe('Squat');
@@ -133,32 +170,46 @@ export async function runExerciseTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing exercise search via use case...');
     let searchResults: Exercise[];
     try {
-      searchResults = await exerciseUseCase.search('Squat', testData.organization.id, testData.adminUser.id);
+      searchResults = await exerciseUseCase.search(
+        'Squat',
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to search exercises: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to search exercises: ${(error as Error).message}`
+      );
     }
     expect(searchResults.length).toBeGreaterThanOrEqual(2); // Squat + Squat Clavicule
 
     // Test 6: Delete an exercise via use case
     console.log('🧪 Testing exercise deletion via use case...');
     try {
-      await exerciseUseCase.delete(exercise2.id, testData.organization.id, testData.adminUser.id);
+      await exerciseUseCase.delete(
+        exercise2.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to delete exercise: ${(error as Error).message}`);
     }
 
     let remainingExercises: Exercise[];
     try {
-      remainingExercises = await exerciseUseCase.getAll(testData.organization.id, testData.adminUser.id);
+      remainingExercises = await exerciseUseCase.getAll(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get remaining exercises: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get remaining exercises: ${(error as Error).message}`
+      );
     }
     expect(remainingExercises.length).toBe(exercises.length - 1);
 
     console.log('✅ Exercise integration tests completed successfully');
-
   } catch (error) {
     console.error('❌ Exercise integration tests failed:', error);
     throw error;
   }
-} 
+}

@@ -1,11 +1,10 @@
 import { workoutContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { IWorkoutUseCases, WORKOUT_USE_CASES } from '../../application/ports/workout-use-cases.port';
+import {
+  IWorkoutUseCases,
+  WORKOUT_USE_CASES,
+} from '../../application/ports/workout-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
@@ -18,16 +17,16 @@ const c = workoutContract;
 
 /**
  * Workout Controller
- * 
+ *
  * @description
  * Handles all workout related operations including CRUD operations.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
- * 
+ *
  * @see {@link WorkoutUseCases} for business logic implementation
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -54,7 +53,10 @@ export class WorkoutController {
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkouts>> {
     return tsRestHandler(c.getWorkouts, async () => {
       try {
-        const workouts = await this.workoutUseCases.getWorkouts(organizationId, user.id);
+        const workouts = await this.workoutUseCases.getWorkouts(
+          organizationId,
+          user.id
+        );
         const workoutsDto = WorkoutMapper.toDtoList(workouts);
         return WorkoutPresenter.presentList(workoutsDto);
       } catch (error) {
@@ -79,7 +81,11 @@ export class WorkoutController {
   ): ReturnType<typeof tsRestHandler<typeof c.getWorkout>> {
     return tsRestHandler(c.getWorkout, async ({ params }) => {
       try {
-        const workout = await this.workoutUseCases.getWorkoutWithDetails(params.id, organizationId, user.id);
+        const workout = await this.workoutUseCases.getWorkoutWithDetails(
+          params.id,
+          organizationId,
+          user.id
+        );
         const workoutDto = WorkoutMapper.toDto(workout);
         return WorkoutPresenter.presentOne(workoutDto);
       } catch (error) {
@@ -104,7 +110,11 @@ export class WorkoutController {
   ): ReturnType<typeof tsRestHandler<typeof c.createWorkout>> {
     return tsRestHandler(c.createWorkout, async ({ body }) => {
       try {
-        const workout = await this.workoutUseCases.createWorkout(body, organizationId, user.id);
+        const workout = await this.workoutUseCases.createWorkout(
+          body,
+          organizationId,
+          user.id
+        );
         const workoutDto = WorkoutMapper.toDto(workout);
         return WorkoutPresenter.presentOne(workoutDto);
       } catch (error) {
@@ -130,7 +140,12 @@ export class WorkoutController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateWorkout>> {
     return tsRestHandler(c.updateWorkout, async ({ params, body }) => {
       try {
-        const workout = await this.workoutUseCases.updateWorkout(params.id, body, organizationId, user.id);
+        const workout = await this.workoutUseCases.updateWorkout(
+          params.id,
+          body,
+          organizationId,
+          user.id
+        );
         const workoutDto = WorkoutMapper.toDto(workout);
         return WorkoutPresenter.presentOne(workoutDto);
       } catch (error) {
@@ -150,12 +165,16 @@ export class WorkoutController {
   @TsRestHandler(c.deleteWorkout)
   @RequirePermissions('delete')
   deleteWorkout(
-      @CurrentOrganization() organizationId: string,
+    @CurrentOrganization() organizationId: string,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteWorkout>> {
     return tsRestHandler(c.deleteWorkout, async ({ params }) => {
       try {
-        await this.workoutUseCases.deleteWorkout(params.id, organizationId, user.id);
+        await this.workoutUseCases.deleteWorkout(
+          params.id,
+          organizationId,
+          user.id
+        );
         return WorkoutPresenter.presentSuccess('Workout deleted successfully');
       } catch (error) {
         return WorkoutPresenter.presentError(error as Error);

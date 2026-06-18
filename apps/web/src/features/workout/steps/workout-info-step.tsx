@@ -50,7 +50,7 @@ export function WorkoutInfoStep({
 }: WorkoutInfoStepProps) {
   const [templateSearch, setTemplateSearch] = useState('');
   const [useTemplate, setUseTemplate] = useState(false);
-  
+
   const { data: categories } = useQuery({
     queryKey: ['workoutCategories'],
     queryFn: async () => {
@@ -73,22 +73,25 @@ export function WorkoutInfoStep({
     form.setValue('description', templateWorkout.description || '');
 
     // Trouver la catégorie correspondante par son nom pour obtenir l'ID
-    const category = categories?.find(cat => cat.name === templateWorkout.workoutCategory);
+    const category = categories?.find(
+      (cat) => cat.name === templateWorkout.workoutCategory
+    );
     if (category) {
       form.setValue('workoutCategory', category.id);
     }
 
     // Transformer les éléments du template pour correspondre au schéma de création
     if (templateWorkout.elements) {
-      const transformedElements = templateWorkout.elements.map(element => {
+      const transformedElements = templateWorkout.elements.map((element) => {
         // Transformer les blocks pour s'assurer que intensity est toujours définie
-        const transformedBlocks = element.blocks.map(block => ({
+        const transformedBlocks = element.blocks.map((block) => ({
           order: block.order,
           numberOfSets: block.numberOfSets,
           rest: block.rest,
           intensity: {
             percentageOfMax: block.intensity?.percentageOfMax ?? 0,
-            type: (block.intensity?.type as 'percentage' | 'rpe') ?? 'percentage',
+            type:
+              (block.intensity?.type as 'percentage' | 'rpe') ?? 'percentage',
             referenceExerciseId: block.intensity?.referenceExerciseId,
           },
           exercises: block.exercises,
@@ -117,19 +120,23 @@ export function WorkoutInfoStep({
     }
   };
 
-  const filteredWorkouts = workouts?.filter(workout => {
-    const searchTerm = templateSearch.toLowerCase();
-    // Recherche dans la catégorie ou la description
-    const categoryMatch = workout.workoutCategory.toLowerCase().includes(searchTerm);
-    const descriptionMatch = workout.description?.toLowerCase().includes(searchTerm);
-    return categoryMatch || descriptionMatch;
-  }) || [];
+  const filteredWorkouts =
+    workouts?.filter((workout) => {
+      const searchTerm = templateSearch.toLowerCase();
+      // Recherche dans la catégorie ou la description
+      const categoryMatch = workout.workoutCategory
+        .toLowerCase()
+        .includes(searchTerm);
+      const descriptionMatch = workout.description
+        ?.toLowerCase()
+        .includes(searchTerm);
+      return categoryMatch || descriptionMatch;
+    }) || [];
 
   return (
     <div className="h-full flex flex-col">
       {/* Layout principal : 2 colonnes */}
       <div className="flex-1 grid grid-cols-3 gap-6 min-h-0">
-        
         {/* Colonne gauche : Formulaire d'informations */}
         <div className="col-span-2 flex flex-col min-h-0">
           <div className="mb-4">
@@ -197,14 +204,15 @@ export function WorkoutInfoStep({
                   Partir d'un entraînement existant
                 </p>
               </div>
-              <Switch 
-                checked={useTemplate}
-                onCheckedChange={setUseTemplate}
-              />
+              <Switch checked={useTemplate} onCheckedChange={setUseTemplate} />
             </div>
           </div>
 
-          <Card className={`flex-1 flex flex-col min-h-0 shadow-none ${!useTemplate ? 'opacity-50 pointer-events-none' : ''}`}>
+          <Card
+            className={`flex-1 flex flex-col min-h-0 shadow-none ${
+              !useTemplate ? 'opacity-50 pointer-events-none' : ''
+            }`}
+          >
             <CardContent className="p-4 flex-1 flex flex-col min-h-0">
               <div className="relative mb-3 flex-shrink-0 bg-sidebar">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -216,11 +224,13 @@ export function WorkoutInfoStep({
                   disabled={!useTemplate}
                 />
               </div>
-              
+
               <div className="flex-1 overflow-y-auto space-y-2 min-h-0">
                 {!useTemplate ? (
                   <div className="flex items-center justify-center h-32 text-center text-muted-foreground">
-                    <p className="text-sm">Activez le switch pour utiliser un template</p>
+                    <p className="text-sm">
+                      Activez le switch pour utiliser un template
+                    </p>
                   </div>
                 ) : filteredWorkouts.length === 0 ? (
                   <div className="flex items-center justify-center h-32 text-center text-muted-foreground">
@@ -235,10 +245,15 @@ export function WorkoutInfoStep({
                       <div className="flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <h5 className="font-medium text-sm truncate">
-                            {workout.elements.length} {workout.elements.length > 1 ? 'éléments' : 'élément'}
+                            {workout.elements.length}{' '}
+                            {workout.elements.length > 1
+                              ? 'éléments'
+                              : 'élément'}
                           </h5>
                           <p className="text-xs text-muted-foreground truncate">
-                            {typeof workout.workoutCategory === 'string' ? workout.workoutCategory : '-'}
+                            {typeof workout.workoutCategory === 'string'
+                              ? workout.workoutCategory
+                              : '-'}
                           </p>
                         </div>
                         <Button

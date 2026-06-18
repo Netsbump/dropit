@@ -26,9 +26,8 @@ function WorkoutPage() {
   const { setPageMeta } = usePageMeta();
 
   useEffect(() => {
-    setPageMeta({ title: t('library.title') });
+    setPageMeta({ title: t('library:title') });
   }, [setPageMeta, t]);
-
 
   const { data: workouts, isLoading } = useQuery({
     queryKey: ['workouts'],
@@ -52,15 +51,15 @@ function WorkoutPage() {
     queryKey: ['trainingSessions'],
     queryFn: async () => {
       const response = await api.trainingSession.getTrainingSessions();
-      if (response.status !== 200) throw new Error('Failed to load training sessions');
+      if (response.status !== 200)
+        throw new Error('Failed to load training sessions');
       return response.body;
     },
   });
 
   const filteredWorkouts = workouts?.filter((workout) => {
-    const matchesSearch = workout.description
-      ?.toLowerCase()
-      .includes(filter.toLowerCase()) ?? true;
+    const matchesSearch =
+      workout.description?.toLowerCase().includes(filter.toLowerCase()) ?? true;
     const matchesCategory =
       categoryFilter === 'all' || workout.workoutCategory === categoryFilter;
     return matchesSearch && matchesCategory;
@@ -86,20 +85,20 @@ function WorkoutPage() {
       <div className="flex-none space-y-6">
         <HeroCard
           variant="workout"
-          title={t('workout.hero.title')}
-          description={t('workout.hero.description')}
+          title={t('workout:hero.title')}
+          description={t('workout:hero.description')}
           stat={{
-            label: t('workout.hero.stat_label'),
+            label: t('workout:hero.stat_label'),
             value: workouts?.length || 0,
             icon: Layers,
-            description: t('workout.hero.stat_description'),
+            description: t('workout:hero.stat_description'),
             callToAction: {
-              text: t('workout.hero.stat_cta'),
+              text: t('workout:hero.stat_cta'),
               onClick: () => {
                 // TODO: Ouvrir une popup avec vidéo explicative
                 console.log('Open workout tutorial video');
-              }
-            }
+              },
+            },
           }}
         />
 
@@ -120,7 +119,7 @@ function WorkoutPage() {
           </div>
         ) : !workouts?.length ? (
           <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>{t('workout.filters.no_results')}</p>
+            <p>{t('workout:filters.no_results')}</p>
             <p className="text-sm">{t('common.start_create')}</p>
           </div>
         ) : (

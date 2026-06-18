@@ -14,26 +14,26 @@ export type WorkoutElementType =
 export const exerciseConfigSchema = z.object({
   exerciseId: z.string().uuid(),
   reps: z.number().int().min(1), // Au moins 1 rep
-  order: z.number().int().min(1)  // Commence à 1
-})
+  order: z.number().int().min(1), // Commence à 1
+});
 
 export type ExerciseConfigDto = z.infer<typeof exerciseConfigSchema>;
 
 export const intensityConfigSchema = z.object({
   percentageOfMax: z.number().min(0).max(200),
   referenceExerciseId: z.string().uuid().optional(),
-  type: z.enum(['percentage', 'rpe']).default('percentage')
-})
+  type: z.enum(['percentage', 'rpe']).default('percentage'),
+});
 
 export type IntensityConfigDto = z.infer<typeof intensityConfigSchema>;
 
 export const blockConfigSchema = z.object({
-  order: z.number().int().min(1),        // Commence à 1
+  order: z.number().int().min(1), // Commence à 1
   numberOfSets: z.number().int().min(1), // Au moins 1 série
   rest: z.number().int().positive().optional(),
-  intensity: intensityConfigSchema,      // Toujours requis
-  exercises: z.array(exerciseConfigSchema).min(1) // Au moins 1 exercice
-})
+  intensity: intensityConfigSchema, // Toujours requis
+  exercises: z.array(exerciseConfigSchema).min(1), // Au moins 1 exercice
+});
 
 export type BlockConfigDto = z.infer<typeof blockConfigSchema>;
 

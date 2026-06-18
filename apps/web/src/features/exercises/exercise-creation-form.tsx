@@ -1,5 +1,4 @@
 import { api } from '@/lib/api';
-import { Button } from '@/components/ui/button';
 import { FileUpload } from '@/components/ui/file-upload';
 import {
   Form,
@@ -21,20 +20,18 @@ import { useToast } from '@/hooks/use-toast';
 import { CreateExerciseInput, createExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
 type ExerciseCreationFormProps = {
+  formId?: string;
   onSuccess?: (exerciseId: string) => void;
-  onCancel?: () => void;
 };
 
 export function ExerciseCreationForm({
+  formId,
   onSuccess,
-  onCancel,
 }: ExerciseCreationFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const { data: exerciseCategories, isLoading: categoriesLoading } = useQuery({
@@ -71,14 +68,10 @@ export function ExerciseCreationForm({
     },
   });
 
-  const handleSubmit = async (formValues: z.infer<typeof formExerciseSchema>) => {
-    setIsLoading(true);
-
-    try {
-      await createExerciseMutation(formValues);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSubmit = async (
+    formValues: z.infer<typeof formExerciseSchema>
+  ) => {
+    await createExerciseMutation(formValues);
   };
 
   const formExerciseSchema = createExerciseSchema;
@@ -96,6 +89,7 @@ export function ExerciseCreationForm({
   return (
     <Form {...form}>
       <form
+        id={formId}
         onSubmit={form.handleSubmit(handleSubmit)}
         className="grid gap-4 py-4"
       >
@@ -188,20 +182,6 @@ export function ExerciseCreationForm({
             </FormItem>
           )}
         />
-
-        <div className="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onCancel}
-            disabled={isLoading}
-          >
-            Annuler
-          </Button>
-          <Button type="submit" disabled={isLoading}>
-            {isLoading ? 'Création...' : 'Créer'}
-          </Button>
-        </div>
       </form>
     </Form>
   );

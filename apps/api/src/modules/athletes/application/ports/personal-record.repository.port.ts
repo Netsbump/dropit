@@ -8,4 +8,4 @@ export interface IPersonalRecordRepository {
   getAllByAthleteId(athleteId: string): Promise<PersonalRecord[]>;
   save(personalRecord: PersonalRecord): Promise<void>;
   remove(personalRecord: PersonalRecord): Promise<void>;
-} 
+}

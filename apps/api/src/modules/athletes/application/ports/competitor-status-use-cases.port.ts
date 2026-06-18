@@ -1,4 +1,7 @@
-import { CreateCompetitorStatusInput, UpdateCompetitorStatusInput } from '@dropit/schemas';
+import {
+  CreateCompetitorStatusInput,
+  UpdateCompetitorStatusInput,
+} from '@dropit/schemas';
 import { CompetitorStatus } from '../../domain/competitor-status.entity';
 
 /**
@@ -22,22 +25,36 @@ export interface ICompetitorStatusUseCases {
   /**
    * Find one competitor status by athlete ID
    */
-  findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
+  findOne(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<CompetitorStatus>;
 
   /**
    * Create a new competitor status
    */
-  create(data: CreateCompetitorStatusInput, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
+  create(
+    data: CreateCompetitorStatusInput,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<CompetitorStatus>;
 
   /**
    * Update an existing competitor status
    */
-  update(id: string, data: UpdateCompetitorStatusInput, currentUserId: string, organizationId: string): Promise<CompetitorStatus>;
+  update(
+    id: string,
+    data: UpdateCompetitorStatusInput,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<CompetitorStatus>;
 }
 
 /**
  * Injection token for ICompetitorStatusUseCases
  * Use this token in @Inject() decorators in controllers
  */
-export const COMPETITOR_STATUS_USE_CASES = Symbol('COMPETITOR_STATUS_USE_CASES');
-
+export const COMPETITOR_STATUS_USE_CASES = Symbol(
+  'COMPETITOR_STATUS_USE_CASES'
+);

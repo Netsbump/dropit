@@ -2,7 +2,6 @@ import { PersonalRecordDto } from '@dropit/schemas';
 import { PersonalRecord } from '../../domain/personal-record.entity';
 
 export const PersonalRecordMapper = {
-
   toDto(personalRecord: PersonalRecord): PersonalRecordDto {
     return {
       id: personalRecord.id,
@@ -17,6 +16,8 @@ export const PersonalRecordMapper = {
   },
 
   toDtoList(personalRecords: PersonalRecord[]): PersonalRecordDto[] {
-    return personalRecords.map((personalRecord) => PersonalRecordMapper.toDto(personalRecord));
+    return personalRecords.map((personalRecord) =>
+      PersonalRecordMapper.toDto(personalRecord)
+    );
   },
-}; 
+};

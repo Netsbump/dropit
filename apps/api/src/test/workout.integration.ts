@@ -22,7 +22,7 @@ import { TestUseCaseFactory } from './utils/test-use-cases';
  */
 export async function runWorkoutTests(orm: MikroORM): Promise<void> {
   console.log('📋 Running workout integration tests...');
-  
+
   let exerciseCategoryUseCase: ExerciseCategoryUseCase;
   let exerciseUseCase: ExerciseUseCase;
   let complexCategoryUseCase: ComplexCategoryUseCase;
@@ -38,10 +38,10 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
   try {
     // Clean the database
     await cleanDatabase(orm);
-    
+
     // Setup organization (dependency)
     testData = await setupOrganization(orm);
-    
+
     // Use the factory to create use cases
     const factory = new TestUseCaseFactory(orm);
     organizationUseCases = factory.createOrganizationUseCases();
@@ -54,29 +54,47 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
 
     // Create categories via use cases
     try {
-      exerciseCategory = await exerciseCategoryUseCase.create({ 
-        name: 'Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      exerciseCategory = await exerciseCategoryUseCase.create(
+        {
+          name: 'Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercise category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercise category: ${(error as Error).message}`
+      );
     }
 
     try {
-      complexCategory = await complexCategoryUseCase.create({ 
-        name: 'Complexes Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      complexCategory = await complexCategoryUseCase.create(
+        {
+          name: 'Complexes Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create complex category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create complex category: ${(error as Error).message}`
+      );
     }
 
     try {
-      workoutCategory = await workoutCategoryUseCase.create({ 
-        name: 'Workouts Haltérophilie' 
-      }, testData.organization.id, testData.adminUser.id);
+      workoutCategory = await workoutCategoryUseCase.create(
+        {
+          name: 'Workouts Haltérophilie',
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create workout category: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create workout category: ${(error as Error).message}`
+      );
     }
-    
+
     expect(workoutCategory).toBeDefined();
     expect(workoutCategory.id).toBeDefined();
     expect(workoutCategory.name).toBe('Workouts Haltérophilie');
@@ -87,31 +105,45 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     let exercise2: Exercise;
     let complex: Complex;
     try {
-      exercise1 = await exerciseUseCase.create({
-        name: 'Squat',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise1 = await exerciseUseCase.create(
+        {
+          name: 'Squat',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      exercise2 = await exerciseUseCase.create({
-        name: 'Deadlift',
-        exerciseCategory: exerciseCategory.id,
-      }, testData.organization.id, testData.adminUser.id);
+      exercise2 = await exerciseUseCase.create(
+        {
+          name: 'Deadlift',
+          exerciseCategory: exerciseCategory.id,
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
 
-      complex = await complexUseCase.create({
-        complexCategory: complexCategory.id,
-        exercises: [
-          {
-            exerciseId: exercise1.id,
-            order: 1,
-          },
-          {
-            exerciseId: exercise2.id,
-            order: 2,
-          },
-        ],
-      }, testData.organization.id, testData.adminUser.id);
+      complex = await complexUseCase.create(
+        {
+          complexCategory: complexCategory.id,
+          exercises: [
+            {
+              exerciseId: exercise1.id,
+              order: 1,
+            },
+            {
+              exerciseId: exercise2.id,
+              order: 2,
+            },
+          ],
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to create exercises and complex: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to create exercises and complex: ${(error as Error).message}`
+      );
     }
 
     expect(exercise1).toBeDefined();
@@ -122,63 +154,67 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing workout creation via use case...');
     let workout1: Workout;
     try {
-      workout1 = await workoutUseCase.createWorkout({
-        workoutCategory: workoutCategory.id,
-        description: 'Test workout description',
-        elements: [
-          {
-            type: WORKOUT_ELEMENT_TYPES.COMPLEX,
-            complexId: complex.id,
-            order: 0,
-            blocks: [
-              {
-                order: 1,
-                numberOfSets: 1,
-                rest: 120,
-                intensity: {
-                  percentageOfMax: 75,
-                  type: 'percentage' as const,
+      workout1 = await workoutUseCase.createWorkout(
+        {
+          workoutCategory: workoutCategory.id,
+          description: 'Test workout description',
+          elements: [
+            {
+              type: WORKOUT_ELEMENT_TYPES.COMPLEX,
+              complexId: complex.id,
+              order: 0,
+              blocks: [
+                {
+                  order: 1,
+                  numberOfSets: 1,
+                  rest: 120,
+                  intensity: {
+                    percentageOfMax: 75,
+                    type: 'percentage' as const,
+                  },
+                  exercises: [
+                    {
+                      exerciseId: exercise1.id,
+                      reps: 10,
+                      order: 1,
+                    },
+                    {
+                      exerciseId: exercise2.id,
+                      reps: 10,
+                      order: 2,
+                    },
+                  ],
                 },
-                exercises: [
-                  {
-                    exerciseId: exercise1.id,
-                    reps: 10,
-                    order: 1,
+              ],
+            },
+            {
+              type: WORKOUT_ELEMENT_TYPES.EXERCISE,
+              exerciseId: exercise2.id,
+              order: 1,
+              blocks: [
+                {
+                  order: 1,
+                  numberOfSets: 3,
+                  rest: 90,
+                  intensity: {
+                    percentageOfMax: 70,
+                    type: 'percentage' as const,
                   },
-                  {
-                    exerciseId: exercise2.id,
-                    reps: 10,
-                    order: 2,
-                  },
-                ],
-              },
-            ],
-          },
-          {
-            type: WORKOUT_ELEMENT_TYPES.EXERCISE,
-            exerciseId: exercise2.id,
-            order: 1,
-            blocks: [
-              {
-                order: 1,
-                numberOfSets: 3,
-                rest: 90,
-                intensity: {
-                  percentageOfMax: 70,
-                  type: 'percentage' as const,
+                  exercises: [
+                    {
+                      exerciseId: exercise2.id,
+                      reps: 8,
+                      order: 1,
+                    },
+                  ],
                 },
-                exercises: [
-                  {
-                    exerciseId: exercise2.id,
-                    reps: 8,
-                    order: 1,
-                  },
-                ],
-              },
-            ],
-          },
-        ],
-      }, testData.organization.id, testData.adminUser.id);
+              ],
+            },
+          ],
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to create workout1: ${(error as Error).message}`);
     }
@@ -211,35 +247,39 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing second workout creation via use case...');
     let workout2: Workout;
     try {
-      workout2 = await workoutUseCase.createWorkout({
-        workoutCategory: workoutCategory.id,
-        description: 'Second workout description',
-        elements: [
-          {
-            type: WORKOUT_ELEMENT_TYPES.EXERCISE,
-            exerciseId: exercise1.id,
-            order: 0,
-            blocks: [
-              {
-                order: 1,
-                numberOfSets: 3,
-                rest: 60,
-                intensity: {
-                  percentageOfMax: 75,
-                  type: 'percentage' as const,
-                },
-                exercises: [
-                  {
-                    exerciseId: exercise1.id,
-                    reps: 5,
-                    order: 1,
+      workout2 = await workoutUseCase.createWorkout(
+        {
+          workoutCategory: workoutCategory.id,
+          description: 'Second workout description',
+          elements: [
+            {
+              type: WORKOUT_ELEMENT_TYPES.EXERCISE,
+              exerciseId: exercise1.id,
+              order: 0,
+              blocks: [
+                {
+                  order: 1,
+                  numberOfSets: 3,
+                  rest: 60,
+                  intensity: {
+                    percentageOfMax: 75,
+                    type: 'percentage' as const,
                   },
-                ],
-              },
-            ],
-          },
-        ],
-      }, testData.organization.id, testData.adminUser.id);
+                  exercises: [
+                    {
+                      exerciseId: exercise1.id,
+                      reps: 5,
+                      order: 1,
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to create workout2: ${(error as Error).message}`);
     }
@@ -250,7 +290,10 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing workout retrieval via use case...');
     let workouts: Workout[];
     try {
-      workouts = await workoutUseCase.getWorkouts(testData.organization.id, testData.adminUser.id);
+      workouts = await workoutUseCase.getWorkouts(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to get workouts: ${(error as Error).message}`);
     }
@@ -260,9 +303,15 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     console.log('🧪 Testing single workout retrieval via use case...');
     let singleWorkout: Workout;
     try {
-      singleWorkout = await workoutUseCase.getWorkout(workout1.id, testData.organization.id, testData.adminUser.id);
+      singleWorkout = await workoutUseCase.getWorkout(
+        workout1.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get single workout: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get single workout: ${(error as Error).message}`
+      );
     }
     expect(singleWorkout.id).toBe(workout1.id);
 
@@ -286,23 +335,31 @@ export async function runWorkoutTests(orm: MikroORM): Promise<void> {
     // Test 7: Delete a workout via use case
     console.log('🧪 Testing workout deletion via use case...');
     try {
-      await workoutUseCase.deleteWorkout(workout2.id, testData.organization.id, testData.adminUser.id);
+      await workoutUseCase.deleteWorkout(
+        workout2.id,
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
       throw new Error(`Failed to delete workout: ${(error as Error).message}`);
     }
 
     let remainingWorkouts: Workout[];
     try {
-      remainingWorkouts = await workoutUseCase.getWorkouts(testData.organization.id, testData.adminUser.id);
+      remainingWorkouts = await workoutUseCase.getWorkouts(
+        testData.organization.id,
+        testData.adminUser.id
+      );
     } catch (error: unknown) {
-      throw new Error(`Failed to get remaining workouts: ${(error as Error).message}`);
+      throw new Error(
+        `Failed to get remaining workouts: ${(error as Error).message}`
+      );
     }
     expect(remainingWorkouts.length).toBe(workouts.length - 1);
 
     console.log('✅ Workout integration tests completed successfully');
-
   } catch (error) {
     console.error('❌ Workout integration tests failed:', error);
     throw error;
   }
-} 
+}

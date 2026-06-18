@@ -38,10 +38,10 @@ export class WorkoutElement {
   workout!: Workout;
 
   @ManyToOne(() => Exercise, { nullable: true, deleteRule: 'cascade' })
-  exercise?: Exercise;
+  exercise!: Exercise | null;
 
   @ManyToOne(() => Complex, { nullable: true, deleteRule: 'cascade' })
-  complex?: Complex;
+  complex!: Complex | null;
 
   @Property({ type: 'jsonb' })
   blocks: BlockConfigDto[] = [];
@@ -50,10 +50,10 @@ export class WorkoutElement {
   order!: number;
 
   @Property({ nullable: true })
-  tempo?: string;
+  tempo!: string | null;
 
   @Property({ nullable: true })
-  commentary?: string;
+  commentary!: string | null;
 
   @Property({ onCreate: () => new Date() })
   createdAt: Date = new Date();

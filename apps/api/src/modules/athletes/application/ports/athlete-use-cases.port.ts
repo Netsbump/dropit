@@ -18,12 +18,20 @@ export interface IAthleteUseCases {
   /**
    * Find one athlete by ID
    */
-  findOne(athleteId: string, currentUserId: string, organizationId: string): Promise<Athlete>;
+  findOne(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<Athlete>;
 
   /**
    * Find one athlete with details (relations populated)
    */
-  findOneWithDetails(athleteId: string, currentUserId: string, organizationId: string): Promise<AthleteDetails>;
+  findOneWithDetails(
+    athleteId: string,
+    currentUserId: string,
+    organizationId: string
+  ): Promise<AthleteDetails>;
 
   /**
    * Find all athletes in organization
@@ -33,7 +41,17 @@ export interface IAthleteUseCases {
   /**
    * Find all athletes with details in organization
    */
-  findAllWithDetails(currentUserId: string, organizationId: string): Promise<AthleteDetails[]>;
+  findAllWithDetails(
+    currentUserId: string,
+    organizationId: string
+  ): Promise<AthleteDetails[]>;
+
+  /**
+   * Find all athletes with details for a given organization (super admin)
+   */
+  findAllWithDetailsByOrganization(
+    organizationId: string
+  ): Promise<AthleteDetails[]>;
 
   /**
    * Create a new athlete
@@ -43,7 +61,11 @@ export interface IAthleteUseCases {
   /**
    * Update an existing athlete
    */
-  update(idAthlete: string, data: UpdateAthleteInput, userId: string): Promise<Athlete>;
+  update(
+    idAthlete: string,
+    data: UpdateAthleteInput,
+    userId: string
+  ): Promise<Athlete>;
 
   /**
    * Delete an athlete

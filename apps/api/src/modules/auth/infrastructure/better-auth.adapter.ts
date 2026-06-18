@@ -1,15 +1,18 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
-import { Auth } from 'better-auth';
 import { createAuthConfig } from '../better-auth.config';
-import type { CustomSessionContext, EnrichedSessionResult } from '../better-auth.config';
+import type { BetterAuthInstance } from '../better-auth.config';
+import type {
+  CustomSessionContext,
+  EnrichedSessionResult,
+} from '../better-auth.config';
 import {
   INotificationUseCases,
   NOTIFICATION_USE_CASES,
 } from '../../notification/application/ports/inbound/notification-use-cases.port';
 import {
-  IOnboardingUseCases,
-  ONBOARDING_USE_CASES,
-} from '../application/ports/onboarding-use-cases.port';
+  IInvitationRecipientService,
+  INVITATION_RECIPIENT_SERVICE,
+} from '../../invitations/application/ports/invitation-recipient.port';
 import {
   IMemberUseCases,
   MEMBER_USE_CASES,
@@ -19,9 +22,15 @@ import {
   USER_USE_CASES,
 } from '../application/ports/user-use-cases.port';
 import {
-  IAthleteUseCases,
-  ATHLETE_USE_CASES,
-} from '../../athletes/application/ports/athlete-use-cases.port';
+  ATHLETE_REPO,
+  IAthleteRepository,
+} from '../../athletes/application/ports/athlete.repository.port';
+import {
+  invitableOrganizationRoleSchema,
+  organizationRoleSchema,
+  type OrganizationRole,
+} from '@dropit/schemas';
+import type { Invitation } from 'better-auth/plugins/organization';
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -40,16 +49,18 @@ import {
  */
 @Injectable()
 export class BetterAuthAdapter implements OnModuleInit {
-  private _auth: Auth | null = null;
+  private _auth: BetterAuthInstance | null = null;
   private static initPromise: Promise<void> | null = null;
 
   constructor(
-    @Inject(NOTIFICATION_USE_CASES) private notificationUseCase: INotificationUseCases,
-    @Inject(ONBOARDING_USE_CASES) private onboardingUseCases: IOnboardingUseCases,
+    @Inject(NOTIFICATION_USE_CASES)
+    private notificationUseCase: INotificationUseCases,
+    @Inject(INVITATION_RECIPIENT_SERVICE)
+    private invitationRecipientService: IInvitationRecipientService,
     @Inject(MEMBER_USE_CASES) private memberUseCases: IMemberUseCases,
-    @Inject(ATHLETE_USE_CASES) private athleteUseCases: IAthleteUseCases,
-    @Inject(USER_USE_CASES) private userUseCases: IUserUseCases,
-  ) { }
+    @Inject(ATHLETE_REPO) private athleteRepository: IAthleteRepository,
+    @Inject(USER_USE_CASES) private userUseCases: IUserUseCases
+  ) {}
 
   /**
    * NestJS lifecycle hook called automatically when the module starts.
@@ -78,17 +89,32 @@ export class BetterAuthAdapter implements OnModuleInit {
    * Enriches the session returned by getSession with organizationRole and athleteId.
    * Called by customSession plugin on each getSession(); no extra DB columns.
    */
-  private async enrichSession(ctx: CustomSessionContext): Promise<EnrichedSessionResult> {
+  private async enrichSession(
+    ctx: CustomSessionContext
+  ): Promise<EnrichedSessionResult> {
     const { user, session } = ctx;
-    const activeOrgId = session.activeOrganizationId as string | undefined;
-    let organizationRole: string | null = null;
+    const activeOrganizationId = session.activeOrganizationId;
+    const activeOrgId =
+      typeof activeOrganizationId === 'string'
+        ? activeOrganizationId
+        : undefined;
+    let organizationRole: OrganizationRole | null = null;
     let athleteId: string | null = null;
 
     if (user?.id) {
       if (activeOrgId) {
-        organizationRole = await this.memberUseCases.getMemberRole(user.id, activeOrgId);
+        const rawOrganizationRole = await this.memberUseCases.getMemberRole(
+          user.id,
+          activeOrgId
+        );
+        const parsedOrganizationRole =
+          organizationRoleSchema.safeParse(rawOrganizationRole);
+        organizationRole = parsedOrganizationRole.success
+          ? parsedOrganizationRole.data
+          : null;
       }
-      athleteId = await this.athleteUseCases.getAthleteId(user.id);
+      const athlete = await this.athleteRepository.findByUserId(user.id);
+      athleteId = athlete?.id ?? null;
     }
 
     return {
@@ -112,12 +138,20 @@ export class BetterAuthAdapter implements OnModuleInit {
     }
 
     this._auth = createAuthConfig({
-      afterCreateInvitation: async (data) => {
+      afterCreateInvitation: async (data: {
+        invitation: Invitation;
+        inviter: { name: string };
+        organization: { id: string; name: string };
+      }) => {
         const { isNewUser, hasOtherOrganization } =
-          await this.onboardingUseCases.prepareUserForInvitation(
+          await this.invitationRecipientService.getNotificationContext(
             data.invitation.email,
-            data.organization.id,
+            data.organization.id
           );
+
+        const invitationRole = invitableOrganizationRoleSchema.parse(
+          data.invitation.role
+        );
 
         this.notificationUseCase.sendOrganizationInvitation({
           organizationId: data.organization.id,
@@ -125,12 +159,17 @@ export class BetterAuthAdapter implements OnModuleInit {
           invitedBy: data.inviter.name,
           invitationToken: data.invitation.id,
           email: data.invitation.email,
+          organizationRole: invitationRole,
           isNewUser,
           hasOtherOrganization,
         });
       },
       sendVerificationOTP: (data) => {
-        this.notificationUseCase.sendOtp({ otp: data.otp, email: data.email, type: data.type });
+        this.notificationUseCase.sendOtp({
+          otp: data.otp,
+          email: data.email,
+          type: data.type,
+        });
       },
       enrichSession: (ctx) => this.enrichSession(ctx),
       checkIsSuperAdminByEmail: (email) => this.checkIsSuperAdminByEmail(email),
@@ -140,11 +179,16 @@ export class BetterAuthAdapter implements OnModuleInit {
             before: async (session) => {
               try {
                 const activeOrganizationId =
-                  await this.memberUseCases.getActiveOrganizationId(session.userId);
-                console.log('🔧 [BetterAuth Hook] Setting session activeOrganizationId:', {
-                  userId: session.userId,
-                  activeOrganizationId,
-                });
+                  await this.memberUseCases.getActiveOrganizationId(
+                    session.userId
+                  );
+                console.log(
+                  '🔧 [BetterAuth Hook] Setting session activeOrganizationId:',
+                  {
+                    userId: session.userId,
+                    activeOrganizationId,
+                  }
+                );
                 return {
                   data: {
                     ...session,
@@ -152,14 +196,17 @@ export class BetterAuthAdapter implements OnModuleInit {
                   },
                 };
               } catch (error) {
-                console.error('❌ [BetterAuth Hook] Error setting session data:', error);
+                console.error(
+                  '❌ [BetterAuth Hook] Error setting session data:',
+                  error
+                );
                 return { data: session };
               }
             },
           },
         },
       },
-    }) as unknown as Auth;
+    });
   }
 
   /**
@@ -174,7 +221,9 @@ export class BetterAuthAdapter implements OnModuleInit {
       console.error(
         'BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first'
       );
-      throw new Error('BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first');
+      throw new Error(
+        'BetterAuthAdapter: BetterAuth not initialized - call onModuleInit first'
+      );
     }
     return this._auth;
   }

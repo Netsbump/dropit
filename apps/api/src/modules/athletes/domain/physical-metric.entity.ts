@@ -7,10 +7,10 @@ export class PhysicalMetric {
   id!: string;
 
   @Property({ nullable: true })
-  weight?: number;
+  weight!: number | null;
 
   @Property({ type: 'float', nullable: true })
-  height?: number;
+  height!: number | null;
 
   @Property()
   date!: Date;

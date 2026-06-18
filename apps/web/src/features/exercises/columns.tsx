@@ -60,16 +60,12 @@ export const columns: ColumnDef<Exercise>[] = [
   },
   {
     accessorKey: 'englishName',
-    header: () => (
-      <div className="text-left font-medium">Nom Anglais</div>
-    ),
+    header: () => <div className="text-left font-medium">Nom Anglais</div>,
     cell: ({ row }) => row.getValue('englishName') || '—',
   },
   {
     accessorKey: 'shortName',
-    header: () => (
-      <div className="text-left font-medium">Abréviation</div>
-    ),
+    header: () => <div className="text-left font-medium">Abréviation</div>,
     cell: ({ row }) => row.getValue('shortName') || '—',
   },
   {
@@ -88,20 +84,15 @@ export const columns: ColumnDef<Exercise>[] = [
     },
     cell: ({ row }) => {
       const categoryName = row.original.exerciseCategory?.name || '—';
-      
+
       const badgeVariant = getCategoryBadgeVariant(categoryName);
-      
-      return (
-        <Badge className={badgeVariant}>
-          {categoryName}
-        </Badge>
-      );
+
+      return <Badge className={badgeVariant}>{categoryName}</Badge>;
     },
   },
   {
     id: 'actions',
     cell: () => {
-
       return (
         <div className="flex justify-center">
           <DropdownMenu>

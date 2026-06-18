@@ -8,7 +8,9 @@ interface TrainingSessionWeekViewProps {
   trainingSession: TrainingSessionDto;
 }
 
-export function TrainingSessionWeekView({ trainingSession }: TrainingSessionWeekViewProps) {
+export function TrainingSessionWeekView({
+  trainingSession,
+}: TrainingSessionWeekViewProps) {
   const { t } = useTranslation('planning');
 
   return (
@@ -50,7 +52,8 @@ export function TrainingSessionWeekView({ trainingSession }: TrainingSessionWeek
                     : 'bg-secondary text-secondary-foreground'
                 )}
               >
-                {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)} sets
+                {element.blocks.reduce((sum, b) => sum + b.numberOfSets, 0)}{' '}
+                sets
               </Badge>
             </div>
           </div>

@@ -26,7 +26,10 @@ function Signup() {
         <div className="bg-white/80 backdrop-blur-sm border rounded-2xl shadow-sm p-8">
           <AuthLogo />
 
-          <AuthFormHeader title={t('signup.title')} description={t('signup.description')} />
+          <AuthFormHeader
+            title={t('signup.title')}
+            description={t('signup.description')}
+          />
 
           <SignupForm
             onSuccess={handleSuccess}

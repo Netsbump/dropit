@@ -2,7 +2,6 @@ import { PersonalRecordDto, PersonalRecordsSummary } from '@dropit/schemas';
 import { PersonalRecordException } from '../../application/exceptions/personal-record.exceptions';
 
 export const PersonalRecordPresenter = {
-
   present(personalRecords: PersonalRecordDto[]) {
     return {
       status: 200 as const,
@@ -49,14 +48,14 @@ export const PersonalRecordPresenter = {
     if (error instanceof PersonalRecordException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
     console.error('PersonalRecord unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-}; 
+  },
+};

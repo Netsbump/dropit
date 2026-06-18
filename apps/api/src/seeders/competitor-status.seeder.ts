@@ -38,7 +38,9 @@ export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
 
   const n = Math.min(athletes.length, competitorData.length);
   for (let i = 0; i < n; i++) {
-    const existing = await em.findOne(CompetitorStatus, { athlete: athletes[i] });
+    const existing = await em.findOne(CompetitorStatus, {
+      athlete: athletes[i],
+    });
     if (existing) continue;
 
     const status = new CompetitorStatus();

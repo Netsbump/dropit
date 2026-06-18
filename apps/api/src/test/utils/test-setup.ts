@@ -29,7 +29,7 @@ export async function createTestOrganization(orm: MikroORM): Promise<TestData> {
   organization.name = 'Test Organization';
   organization.slug = 'test-organization';
   organization.metadata = JSON.stringify({
-    description: 'Organisation de test pour les tests d\'intégration',
+    description: "Organisation de test pour les tests d'intégration",
     type: 'coaching',
     createdAt: new Date().toISOString(),
   });
@@ -71,4 +71,4 @@ export async function createTestOrganization(orm: MikroORM): Promise<TestData> {
     adminMember,
     memberMember,
   };
-} 
+}

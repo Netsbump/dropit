@@ -1,11 +1,24 @@
-import { BetterAuthOptions, User, betterAuth } from "better-auth";
-import { createAuthMiddleware, APIError } from "better-auth/api";
-import { openAPI, admin, customSession, emailOTP, bearer, EmailOTPOptions } from "better-auth/plugins";
-import { Pool } from "pg";
-import { config } from "../../config/env.config";
-import { organization, Organization, Invitation } from "better-auth/plugins/organization";
+import { BetterAuthOptions, User, betterAuth } from 'better-auth';
+import { createAuthMiddleware, APIError } from 'better-auth/api';
+import {
+  openAPI,
+  admin,
+  customSession,
+  emailOTP,
+  bearer,
+  EmailOTPOptions,
+} from 'better-auth/plugins';
+import { Pool } from 'pg';
+import { config } from '../../config/env.config';
+import {
+  organization,
+  Organization,
+  Invitation,
+} from 'better-auth/plugins/organization';
 
-export type SendVerificationOTP = Parameters<EmailOTPOptions["sendVerificationOTP"]>[0];
+export type SendVerificationOTP = Parameters<
+  EmailOTPOptions['sendVerificationOTP']
+>[0];
 
 /** Context passed by customSession plugin (user + session from DB) */
 export interface CustomSessionContext {
@@ -29,12 +42,10 @@ interface BetterAuthDeps {
   enrichSession: (ctx: CustomSessionContext) => Promise<EnrichedSessionResult>;
   /** Returns true if the email belongs to a super admin (role === 'admin'). */
   checkIsSuperAdminByEmail: (email: string) => Promise<boolean>;
-  databaseHooks: BetterAuthOptions["databaseHooks"];
+  databaseHooks: BetterAuthOptions['databaseHooks'];
 }
 
-export function createAuthConfig(
-  deps: BetterAuthDeps
-) {
+export function createAuthConfig(deps: BetterAuthDeps) {
   return betterAuth({
     // === STATIC (env.config) ===
     secret: config.betterAuth.secret,
@@ -58,9 +69,9 @@ export function createAuthConfig(
     },
     // Disable unused routes to reduce attack surface and prevent email enumeration
     disabledPaths: [
-      "/email-otp/check-verification-otp",
-      "/email-otp/verify-email",
-      "/sign-up/email",
+      '/email-otp/check-verification-otp',
+      '/email-otp/verify-email',
+      '/sign-up/email',
     ],
 
     // Restrict signIn.email to super admins only (role === 'admin').
@@ -92,7 +103,7 @@ export function createAuthConfig(
         disableSignUp: true,
         async sendVerificationOTP(data) {
           deps.sendVerificationOTP(data);
-        }
+        },
       }),
       organization({
         allowUserToCreateOrganization: async (user) => {
@@ -106,5 +117,7 @@ export function createAuthConfig(
       }),
       customSession(async (ctx) => deps.enrichSession(ctx)),
     ],
-  })
+  });
 }
+
+export type BetterAuthInstance = ReturnType<typeof createAuthConfig>;

@@ -1,9 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import DashboardCarousel from './DashboardCarousel';
 import BottomNavigation from './BottomNavigation';
@@ -15,9 +11,13 @@ import { api } from '../lib/api';
 import type { AthleteDetailsDto } from '@dropit/schemas';
 
 export default function DashboardScreen() {
-  const [activeTab, setActiveTab] = useState<'pr' | 'dashboard' | 'account'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'pr' | 'dashboard' | 'account'>(
+    'dashboard'
+  );
   const [showTraining, setShowTraining] = useState(false);
-  const [athleteData, setAthleteData] = useState<AthleteDetailsDto | null>(null);
+  const [athleteData, setAthleteData] = useState<AthleteDetailsDto | null>(
+    null
+  );
   const [athleteId, setAthleteId] = useState<string | null>(null);
 
   // Fetch athleteId from session on mount
@@ -45,7 +45,10 @@ export default function DashboardScreen() {
           params: { id: athleteId },
         });
 
-        const data = typeof response.body === 'string' ? JSON.parse(response.body) : response.body;
+        const data =
+          typeof response.body === 'string'
+            ? JSON.parse(response.body)
+            : response.body;
 
         if (response.status === 200) {
           setAthleteData(data);
@@ -57,7 +60,6 @@ export default function DashboardScreen() {
 
     fetchAthleteData();
   }, [athleteId]);
-
 
   const handleTabPress = (tab: 'pr' | 'dashboard' | 'account') => {
     setActiveTab(tab);
@@ -98,7 +100,9 @@ export default function DashboardScreen() {
 
       {/* Greeting */}
       <View style={styles.greetingContainer}>
-        <Text style={styles.greeting}>Bonjour, {athleteData?.firstName || 'Athlète'}</Text>
+        <Text style={styles.greeting}>
+          Bonjour, {athleteData?.firstName || 'Athlète'}
+        </Text>
       </View>
 
       {/* Carousel Content */}
@@ -107,10 +111,7 @@ export default function DashboardScreen() {
       </View>
 
       {/* Bottom Navigation */}
-      <BottomNavigation
-        activeTab={activeTab}
-        onTabPress={handleTabPress}
-      />
+      <BottomNavigation activeTab={activeTab} onTabPress={handleTabPress} />
     </View>
   );
 }

@@ -1,0 +1,9 @@
+{
+  "title": "Library",
+  "description": "Find and manage all your workouts, complexes and exercises here",
+  "tabs": {
+    "workouts": "Workouts",
+    "complex": "Complex",
+    "exercises": "Exercises"
+  }
+}

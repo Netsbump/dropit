@@ -4,7 +4,10 @@ import { WorkoutElement } from '../domain/workout-element.entity';
 import { IWorkoutElementRepository } from '../application/ports/workout-element.repository.port';
 
 @Injectable()
-export class MikroWorkoutElementRepository extends EntityRepository<WorkoutElement> implements IWorkoutElementRepository {
+export class MikroWorkoutElementRepository
+  extends EntityRepository<WorkoutElement>
+  implements IWorkoutElementRepository
+{
   constructor(public readonly em: EntityManager) {
     super(em, WorkoutElement);
   }
@@ -15,9 +18,9 @@ export class MikroWorkoutElementRepository extends EntityRepository<WorkoutEleme
 
   async remove(id: string, organizationId: string): Promise<void> {
     const workoutElement = await this.em.findOne(WorkoutElement, { id });
-    
+
     if (workoutElement) {
       await this.em.removeAndFlush(workoutElement);
     }
   }
-} 
+}

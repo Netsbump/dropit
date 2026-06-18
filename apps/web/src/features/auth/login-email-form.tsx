@@ -18,7 +18,7 @@ import { Input } from '@/components/ui/input';
 import { useTranslation } from '@dropit/i18n';
 
 type LoginEmailFormData = {
-  email: string
+  email: string;
 };
 
 interface LoginEmailFormProps {
@@ -47,7 +47,7 @@ export function LoginEmailForm({
     mutationFn: async (values: LoginEmailFormData) => {
       await authClient.emailOtp.sendVerificationOtp({
         email: values.email,
-        type: 'sign-in'
+        type: 'sign-in',
       });
       return values.email;
     },
@@ -60,9 +60,8 @@ export function LoginEmailForm({
         description: t(getAuthErrorKey(error.message)),
         variant: 'destructive',
       });
-    }
+    },
   });
-
 
   function onSubmitEmail(values: LoginEmailFormData) {
     loginEmailMutation.mutate(values);
@@ -71,7 +70,10 @@ export function LoginEmailForm({
   return (
     <div>
       <Form {...emailForm}>
-        <form onSubmit={emailForm.handleSubmit(onSubmitEmail)} className="space-y-4">
+        <form
+          onSubmit={emailForm.handleSubmit(onSubmitEmail)}
+          className="space-y-4"
+        >
           <FormField
             control={emailForm.control}
             name="email"
@@ -79,7 +81,10 @@ export function LoginEmailForm({
               <FormItem>
                 <FormLabel>{t('login.email')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('common.placeholders.email')} {...field} />
+                  <Input
+                    placeholder={t('common.placeholders.email')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

@@ -116,10 +116,9 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)}>
           <div className="space-y-6">
-
             {/* Premier bloc - Vidéo */}
             <CardHeader className="space-y-4 p-0">
-              <Label className='text-gray-500' >Vidéo</Label>
+              <Label className="text-gray-500">Vidéo</Label>
               <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
                 Aucune vidéo (placeholder)
               </div>
@@ -132,7 +131,7 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                 name="name"
                 render={({ field, fieldState }) => (
                   <FormItem>
-                    <FormLabel className='text-gray-500' >Nom</FormLabel>
+                    <FormLabel className="text-gray-500">Nom</FormLabel>
                     <FormControl className="bg-white">
                       <Input placeholder="Nom de l'exercice" {...field} />
                     </FormControl>
@@ -154,7 +153,9 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                     name="exerciseCategory"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className='text-gray-500' >Catégorie</FormLabel>
+                        <FormLabel className="text-gray-500">
+                          Catégorie
+                        </FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           defaultValue={field.value}
@@ -192,7 +193,9 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                       name="shortName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-gray-500' >Abbréviation</FormLabel>
+                          <FormLabel className="text-gray-500">
+                            Abbréviation
+                          </FormLabel>
                           <FormControl className="bg-white">
                             <Input placeholder="Abbréviation" {...field} />
                           </FormControl>
@@ -206,7 +209,9 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                       name="englishName"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className='text-gray-500' >Nom en anglais</FormLabel>
+                          <FormLabel className="text-gray-500">
+                            Nom en anglais
+                          </FormLabel>
                           <FormControl className="bg-white">
                             <Input {...field} />
                           </FormControl>
@@ -217,28 +222,32 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                 </div>
               </div>
             </CardContent>
-     
+
             <Separator />
             {/* Quatrième bloc - Métadonnées */}
             <CardContent className="p-0">
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className='text-gray-500'>Créé le</Label>
+                    <Label className="text-gray-500">Créé le</Label>
                     <p className="text-sm font-semibold text-gray-600">
                       {format(new Date(), 'Pp', { locale: fr })}
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <Label className='text-gray-500'>Dernière modification</Label>
+                    <Label className="text-gray-500">
+                      Dernière modification
+                    </Label>
                     <p className="text-sm font-semibold text-gray-600">
                       {format(new Date(), 'Pp', { locale: fr })}
                     </p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label className='text-gray-500'>Auteur</Label>
-                  <p className="text-sm font-semibold text-gray-600">John Doe</p>
+                  <Label className="text-gray-500">Auteur</Label>
+                  <p className="text-sm font-semibold text-gray-600">
+                    John Doe
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -266,21 +275,21 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
     <div className="space-y-6">
       {/* Premier bloc - Vidéo */}
       <CardHeader className="space-y-4 p-0">
-        <Label className='text-gray-500' >Vidéo</Label>
+        <Label className="text-gray-500">Vidéo</Label>
         <div className="aspect-video bg-muted rounded-lg flex items-center justify-center text-muted-foreground">
           Aucune vidéo (placeholder)
         </div>
       </CardHeader>
 
-       {/* Second bloc - Informations principales */}
+      {/* Second bloc - Informations principales */}
       <CardContent className="space-y-4 p-0">
         <div className="space-y-2">
-          <Label className='text-gray-500' >Nom</Label>
+          <Label className="text-gray-500">Nom</Label>
           <p className="text-sm font-semibold text-gray-600">{exercise.name}</p>
         </div>
 
         <div className="space-y-2">
-          <Label className='text-gray-500' >Description</Label>
+          <Label className="text-gray-500">Description</Label>
           <p className="text-sm font-semibold text-gray-600">
             {exercise.description || 'pas de description'}
           </p>
@@ -292,21 +301,27 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
       <CardContent className="p-0">
         <div className="space-y-4">
           <div className="space-y-2 space-x-2">
-            <Label className='text-gray-500' >Catégorie</Label>
-            <Badge 
-              className={`text-xs border-0 ${getCategoryBadgeVariant(exercise.exerciseCategory.name)}`}
+            <Label className="text-gray-500">Catégorie</Label>
+            <Badge
+              className={`text-xs border-0 ${getCategoryBadgeVariant(
+                exercise.exerciseCategory.name
+              )}`}
             >
               {exercise.exerciseCategory.name}
             </Badge>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className='text-gray-500' >Nom court</Label>
-              <p className="text-sm font-semibold text-gray-600">{exercise.shortName || '-'}</p>
+              <Label className="text-gray-500">Nom court</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {exercise.shortName || '-'}
+              </p>
             </div>
             <div className="space-y-2">
-              <Label className='text-gray-500' >Nom anglais</Label>
-              <p className="text-sm font-semibold text-gray-600">{exercise.englishName || '-'}</p>
+              <Label className="text-gray-500">Nom anglais</Label>
+              <p className="text-sm font-semibold text-gray-600">
+                {exercise.englishName || '-'}
+              </p>
             </div>
           </div>
         </div>
@@ -318,20 +333,20 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
         <div className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label className='text-gray-500' >Créé le</Label>
+              <Label className="text-gray-500">Créé le</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>
             </div>
             <div className="space-y-2">
-              <Label className='text-gray-500' >Dernière modification</Label>
+              <Label className="text-gray-500">Dernière modification</Label>
               <p className="text-sm font-semibold text-gray-600">
                 {format(new Date(), 'Pp', { locale: fr })}
               </p>
             </div>
           </div>
           <div className="space-y-2">
-            <Label className='text-gray-500' >Auteur</Label>
+            <Label className="text-gray-500">Auteur</Label>
             <p className="text-sm font-semibold text-gray-600">John Doe</p>
           </div>
         </div>

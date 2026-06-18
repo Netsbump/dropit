@@ -1,4 +1,4 @@
-import { Athlete } from "../../domain/athlete.entity";
+import { Athlete } from '../../domain/athlete.entity';
 
 export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 

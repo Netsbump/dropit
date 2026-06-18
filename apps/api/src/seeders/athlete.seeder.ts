@@ -9,7 +9,7 @@ import { Account } from '../modules/auth/domain/auth/account.entity';
 const TARGET_ATHLETE_COUNT = 19;
 
 export async function seedAthletes(
-  em: EntityManager,
+  em: EntityManager
 ): Promise<{ athletes: Athlete[]; coach: Athlete }> {
   console.log('Ensuring super admin...');
 

@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const endpoint = `${request.method} ${request.url}`;
-    
+
     try {
       console.log('🔑 [AuthGuard] Checking authentication for:', endpoint);
 
@@ -36,7 +36,9 @@ export class AuthGuard implements CanActivate {
       // Check if the route is marked as optional
       const isOptional = this.reflector.get('OPTIONAL', context.getHandler());
       if (isOptional && !session) {
-        console.log('⚠️ [AuthGuard] Optional route, no session found but access granted');
+        console.log(
+          '⚠️ [AuthGuard] Optional route, no session found but access granted'
+        );
         return true;
       }
 

@@ -1,4 +1,3 @@
-
 import { useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,15 +27,21 @@ interface LoginFormProps {
   onSuccess?: () => void;
 }
 
-export function LoginAdminForm({
-  onSuccess,
-}: LoginFormProps) {
+export function LoginAdminForm({ onSuccess }: LoginFormProps) {
   const { t } = useTranslation(['auth']);
 
-  const formSchema = useMemo(() => z.object({
-    email: z.string().email({ message: t('common.validation.emailRequired') }),
-    password: z.string().min(6, { message: t('common.validation.passwordMinLength') }),
-  }), [t]);
+  const formSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email({ message: t('common.validation.emailRequired') }),
+        password: z
+          .string()
+          .min(6, { message: t('common.validation.passwordMinLength') }),
+      }),
+    [t]
+  );
 
   const form = useForm<LoginFormData>({
     resolver: zodResolver(formSchema),
@@ -91,7 +96,10 @@ export function LoginAdminForm({
               <FormItem>
                 <FormLabel>{t('login.email')}</FormLabel>
                 <FormControl>
-                  <Input placeholder={t('common.placeholders.email')} {...field} />
+                  <Input
+                    placeholder={t('common.placeholders.email')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -104,7 +112,11 @@ export function LoginAdminForm({
               <FormItem>
                 <FormLabel>{t('login.password')}</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder={t('common.placeholders.password')} {...field} />
+                  <Input
+                    type="password"
+                    placeholder={t('common.placeholders.password')}
+                    {...field}
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -117,10 +129,10 @@ export function LoginAdminForm({
           >
             {loginMutation.isPending
               ? t('login.buttonLoading')
-              : t('login.button')}
+              : t('login.buttonAdmin')}
           </Button>
         </form>
       </Form>
     </div>
   );
-} 
+}

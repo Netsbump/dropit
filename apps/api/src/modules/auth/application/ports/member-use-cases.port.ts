@@ -1,4 +1,5 @@
 import { CoachFilterConditions } from './member.repository.port';
+import type { OrganizationRole } from '@dropit/schemas';
 
 /**
  * Member Use Cases Port
@@ -22,17 +23,25 @@ export interface IMemberUseCases {
   /**
    * Check if a user is a coach of an organization
    */
-  isUserCoachInOrganization(userId: string, organizationId: string): Promise<boolean>;
+  isUserCoachInOrganization(
+    userId: string,
+    organizationId: string
+  ): Promise<boolean>;
 
   /**
    * Check if an athlete belongs to an organization
    */
-  isUserAthleteInOrganization(athleteId: string, organizationId: string): Promise<boolean>;
+  isUserAthleteInOrganization(
+    athleteId: string,
+    organizationId: string
+  ): Promise<boolean>;
 
   /**
    * Generate the filter conditions for entities created by coaches
    */
-  getCoachFilterConditions(organizationId: string): Promise<CoachFilterConditions>;
+  getCoachFilterConditions(
+    organizationId: string
+  ): Promise<CoachFilterConditions>;
 
   /**
    * Get the active organization ID for a user, null if not a member of any org
@@ -42,7 +51,10 @@ export interface IMemberUseCases {
   /**
    * Get the role of a user in a specific organization, null if not a member
    */
-  getMemberRole(userId: string, organizationId: string): Promise<string | null>;
+  getMemberRole(
+    userId: string,
+    organizationId: string
+  ): Promise<OrganizationRole | null>;
 }
 
 /**

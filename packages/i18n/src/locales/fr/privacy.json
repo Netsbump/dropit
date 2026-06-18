@@ -122,17 +122,28 @@
         {
           "type": "Consentement (Art. 6.1.a RGPD)",
           "description": "Vous avez consenti au traitement de vos données personnelles lors de votre inscription en acceptant cette politique de confidentialité via la case à cocher obligatoire.",
-          "examples": ["Création de compte", "Acceptation des conditions d'utilisation"]
+          "examples": [
+            "Création de compte",
+            "Acceptation des conditions d'utilisation"
+          ]
         },
         {
           "type": "Exécution d'un contrat (Art. 6.1.b RGPD)",
           "description": "Le traitement est nécessaire à l'exécution du service que vous avez demandé : la gestion de votre entraînement sportif et le suivi de vos performances.",
-          "examples": ["Accès aux fonctionnalités de l'application", "Suivi des entraînements", "Calcul des statistiques"]
+          "examples": [
+            "Accès aux fonctionnalités de l'application",
+            "Suivi des entraînements",
+            "Calcul des statistiques"
+          ]
         },
         {
           "type": "Intérêt légitime (Art. 6.1.f RGPD)",
           "description": "Nous avons un intérêt légitime à traiter certaines données pour assurer la sécurité de la plateforme et prévenir la fraude.",
-          "examples": ["Logs de sécurité", "Détection d'activités suspectes", "Amélioration du service"]
+          "examples": [
+            "Logs de sécurité",
+            "Détection d'activités suspectes",
+            "Amélioration du service"
+          ]
         }
       ]
     },

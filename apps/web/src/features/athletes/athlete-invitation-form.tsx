@@ -1,4 +1,3 @@
-import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
@@ -12,26 +11,26 @@ import { useTranslation } from '@dropit/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
-import { Mail, UserPlus, Send } from 'lucide-react';
-import { authClient } from '@/lib/auth-client';
+import { Mail, UserPlus } from 'lucide-react';
+import { api } from '@/lib/api';
 import { getAuthErrorKey } from '@/lib/auth-errors';
 
 type AthleteInvitationFormProps = {
+  formId: string;
   onSuccess: () => void;
-  onCancel: () => void;
 };
 
 export function AthleteInvitationForm({
+  formId,
   onSuccess,
-  onCancel,
 }: AthleteInvitationFormProps) {
-  const [isLoading, setIsLoading] = useState(false);
   const { t } = useTranslation(['athletes']);
 
   const invitationSchema = z.object({
+    firstName: z.string().min(1, t('invitation.first_name_required')),
+    lastName: z.string().min(1, t('invitation.last_name_required')),
     email: z.string().email(t('invitation.email_required')),
   });
 
@@ -39,16 +38,15 @@ export function AthleteInvitationForm({
 
   const { mutate: sendInvitationMutation } = useMutation({
     mutationFn: async (data: InvitationFormData) => {
-      const response = await authClient.organization.inviteMember({
-        email: data.email,
-        role: 'member',
+      const response = await api.athlete.inviteAthlete({
+        body: data,
       });
 
-      if (response.error) {
-        throw new Error(response.error.code ?? response.error.message);
+      if (response.status !== 201) {
+        throw new Error('Failed to send invitation');
       }
 
-      return response.data;
+      return data;
     },
     onSuccess: (data) => {
       toast({
@@ -60,7 +58,9 @@ export function AthleteInvitationForm({
     onError: (error) => {
       toast({
         title: t('invitation.error_title'),
-        description: t(getAuthErrorKey(error instanceof Error ? error.message : undefined)),
+        description: t(
+          getAuthErrorKey(error instanceof Error ? error.message : undefined)
+        ),
         variant: 'destructive',
       });
     },
@@ -69,19 +69,14 @@ export function AthleteInvitationForm({
   const form = useForm<InvitationFormData>({
     resolver: zodResolver(invitationSchema),
     defaultValues: {
+      firstName: '',
+      lastName: '',
       email: '',
     },
   });
 
   async function onSubmit(values: InvitationFormData) {
-    try {
-      setIsLoading(true);
-      sendInvitationMutation(values);
-    } catch (error) {
-      console.error('Failed to send invitation:', error);
-    } finally {
-      setIsLoading(false);
-    }
+    sendInvitationMutation(values);
   }
 
   return (
@@ -91,13 +86,55 @@ export function AthleteInvitationForm({
           <UserPlus className="w-6 h-6 text-blue-600" />
         </div>
         <h3 className="text-lg font-semibold">{t('invitation.title')}</h3>
-        <p className="text-sm text-gray-600">
-          {t('invitation.description')}
-        </p>
+        <p className="text-sm text-gray-600">{t('invitation.description')}</p>
       </div>
 
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <form
+          id={formId}
+          onSubmit={form.handleSubmit(onSubmit)}
+          className="space-y-4"
+        >
+          <FormField
+            control={form.control}
+            name="firstName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('invitation.first_name')}{' '}
+                  <span className="text-destructive ml-1">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('invitation.first_name_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="lastName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>
+                  {t('invitation.last_name')}{' '}
+                  <span className="text-destructive ml-1">*</span>
+                </FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t('invitation.last_name_placeholder')}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
           <FormField
             control={form.control}
             name="email"
@@ -105,13 +142,14 @@ export function AthleteInvitationForm({
               <FormItem>
                 <FormLabel className="flex items-center gap-2">
                   <Mail className="w-4 h-4" />
-                  {t('invitation.email')} <span className="text-destructive ml-1">*</span>
+                  {t('invitation.email')}{' '}
+                  <span className="text-destructive ml-1">*</span>
                 </FormLabel>
                 <FormControl>
-                  <Input 
-                    type="email" 
-                    placeholder={t('invitation.email_placeholder')} 
-                    {...field} 
+                  <Input
+                    type="email"
+                    placeholder={t('invitation.email_placeholder')}
+                    {...field}
                   />
                 </FormControl>
                 <FormMessage />
@@ -120,7 +158,9 @@ export function AthleteInvitationForm({
           />
 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-medium text-blue-900 mb-2">{t('invitation.how_it_works')}</h4>
+            <h4 className="font-medium text-blue-900 mb-2">
+              {t('invitation.how_it_works')}
+            </h4>
             <ul className="text-sm text-blue-800 space-y-1">
               <li>• {t('invitation.how_it_works_steps.0')}</li>
               <li>• {t('invitation.how_it_works_steps.1')}</li>
@@ -128,36 +168,8 @@ export function AthleteInvitationForm({
               <li>• {t('invitation.how_it_works_steps.3')}</li>
             </ul>
           </div>
-
-          <div className="flex justify-end gap-2 pt-4">
-            <Button 
-              type="button" 
-              variant="outline" 
-              onClick={onCancel} 
-              disabled={isLoading}
-            >
-              {t('invitation.button_cancel')}
-            </Button>
-            <Button 
-              type="submit" 
-              disabled={isLoading}
-              className="flex items-center gap-2"
-            >
-              {isLoading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  {t('invitation.sending')}
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4" />
-                  {t('invitation.button_send')}
-                </>
-              )}
-            </Button>
-          </div>
         </form>
       </Form>
     </div>
   );
-} 
+}

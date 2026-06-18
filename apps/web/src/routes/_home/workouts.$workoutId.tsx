@@ -38,17 +38,17 @@ function WorkoutDetailPage() {
   // Update page meta with title and back button
   useEffect(() => {
     setPageMeta({
-      title: t('workout.detail.title'),
+      title: t('workout:detail.title'),
       showBackButton: true,
-      onBackClick: () => navigate({ to: '/library/workouts' })
+      onBackClick: () => navigate({ to: '/library/workouts' }),
     });
 
     // Cleanup: reset to default when leaving the page
     return () => {
       setPageMeta({
-        title: t('library.title'),
+        title: t('library:title'),
         showBackButton: false,
-        onBackClick: undefined
+        onBackClick: undefined,
       });
     };
   }, [setPageMeta, navigate, t]);
@@ -73,10 +73,7 @@ function WorkoutDetailPage() {
 
   return (
     <div className="p-4">
-      <WorkoutDetail
-        workout={workout}
-        onEdit={() => setIsEditing(true)}
-      />
+      <WorkoutDetail workout={workout} onEdit={() => setIsEditing(true)} />
     </div>
   );
 }

@@ -28,10 +28,18 @@ export function UserProfileSection() {
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
 
-  const updateUserSchema = useMemo(() => z.object({
-    name: z.string().min(1, { message: t('common:validation.nameRequired') }),
-    email: z.string().email({ message: t('common:validation.emailRequired') }),
-  }), [t]);
+  const updateUserSchema = useMemo(
+    () =>
+      z.object({
+        name: z
+          .string()
+          .min(1, { message: t('common:validation.nameRequired') }),
+        email: z
+          .string()
+          .email({ message: t('common:validation.emailRequired') }),
+      }),
+    [t]
+  );
 
   // Fetch current user
   const { data: user, isLoading } = useQuery({
@@ -122,7 +130,9 @@ export function UserProfileSection() {
     <div>
       <div className="mb-4">
         <h2 className="text-2xl font-semibold">{t('profile:user.title')}</h2>
-        <p className="text-sm text-gray-600 mt-1">{t('profile:user.description')}</p>
+        <p className="text-sm text-gray-600 mt-1">
+          {t('profile:user.description')}
+        </p>
       </div>
       <div>
         {!isEditing ? (

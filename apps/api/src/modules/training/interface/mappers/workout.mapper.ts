@@ -6,22 +6,26 @@ import { Exercise } from '../../domain/exercise.entity';
 import { Complex } from '../../domain/complex.entity';
 
 // Type guards for WorkoutElement discrimination
-const isExerciseElement = (element: WorkoutElement): element is WorkoutElement & { exercise: Exercise } => {
-  return element.type === 'exercise' && element.exercise !== undefined;
+const isExerciseElement = (
+  element: WorkoutElement
+): element is WorkoutElement & { exercise: Exercise } => {
+  return element.type === 'exercise' && element.exercise !== null;
 };
 
-const isComplexElement = (element: WorkoutElement): element is WorkoutElement & { complex: Complex } => {
-  return element.type === 'complex' && element.complex !== undefined;
+const isComplexElement = (
+  element: WorkoutElement
+): element is WorkoutElement & { complex: Complex } => {
+  return element.type === 'complex' && element.complex !== null;
 };
 
 export const WorkoutMapper = {
   toDto(workout: Workout): WorkoutDto {
-    const elements = workout.elements.getItems().map(element => {
+    const elements = workout.elements.getItems().map((element) => {
       const baseElement = {
         id: element.id,
         order: element.order,
-        tempo: element.tempo,
-        commentary: element.commentary,
+        tempo: element.tempo ?? undefined,
+        commentary: element.commentary ?? undefined,
         blocks: element.blocks,
       };
 
@@ -37,8 +41,8 @@ export const WorkoutMapper = {
               name: element.exercise.exerciseCategory.name,
             },
             video: element.exercise.video?.id,
-            englishName: element.exercise.englishName,
-            shortName: element.exercise.shortName,
+            englishName: element.exercise.englishName ?? undefined,
+            shortName: element.exercise.shortName ?? undefined,
           },
         };
       }
@@ -53,18 +57,20 @@ export const WorkoutMapper = {
               id: element.complex.complexCategory.id,
               name: element.complex.complexCategory.name,
             },
-            exercises: element.complex.exercises.getItems().map((ex: ExerciseComplex) => ({
-              id: ex.exercise.id,
-              name: ex.exercise.name,
-              exerciseCategory: {
-                id: ex.exercise.exerciseCategory.id,
-                name: ex.exercise.exerciseCategory.name,
-              },
-              video: ex.exercise.video?.id,
-              englishName: ex.exercise.englishName,
-              shortName: ex.exercise.shortName,
-              order: ex.order,
-            })),
+            exercises: element.complex.exercises
+              .getItems()
+              .map((ex: ExerciseComplex) => ({
+                id: ex.exercise.id,
+                name: ex.exercise.name,
+                exerciseCategory: {
+                  id: ex.exercise.exerciseCategory.id,
+                  name: ex.exercise.exerciseCategory.name,
+                },
+                video: ex.exercise.video?.id,
+                englishName: ex.exercise.englishName ?? undefined,
+                shortName: ex.exercise.shortName ?? undefined,
+                order: ex.order,
+              })),
           },
         };
       }
@@ -84,4 +90,4 @@ export const WorkoutMapper = {
   toDtoList(workouts: Workout[]): WorkoutDto[] {
     return workouts.map(this.toDto);
   },
-}
+};

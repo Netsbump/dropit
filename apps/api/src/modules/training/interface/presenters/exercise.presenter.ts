@@ -34,14 +34,14 @@ export const ExercisePresenter = {
     if (error instanceof ExerciseException) {
       return {
         status: error.statusCode as 400 | 403 | 404 | 500,
-        body: { message: error.message }
+        body: { message: error.message },
       };
     }
 
     console.error('Exercise unexpected error:', error);
     return {
       status: 500 as const,
-      body: { message: 'An error occurred while processing the request' }
+      body: { message: 'An error occurred while processing the request' },
     };
-  }
-} 
+  },
+};

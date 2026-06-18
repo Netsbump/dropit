@@ -5,6 +5,7 @@ import { NotificationModule } from './modules/notification/notification.module';
 import { AthletesModule } from './modules/athletes/athletes.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { TrainingModule } from './modules/training/training.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { TrainingModule } from './modules/training/training.module';
     AthletesModule,
     NotificationModule,
     TrainingModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [],

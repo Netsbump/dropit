@@ -1,4 +1,7 @@
-import { CreateExerciseCategoryInput, UpdateExerciseCategoryInput } from '@dropit/schemas';
+import {
+  CreateExerciseCategoryInput,
+  UpdateExerciseCategoryInput,
+} from '@dropit/schemas';
 import { ExerciseCategory } from '../../domain/exercise-category.entity';
 
 /**
@@ -17,7 +20,11 @@ export interface IExerciseCategoryUseCases {
   /**
    * Get one exercise category by ID
    */
-  getOne(exerciseCategoryId: string, organizationId: string, userId: string): Promise<ExerciseCategory>;
+  getOne(
+    exerciseCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory>;
 
   /**
    * Get all exercise categories for an organization
@@ -27,21 +34,36 @@ export interface IExerciseCategoryUseCases {
   /**
    * Create a new exercise category
    */
-  create(data: CreateExerciseCategoryInput, organizationId: string, userId: string): Promise<ExerciseCategory>;
+  create(
+    data: CreateExerciseCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory>;
 
   /**
    * Update an exercise category
    */
-  update(exerciseCategoryId: string, data: UpdateExerciseCategoryInput, organizationId: string, userId: string): Promise<ExerciseCategory>;
+  update(
+    exerciseCategoryId: string,
+    data: UpdateExerciseCategoryInput,
+    organizationId: string,
+    userId: string
+  ): Promise<ExerciseCategory>;
 
   /**
    * Delete an exercise category
    */
-  delete(exerciseCategoryId: string, organizationId: string, userId: string): Promise<void>;
+  delete(
+    exerciseCategoryId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void>;
 }
 
 /**
  * Injection token for IExerciseCategoryUseCases
  * Use this token in @Inject() decorators in controllers
  */
-export const EXERCISE_CATEGORY_USE_CASES = Symbol('EXERCISE_CATEGORY_USE_CASES');
+export const EXERCISE_CATEGORY_USE_CASES = Symbol(
+  'EXERCISE_CATEGORY_USE_CASES'
+);

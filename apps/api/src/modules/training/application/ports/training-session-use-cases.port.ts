@@ -1,4 +1,8 @@
-import { CreateTrainingSessionInput, UpdateAthleteTrainingSessionInput, UpdateTrainingSessionInput } from '@dropit/schemas';
+import {
+  CreateTrainingSessionInput,
+  UpdateAthleteTrainingSessionInput,
+  UpdateTrainingSessionInput,
+} from '@dropit/schemas';
 import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 
@@ -18,7 +22,11 @@ export interface ITrainingSessionUseCases {
   /**
    * Get one training session by ID
    */
-  getOne(trainingSessionId: string, organizationId: string, userId: string): Promise<TrainingSession>;
+  getOne(
+    trainingSessionId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession>;
 
   /**
    * Get all training sessions for an organization
@@ -28,32 +36,60 @@ export interface ITrainingSessionUseCases {
   /**
    * Get training sessions for a specific athlete with optional date range filter
    */
-  getByAthlete(athleteId: string, organizationId: string, userId: string, startDate?: string, endDate?: string): Promise<TrainingSession[]>;
+  getByAthlete(
+    athleteId: string,
+    organizationId: string,
+    userId: string,
+    startDate?: string,
+    endDate?: string
+  ): Promise<TrainingSession[]>;
 
   /**
    * Create a new training session
    */
-  create(data: CreateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession>;
+  create(
+    data: CreateTrainingSessionInput,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession>;
 
   /**
    * Update a training session
    */
-  update(sessionId: string, data: UpdateTrainingSessionInput, organizationId: string, userId: string): Promise<TrainingSession>;
+  update(
+    sessionId: string,
+    data: UpdateTrainingSessionInput,
+    organizationId: string,
+    userId: string
+  ): Promise<TrainingSession>;
 
   /**
    * Delete a training session
    */
-  delete(trainingSessionId: string, organizationId: string, userId: string): Promise<void>;
+  delete(
+    trainingSessionId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<void>;
 
   /**
    * Get all athlete training sessions for a training session
    */
-  getAthleteTrainingSessions(athleteId: string, organizationId: string, userId: string): Promise<AthleteTrainingSession[]>;
+  getAthleteTrainingSessions(
+    athleteId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<AthleteTrainingSession[]>;
 
   /**
    * Get one athlete training session by ID
    */
-  getOneAthleteTrainingSession(trainingSessionId: string, athleteId: string, organizationId: string, userId: string): Promise<AthleteTrainingSession>;
+  getOneAthleteTrainingSession(
+    trainingSessionId: string,
+    athleteId: string,
+    organizationId: string,
+    userId: string
+  ): Promise<AthleteTrainingSession>;
 
   /**
    * Update athlete training session

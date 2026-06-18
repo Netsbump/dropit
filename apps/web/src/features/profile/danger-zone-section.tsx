@@ -39,11 +39,21 @@ export function DangerZoneSection() {
   const navigate = useNavigate();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
-  const deleteAccountSchema = useMemo(() => z.object({
-    email: z.string().email({ message: t('common:validation.emailRequired') }),
-    password: z.string().min(1, { message: t('common:validation.passwordRequired') }),
-    confirmation: z.string().min(1, { message: t('common:validation.confirmationRequired') }),
-  }), [t]);
+  const deleteAccountSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .email({ message: t('common:validation.emailRequired') }),
+        password: z
+          .string()
+          .min(1, { message: t('common:validation.passwordRequired') }),
+        confirmation: z
+          .string()
+          .min(1, { message: t('common:validation.confirmationRequired') }),
+      }),
+    [t]
+  );
 
   const form = useForm<DeleteAccountFormData>({
     resolver: zodResolver(deleteAccountSchema),
@@ -105,7 +115,9 @@ export function DangerZoneSection() {
           <h2 className="text-2xl font-semibold text-red-600">
             {t('profile:danger.title')}
           </h2>
-          <p className="text-sm text-gray-600 mt-1">{t('profile:danger.description')}</p>
+          <p className="text-sm text-gray-600 mt-1">
+            {t('profile:danger.description')}
+          </p>
         </div>
         <div className="space-y-4">
           {/* Delete Account Section */}
@@ -137,7 +149,9 @@ export function DangerZoneSection() {
 
           <Alert variant="destructive">
             <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{t('profile:danger.delete_account.warning_title')}</AlertTitle>
+            <AlertTitle>
+              {t('profile:danger.delete_account.warning_title')}
+            </AlertTitle>
             <AlertDescription>
               {t('profile:danger.delete_account.warning_text')}
             </AlertDescription>

@@ -55,8 +55,14 @@ export class TestUseCaseFactory {
    */
   createExerciseCategoryUseCase(): ExerciseCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
-    const exerciseCategoryRepository = new MikroExerciseCategoryRepository(this.orm.em);
-    return new ExerciseCategoryUseCase(exerciseCategoryRepository, userUseCases, memberUseCases);
+    const exerciseCategoryRepository = new MikroExerciseCategoryRepository(
+      this.orm.em
+    );
+    return new ExerciseCategoryUseCase(
+      exerciseCategoryRepository,
+      userUseCases,
+      memberUseCases
+    );
   }
 
   /**
@@ -65,8 +71,15 @@ export class TestUseCaseFactory {
   createExerciseUseCase(): ExerciseUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
     const exerciseRepository = new MikroExerciseRepository(this.orm.em);
-    const exerciseCategoryRepository = new MikroExerciseCategoryRepository(this.orm.em);
-    return new ExerciseUseCase(exerciseRepository, exerciseCategoryRepository, userUseCases, memberUseCases);
+    const exerciseCategoryRepository = new MikroExerciseCategoryRepository(
+      this.orm.em
+    );
+    return new ExerciseUseCase(
+      exerciseRepository,
+      exerciseCategoryRepository,
+      userUseCases,
+      memberUseCases
+    );
   }
 
   /**
@@ -74,8 +87,14 @@ export class TestUseCaseFactory {
    */
   createComplexCategoryUseCase(): ComplexCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
-    const complexCategoryRepository = new MikroComplexCategoryRepository(this.orm.em);
-    return new ComplexCategoryUseCase(complexCategoryRepository, userUseCases, memberUseCases);
+    const complexCategoryRepository = new MikroComplexCategoryRepository(
+      this.orm.em
+    );
+    return new ComplexCategoryUseCase(
+      complexCategoryRepository,
+      userUseCases,
+      memberUseCases
+    );
   }
 
   /**
@@ -84,10 +103,21 @@ export class TestUseCaseFactory {
   createComplexUseCase(): ComplexUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
     const complexRepository = new MikroComplexRepository(this.orm.em);
-    const complexCategoryRepository = new MikroComplexCategoryRepository(this.orm.em);
+    const complexCategoryRepository = new MikroComplexCategoryRepository(
+      this.orm.em
+    );
     const exerciseRepository = new MikroExerciseRepository(this.orm.em);
-    const exerciseComplexRepository = new MikroExerciseComplexRepository(this.orm.em);
-    return new ComplexUseCase(complexRepository, complexCategoryRepository, exerciseRepository, exerciseComplexRepository, userUseCases, memberUseCases);
+    const exerciseComplexRepository = new MikroExerciseComplexRepository(
+      this.orm.em
+    );
+    return new ComplexUseCase(
+      complexRepository,
+      complexCategoryRepository,
+      exerciseRepository,
+      exerciseComplexRepository,
+      userUseCases,
+      memberUseCases
+    );
   }
 
   /**
@@ -95,8 +125,14 @@ export class TestUseCaseFactory {
    */
   createWorkoutCategoryUseCase(): WorkoutCategoryUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
-    const workoutCategoryRepository = new MikroWorkoutCategoryRepository(this.orm.em);
-    return new WorkoutCategoryUseCase(workoutCategoryRepository, userUseCases, memberUseCases);
+    const workoutCategoryRepository = new MikroWorkoutCategoryRepository(
+      this.orm.em
+    );
+    return new WorkoutCategoryUseCase(
+      workoutCategoryRepository,
+      userUseCases,
+      memberUseCases
+    );
   }
 
   /**
@@ -106,14 +142,21 @@ export class TestUseCaseFactory {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
     const organizationUseCases = this.createOrganizationUseCases();
     const workoutRepository = new MikroWorkoutRepository(this.orm.em);
-    const workoutCategoryRepository = new MikroWorkoutCategoryRepository(this.orm.em);
+    const workoutCategoryRepository = new MikroWorkoutCategoryRepository(
+      this.orm.em
+    );
     const complexRepository = new MikroComplexRepository(this.orm.em);
     const exerciseRepository = new MikroExerciseRepository(this.orm.em);
-    const workoutElementRepository = new MikroWorkoutElementRepository(this.orm.em);
+    const workoutElementRepository = new MikroWorkoutElementRepository(
+      this.orm.em
+    );
     const athleteRepository = new MikroAthleteRepository(this.orm.em);
-    const trainingSessionRepository = new MikroTrainingSessionRepository(this.orm.em);
-    const athleteTrainingSessionRepository = new MikroAthleteTrainingSessionRepository(this.orm.em);
-    
+    const trainingSessionRepository = new MikroTrainingSessionRepository(
+      this.orm.em
+    );
+    const athleteTrainingSessionRepository =
+      new MikroAthleteTrainingSessionRepository(this.orm.em);
+
     return new WorkoutUseCases(
       workoutRepository,
       workoutCategoryRepository,
@@ -135,11 +178,14 @@ export class TestUseCaseFactory {
   createTrainingSessionUseCase(): TrainingSessionUseCase {
     const { userUseCases, memberUseCases } = this.createCommonUseCases();
     const organizationUseCases = this.createOrganizationUseCases();
-    const trainingSessionRepository = new MikroTrainingSessionRepository(this.orm.em);
-    const athleteTrainingSessionRepository = new MikroAthleteTrainingSessionRepository(this.orm.em);
+    const trainingSessionRepository = new MikroTrainingSessionRepository(
+      this.orm.em
+    );
+    const athleteTrainingSessionRepository =
+      new MikroAthleteTrainingSessionRepository(this.orm.em);
     const workoutRepository = new MikroWorkoutRepository(this.orm.em);
     const athleteRepository = new MikroAthleteRepository(this.orm.em);
-    
+
     return new TrainingSessionUseCase(
       trainingSessionRepository,
       athleteTrainingSessionRepository,
@@ -149,4 +195,4 @@ export class TestUseCaseFactory {
       memberUseCases
     );
   }
-} 
+}

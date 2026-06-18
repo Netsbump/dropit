@@ -1,15 +1,17 @@
 import { apiContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { ITrainingSessionUseCases, TRAINING_SESSION_USE_CASES } from '../../application/ports/training-session-use-cases.port';
+import {
+  ITrainingSessionUseCases,
+  TRAINING_SESSION_USE_CASES,
+} from '../../application/ports/training-session-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
 import { AthleteTrainingSessionMapper } from '../mappers/athlete-training-session.mapper';
 import { AthleteTrainingSessionPresenter } from '../presenters/athlete-training-session.presenter';
 
@@ -50,16 +52,31 @@ export class AthleteTrainingSessionController {
   getAthleteTrainingSessions(
     @CurrentOrganization() organizationId: string,
     @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSessions>> {
-    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSessions, async ({ params }) => {
-      try {
-        const athleteTrainingSessions = await this.trainingSessionUseCase.getAthleteTrainingSessions(params.athleteId, organizationId, user.id);
-        const athleteTrainingSessionsDto = AthleteTrainingSessionMapper.toDtoList(athleteTrainingSessions);
-        return AthleteTrainingSessionPresenter.present(athleteTrainingSessionsDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
+  ): ReturnType<
+    typeof tsRestHandler<
+      typeof contractAthleteTrainingSession.getAthleteTrainingSessions
+    >
+  > {
+    return tsRestHandler(
+      contractAthleteTrainingSession.getAthleteTrainingSessions,
+      async ({ params }) => {
+        try {
+          const athleteTrainingSessions =
+            await this.trainingSessionUseCase.getAthleteTrainingSessions(
+              params.athleteId,
+              organizationId,
+              user.id
+            );
+          const athleteTrainingSessionsDto =
+            AthleteTrainingSessionMapper.toDtoList(athleteTrainingSessions);
+          return AthleteTrainingSessionPresenter.present(
+            athleteTrainingSessionsDto
+          );
+        } catch (error) {
+          return AthleteTrainingSessionPresenter.presentError(error as Error);
+        }
       }
-    });
+    );
   }
 
   /**
@@ -74,16 +91,33 @@ export class AthleteTrainingSessionController {
   getAthleteTrainingSession(
     @CurrentOrganization() organizationId: string,
     @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.getAthleteTrainingSession>> {
-    return tsRestHandler(contractAthleteTrainingSession.getAthleteTrainingSession, async ({ params }) => {
-      try {
-        const athleteTrainingSession = await this.trainingSessionUseCase.getOneAthleteTrainingSession(params.trainingSessionId, params.athleteId, organizationId, user.id);
-        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
-        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
+  ): ReturnType<
+    typeof tsRestHandler<
+      typeof contractAthleteTrainingSession.getAthleteTrainingSession
+    >
+  > {
+    return tsRestHandler(
+      contractAthleteTrainingSession.getAthleteTrainingSession,
+      async ({ params }) => {
+        try {
+          const athleteTrainingSession =
+            await this.trainingSessionUseCase.getOneAthleteTrainingSession(
+              params.trainingSessionId,
+              params.athleteId,
+              organizationId,
+              user.id
+            );
+          const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(
+            athleteTrainingSession
+          );
+          return AthleteTrainingSessionPresenter.presentOne(
+            athleteTrainingSessionDto
+          );
+        } catch (error) {
+          return AthleteTrainingSessionPresenter.presentError(error as Error);
+        }
       }
-    });
+    );
   }
 
   /**
@@ -96,15 +130,32 @@ export class AthleteTrainingSessionController {
   @RequirePermissions('update')
   updateAthleteTrainingSession(
     @CurrentUser() user: AuthenticatedUser
-  ): ReturnType<typeof tsRestHandler<typeof contractAthleteTrainingSession.updateAthleteTrainingSession>> {
-    return tsRestHandler(contractAthleteTrainingSession.updateAthleteTrainingSession, async ({ params, body }) => {
-      try {
-        const athleteTrainingSession = await this.trainingSessionUseCase.updateAthleteTrainingSession(params.athleteId, params.trainingSessionId, body, user.id);
-        const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(athleteTrainingSession);
-        return AthleteTrainingSessionPresenter.presentOne(athleteTrainingSessionDto);
-      } catch (error) {
-        return AthleteTrainingSessionPresenter.presentError(error as Error);
+  ): ReturnType<
+    typeof tsRestHandler<
+      typeof contractAthleteTrainingSession.updateAthleteTrainingSession
+    >
+  > {
+    return tsRestHandler(
+      contractAthleteTrainingSession.updateAthleteTrainingSession,
+      async ({ params, body }) => {
+        try {
+          const athleteTrainingSession =
+            await this.trainingSessionUseCase.updateAthleteTrainingSession(
+              params.athleteId,
+              params.trainingSessionId,
+              body,
+              user.id
+            );
+          const athleteTrainingSessionDto = AthleteTrainingSessionMapper.toDto(
+            athleteTrainingSession
+          );
+          return AthleteTrainingSessionPresenter.presentOne(
+            athleteTrainingSessionDto
+          );
+        } catch (error) {
+          return AthleteTrainingSessionPresenter.presentError(error as Error);
+        }
       }
-    });
+    );
   }
 }

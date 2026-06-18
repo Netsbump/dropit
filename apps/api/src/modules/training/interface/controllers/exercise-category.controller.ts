@@ -1,15 +1,17 @@
 import { exerciseCategoryContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { IExerciseCategoryUseCases, EXERCISE_CATEGORY_USE_CASES } from '../../application/ports/exercise-category-use-cases.port';
+import {
+  IExerciseCategoryUseCases,
+  EXERCISE_CATEGORY_USE_CASES,
+} from '../../application/ports/exercise-category-use-cases.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
 import { ExerciseCategoryMapper } from '../mappers/exercise-category.mapper';
 import { ExerciseCategoryPresenter } from '../presenters/exercise-category.presenter';
 
@@ -17,16 +19,16 @@ const c = exerciseCategoryContract;
 
 /**
  * Exercise Category Controller
- * 
+ *
  * @description
  * Handles all exercise category related operations including CRUD operations.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
- * 
+ *
  * @see {@link ExerciseCategoryUseCase} for business logic implementation
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -53,8 +55,12 @@ export class ExerciseCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategories>> {
     return tsRestHandler(c.getExerciseCategories, async () => {
       try {
-        const exerciseCategories = await this.exerciseCategoryUseCase.getAll(organizationId, user.id);
-        const exerciseCategoriesDto = ExerciseCategoryMapper.toDtoList(exerciseCategories);
+        const exerciseCategories = await this.exerciseCategoryUseCase.getAll(
+          organizationId,
+          user.id
+        );
+        const exerciseCategoriesDto =
+          ExerciseCategoryMapper.toDtoList(exerciseCategories);
         return ExerciseCategoryPresenter.present(exerciseCategoriesDto);
       } catch (error) {
         return ExerciseCategoryPresenter.presentError(error as Error);
@@ -78,8 +84,13 @@ export class ExerciseCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.getExerciseCategory>> {
     return tsRestHandler(c.getExerciseCategory, async ({ params }) => {
       try {
-        const exerciseCategory = await this.exerciseCategoryUseCase.getOne(params.id, organizationId, user.id);
-        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        const exerciseCategory = await this.exerciseCategoryUseCase.getOne(
+          params.id,
+          organizationId,
+          user.id
+        );
+        const exerciseCategoryDto =
+          ExerciseCategoryMapper.toDto(exerciseCategory);
         return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
       } catch (error) {
         return ExerciseCategoryPresenter.presentError(error as Error);
@@ -103,8 +114,13 @@ export class ExerciseCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.createExerciseCategory>> {
     return tsRestHandler(c.createExerciseCategory, async ({ body }) => {
       try {
-        const exerciseCategory = await this.exerciseCategoryUseCase.create(body, organizationId, user.id);
-        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        const exerciseCategory = await this.exerciseCategoryUseCase.create(
+          body,
+          organizationId,
+          user.id
+        );
+        const exerciseCategoryDto =
+          ExerciseCategoryMapper.toDto(exerciseCategory);
         return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
       } catch (error) {
         return ExerciseCategoryPresenter.presentError(error as Error);
@@ -129,8 +145,14 @@ export class ExerciseCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateExerciseCategory>> {
     return tsRestHandler(c.updateExerciseCategory, async ({ params, body }) => {
       try {
-        const exerciseCategory = await this.exerciseCategoryUseCase.update(params.id, body, organizationId, user.id);
-        const exerciseCategoryDto = ExerciseCategoryMapper.toDto(exerciseCategory);
+        const exerciseCategory = await this.exerciseCategoryUseCase.update(
+          params.id,
+          body,
+          organizationId,
+          user.id
+        );
+        const exerciseCategoryDto =
+          ExerciseCategoryMapper.toDto(exerciseCategory);
         return ExerciseCategoryPresenter.presentOne(exerciseCategoryDto);
       } catch (error) {
         return ExerciseCategoryPresenter.presentError(error as Error);
@@ -154,8 +176,14 @@ export class ExerciseCategoryController {
   ): ReturnType<typeof tsRestHandler<typeof c.deleteExerciseCategory>> {
     return tsRestHandler(c.deleteExerciseCategory, async ({ params }) => {
       try {
-        await this.exerciseCategoryUseCase.delete(params.id, organizationId, user.id);
-        return ExerciseCategoryPresenter.presentSuccess('Exercise category deleted successfully');
+        await this.exerciseCategoryUseCase.delete(
+          params.id,
+          organizationId,
+          user.id
+        );
+        return ExerciseCategoryPresenter.presentSuccess(
+          'Exercise category deleted successfully'
+        );
       } catch (error) {
         return ExerciseCategoryPresenter.presentError(error as Error);
       }

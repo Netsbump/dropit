@@ -7,9 +7,18 @@ import { PersonalRecord } from './domain/personal-record.entity';
 import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
-import { ATHLETE_REPO, IAthleteRepository } from './application/ports/athlete.repository.port';
-import { COMPETITOR_STATUS_REPO, ICompetitorStatusRepository } from './application/ports/competitor-status.repository.port';
-import { PERSONAL_RECORD_REPO, IPersonalRecordRepository } from './application/ports/personal-record.repository.port';
+import {
+  ATHLETE_REPO,
+  IAthleteRepository,
+} from './application/ports/athlete.repository.port';
+import {
+  COMPETITOR_STATUS_REPO,
+  ICompetitorStatusRepository,
+} from './application/ports/competitor-status.repository.port';
+import {
+  PERSONAL_RECORD_REPO,
+  IPersonalRecordRepository,
+} from './application/ports/personal-record.repository.port';
 import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
 import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
 import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
@@ -28,9 +37,19 @@ import { AthleteUseCases } from './application/use-cases/athlete-use-cases';
 import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
-import { USER_USE_CASES, IUserUseCases } from '../auth/application/ports/user-use-cases.port';
-import { MEMBER_USE_CASES, IMemberUseCases } from '../auth/application/ports/member-use-cases.port';
-import { EXERCISE_REPO, IExerciseRepository } from '../training/application/ports/exercise.repository.port';
+import { InvitationsModule } from '../invitations/invitations.module';
+import {
+  USER_USE_CASES,
+  IUserUseCases,
+} from '../auth/application/ports/user-use-cases.port';
+import {
+  MEMBER_USE_CASES,
+  IMemberUseCases,
+} from '../auth/application/ports/member-use-cases.port';
+import {
+  EXERCISE_REPO,
+  IExerciseRepository,
+} from '../training/application/ports/exercise.repository.port';
 
 @Module({
   imports: [
@@ -39,10 +58,15 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
       entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
     }),
     forwardRef(() => AuthModule),
+    forwardRef(() => InvitationsModule),
     forwardRef(() => TrainingModule),
   ],
 
-  controllers: [AthleteController, CompetitorStatusController, PersonalRecordController],
+  controllers: [
+    AthleteController,
+    CompetitorStatusController,
+    PersonalRecordController,
+  ],
 
   providers: [
     // MikroORM implementations
@@ -52,7 +76,10 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
 
     // Port to implementation bindings (repositories)
     { provide: ATHLETE_REPO, useClass: MikroAthleteRepository },
-    { provide: COMPETITOR_STATUS_REPO, useClass: MikroCompetitorStatusRepository },
+    {
+      provide: COMPETITOR_STATUS_REPO,
+      useClass: MikroCompetitorStatusRepository,
+    },
     { provide: PERSONAL_RECORD_REPO, useClass: MikroPersonalRecordRepository },
 
     // use-cases (concrete implementations)
@@ -63,28 +90,60 @@ import { EXERCISE_REPO, IExerciseRepository } from '../training/application/port
     // Port to implementation bindings (use-cases)
     {
       provide: ATHLETE_USE_CASES,
-      useFactory: (athleteRepo: IAthleteRepository, userUseCases: IUserUseCases, memberUseCases: IMemberUseCases) => {
+      useFactory: (
+        athleteRepo: IAthleteRepository,
+        userUseCases: IUserUseCases,
+        memberUseCases: IMemberUseCases
+      ) => {
         return new AthleteUseCases(athleteRepo, userUseCases, memberUseCases);
       },
       inject: [ATHLETE_REPO, USER_USE_CASES, MEMBER_USE_CASES],
     },
     {
       provide: PERSONAL_RECORD_USE_CASES,
-      useFactory: (personalRecordRepo: IPersonalRecordRepository, athleteRepo: IAthleteRepository, exerciseRepo: IExerciseRepository, memberUseCases: IMemberUseCases) => {
-        return new PersonalRecordUseCases(personalRecordRepo, athleteRepo, exerciseRepo, memberUseCases);
+      useFactory: (
+        personalRecordRepo: IPersonalRecordRepository,
+        athleteRepo: IAthleteRepository,
+        exerciseRepo: IExerciseRepository,
+        memberUseCases: IMemberUseCases
+      ) => {
+        return new PersonalRecordUseCases(
+          personalRecordRepo,
+          athleteRepo,
+          exerciseRepo,
+          memberUseCases
+        );
       },
-      inject: [PERSONAL_RECORD_REPO, ATHLETE_REPO, EXERCISE_REPO, MEMBER_USE_CASES],
+      inject: [
+        PERSONAL_RECORD_REPO,
+        ATHLETE_REPO,
+        EXERCISE_REPO,
+        MEMBER_USE_CASES,
+      ],
     },
     {
       provide: COMPETITOR_STATUS_USE_CASES,
-      useFactory: (competitorStatusRepo: ICompetitorStatusRepository, athleteRepo: IAthleteRepository, memberUseCases: IMemberUseCases) => {
-        return new CompetitorStatusUseCases(competitorStatusRepo, athleteRepo, memberUseCases);
+      useFactory: (
+        competitorStatusRepo: ICompetitorStatusRepository,
+        athleteRepo: IAthleteRepository,
+        memberUseCases: IMemberUseCases
+      ) => {
+        return new CompetitorStatusUseCases(
+          competitorStatusRepo,
+          athleteRepo,
+          memberUseCases
+        );
       },
       inject: [COMPETITOR_STATUS_REPO, ATHLETE_REPO, MEMBER_USE_CASES],
     },
   ],
 
   // What other modules can inject
-  exports: [ATHLETE_REPO, COMPETITOR_STATUS_REPO, PERSONAL_RECORD_REPO, ATHLETE_USE_CASES],
+  exports: [
+    ATHLETE_REPO,
+    COMPETITOR_STATUS_REPO,
+    PERSONAL_RECORD_REPO,
+    ATHLETE_USE_CASES,
+  ],
 })
 export class AthletesModule {}

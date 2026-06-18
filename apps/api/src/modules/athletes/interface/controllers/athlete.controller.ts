@@ -1,15 +1,24 @@
 import { athleteContract } from '@dropit/contract';
-import {
-  Controller,
-  UseGuards,
-  Inject,
-} from '@nestjs/common';
+import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
-import { NoOrganization, RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
+import {
+  NoOrganization,
+  RequirePermissions,
+} from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
-import { AuthenticatedUser, CurrentUser } from '../../../auth/infrastructure/decorators/auth.decorator';
-import { IAthleteUseCases, ATHLETE_USE_CASES } from '../../application/ports/athlete-use-cases.port';
+import {
+  AuthenticatedUser,
+  CurrentUser,
+} from '../../../auth/infrastructure/decorators/auth.decorator';
+import {
+  IAthleteUseCases,
+  ATHLETE_USE_CASES,
+} from '../../application/ports/athlete-use-cases.port';
+import {
+  IInvitationUseCases,
+  INVITATION_USE_CASES,
+} from '../../../invitations/application/ports/invitation-use-cases.port';
 import { AthleteMapper } from '../mappers/athlete.mapper';
 import { AthletePresenter } from '../presenter/athlete.presenter';
 
@@ -17,18 +26,18 @@ const c = athleteContract;
 
 /**
  * Athlete Controller
- * 
+ *
  * @description
  * Handles all athlete related operations including CRUD operations
  * for managing athletes, their profiles, and associated data.
- * 
+ *
  * @remarks
  * This controller uses Ts REST for type-safe API contracts and integrates
  * with the permissions system via @UseGuards(PermissionsGuard).
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization, except for create and update
  * operations which use @NoOrganization() decorator.
- * 
+ *
  * @see {@link IAthleteUseCases} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
@@ -37,8 +46,40 @@ const c = athleteContract;
 export class AthleteController {
   constructor(
     @Inject(ATHLETE_USE_CASES)
-    private readonly athleteUseCases: IAthleteUseCases
+    private readonly athleteUseCases: IAthleteUseCases,
+    @Inject(INVITATION_USE_CASES)
+    private readonly invitationUseCases: IInvitationUseCases
   ) {}
+
+  @TsRestHandler(c.inviteAthlete)
+  @RequirePermissions('create')
+  inviteAthlete(
+    @CurrentOrganization() organizationId: string,
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.inviteAthlete>> {
+    return tsRestHandler(c.inviteAthlete, async ({ body, headers }) => {
+      try {
+        await this.invitationUseCases.inviteAthlete(
+          {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email,
+            organizationId,
+            headers,
+          },
+          {
+            userId: user.id,
+            isSuperAdmin: user.role === 'admin',
+            organizationId,
+          }
+        );
+
+        return { status: 201 as const, body: { message: 'Invitation sent' } };
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
+    });
+  }
 
   /**
    * Retrieves all athletes in the current organization.
@@ -54,9 +95,47 @@ export class AthleteController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
       try {
-        const athletes = await this.athleteUseCases.findAllWithDetails(user.id, organizationId);
+        const athletes = await this.athleteUseCases.findAllWithDetails(
+          user.id,
+          organizationId
+        );
         const athletesDto = AthleteMapper.toDtoListDetails(athletes);
         return AthletePresenter.presentListDetails(athletesDto);
+      } catch (error) {
+        return AthletePresenter.presentError(error as Error);
+      }
+    });
+  }
+
+  @TsRestHandler(c.getAthletesByOrganization)
+  @RequirePermissions('read')
+  @NoOrganization()
+  getAthletesByOrganization(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.getAthletesByOrganization>> {
+    return tsRestHandler(c.getAthletesByOrganization, async ({ params }) => {
+      try {
+        if (user.role !== 'admin') {
+          return { status: 403, body: { message: 'Forbidden' } };
+        }
+
+        const athletes =
+          await this.athleteUseCases.findAllWithDetailsByOrganization(
+            params.organizationId
+          );
+        const athletesDto = AthleteMapper.toDtoListDetails(athletes).map(
+          (athlete) => ({
+            id: athlete.id,
+            firstName: athlete.firstName,
+            lastName: athlete.lastName,
+            email: athlete.email,
+            birthday: athlete.birthday,
+          })
+        );
+        return {
+          status: 200 as const,
+          body: athletesDto,
+        };
       } catch (error) {
         return AthletePresenter.presentError(error as Error);
       }
@@ -79,7 +158,11 @@ export class AthleteController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
       try {
-        const athlete = await this.athleteUseCases.findOneWithDetails(params.id, user.id, organizationId);
+        const athlete = await this.athleteUseCases.findOneWithDetails(
+          params.id,
+          user.id,
+          organizationId
+        );
         const athleteDto = AthleteMapper.toDtoDetails(athlete);
         return AthletePresenter.presentOneDetails(athleteDto);
       } catch (error) {
@@ -128,10 +211,16 @@ export class AthleteController {
   @TsRestHandler(c.updateAthlete)
   @RequirePermissions('update')
   @NoOrganization()
-  updateAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
+  updateAthlete(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       try {
-        const athlete = await this.athleteUseCases.update(params.id, body, user.id);
+        const athlete = await this.athleteUseCases.update(
+          params.id,
+          body,
+          user.id
+        );
         const athleteDto = AthleteMapper.toDto(athlete);
         return AthletePresenter.presentOne(athleteDto);
       } catch (error) {
@@ -151,7 +240,9 @@ export class AthleteController {
    */
   @TsRestHandler(c.deleteAthlete)
   @RequirePermissions('delete')
-  deleteAthlete(@CurrentUser() user: AuthenticatedUser): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
+  deleteAthlete(
+    @CurrentUser() user: AuthenticatedUser
+  ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
       try {
         await this.athleteUseCases.delete(params.id, user.id);

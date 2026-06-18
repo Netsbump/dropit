@@ -32,7 +32,10 @@ export function AppHeader({ tabs }: AppHeaderProps) {
     if (names.length === 1) {
       return names[0].charAt(0).toUpperCase();
     }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+    return (
+      names[0].charAt(0).toUpperCase() +
+      names[names.length - 1].charAt(0).toUpperCase()
+    );
   };
 
   const handleBackClick = () => {
@@ -58,7 +61,9 @@ export function AppHeader({ tabs }: AppHeaderProps) {
             >
               <ChevronLeft className="h-5 w-5" />
             </Button>
-            <span className="text-sm font-medium text-[hsl(var(--appheader-foreground))]">{t('common.back')}</span>
+            <span className="text-sm font-medium text-[hsl(var(--appheader-foreground))]">
+              {t('common.back')}
+            </span>
           </div>
         ) : pageTitle ? (
           <h1 className="text-xl font-medium truncate text-[hsl(var(--appheader-foreground))]">
@@ -79,15 +84,18 @@ export function AppHeader({ tabs }: AppHeaderProps) {
       ) : tabs && tabs.length > 0 ? (
         <nav className="flex gap-6 h-16 items-center absolute left-1/2 -translate-x-1/2">
           {tabs.map((tab) => {
-            const isActive = currentPath === tab.path || currentPath.startsWith(`${tab.path}/`);
+            const isActive =
+              currentPath === tab.path ||
+              currentPath.startsWith(`${tab.path}/`);
             return (
               <Link
                 key={tab.path}
                 to={tab.path}
-                className={`px-3 transition-all uppercase text-sm ${isActive
-                  ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
-                  : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
-                  }`}
+                className={`px-3 transition-all uppercase text-sm ${
+                  isActive
+                    ? 'text-[hsl(var(--appheader-tab-active))] font-semibold'
+                    : 'text-[hsl(var(--appheader-tab-inactive))] hover:text-[hsl(var(--appheader-tab-active))] font-semibold'
+                }`}
               >
                 {tab.label}
               </Link>
@@ -102,7 +110,10 @@ export function AppHeader({ tabs }: AppHeaderProps) {
 
         {/* User Profile */}
         <Link to="/profile">
-          <Button variant="ghost" className="h-auto py-2 rounded-full border bg-outlet hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all">
+          <Button
+            variant="ghost"
+            className="h-auto py-2 rounded-full border bg-outlet hover:bg-purple-100 hover:border-purple-500 gap-3 transition-all"
+          >
             <Avatar className="h-10 w-10 shadow-sm">
               <AvatarFallback className="bg-purple-600 text-white text-sm font-bold">
                 {getUserInitials(session?.user?.name)}

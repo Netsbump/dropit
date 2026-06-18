@@ -6,7 +6,11 @@ import {
   CardFooter,
   CardHeader,
 } from '@/components/ui/card';
-import { WORKOUT_ELEMENT_TYPES, WorkoutDto, TrainingSessionDto } from '@dropit/schemas';
+import {
+  WORKOUT_ELEMENT_TYPES,
+  WorkoutDto,
+  TrainingSessionDto,
+} from '@dropit/schemas';
 
 interface WorkoutCardProps {
   workout: WorkoutDto;
@@ -14,11 +18,13 @@ interface WorkoutCardProps {
   onWorkoutClick: (id: string) => void;
 }
 
-export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: WorkoutCardProps) {
+export function WorkoutCard({
+  workout,
+  trainingSessions,
+  onWorkoutClick,
+}: WorkoutCardProps) {
   return (
-    <Card
-      className="rounded-2xl bg-white shadow-none"
-    >
+    <Card className="rounded-2xl bg-white shadow-none">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between gap-3">
           {workout.workoutCategory && (
@@ -37,11 +43,16 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
           {workout.elements.map((element) => {
             const isExercise = element.type === WORKOUT_ELEMENT_TYPES.EXERCISE;
             // Calculer un résumé des blocks
-            const totalSets = element.blocks.reduce((sum, block) => sum + block.numberOfSets, 0);
-            const blocksSummary = element.blocks.map(block => {
-              const repsInfo = block.exercises.map(ex => ex.reps).join('-');
-              return `${block.numberOfSets}x${repsInfo}`;
-            }).join(', ');
+            const totalSets = element.blocks.reduce(
+              (sum, block) => sum + block.numberOfSets,
+              0
+            );
+            const blocksSummary = element.blocks
+              .map((block) => {
+                const repsInfo = block.exercises.map((ex) => ex.reps).join('-');
+                return `${block.numberOfSets}x${repsInfo}`;
+              })
+              .join(', ');
 
             return (
               <div
@@ -77,15 +88,19 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
                   </div>
                 ) : (
                   <div className="space-y-1.5">
-                    {element.complex.exercises && element.complex.exercises.length > 0 && (
-                      <div className="border-l-2 border-gray-300 pl-2 space-y-0.5">
-                        {element.complex.exercises.map((ex, idx) => (
-                          <div key={`${ex.name}-${idx}`} className="text-xs text-gray-600">
-                            {ex.name}
-                          </div>
-                        ))}
-                      </div>
-                    )}
+                    {element.complex.exercises &&
+                      element.complex.exercises.length > 0 && (
+                        <div className="border-l-2 border-gray-300 pl-2 space-y-0.5">
+                          {element.complex.exercises.map((ex, idx) => (
+                            <div
+                              key={`${ex.name}-${idx}`}
+                              className="text-xs text-gray-600"
+                            >
+                              {ex.name}
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     <div className="text-[10px] text-gray-500">
                       {blocksSummary}
                     </div>
@@ -99,17 +114,20 @@ export function WorkoutCard({ workout, trainingSessions, onWorkoutClick }: Worko
 
       <CardFooter className="pt-3 border-t border-gray-100 flex-col gap-3">
         <div className="flex items-center justify-between w-full text-xs">
-          <span className={`font-medium ${
-            trainingSessions.length > 0 ? 'text-emerald-600' : 'text-gray-400'
-          }`}>
+          <span
+            className={`font-medium ${
+              trainingSessions.length > 0 ? 'text-emerald-600' : 'text-gray-400'
+            }`}
+          >
             {trainingSessions.length > 0
-              ? `${trainingSessions.length} session${trainingSessions.length > 1 ? 's' : ''} planifiée${trainingSessions.length > 1 ? 's' : ''}`
-              : 'Non planifié'
-            }
+              ? `${trainingSessions.length} session${
+                  trainingSessions.length > 1 ? 's' : ''
+                } planifiée${trainingSessions.length > 1 ? 's' : ''}`
+              : 'Non planifié'}
           </span>
         </div>
 
-        <div className='flex gap-2 w-full'>
+        <div className="flex gap-2 w-full">
           <Button
             variant="outline"
             size="sm"

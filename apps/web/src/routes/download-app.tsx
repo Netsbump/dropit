@@ -1,11 +1,24 @@
-import { authClient } from "@/lib/auth-client";
-import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useTranslation } from "@dropit/i18n";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Smartphone, Download, Apple, ArrowRight, CheckCircle, Star } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-import { useState, useEffect } from "react";
+import { authClient } from '@/lib/auth-client';
+import { createFileRoute, redirect } from '@tanstack/react-router';
+import { useTranslation } from '@dropit/i18n';
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import {
+  Smartphone,
+  Download,
+  Apple,
+  ArrowRight,
+  CheckCircle,
+  Star,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { useState, useEffect } from 'react';
 
 export const Route = createFileRoute('/download-app')({
   beforeLoad: async () => {
@@ -15,14 +28,18 @@ export const Route = createFileRoute('/download-app')({
     }
   },
   component: DownloadAppPage,
-}); 
+});
 
 function DownloadAppPage() {
   const { t } = useTranslation('onboarding');
-  const [activeMember, setActiveMember] = useState<{ role: string } | null>(null);
+  const [activeMember, setActiveMember] = useState<{ role: string } | null>(
+    null
+  );
 
-  const features = t('download_app.features.list', { returnObjects: true }) as string[];
-  
+  const features = t('download_app.features.list', {
+    returnObjects: true,
+  }) as string[];
+
   // Récupérer le membre actif au montage du composant
   useEffect(() => {
     const fetchActiveMember = async () => {
@@ -35,10 +52,10 @@ function DownloadAppPage() {
         console.error('Error fetching active member:', error);
       }
     };
-    
+
     fetchActiveMember();
   }, []);
-  
+
   // Vérifier si l'utilisateur est un membre (athlète)
   const isAthlete = activeMember?.role === 'member';
 
@@ -49,7 +66,10 @@ function DownloadAppPage() {
         window.open('https://apps.apple.com/app/dropit', '_blank');
         break;
       case 'android':
-        window.open('https://play.google.com/store/apps/details?id=com.dropit', '_blank');
+        window.open(
+          'https://play.google.com/store/apps/details?id=com.dropit',
+          '_blank'
+        );
         break;
     }
   };
@@ -65,10 +85,9 @@ function DownloadAppPage() {
             {isAthlete ? 'Bienvenue sur DropIt !' : t('download_app.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {isAthlete 
-              ? 'L\'interface web est réservée aux coachs pour la gestion des programmes d\'entraînement. Votre espace athlète vous attend sur mobile !'
-              : t('download_app.description')
-            }
+            {isAthlete
+              ? "L'interface web est réservée aux coachs pour la gestion des programmes d'entraînement. Votre espace athlète vous attend sur mobile !"
+              : t('download_app.description')}
           </p>
         </div>
 
@@ -76,7 +95,9 @@ function DownloadAppPage() {
           {/* Carte principale */}
           <Card className="w-full h-full flex flex-col shadow-none">
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl">{t('download_app.download_section.title')}</CardTitle>
+              <CardTitle className="text-2xl">
+                {t('download_app.download_section.title')}
+              </CardTitle>
               <CardDescription>
                 {t('download_app.download_section.subtitle')}
               </CardDescription>
@@ -90,8 +111,12 @@ function DownloadAppPage() {
               >
                 <Apple className="h-6 w-6 mr-3" />
                 <div className="text-left">
-                  <div className="text-xs">{t('download_app.platforms.ios.label')}</div>
-                  <div className="font-semibold">{t('download_app.platforms.ios.store')}</div>
+                  <div className="text-xs">
+                    {t('download_app.platforms.ios.label')}
+                  </div>
+                  <div className="font-semibold">
+                    {t('download_app.platforms.ios.store')}
+                  </div>
                 </div>
                 <ArrowRight className="h-5 w-5 ml-auto" />
               </Button>
@@ -104,8 +129,12 @@ function DownloadAppPage() {
               >
                 <Download className="h-6 w-6 mr-3" />
                 <div className="text-left">
-                  <div className="text-xs">{t('download_app.platforms.android.label')}</div>
-                  <div className="font-semibold">{t('download_app.platforms.android.store')}</div>
+                  <div className="text-xs">
+                    {t('download_app.platforms.android.label')}
+                  </div>
+                  <div className="font-semibold">
+                    {t('download_app.platforms.android.store')}
+                  </div>
                 </div>
                 <ArrowRight className="h-5 w-5 ml-auto" />
               </Button>

@@ -15,13 +15,15 @@ export const TrainingSessionMapper = {
       workout: WorkoutMapper.toDto(trainingSession.workout),
       athletes,
       scheduledDate: trainingSession.scheduledDate,
-      completedDate: trainingSession.completedDate,
+      completedDate: trainingSession.completedDate ?? undefined,
       createdAt: trainingSession.createdAt,
       updatedAt: trainingSession.updatedAt,
     };
   },
 
   toDtoList(trainingSessions: TrainingSession[]): TrainingSessionDto[] {
-    return trainingSessions.map((trainingSession) => TrainingSessionMapper.toDto(trainingSession));
+    return trainingSessions.map((trainingSession) =>
+      TrainingSessionMapper.toDto(trainingSession)
+    );
   },
 };

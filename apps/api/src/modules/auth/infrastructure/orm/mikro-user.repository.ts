@@ -1,10 +1,13 @@
-import { EntityManager, EntityRepository } from "@mikro-orm/core";
-import { Injectable } from "@nestjs/common";
-import { User } from "../../domain/auth/user.entity";
-import { IUserRepository } from "../../application/ports/user.repository.port";
+import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import { Injectable } from '@nestjs/common';
+import { User } from '../../domain/auth/user.entity';
+import { IUserRepository } from '../../application/ports/user.repository.port';
 
 @Injectable()
-export class MikroUserRepository extends EntityRepository<User> implements IUserRepository {
+export class MikroUserRepository
+  extends EntityRepository<User>
+  implements IUserRepository
+{
   constructor(public readonly em: EntityManager) {
     super(em, User);
   }
@@ -24,5 +27,4 @@ export class MikroUserRepository extends EntityRepository<User> implements IUser
   async save(user: User): Promise<void> {
     return await this.em.persistAndFlush(user);
   }
-
 }

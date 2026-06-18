@@ -58,6 +58,12 @@
   "invitation": {
     "title": "Invite an athlete",
     "description": "Send an email invitation for an athlete to join your organization",
+    "first_name": "First name",
+    "first_name_placeholder": "First name",
+    "first_name_required": "First name is required",
+    "last_name": "Last name",
+    "last_name_placeholder": "Last name",
+    "last_name_required": "Last name is required",
     "email": "Email address",
     "email_placeholder": "athlete@example.com",
     "email_required": "Invalid email address",

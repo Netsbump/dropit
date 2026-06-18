@@ -1,0 +1,75 @@
+{
+  "title": "Administration",
+  "actions": {
+    "save": "Enregistrer",
+    "rename": "Renommer",
+    "view_details": "Voir le detail",
+    "delete": "Supprimer"
+  },
+  "organizations": {
+    "title": "Clubs",
+    "description": "Créez et gérez les clubs du backoffice.",
+    "create_placeholder": "Nom du club",
+    "create_button": "Créer",
+    "list_title": "Liste des clubs",
+    "search_placeholder": "Rechercher un club",
+    "fields": {
+      "name": "Nom du club"
+    },
+    "validation": {
+      "name_required": "Le nom du club est requis"
+    },
+    "modal": {
+      "title": "Créer un club",
+      "description": "Ajoutez un nouveau club à votre backoffice.",
+      "cancel": "Annuler",
+      "submit": "Créer un club"
+    },
+    "columns": {
+      "name": "Nom",
+      "id": "ID",
+      "actions": "Actions"
+    },
+    "details": {
+      "title": "Detail du club",
+      "athletes_title": "Athletes associes",
+      "no_athletes": "Aucun athlete associe pour le moment"
+    }
+  },
+  "users": {
+    "list_title": "Utilisateurs",
+    "search_placeholder": "Rechercher un utilisateur",
+    "create_button": "Créer un utilisateur",
+    "columns": {
+      "first_name": "Prenom",
+      "last_name": "Nom",
+      "club": "Club",
+      "role": "Role",
+      "email": "Email",
+      "birthday": "Date de naissance"
+    },
+    "roles": {
+      "coach": "Coach",
+      "athlete": "Athlète"
+    },
+    "modal": {
+      "title": "Créer un utilisateur",
+      "description": "Renseignez les informations du nouvel utilisateur",
+      "cancel": "Annuler",
+      "submit": "Créer",
+      "organization_placeholder": "Selectionner un club",
+      "labels": {
+        "first_name": "Prenom",
+        "last_name": "Nom",
+        "email": "Email",
+        "organization_role": "Role dans le club",
+        "organization": "Club"
+      },
+      "placeholders": {
+        "first_name": "Prenom",
+        "last_name": "Nom",
+        "email": "Email"
+      }
+    }
+  }
+}
