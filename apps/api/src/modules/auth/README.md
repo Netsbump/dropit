@@ -8,22 +8,20 @@ Handles authentication, identity management, and organization-based permissions 
 auth/
 ├── application/
 │   ├── ports/
-│   │   ├── inbound/                       # What other modules call
-│   │   │   ├── user-use-cases.port.ts
-│   │   │   ├── organization-use-cases.port.ts
-│   │   │   ├── member-use-cases.port.ts
-│   │   │   └── onboarding-use-cases.port.ts
-│   │   └── outbound/                      # What use cases depend on
-│   │       ├── user.repository.port.ts
-│   │       ├── organization.repository.port.ts
-│   │       ├── member.repository.port.ts
-│   │       └── invitation.repository.port.ts
-│   ├── use-cases/
-│   │   ├── user.use-cases.ts
-│   │   ├── organization.use-cases.ts
-│   │   ├── member.use-cases.ts
-│   │   └── onboarding.use-cases.ts
+│   │   ├── user-use-cases.port.ts         # What other modules call
+│   │   ├── organization-use-cases.port.ts
+│   │   ├── member-use-cases.port.ts
+│   │   ├── onboarding-use-cases.port.ts
+│   │   ├── user.repository.port.ts        # What auth use cases depend on
+│   │   ├── organization.repository.port.ts
+│   │   ├── member.repository.port.ts
+│   │   └── invitation.repository.port.ts
+│   ├── user.use-cases.ts
+│   ├── organization.use-cases.ts
+│   ├── member.use-cases.ts
+│   ├── onboarding.use-cases.ts
 │   └── exceptions/
+│       ├── invitation.exceptions.ts
 │       └── user.exceptions.ts
 ├── domain/
 │   ├── auth/
@@ -40,10 +38,12 @@ auth/
 │   ├── decorators/
 │   │   ├── auth.decorator.ts              # @Public, @Optional, @Session, @CurrentUser
 │   │   ├── organization.decorator.ts      # @CurrentOrganization
-│   │   └── permissions.decorator.ts       # @RequirePermissions, @NoOrganization
+│   │   ├── permissions.decorator.ts       # @RequirePermissions, @NoOrganization
+│   │   └── super-admin.decorator.ts       # @RequireSuperAdmin
 │   ├── guards/
 │   │   ├── auth.guard.ts                  # Global guard: validates session
-│   │   └── permissions.guard.ts           # Route guard: checks organization role
+│   │   ├── permissions.guard.ts           # Route guard: checks organization role
+│   │   └── super-admin.guard.ts           # Route guard: requires app-level admin
 │   └── orm/
 │       ├── mikro-user.repository.ts
 │       ├── mikro-organization.repository.ts
@@ -127,6 +127,10 @@ Note: the body parser is skipped for `/auth/*` routes in `main.ts` because bette
 - Super admin (`user.role === 'admin'`) bypasses all permission checks
 - Derives the resource name from the controller name
 
+**SuperAdminGuard** (per-route, used through `@RequireSuperAdmin()`):
+- Requires an authenticated app-level super admin (`user.role === 'admin'`)
+- Used for backoffice admin routes that must not be accessible through organization-level roles
+
 ### Decorators
 
 | Decorator | Type | Description |
@@ -138,6 +142,7 @@ Note: the body parser is skipped for `/auth/*` routes in `main.ts` because bette
 | `@CurrentOrganization()` | Param | Inject the active organization ID |
 | `@RequirePermissions('read', 'create')` | Method | Require at least one of the listed permissions |
 | `@NoOrganization()` | Method | Skip organization check in PermissionsGuard |
+| `@RequireSuperAdmin()` | Class/Method | Require an app-level super admin via `SuperAdminGuard` |
 
 ### Database hooks
 

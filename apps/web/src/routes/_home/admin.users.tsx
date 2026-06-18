@@ -16,7 +16,7 @@ export const Route = createFileRoute('/_home/admin/users')({
 
 function AdminUsersPage() {
   return (
-    <div className="flex h-full flex-col p-4">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden p-4">
       <UsersSection />
     </div>
   );

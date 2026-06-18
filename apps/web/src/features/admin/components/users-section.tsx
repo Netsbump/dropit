@@ -15,8 +15,8 @@ import { useMemo, useState } from 'react';
 export function UsersSection() {
   const { t } = useTranslation(['admin']);
   const [search, setSearch] = useState('');
+  const [invitationSearch, setInvitationSearch] = useState('');
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<'users' | 'invitations'>('users');
   const [successMessage, setSuccessMessage] = useState('');
 
   const { data: organizations = [] } = useOrganizationsQuery();
@@ -30,6 +30,16 @@ export function UsersSection() {
       `${user.firstName} ${user.lastName} ${user.email}`.toLowerCase();
     return full.includes(search.toLowerCase());
   });
+
+  const filteredInvitations = invitations.filter((invitation) => {
+    const full =
+      `${invitation.email} ${invitation.organizationName} ${invitation.organizationRole} ${invitation.inviterName}`.toLowerCase();
+    return full.includes(invitationSearch.toLowerCase());
+  });
+  const hasScrollableUsersTable = filtered.length > 10;
+  const hasScrollableInvitationsTable = filteredInvitations.length > 10;
+  const hasScrollableTable =
+    hasScrollableUsersTable || hasScrollableInvitationsTable;
 
   const columns = useMemo<ColumnDef<(typeof users)[number]>[]>(
     () => [
@@ -61,66 +71,121 @@ export function UsersSection() {
   );
 
   return (
-    <section className="flex min-h-0 flex-1 flex-col rounded-2xl border bg-card p-4">
-      <h2 className="text-lg font-semibold">{t('admin:users.list_title')}</h2>
-      <div className="mt-4 min-h-0 flex-1">
-        <div className="flex items-center justify-between pb-6">
-          <div className="relative w-full max-w-lg">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              value={search}
-              onChange={(event) => setSearch(event.target.value)}
-              placeholder={t('admin:users.search_placeholder')}
-              className="bg-background pl-8"
-            />
-          </div>
-          <div className="flex items-center gap-2">
+    <div
+      className={
+        hasScrollableTable
+          ? 'flex min-h-0 flex-1 flex-col gap-6 overflow-hidden'
+          : 'flex min-h-0 flex-1 flex-col items-start gap-6 overflow-hidden'
+      }
+    >
+      <section
+        className={
+          hasScrollableUsersTable
+            ? 'flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card p-4'
+            : 'flex max-h-full w-full flex-col overflow-hidden rounded-2xl border bg-card p-4'
+        }
+      >
+        <h2 className="text-lg font-semibold">Utilisateurs actifs</h2>
+
+        <div
+          className={
+            hasScrollableUsersTable
+              ? 'mt-4 flex min-h-0 flex-1 flex-col gap-4'
+              : 'mt-4 flex min-h-0 flex-col gap-4'
+          }
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="relative w-full max-w-lg">
+              <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+              <Input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder={t('admin:users.search_placeholder')}
+                className="bg-background pl-8"
+              />
+            </div>
             <Button
-              variant={tab === 'users' ? 'default' : 'outline'}
-              onClick={() => setTab('users')}
+              className="shrink-0 sm:w-auto"
+              onClick={() => setOpen(true)}
             >
-              Utilisateurs actifs
-            </Button>
-            <Button
-              variant={tab === 'invitations' ? 'default' : 'outline'}
-              onClick={() => setTab('invitations')}
-            >
-              Invitations en attente
-            </Button>
-            <Button onClick={() => setOpen(true)}>
               {t('admin:users.create_button')}
             </Button>
           </div>
-        </div>
-        {successMessage ? (
-          <div className="pb-2 text-sm text-green-600">{successMessage}</div>
-        ) : null}
-        {tab === 'users' ? (
-          isLoading ? (
+          {successMessage ? (
+            <div className="text-sm text-green-600">{successMessage}</div>
+          ) : null}
+          {isLoading ? (
             <div>{t('loading')}</div>
           ) : (
-            <DataTable
-              columns={columns}
-              data={filtered}
-              pagination={{
-                initialPageSize: 10,
-                pageSizeOptions: [10, 20, 50],
-              }}
+            <div
+              className={hasScrollableUsersTable ? 'min-h-0 flex-1' : 'min-h-0'}
+            >
+              <DataTable
+                columns={columns}
+                data={filtered}
+                fillHeight={hasScrollableUsersTable}
+                pagination={
+                  hasScrollableUsersTable
+                    ? {
+                        initialPageSize: 10,
+                        pageSizeOptions: [10, 20, 50],
+                      }
+                    : undefined
+                }
+              />
+            </div>
+          )}
+        </div>
+      </section>
+
+      <section
+        className={
+          hasScrollableInvitationsTable
+            ? 'flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card p-4'
+            : 'flex max-h-full w-full flex-col overflow-hidden rounded-2xl border bg-card p-4'
+        }
+      >
+        <h2 className="text-lg font-semibold">Invitations en attente</h2>
+
+        <div
+          className={
+            hasScrollableInvitationsTable
+              ? 'mt-4 flex min-h-0 flex-1 flex-col gap-4'
+              : 'mt-4 flex min-h-0 flex-col gap-4'
+          }
+        >
+          <div className="relative w-full max-w-lg">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              value={invitationSearch}
+              onChange={(event) => setInvitationSearch(event.target.value)}
+              placeholder="Rechercher des invitations"
+              className="bg-background pl-8"
             />
-          )
-        ) : (
-          <DataTable
-            columns={[
-              { accessorKey: 'email', header: 'Email' },
-              { accessorKey: 'organizationName', header: 'Club' },
-              { accessorKey: 'organizationRole', header: 'Role' },
-              { accessorKey: 'inviterName', header: 'Invite par' },
-            ]}
-            data={invitations}
-            pagination={{ initialPageSize: 10, pageSizeOptions: [10, 20, 50] }}
-          />
-        )}
-      </div>
+          </div>
+          <div
+            className={
+              hasScrollableInvitationsTable ? 'min-h-0 flex-1' : 'min-h-0'
+            }
+          >
+            <DataTable
+              columns={[
+                { accessorKey: 'email', header: 'Email' },
+                { accessorKey: 'organizationName', header: 'Club' },
+                { accessorKey: 'organizationRole', header: 'Role' },
+                { accessorKey: 'inviterName', header: 'Invite par' },
+              ]}
+              data={filteredInvitations}
+              fillHeight={hasScrollableInvitationsTable}
+              pagination={
+                hasScrollableInvitationsTable
+                  ? { initialPageSize: 10, pageSizeOptions: [10, 20, 50] }
+                  : undefined
+              }
+            />
+          </div>
+        </div>
+      </section>
 
       <CreationDialog
         open={open}
@@ -144,6 +209,6 @@ export function UsersSection() {
           }}
         />
       </CreationDialog>
-    </section>
+    </div>
   );
 }

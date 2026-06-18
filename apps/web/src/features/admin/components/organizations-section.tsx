@@ -36,6 +36,7 @@ export function OrganizationsSection() {
   const filteredData = data.filter((organization) =>
     organization.name.toLowerCase().includes(search.toLowerCase())
   );
+  const hasScrollableTable = filteredData.length > 10;
 
   const { data: associatedAthletes = [] } = useQuery({
     queryKey: ['admin', 'organization-athletes', selectedOrganization?.id],
@@ -97,22 +98,40 @@ export function OrganizationsSection() {
   );
 
   return (
-    <div className="flex min-h-0 flex-1 gap-4">
-      <section className="flex min-h-0 flex-1 flex-col rounded-2xl border bg-card p-4">
+    <div
+      className={
+        hasScrollableTable
+          ? 'flex min-h-0 flex-1 gap-4 overflow-hidden'
+          : 'flex min-h-0 flex-1 items-start gap-4 overflow-hidden'
+      }
+    >
+      <section
+        className={
+          hasScrollableTable
+            ? 'flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border bg-card p-4'
+            : 'flex max-h-full w-full flex-col overflow-hidden rounded-2xl border bg-card p-4'
+        }
+      >
         <h2 className="text-lg font-semibold">
           {t('admin:organizations.list_title')}
         </h2>
         <p className="text-sm text-muted-foreground">
           {t('admin:organizations.description')}
         </p>
-        <div className="mt-4 min-h-0 flex-1">
+        <div
+          className={
+            hasScrollableTable
+              ? 'mt-4 flex min-h-0 flex-1 flex-col gap-4'
+              : 'mt-4 flex min-h-0 flex-col gap-4'
+          }
+        >
           {isLoading ? (
             <div className="flex h-24 items-center justify-center">
               {t('loading')}
             </div>
           ) : (
             <>
-              <div className="flex items-center justify-between pb-6">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="relative w-full max-w-lg">
                   <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                   <Input
@@ -122,17 +141,27 @@ export function OrganizationsSection() {
                     className="bg-background pl-8"
                   />
                 </div>
-                <Button onClick={() => setCreateOpen(true)}>
+                <Button
+                  className="shrink-0 sm:w-auto"
+                  onClick={() => setCreateOpen(true)}
+                >
                   {t('admin:organizations.create_button')}
                 </Button>
               </div>
-              <DataTable
-                columns={columns}
-                data={filteredData}
-                pagination={
-                  filteredData.length > 10 ? { initialPageSize: 10 } : undefined
-                }
-              />
+              <div
+                className={hasScrollableTable ? 'min-h-0 flex-1' : 'min-h-0'}
+              >
+                <DataTable
+                  columns={columns}
+                  data={filteredData}
+                  fillHeight={hasScrollableTable}
+                  pagination={
+                    filteredData.length > 10
+                      ? { initialPageSize: 10 }
+                      : undefined
+                  }
+                />
+              </div>
             </>
           )}
         </div>

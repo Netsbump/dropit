@@ -8,7 +8,7 @@
   },
   "organizations": {
     "title": "Clubs",
-    "description": "Créez et gérez les organizations du backoffice.",
+    "description": "Créez et gérez les clubs du backoffice.",
     "create_placeholder": "Nom du club",
     "create_button": "Créer",
     "list_title": "Liste des clubs",
@@ -39,7 +39,7 @@
   "users": {
     "list_title": "Utilisateurs",
     "search_placeholder": "Rechercher un utilisateur",
-    "create_button": "Creer un user",
+    "create_button": "Créer un utilisateur",
     "columns": {
       "first_name": "Prenom",
       "last_name": "Nom",
@@ -53,10 +53,10 @@
       "athlete": "Athlète"
     },
     "modal": {
-      "title": "Creer un user",
+      "title": "Créer un utilisateur",
       "description": "Renseignez les informations du nouvel utilisateur",
       "cancel": "Annuler",
-      "submit": "Creer",
+      "submit": "Créer",
       "organization_placeholder": "Selectionner un club",
       "labels": {
         "first_name": "Prenom",
