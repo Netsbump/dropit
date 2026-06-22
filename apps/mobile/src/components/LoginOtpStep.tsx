@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   Alert,
   ActivityIndicator,
@@ -81,7 +81,7 @@ export default function LoginOtpStep({
         />
       </View>
 
-      <TouchableOpacity
+      <Pressable
         style={[
           loginStyles.primaryButton,
           isLoading && loginStyles.primaryButtonDisabled,
@@ -94,15 +94,15 @@ export default function LoginOtpStep({
         ) : (
           <Text style={loginStyles.primaryButtonText}>Se connecter</Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
 
-      <TouchableOpacity
+      <Pressable
         style={styles.backButton}
         onPress={onBack}
         disabled={isLoading}
       >
         <Text style={styles.backButtonText}>Modifier l'email</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

@@ -7,173 +7,154 @@ import { ColumnDef } from '@tanstack/react-table';
 import { Mars, Venus } from 'lucide-react';
 import { getLevelBadgeVariant } from '@/utils';
 
-export const columns: ColumnDef<AthleteDetailsDto>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <div className="flex items-center justify-start pl-4">
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && 'indeterminate')
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="flex items-center justify-start pl-4">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    id: 'name',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.name');
-    },
-    cell: ({ row }) => {
-      const firstName = row.original.firstName;
-      const lastName = row.original.lastName;
-      const email = row.original.email;
-      const image = row.original.image;
+export function useAthleteColumns(): ColumnDef<AthleteDetailsDto>[] {
+  const { t } = useTranslation(['athletes']);
 
-      return (
-        <div className="flex items-center gap-3">
-          <Avatar className="bg-sidebar text-sidebar-foreground border border-color-border">
-            <AvatarImage src={image} />
-            <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
-          </Avatar>
-          <div className="flex flex-col">
-            <div className="font-medium">{`${firstName} ${lastName}`}</div>
-            <div className="text-sm text-muted-foreground">{email}</div>
+  return [
+    {
+      id: 'select',
+      header: ({ table }) => (
+        <div className="flex items-center justify-start pl-4">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && 'indeterminate')
+            }
+            onCheckedChange={(value) =>
+              table.toggleAllPageRowsSelected(!!value)
+            }
+            aria-label="Select all"
+          />
+        </div>
+      ),
+      cell: ({ row }) => (
+        <div className="flex items-center justify-start pl-4">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      id: 'name',
+      header: () => t('columns.name'),
+      cell: ({ row }) => {
+        const firstName = row.original.firstName;
+        const lastName = row.original.lastName;
+        const email = row.original.email;
+        const image = row.original.image;
+
+        return (
+          <div className="flex items-center gap-3">
+            <Avatar className="bg-sidebar text-sidebar-foreground border border-color-border">
+              <AvatarImage src={image} />
+              <AvatarFallback>{`${firstName[0]}${lastName[0]}`}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+              <div className="font-medium">{`${firstName} ${lastName}`}</div>
+              <div className="text-sm text-muted-foreground">{email}</div>
+            </div>
           </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    id: 'sexCategory',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return <div className="text-center">{t('columns.sex_category')}</div>;
-    },
-    cell: ({ row }) => {
-      const sexCategory = row.original.competitorStatus?.sexCategory;
-      if (!sexCategory) return <div className="text-center">-</div>;
+    {
+      id: 'sexCategory',
+      header: () => (
+        <div className="text-center">{t('columns.sex_category')}</div>
+      ),
+      cell: ({ row }) => {
+        const sexCategory = row.original.competitorStatus?.sexCategory;
+        if (!sexCategory) return <div className="text-center">-</div>;
 
-      const isMale =
-        sexCategory.toLowerCase() === 'men' ||
-        sexCategory.toLowerCase() === 'male' ||
-        sexCategory.toLowerCase() === 'm';
-      const isFemale =
-        sexCategory.toLowerCase() === 'women' ||
-        sexCategory.toLowerCase() === 'female' ||
-        sexCategory.toLowerCase() === 'f';
+        const isMale =
+          sexCategory.toLowerCase() === 'men' ||
+          sexCategory.toLowerCase() === 'male' ||
+          sexCategory.toLowerCase() === 'm';
+        const isFemale =
+          sexCategory.toLowerCase() === 'women' ||
+          sexCategory.toLowerCase() === 'female' ||
+          sexCategory.toLowerCase() === 'f';
 
-      return (
-        <div className="flex items-center justify-center">
-          {isMale ? (
-            <Mars className="h-5 w-5 text-blue-600" />
-          ) : isFemale ? (
-            <Venus className="h-5 w-5 text-pink-600" />
-          ) : (
-            sexCategory
-          )}
-        </div>
-      );
+        return (
+          <div className="flex items-center justify-center">
+            {isMale ? (
+              <Mars className="h-5 w-5 text-blue-600" />
+            ) : isFemale ? (
+              <Venus className="h-5 w-5 text-pink-600" />
+            ) : (
+              sexCategory
+            )}
+          </div>
+        );
+      },
     },
-  },
-  {
-    id: 'weightCategory',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.weight_category');
+    {
+      id: 'weightCategory',
+      header: () => t('columns.weight_category'),
+      cell: ({ row }) => {
+        const category = row.original.competitorStatus?.weightCategory;
+        return category ? `${category} kg` : '-';
+      },
     },
-    cell: ({ row }) => {
-      const category = row.original.competitorStatus?.weightCategory;
-      return category ? `${category} kg` : '-';
+    {
+      id: 'weight',
+      header: () => t('columns.weight'),
+      cell: ({ row }) => {
+        const metrics = row.original.metrics;
+        const weight = metrics?.weight;
+        return weight ? `${weight} kg` : '-';
+      },
     },
-  },
-  {
-    id: 'weight',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.weight');
+    {
+      id: 'snatch',
+      header: () => t('columns.snatch'),
+      cell: ({ row }) => {
+        const records = row.original.personalRecords;
+        const snatch = records?.snatch;
+        return snatch ? `${snatch}kg` : '-';
+      },
     },
-    cell: ({ row }) => {
-      const metrics = row.original.metrics;
-      const weight = metrics?.weight;
-      return weight ? `${weight} kg` : '-';
+    {
+      id: 'cleanAndJerk',
+      header: () => t('columns.clean_and_jerk'),
+      cell: ({ row }) => {
+        const records = row.original.personalRecords;
+        const cleanAndJerk = records?.cleanAndJerk;
+        return cleanAndJerk ? `${cleanAndJerk}kg` : '-';
+      },
     },
-  },
-  {
-    id: 'snatch',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.snatch');
-    },
-    cell: ({ row }) => {
-      const records = row.original.personalRecords;
-      const snatch = records?.snatch;
-      return snatch ? `${snatch}kg` : '-';
-    },
-  },
-  {
-    id: 'cleanAndJerk',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.clean_and_jerk');
-    },
-    cell: ({ row }) => {
-      const records = row.original.personalRecords;
-      const cleanAndJerk = records?.cleanAndJerk;
-      return cleanAndJerk ? `${cleanAndJerk}kg` : '-';
-    },
-  },
-  {
-    id: 'level',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.level');
-    },
-    cell: ({ row }) => {
-      const level = row.original.competitorStatus?.level;
-      if (!level) return '-';
+    {
+      id: 'level',
+      header: () => t('columns.level'),
+      cell: ({ row }) => {
+        const level = row.original.competitorStatus?.level;
+        if (!level) return '-';
 
-      const badgeVariant = getLevelBadgeVariant(level);
+        const badgeVariant = getLevelBadgeVariant(level);
 
-      return <Badge className={badgeVariant}>{level}</Badge>;
+        return <Badge className={badgeVariant}>{level}</Badge>;
+      },
     },
-  },
-  {
-    accessorKey: 'birthday',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.birthday');
+    {
+      accessorKey: 'birthday',
+      header: () => t('columns.birthday'),
+      cell: ({ row }) => {
+        const value = row.original.birthday;
+        return value ? new Date(value).getFullYear().toString() : '-';
+      },
     },
-    cell: ({ row }) => {
-      const value = row.original.birthday;
-      return value ? new Date(value).getFullYear().toString() : '-';
+    {
+      accessorKey: 'country',
+      header: () => t('columns.country'),
+      cell: ({ row }) => {
+        const value = row.getValue('country');
+        return value || '-';
+      },
     },
-  },
-  {
-    accessorKey: 'country',
-    header: () => {
-      const { t } = useTranslation(['athletes']);
-      return t('columns.country');
-    },
-    cell: ({ row }) => {
-      const value = row.getValue('country');
-      return value || '-';
-    },
-  },
-];
+  ];
+}

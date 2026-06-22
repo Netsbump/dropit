@@ -8,18 +8,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 export function SettingsSection() {
   const { t, i18n: i18nInstance } = useTranslation(['profile']);
   const [language, setLanguage] = useState(i18nInstance.language);
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Load dark mode preference from localStorage
-  useEffect(() => {
-    const savedTheme = localStorage.getItem('theme');
-    setDarkMode(savedTheme === 'dark');
-  }, []);
+  const [darkMode, setDarkMode] = useState(
+    () => localStorage.getItem('theme') === 'dark'
+  );
 
   const handleLanguageChange = (value: string) => {
     setLanguage(value);

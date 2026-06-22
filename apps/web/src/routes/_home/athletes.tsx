@@ -11,7 +11,7 @@ import {
 } from '@tanstack/react-router';
 import { useState, useEffect } from 'react';
 import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
-import { columns } from '@/features/athletes/columns';
+import { useAthleteColumns } from '@/features/athletes/columns';
 import { DataTable } from '@/components/ui/data-table';
 import { CreationDialog } from '@/components/shared/creation-dialog';
 import { usePageMeta } from '@/hooks/use-page-meta';
@@ -41,6 +41,7 @@ function AthletesPage() {
   const [search, setSearch] = useState('');
   const invitationFormId = 'athlete-invitation-form';
   const queryClient = useQueryClient();
+  const columns = useAthleteColumns();
   const navigate = Route.useNavigate();
   const matches = useMatches();
   const isAthleteDetail = matches.some(

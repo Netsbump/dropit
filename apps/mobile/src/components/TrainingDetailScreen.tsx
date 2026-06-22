@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ScrollView,
   Alert,
@@ -21,7 +21,7 @@ export default function TrainingDetailScreen({
   onBack,
   element,
 }: TrainingDetailScreenProps) {
-  const [isTimerActive, setIsTimerActive] = useState(false);
+  const isTimerActiveRef = useRef(false);
   const [timeLeft, setTimeLeft] = useState(0);
   const [showTimer, setShowTimer] = useState(false);
 
@@ -55,34 +55,36 @@ export default function TrainingDetailScreen({
   const defaultRestTime = firstRest;
   useEffect(() => {
     let interval: ReturnType<typeof setInterval>;
-    if (isTimerActive && timeLeft > 0) {
+    if (!showTimer) return () => clearInterval(interval);
+
+    if (isTimerActiveRef.current && timeLeft > 0) {
       interval = setInterval(() => {
-        setTimeLeft(timeLeft - 1);
+        setTimeLeft((currentTimeLeft) => currentTimeLeft - 1);
       }, 1000);
-    } else if (timeLeft === 0 && isTimerActive) {
-      setIsTimerActive(false);
+    } else if (timeLeft === 0 && isTimerActiveRef.current) {
+      isTimerActiveRef.current = false;
       setShowTimer(false);
       Alert.alert('Temps écoulé !', 'Temps de repos terminé');
     }
     return () => clearInterval(interval);
-  }, [isTimerActive, timeLeft]);
+  }, [showTimer, timeLeft]);
 
   const handlePlayTimer = () => {
     if (timeLeft === 0) {
       setTimeLeft(defaultRestTime);
     }
-    setIsTimerActive(true);
+    isTimerActiveRef.current = true;
     setShowTimer(true);
   };
 
   const handleTimerPress = () => {
-    setIsTimerActive(false);
+    isTimerActiveRef.current = false;
     setShowTimer(false);
   };
 
   const handleResetTimer = () => {
     setTimeLeft(0);
-    setIsTimerActive(false);
+    isTimerActiveRef.current = false;
     setShowTimer(false);
   };
 
@@ -92,9 +94,9 @@ export default function TrainingDetailScreen({
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <Pressable onPress={onBack} style={styles.backButton}>
           <ChevronLeft color="#f2f6f6" size={24} />
-        </TouchableOpacity>
+        </Pressable>
         <Text style={styles.appTitle}>DROPIT</Text>
         <View style={styles.placeholder} />
       </View>
@@ -167,15 +169,12 @@ export default function TrainingDetailScreen({
 
         {/* Bottom Controls */}
         <View style={styles.bottomControls}>
-          <TouchableOpacity style={styles.easyModeButton}>
+          <Pressable style={styles.easyModeButton}>
             <Text style={styles.chronoRestText}>Chrono{'\n'}Repos</Text>
-          </TouchableOpacity>
+          </Pressable>
 
           {showTimer ? (
-            <TouchableOpacity
-              style={styles.timerDisplay}
-              onPress={handleTimerPress}
-            >
+            <Pressable style={styles.timerDisplay} onPress={handleTimerPress}>
               <Svg width={65} height={65} style={styles.progressCircle}>
                 <Circle
                   cx={32.5}
@@ -193,22 +192,16 @@ export default function TrainingDetailScreen({
                 />
               </Svg>
               <Text style={styles.timerText}>{timeLeft}</Text>
-            </TouchableOpacity>
+            </Pressable>
           ) : (
-            <TouchableOpacity
-              style={styles.playButton}
-              onPress={handlePlayTimer}
-            >
+            <Pressable style={styles.playButton} onPress={handlePlayTimer}>
               <Play color="#e9edf5" size={24} />
-            </TouchableOpacity>
+            </Pressable>
           )}
 
-          <TouchableOpacity
-            style={styles.fullscreenButton}
-            onPress={handleResetTimer}
-          >
+          <Pressable style={styles.fullscreenButton} onPress={handleResetTimer}>
             <RotateCcw color="#e9edf5" size={24} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Bottom spacing */}

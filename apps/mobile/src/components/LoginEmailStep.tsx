@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   Alert,
   ActivityIndicator,
 } from 'react-native';
@@ -64,7 +64,7 @@ export default function LoginEmailStep({ onSuccess }: LoginEmailStepProps) {
         />
       </View>
 
-      <TouchableOpacity
+      <Pressable
         style={[
           loginStyles.primaryButton,
           isLoading && loginStyles.primaryButtonDisabled,
@@ -77,7 +77,7 @@ export default function LoginEmailStep({ onSuccess }: LoginEmailStepProps) {
         ) : (
           <Text style={loginStyles.primaryButtonText}>Recevoir un code</Text>
         )}
-      </TouchableOpacity>
+      </Pressable>
     </View>
   );
 }

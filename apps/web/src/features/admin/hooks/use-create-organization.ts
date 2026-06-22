@@ -1,17 +1,17 @@
 import { authClient } from '@/lib/auth-client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { invalidateOrganizations } from '../lib/admin-query-invalidation';
+import { adminQueryKeys } from '../lib/admin-query-keys';
+
+const toSlug = (value: string) =>
+  value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-');
 
 export function useCreateOrganization() {
   const queryClient = useQueryClient();
-
-  const toSlug = (value: string) =>
-    value
-      .toLowerCase()
-      .trim()
-      .replace(/[^a-z0-9\s-]/g, '')
-      .replace(/\s+/g, '-')
-      .replace(/-+/g, '-');
 
   return useMutation({
     mutationFn: async ({ name }: { name: string }) => {
@@ -27,7 +27,9 @@ export function useCreateOrganization() {
       return response.data;
     },
     onSuccess: async () => {
-      await invalidateOrganizations(queryClient);
+      await queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.organizations.all(),
+      });
     },
   });
 }

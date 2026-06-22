@@ -18,29 +18,15 @@ export default function DashboardScreen() {
   const [athleteData, setAthleteData] = useState<AthleteDetailsDto | null>(
     null
   );
-  const [athleteId, setAthleteId] = useState<string | null>(null);
 
-  // Fetch athleteId from session on mount
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const sessionData = await authClient.getSession();
-        if (sessionData.data?.session?.athleteId) {
-          setAthleteId(sessionData.data.session.athleteId);
-        }
-      } catch (error) {
-        console.error('Error fetching session:', error);
-      }
-    };
-    fetchSession();
-  }, []);
-
-  // Fetch athlete data when athleteId is available
+  // Fetch athlete data from the current session athlete id.
   useEffect(() => {
     const fetchAthleteData = async () => {
-      if (!athleteId) return;
-
       try {
+        const sessionData = await authClient.getSession();
+        const athleteId = sessionData.data?.session?.athleteId;
+        if (!athleteId) return;
+
         const response = await api.athlete.getAthlete({
           params: { id: athleteId },
         });
@@ -59,7 +45,7 @@ export default function DashboardScreen() {
     };
 
     fetchAthleteData();
-  }, [athleteId]);
+  }, []);
 
   const handleTabPress = (tab: 'pr' | 'dashboard' | 'account') => {
     setActiveTab(tab);

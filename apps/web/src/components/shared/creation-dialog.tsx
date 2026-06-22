@@ -25,6 +25,14 @@ interface CreationDialogProps {
   isSubmitting?: boolean;
 }
 
+const MAX_WIDTH_CLASSES = {
+  sm: 'sm:max-w-[500px]',
+  md: 'sm:max-w-[600px]',
+  lg: 'sm:max-w-[800px]',
+  xl: 'sm:max-w-[1000px]',
+  '2xl': 'sm:max-w-[1200px]',
+};
+
 export function CreationDialog({
   title,
   description,
@@ -40,19 +48,11 @@ export function CreationDialog({
   submitDisabled,
   isSubmitting,
 }: CreationDialogProps) {
-  const maxWidthClasses = {
-    sm: 'sm:max-w-[500px]',
-    md: 'sm:max-w-[600px]',
-    lg: 'sm:max-w-[800px]',
-    xl: 'sm:max-w-[1000px]',
-    '2xl': 'sm:max-w-[1200px]',
-  };
-
   const showFooter = Boolean(cancelLabel || submitLabel);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={maxWidthClasses[maxWidth]}>
+      <DialogContent className={MAX_WIDTH_CLASSES[maxWidth]}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           {description ? (

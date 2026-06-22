@@ -4,18 +4,35 @@ import { usePageMeta } from '@/hooks/use-page-meta';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useEffect } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { cn } from '@/lib/utils';
-import {
-  AreaChart,
-  Area,
-  ResponsiveContainer,
-  Tooltip,
-  PieChart,
-  Pie,
-  Cell,
-} from 'recharts';
 import { ArrowRight } from 'lucide-react';
+
+const ParticipationChart = lazy(() =>
+  import('@/features/dashboard/dashboard-charts').then((m) => ({
+    default: m.ParticipationChart,
+  }))
+);
+const DistributionChart = lazy(() =>
+  import('@/features/dashboard/dashboard-charts').then((m) => ({
+    default: m.DistributionChart,
+  }))
+);
+
+const getDaysArray = () => {
+  const days = [];
+  const today = new Date();
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(today.getDate() + i);
+    days.push({
+      day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
+      date: date.getDate(),
+      hasSession: i === 2,
+    });
+  }
+  return days;
+};
 
 export const Route = createFileRoute('/_home/dashboard')({
   component: Dashboard,
@@ -28,39 +45,6 @@ function Dashboard() {
   useEffect(() => {
     setPageMeta({ title: t('dashboard:title') });
   }, [setPageMeta, t]);
-
-  // Données pour le graphique de participation (6 derniers mois)
-  const participationData = [
-    { month: 'Mai', rate: 68 },
-    { month: 'Juin', rate: 10 },
-    { month: 'Juil', rate: 72 },
-    { month: 'Août', rate: 50 },
-    { month: 'Sept', rate: 60 },
-    { month: 'Oct', rate: 94 },
-  ];
-
-  // Données pour le graphique de répartition des entraînements
-  const trainingDistribution = [
-    { name: 'Exercices', value: 89, color: 'hsl(256, 100%, 65%)' }, // purple-700
-    { name: 'Complexes', value: 24, color: 'hsl(256, 100%, 85%)' }, // purple-500
-    { name: 'Entraînements', value: 32, color: 'hsl(256, 100%, 88%)' }, // purple-300
-  ];
-
-  // Générer les 7 prochains jours pour le calendrier
-  const getDaysArray = () => {
-    const days = [];
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      days.push({
-        day: date.toLocaleDateString('fr-FR', { weekday: 'short' }),
-        date: date.getDate(),
-        hasSession: i === 2, // Session dans 2 jours
-      });
-    }
-    return days;
-  };
 
   const calendarDays = getDaysArray();
 
@@ -152,49 +136,9 @@ function Dashboard() {
                   <p className="font-bold text-gray-800 text-3xl">94%</p>
                 </div>
               </div>
-              <div className="h-16 -mx-2">
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={participationData}>
-                    <defs>
-                      <linearGradient
-                        id="colorRate"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#8b5cf6"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#8b5cf6"
-                          stopOpacity={0}
-                        />
-                      </linearGradient>
-                    </defs>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e9d5ff',
-                        borderRadius: '8px',
-                        padding: '8px',
-                      }}
-                      labelStyle={{ color: '#374151', fontWeight: 'bold' }}
-                      formatter={(value: number) => [`${value}%`, 'Taux']}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="rate"
-                      stroke="#8b5cf6"
-                      strokeWidth={2}
-                      fill="url(#colorRate)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
+              <Suspense fallback={<div className="h-16" />}>
+                <ParticipationChart />
+              </Suspense>
             </CardContent>
           </Card>
 
@@ -240,35 +184,27 @@ function Dashboard() {
                   <p className="text-gray-500 text-md">
                     Répartition bibliothèque
                   </p>
-                  <div className="h-48">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie
-                          data={trainingDistribution}
-                          cx="50%"
-                          cy="50%"
-                          innerRadius={55}
-                          outerRadius={85}
-                          paddingAngle={4}
-                          dataKey="value"
-                        >
-                          {trainingDistribution.map((entry) => (
-                            <Cell key={entry.name} fill={entry.color} />
-                          ))}
-                        </Pie>
-                        <Tooltip
-                          contentStyle={{
-                            backgroundColor: 'white',
-                            border: '1px solid #e5e7eb',
-                            borderRadius: '8px',
-                            padding: '8px',
-                          }}
-                        />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
+                  <Suspense fallback={<div className="h-48" />}>
+                    <DistributionChart />
+                  </Suspense>
                   <div className="grid grid-cols-3 gap-4 px-4">
-                    {trainingDistribution.map((item) => (
+                    {[
+                      {
+                        name: 'Exercices',
+                        value: 89,
+                        color: 'hsl(256, 100%, 65%)',
+                      },
+                      {
+                        name: 'Complexes',
+                        value: 24,
+                        color: 'hsl(256, 100%, 85%)',
+                      },
+                      {
+                        name: 'Entraînements',
+                        value: 32,
+                        color: 'hsl(256, 100%, 88%)',
+                      },
+                    ].map((item) => (
                       <div
                         className="flex items-center border rounded-lg justify-center gap-2 p-2"
                         key={item.name}

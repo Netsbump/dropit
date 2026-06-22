@@ -16,7 +16,7 @@ import { Switch } from '@/components/ui/switch';
 import { createWorkoutSchema } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { UseFormReturn } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -49,7 +49,9 @@ export function WorkoutPlanningStep({
 }: WorkoutPlanningStepProps) {
   const [isScheduled, setIsScheduled] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
-  const [selectedAthletes, setSelectedAthletes] = useState<string[]>([]);
+  const [selectedAthletes, setSelectedAthletes] = useState<string[]>(
+    () => form.getValues('trainingSession')?.athleteIds ?? []
+  );
   const [selectAll, setSelectAll] = useState(false);
 
   // Fetch athletes from API
@@ -88,50 +90,52 @@ export function WorkoutPlanningStep({
       setSelectedAthletes([]);
       setSelectAll(false);
     } else {
-      // Initialize with empty values
-      form.setValue('trainingSession', { athleteIds: [], scheduledDate: '' });
+      const trainingSession = form.getValues('trainingSession');
+      if (!trainingSession) {
+        form.setValue('trainingSession', {
+          athleteIds: selectedAthletes,
+          scheduledDate: '',
+        });
+      } else {
+        form.setValue('trainingSession.athleteIds', selectedAthletes);
+      }
     }
   };
-
-  // Initialize planning on mount
-  useEffect(() => {
-    if (isScheduled && !form.watch('trainingSession')) {
-      form.setValue('trainingSession', { athleteIds: [], scheduledDate: '' });
-    }
-  }, [isScheduled, form]);
 
   // Toggle select all athletes
   const toggleSelectAll = () => {
     if (selectAll) {
       setSelectedAthletes([]);
       setSelectAll(false);
+      if (isScheduled) {
+        form.setValue('trainingSession.athleteIds', []);
+      }
     } else {
       const allIds = athletes.map((athlete) => athlete.id);
       setSelectedAthletes(allIds);
       setSelectAll(true);
+      if (isScheduled) {
+        form.setValue('trainingSession.athleteIds', allIds);
+      }
     }
   };
 
   // Toggle individual athlete selection
   const handleAthleteToggle = (athleteId: string) => {
-    setSelectedAthletes((prev) => {
-      if (prev.includes(athleteId)) {
-        const newSelection = prev.filter((id) => id !== athleteId);
-        setSelectAll(false);
-        return newSelection;
-      }
-      const newSelection = [...prev, athleteId];
+    const isSelected = selectedAthletes.includes(athleteId);
+    let newSelection: string[];
+    if (isSelected) {
+      newSelection = selectedAthletes.filter((id) => id !== athleteId);
+      setSelectAll(false);
+    } else {
+      newSelection = [...selectedAthletes, athleteId];
       setSelectAll(newSelection.length === athletes.length);
-      return newSelection;
-    });
-  };
-
-  // Update form when athlete selection changes
-  useEffect(() => {
-    if (isScheduled) {
-      form.setValue('trainingSession.athleteIds', selectedAthletes);
     }
-  }, [selectedAthletes, form, isScheduled]);
+    setSelectedAthletes(newSelection);
+    if (isScheduled) {
+      form.setValue('trainingSession.athleteIds', newSelection);
+    }
+  };
 
   return (
     <div className="h-full flex flex-col">

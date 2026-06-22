@@ -15,7 +15,7 @@ import {
   createComplexCategorySchema,
 } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -31,6 +31,7 @@ export function ComplexCategoryCreationForm({
 }: ComplexCategoryCreationFormProps) {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { mutate: createCategoryMutation } = useMutation({
     mutationFn: async (data: CreateComplexCategoryInput) => {
@@ -47,6 +48,7 @@ export function ComplexCategoryCreationForm({
         title: 'Catégorie créée avec succès',
         description: 'La catégorie a été créée avec succès',
       });
+      queryClient.invalidateQueries({ queryKey: ['complexCategories'] });
       onSuccess?.(data.id);
     },
     onError: (error) => {

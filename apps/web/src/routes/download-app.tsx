@@ -20,6 +20,21 @@ import {
 import { Badge } from '@/components/ui/badge';
 import { useState, useEffect } from 'react';
 
+const handleDownload = (platform: 'ios' | 'android') => {
+  // TODO: Implémenter les liens de téléchargement
+  switch (platform) {
+    case 'ios':
+      window.open('https://apps.apple.com/app/dropit', '_blank');
+      break;
+    case 'android':
+      window.open(
+        'https://play.google.com/store/apps/details?id=com.dropit',
+        '_blank'
+      );
+      break;
+  }
+};
+
 export const Route = createFileRoute('/download-app')({
   beforeLoad: async () => {
     const session = await authClient.getSession();
@@ -58,21 +73,6 @@ function DownloadAppPage() {
 
   // Vérifier si l'utilisateur est un membre (athlète)
   const isAthlete = activeMember?.role === 'member';
-
-  const handleDownload = (platform: 'ios' | 'android') => {
-    // TODO: Implémenter les liens de téléchargement
-    switch (platform) {
-      case 'ios':
-        window.open('https://apps.apple.com/app/dropit', '_blank');
-        break;
-      case 'android':
-        window.open(
-          'https://play.google.com/store/apps/details?id=com.dropit',
-          '_blank'
-        );
-        break;
-    }
-  };
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4">

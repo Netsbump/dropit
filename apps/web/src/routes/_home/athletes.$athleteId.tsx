@@ -14,7 +14,7 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -45,6 +45,24 @@ function AthleteDetailPage() {
       return response.body;
     },
   });
+
+  // Set page meta
+  useEffect(() => {
+    if (athlete) {
+      setPageMeta({
+        title: `${athlete.firstName} ${athlete.lastName}`,
+        showBackButton: true,
+        onBackClick: () => navigate({ to: '/athletes' }),
+      });
+    }
+    return () => {
+      setPageMeta({
+        title: t('common:routes./athletes'),
+        showBackButton: false,
+        onBackClick: undefined,
+      });
+    };
+  }, [athlete, setPageMeta, navigate, t]);
 
   // Fetch all personal records for the athlete
   const { data: personalRecords, isLoading: personalRecordsLoading } = useQuery(
@@ -212,7 +230,7 @@ function AthleteDetailPage() {
     },
   });
 
-  // Update form values when athlete data is loaded
+  // Reset form when athlete data is loaded
   useEffect(() => {
     if (athlete?.competitorStatus) {
       updateCompetitorStatusForm.reset({
@@ -222,26 +240,6 @@ function AthleteDetailPage() {
       });
     }
   }, [athlete, updateCompetitorStatusForm]);
-
-  // Update page meta with athlete name and back button
-  useEffect(() => {
-    if (athlete) {
-      setPageMeta({
-        title: `${athlete.firstName} ${athlete.lastName}`,
-        showBackButton: true,
-        onBackClick: () => navigate({ to: '/athletes' }),
-      });
-    }
-
-    // Cleanup: reset to default when leaving the page
-    return () => {
-      setPageMeta({
-        title: t('common:routes./athletes'),
-        showBackButton: false,
-        onBackClick: undefined,
-      });
-    };
-  }, [athlete, setPageMeta, navigate, t]);
 
   if (athleteLoading) {
     return (

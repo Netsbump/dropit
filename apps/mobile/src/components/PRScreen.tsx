@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import {
   View,
   Text,
   TextInput,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ScrollView,
   Alert,
@@ -20,37 +20,34 @@ interface PRScreenProps {
   onTabPress: (tab: 'pr' | 'dashboard' | 'account') => void;
 }
 
+const handleAddRecord = () => {
+  Alert.alert('Ajouter un record', 'Fonctionnalité à implémenter');
+};
+
+const handleRecordPress = (record: PersonalRecordDto) => {
+  Alert.alert(
+    record.exerciseName || 'Exercice',
+    `Record actuel: ${record.weight}kg\n\nFonctionnalité de modification à implémenter`
+  );
+};
+
 export default function PRScreen({ onTabPress }: PRScreenProps) {
   const [searchText, setSearchText] = useState('');
-  const [allRecords, setAllRecords] = useState<PersonalRecordDto[]>([]);
+  const allRecordsRef = useRef<PersonalRecordDto[]>([]);
   const [filteredRecords, setFilteredRecords] = useState<PersonalRecordDto[]>(
     []
   );
   const [isLoading, setIsLoading] = useState(true);
-  const [athleteId, setAthleteId] = useState<string | null>(null);
 
-  // Fetch athleteId from session on mount
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const sessionData = await authClient.getSession();
-        if (sessionData.data?.session?.athleteId) {
-          setAthleteId(sessionData.data.session.athleteId);
-        }
-      } catch (error) {
-        console.error('Error fetching session:', error);
-      }
-    };
-    fetchSession();
-  }, []);
-
-  // Fetch personal records when athleteId is available
+  // Fetch personal records from the current session athlete id.
   useEffect(() => {
     const fetchPersonalRecords = async () => {
-      if (!athleteId) return;
-
       setIsLoading(true);
       try {
+        const sessionData = await authClient.getSession();
+        const athleteId = sessionData.data?.session?.athleteId;
+        if (!athleteId) return;
+
         const response = await api.personalRecord.getAthletePersonalRecords({
           params: { id: athleteId },
         });
@@ -61,12 +58,12 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
             : response.body;
 
         if (response.status === 200) {
-          setAllRecords(data);
+          allRecordsRef.current = data;
           setFilteredRecords(data);
         }
       } catch (error) {
         console.error('Error fetching personal records:', error);
-        setAllRecords([]);
+        allRecordsRef.current = [];
         setFilteredRecords([]);
       } finally {
         setIsLoading(false);
@@ -74,33 +71,22 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
     };
 
     fetchPersonalRecords();
-  }, [athleteId]);
+  }, []);
 
   const handleSearch = (text: string) => {
     setSearchText(text);
     if (text === '') {
-      setFilteredRecords(allRecords);
+      setFilteredRecords(allRecordsRef.current);
     } else {
-      const filtered = allRecords.filter((record) =>
+      const filtered = allRecordsRef.current.filter((record) =>
         record.exerciseName?.toLowerCase().includes(text.toLowerCase())
       );
       setFilteredRecords(filtered);
     }
   };
 
-  const handleAddRecord = () => {
-    Alert.alert('Ajouter un record', 'Fonctionnalité à implémenter');
-  };
-
-  const handleRecordPress = (record: PersonalRecordDto) => {
-    Alert.alert(
-      record.exerciseName || 'Exercice',
-      `Record actuel: ${record.weight}kg\n\nFonctionnalité de modification à implémenter`
-    );
-  };
-
   const renderPRCard = (record: PersonalRecordDto, index: number) => (
-    <TouchableOpacity
+    <Pressable
       key={record.id}
       style={[
         styles.prCard,
@@ -109,7 +95,6 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
           : styles.halfWidthCard,
       ]}
       onPress={() => handleRecordPress(record)}
-      activeOpacity={0.8}
     >
       <Text style={styles.exerciseName}>
         {record.exerciseName || 'Exercice'}
@@ -118,7 +103,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
         {record.weight}
         <Text style={styles.unit}>kg</Text>
       </Text>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (
@@ -168,7 +153,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
         )}
 
         {/* Add New Record Button */}
-        <TouchableOpacity onPress={handleAddRecord} activeOpacity={0.8}>
+        <Pressable onPress={handleAddRecord}>
           <LinearGradient
             colors={['#63b8ef', '#4fa3e3']}
             start={{ x: 0, y: 0 }}
@@ -177,7 +162,7 @@ export default function PRScreen({ onTabPress }: PRScreenProps) {
           >
             <Text style={styles.addRecordText}>Ajoutez un nouveau record</Text>
           </LinearGradient>
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Bottom spacing */}
         <View style={styles.bottomSpacing} />

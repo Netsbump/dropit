@@ -45,7 +45,7 @@ import { useTranslation } from '@dropit/i18n';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 import { GripVertical, Trash2 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { UseFormReturn, useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CreationDialog } from '@/components/shared/creation-dialog';
@@ -119,14 +119,15 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   const { t } = useTranslation(['exercise']);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const metadataTimestamp = useMemo(
+    () => format(new Date(), 'Pp', { locale: fr }),
+    []
+  );
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const [modals, setModals] = useState({ exercise: false, category: false });
   const createExerciseFormId = 'complex-detail-create-exercise-form';
-  const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(
-    null
-  );
-  const [createCategoryModalOpen, setCreateCategoryModalOpen] = useState(false);
+  const currentEditingIndexRef = useRef<number | null>(null);
 
   const { data: categories } = useQuery({
     queryKey: ['complexCategories'],
@@ -219,16 +220,20 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
   const handleExerciseCreationSuccess = async (exerciseId: string) => {
     await queryClient.invalidateQueries({ queryKey: ['exercises'] });
 
-    if (currentEditingIndex !== null) {
-      form.setValue(`exercises.${currentEditingIndex}.exerciseId`, exerciseId, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true,
-      });
+    if (currentEditingIndexRef.current !== null) {
+      form.setValue(
+        `exercises.${currentEditingIndexRef.current}.exerciseId`,
+        exerciseId,
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true,
+        }
+      );
     }
 
-    setCreateExerciseModalOpen(false);
-    setCurrentEditingIndex(null);
+    setModals((prev) => ({ ...prev, exercise: false }));
+    currentEditingIndexRef.current = null;
   };
 
   const handleCategoryCreationSuccess = async (categoryId: string) => {
@@ -240,7 +245,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
       shouldTouch: true,
     });
 
-    setCreateCategoryModalOpen(false);
+    setModals((prev) => ({ ...prev, category: false }));
   };
 
   const handleSubmit = async (
@@ -291,7 +296,7 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                   <Select
                     onValueChange={(value) => {
                       if (value === 'new') {
-                        setCreateCategoryModalOpen(true);
+                        setModals((prev) => ({ ...prev, category: true }));
                       } else {
                         field.onChange(value);
                       }
@@ -367,8 +372,11 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
                               onValueChange={(value) => {
                                 formField.onChange(value);
                                 if (value === 'new') {
-                                  setCurrentEditingIndex(index);
-                                  setCreateExerciseModalOpen(true);
+                                  currentEditingIndexRef.current = index;
+                                  setModals((prev) => ({
+                                    ...prev,
+                                    exercise: true,
+                                  }));
                                 }
                               }}
                               value={formField.value}
@@ -429,10 +437,10 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
         </form>
 
         <CreationDialog
-          open={createExerciseModalOpen}
+          open={modals.exercise}
           onOpenChange={(open) => {
-            setCreateExerciseModalOpen(open);
-            if (!open) setCurrentEditingIndex(null);
+            setModals((prev) => ({ ...prev, exercise: open }));
+            if (!open) currentEditingIndexRef.current = null;
           }}
           title={t('exercise:creation.title')}
           description={t('exercise:creation.description')}
@@ -447,14 +455,16 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
         </CreationDialog>
 
         <CreationDialog
-          open={createCategoryModalOpen}
-          onOpenChange={setCreateCategoryModalOpen}
+          open={modals.category}
+          onOpenChange={(open) =>
+            setModals((prev) => ({ ...prev, category: open }))
+          }
           title="Créer une catégorie"
           description="Ajoutez une nouvelle catégorie de complex."
         >
           <ComplexCategoryCreationForm
             onSuccess={handleCategoryCreationSuccess}
-            onCancel={() => setCreateCategoryModalOpen(false)}
+            onCancel={() => setModals((prev) => ({ ...prev, category: false }))}
           />
         </CreationDialog>
       </Form>
@@ -509,13 +519,13 @@ export function ComplexDetail({ complex }: ComplexDetailProps) {
             <div className="space-y-2">
               <Label className="text-gray-500">Créé le</Label>
               <p className="text-sm font-semibold text-gray-600">
-                {format(new Date(), 'Pp', { locale: fr })}
+                {metadataTimestamp}
               </p>
             </div>
             <div className="space-y-2">
               <Label className="text-gray-500">Dernière modification</Label>
               <p className="text-sm font-semibold text-gray-600">
-                {format(new Date(), 'Pp', { locale: fr })}
+                {metadataTimestamp}
               </p>
             </div>
           </div>

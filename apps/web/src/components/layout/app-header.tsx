@@ -14,6 +14,18 @@ interface AppHeaderProps {
   tabs?: Tab[];
 }
 
+const getUserInitials = (name?: string) => {
+  if (!name) return 'U';
+  const names = name.trim().split(' ');
+  if (names.length === 1) {
+    return names[0].charAt(0).toUpperCase();
+  }
+  return (
+    names[0].charAt(0).toUpperCase() +
+    names[names.length - 1].charAt(0).toUpperCase()
+  );
+};
+
 export function AppHeader({ tabs }: AppHeaderProps) {
   const matches = useMatches();
   const router = useRouter();
@@ -24,19 +36,6 @@ export function AppHeader({ tabs }: AppHeaderProps) {
   const showBackButton = pageMeta.showBackButton || false;
   const onBackClick = pageMeta.onBackClick;
   const middleContent = pageMeta.middleContent;
-
-  // Function to get user initials from name
-  const getUserInitials = (name?: string) => {
-    if (!name) return 'U';
-    const names = name.trim().split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return (
-      names[0].charAt(0).toUpperCase() +
-      names[names.length - 1].charAt(0).toUpperCase()
-    );
-  };
 
   const handleBackClick = () => {
     if (onBackClick) {
@@ -87,7 +86,9 @@ export function AppHeader({ tabs }: AppHeaderProps) {
       ) : tabs && tabs.length > 0 ? (
         <nav
           className="absolute left-1/2 -translate-x-1/2 inline-grid rounded-full border bg-outlet p-1"
-          style={{ gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))` }}
+          style={{
+            gridTemplateColumns: `repeat(${tabs.length}, minmax(0, 1fr))`,
+          }}
         >
           {activeTabIndex !== undefined && activeTabIndex >= 0 ? (
             <span

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
+import React, { use, useEffect, useMemo, useState, createContext } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet } from 'react-native';
 import { authClient } from '../lib/auth-client';
 import LoginScreen from './LoginScreen';
@@ -31,7 +31,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
+  const context = use(AuthContext);
   if (!context) {
     throw new Error('useAuth must be used within AuthProvider');
   }
@@ -78,16 +78,21 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     await initializeAuth();
   };
 
-  const logout = async () => {
-    try {
-      await authClient.signOut();
-      setSession(null);
-      console.log('Logged out successfully');
-    } catch (error) {
-      console.error('Logout error:', error);
-      throw error;
-    }
-  };
+  const authContextValue = useMemo(
+    () => ({
+      logout: async () => {
+        try {
+          await authClient.signOut();
+          setSession(null);
+          console.log('Logged out successfully');
+        } catch (error) {
+          console.error('Logout error:', error);
+          throw error;
+        }
+      },
+    }),
+    []
+  );
 
   // Écran de chargement initial
   if (!isInitialized || isLoading) {
@@ -106,7 +111,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
   // Session active, afficher l'app
   return (
-    <AuthContext.Provider value={{ logout }}>
+    <AuthContext.Provider value={authContextValue}>
       <View style={styles.container}>{children}</View>
     </AuthContext.Provider>
   );

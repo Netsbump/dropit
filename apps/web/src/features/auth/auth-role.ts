@@ -5,11 +5,11 @@ import {
   type OrganizationRole,
 } from '@dropit/schemas';
 
-export function isSuperAdmin(params: { userRole: GlobalRole }): boolean {
+function isSuperAdmin(params: { userRole: GlobalRole }): boolean {
   return params.userRole === GLOBAL_ROLE.ADMIN;
 }
 
-export function isCoach(params: {
+function isCoach(params: {
   organizationRole: OrganizationRole;
 }): boolean {
   return params.organizationRole === ORGANIZATION_ROLE.ADMIN;

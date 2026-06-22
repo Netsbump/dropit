@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
@@ -36,6 +36,7 @@ export function SignupForm({
   showTerms = true,
 }: SignupFormProps) {
   const { t } = useTranslation(['auth']);
+  const queryClient = useQueryClient();
 
   const formSchema = useMemo(
     () =>
@@ -73,6 +74,7 @@ export function SignupForm({
         title: t('signup.toast.success.title'),
         description: t('signup.toast.success.description'),
       });
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       onSuccess();
     },
   });

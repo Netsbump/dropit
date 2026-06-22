@@ -25,10 +25,15 @@ export function OrganizationsSection() {
   const { t } = useTranslation(['admin']);
   const { data = [], isLoading } = useOrganizationsQuery();
   const updateOrganization = useUpdateOrganization();
-  const [selectedOrganization, setSelectedOrganization] =
-    useState<OrganizationRow | null>(null);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [editingName, setEditingName] = useState('');
+  const [detailPanel, setDetailPanel] = useState<{
+    organization: OrganizationRow | null;
+    open: boolean;
+    editingName: string;
+  }>({
+    organization: null,
+    open: false,
+    editingName: '',
+  });
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const createOrganizationFormId = 'create-organization-form';
@@ -39,13 +44,13 @@ export function OrganizationsSection() {
   const hasScrollableTable = filteredData.length > 10;
 
   const { data: associatedAthletes = [] } = useQuery({
-    queryKey: ['admin', 'organization-athletes', selectedOrganization?.id],
-    enabled: detailsOpen && Boolean(selectedOrganization?.id),
+    queryKey: ['admin', 'organization-athletes', detailPanel.organization?.id],
+    enabled: detailPanel.open && Boolean(detailPanel.organization?.id),
     queryFn: async () => {
-      if (!selectedOrganization) return [];
+      if (!detailPanel.organization) return [];
 
       const response = await api.athlete.getAthletesByOrganization({
-        params: { organizationId: selectedOrganization.id },
+        params: { organizationId: detailPanel.organization.id },
       });
 
       if (response.status !== 200) return [];
@@ -78,9 +83,11 @@ export function OrganizationsSection() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={() => {
-                    setSelectedOrganization(org);
-                    setEditingName(org.name);
-                    setDetailsOpen(true);
+                    setDetailPanel({
+                      organization: org,
+                      editingName: org.name,
+                      open: true,
+                    });
                   }}
                 >
                   {t('admin:actions.view_details')}
@@ -183,17 +190,17 @@ export function OrganizationsSection() {
       </section>
 
       <DetailsPanel
-        open={detailsOpen}
-        onClose={() => setDetailsOpen(false)}
+        open={detailPanel.open}
+        onClose={() => setDetailPanel((prev) => ({ ...prev, open: false }))}
         title={t('admin:organizations.details.title')}
       >
-        {selectedOrganization ? (
+        {detailPanel.organization ? (
           <div className="space-y-6 px-1 pb-4">
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
                 {t('admin:organizations.columns.id')}
               </p>
-              <p className="font-mono text-xs">{selectedOrganization.id}</p>
+              <p className="font-mono text-xs">{detailPanel.organization.id}</p>
             </div>
             <div className="space-y-2">
               <p className="text-sm text-muted-foreground">
@@ -201,20 +208,30 @@ export function OrganizationsSection() {
               </p>
               <div className="flex items-center gap-2">
                 <Input
-                  value={editingName}
-                  onChange={(event) => setEditingName(event.target.value)}
+                  value={detailPanel.editingName}
+                  onChange={(event) =>
+                    setDetailPanel((prev) => ({
+                      ...prev,
+                      editingName: event.target.value,
+                    }))
+                  }
                 />
                 <Button
                   size="sm"
                   onClick={() => {
+                    if (!detailPanel.organization) return;
+                    const { organization, editingName } = detailPanel;
                     updateOrganization.mutate({
-                      organizationId: selectedOrganization.id,
+                      organizationId: organization.id,
                       name: editingName,
                     });
-                    setSelectedOrganization({
-                      ...selectedOrganization,
-                      name: editingName,
-                    });
+                    setDetailPanel((prev) => ({
+                      ...prev,
+                      organization: {
+                        ...organization,
+                        name: editingName,
+                      },
+                    }));
                   }}
                 >
                   {t('admin:actions.save')}

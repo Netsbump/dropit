@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import { Notebook, User, Dumbbell } from 'lucide-react-native';
 
 interface BottomNavigationProps {
@@ -15,22 +15,20 @@ export default function BottomNavigation({
     <View style={styles.container}>
       <View style={styles.navigationBar}>
         {/* Personal Records Button */}
-        <TouchableOpacity
+        <Pressable
           style={[styles.tabButton, styles.sideButton]}
           onPress={() => onTabPress('pr')}
-          activeOpacity={0.7}
         >
           <Notebook
             color={activeTab === 'pr' ? '#FFFFFF' : 'rgba(255,255,255,0.5)'}
             size={24}
           />
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Dashboard Button (Center/Main) */}
-        <TouchableOpacity
+        <Pressable
           style={[styles.tabButton, styles.centerButton]}
           onPress={() => onTabPress('dashboard')}
-          activeOpacity={0.7}
         >
           <Dumbbell
             color={
@@ -38,13 +36,12 @@ export default function BottomNavigation({
             }
             size={24}
           />
-        </TouchableOpacity>
+        </Pressable>
 
         {/* Account Button */}
-        <TouchableOpacity
+        <Pressable
           style={[styles.tabButton, styles.sideButton]}
           onPress={() => onTabPress('account')}
-          activeOpacity={0.7}
         >
           <User
             color={
@@ -52,7 +49,7 @@ export default function BottomNavigation({
             }
             size={24}
           />
-        </TouchableOpacity>
+        </Pressable>
       </View>
     </View>
   );
