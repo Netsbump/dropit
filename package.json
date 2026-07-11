@@ -15,7 +15,8 @@
     "clean": "pnpm --recursive --filter '{apps/*}' clean && rm -rf node_modules",
     "test:api:unit": "dotenv -e .env -- pnpm --filter api test:unit",
     "test:api:integration": "dotenv -e .env -- pnpm --filter api test:integration:docker",
-    "doctor": "npx react-doctor@latest"
+    "doctor:web": "react-doctor apps/web --verbose --scope changed",
+    "doctor:web:full": "react-doctor apps/web --verbose"
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
