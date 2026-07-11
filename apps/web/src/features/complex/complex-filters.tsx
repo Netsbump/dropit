@@ -20,11 +20,13 @@ interface ComplexFiltersProps {
   disabled?: boolean;
 }
 
+const EMPTY_CATEGORIES: ComplexCategoryDto[] = [];
+
 export function ComplexFilters({
   onFilterChange,
   onCategoryChange,
   onCreateClick,
-  categories = [],
+  categories = EMPTY_CATEGORIES,
   disabled,
 }: ComplexFiltersProps) {
   const { t } = useTranslation();

@@ -232,11 +232,8 @@ export function TrainingSessionDetail({
                 {element.type === WORKOUT_ELEMENT_TYPES.COMPLEX &&
                   element.complex.exercises && (
                     <div className="mt-2 pl-4 border-l-2 border-gray-300">
-                      {element.complex.exercises.map((ex, index) => (
-                        <div
-                          key={`${element.id}-${index}`}
-                          className="text-xs mt-1"
-                        >
+                      {element.complex.exercises.map((ex) => (
+                        <div key={ex.id} className="text-xs mt-1">
                           {ex.name}
                         </div>
                       ))}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, type ReactNode } from 'react';
+import { createContext, use, useMemo, useState, type ReactNode } from 'react';
 
 interface PageMeta {
   title?: string;
@@ -18,16 +18,17 @@ const PageMetaContext = createContext<PageMetaContextValue | undefined>(
 
 export function PageMetaProvider({ children }: { children: ReactNode }) {
   const [pageMeta, setPageMeta] = useState<PageMeta>({});
+  const value = useMemo(() => ({ pageMeta, setPageMeta }), [pageMeta]);
 
   return (
-    <PageMetaContext.Provider value={{ pageMeta, setPageMeta }}>
+    <PageMetaContext.Provider value={value}>
       {children}
     </PageMetaContext.Provider>
   );
 }
 
 export function usePageMeta(meta?: PageMeta) {
-  const context = useContext(PageMetaContext);
+  const context = use(PageMetaContext);
 
   if (!context) {
     throw new Error('usePageMeta must be used within PageMetaProvider');
@@ -39,9 +40,4 @@ export function usePageMeta(meta?: PageMeta) {
   }
 
   return context;
-}
-
-export function usePageTitle() {
-  const { pageMeta } = usePageMeta();
-  return pageMeta.title;
 }

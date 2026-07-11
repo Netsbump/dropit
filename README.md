@@ -224,6 +224,8 @@ The project uses Docker Compose to provide the following services:
 - **Lint code**: `pnpm lint`
 - **Fix linting issues**: `pnpm lint:fix`
 - **Format code**: `pnpm format`
+- **React Doctor web scan for changed code**: `pnpm doctor:web`
+- **React Doctor full web scan**: `pnpm doctor:web:full`
 
 ### Database (API)
 

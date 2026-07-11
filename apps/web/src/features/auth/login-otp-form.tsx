@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { toast } from '@/hooks/use-toast';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
@@ -29,6 +29,7 @@ interface LoginOtpFormProps {
 
 export function LoginOtpForm({ email, onSuccess }: LoginOtpFormProps) {
   const { t } = useTranslation(['auth']);
+  const queryClient = useQueryClient();
 
   const otpFormSchema = useMemo(
     () =>
@@ -61,6 +62,7 @@ export function LoginOtpForm({ email, onSuccess }: LoginOtpFormProps) {
         title: t('login.toast.success.title'),
         description: t('login.toast.success.description'),
       });
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       onSuccess();
     },
     onError: (error: Error) => {

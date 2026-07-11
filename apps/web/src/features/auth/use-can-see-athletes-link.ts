@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { getBackOfficeAccessState } from './auth-access';
 
 export function useCanSeeAthletesLink() {
-  const query = useQuery({
+  const { data } = useQuery({
     queryKey: ['auth', 'backoffice-access'],
     queryFn: getBackOfficeAccessState,
     staleTime: 60_000,
@@ -11,11 +11,11 @@ export function useCanSeeAthletesLink() {
   });
 
   const canSeeAthletesLink =
-    !!query.data?.isAuthenticated &&
-    query.data.organizationRole === ORGANIZATION_ROLE.ADMIN;
+    !!data?.isAuthenticated &&
+    data.organizationRole === ORGANIZATION_ROLE.ADMIN;
 
   return {
-    ...query,
+    data,
     canSeeAthletesLink,
   };
 }

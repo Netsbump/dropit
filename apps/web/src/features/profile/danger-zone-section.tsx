@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from '@dropit/i18n';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -37,6 +37,7 @@ type DeleteAccountFormData = {
 export function DangerZoneSection() {
   const { t } = useTranslation(['profile', 'common']);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const deleteAccountSchema = useMemo(
@@ -82,6 +83,7 @@ export function DangerZoneSection() {
       toast({
         title: t('profile:danger.toast.delete_account_success'),
       });
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       // Sign out and redirect to login
       await authClient.signOut();
       navigate({ to: '/login' });

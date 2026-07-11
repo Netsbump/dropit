@@ -1,9 +1,6 @@
 import { api } from '@/lib/api';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import {
-  invalidateInvitations,
-  invalidateUsers,
-} from '../lib/admin-query-invalidation';
+import { adminQueryKeys } from '../lib/admin-query-keys';
 
 interface CreateAdminInvitationInput {
   firstName: string;
@@ -26,8 +23,10 @@ export function useCreateAdminInvitation() {
     },
     onSuccess: async () => {
       await Promise.all([
-        invalidateUsers(queryClient),
-        invalidateInvitations(queryClient),
+        queryClient.invalidateQueries({ queryKey: adminQueryKeys.users.all() }),
+        queryClient.invalidateQueries({
+          queryKey: adminQueryKeys.invitations.all(),
+        }),
       ]);
     },
   });

@@ -19,21 +19,6 @@ const extendedWorkoutSchema = createWorkoutSchema.extend({
 
 type ExtendedWorkoutSchema = z.infer<typeof extendedWorkoutSchema>;
 
-export const workoutCreationSteps = [
-  {
-    id: 'info',
-    name: 'Description',
-  },
-  {
-    id: 'elements',
-    name: 'Construction',
-  },
-  {
-    id: 'planning',
-    name: 'Planification',
-  },
-];
-
 interface WorkoutCreationStepperProps {
   currentStep: number;
   setCurrentStep: (step: number) => void;

@@ -49,6 +49,9 @@ interface ExerciseDetailProps {
 export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [metadataTimestamp] = useState(() =>
+    format(new Date(), 'Pp', { locale: fr })
+  );
   const queryClient = useQueryClient();
 
   const { data: exerciseCategories, isLoading: categoriesLoading } = useQuery({
@@ -231,7 +234,7 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                   <div className="space-y-2">
                     <Label className="text-gray-500">Créé le</Label>
                     <p className="text-sm font-semibold text-gray-600">
-                      {format(new Date(), 'Pp', { locale: fr })}
+                      {metadataTimestamp}
                     </p>
                   </div>
                   <div className="space-y-2">
@@ -239,7 +242,7 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
                       Dernière modification
                     </Label>
                     <p className="text-sm font-semibold text-gray-600">
-                      {format(new Date(), 'Pp', { locale: fr })}
+                      {metadataTimestamp}
                     </p>
                   </div>
                 </div>
@@ -335,13 +338,13 @@ export function ExerciseDetail({ exercise }: ExerciseDetailProps) {
             <div className="space-y-2">
               <Label className="text-gray-500">Créé le</Label>
               <p className="text-sm font-semibold text-gray-600">
-                {format(new Date(), 'Pp', { locale: fr })}
+                {metadataTimestamp}
               </p>
             </div>
             <div className="space-y-2">
               <Label className="text-gray-500">Dernière modification</Label>
               <p className="text-sm font-semibold text-gray-600">
-                {format(new Date(), 'Pp', { locale: fr })}
+                {metadataTimestamp}
               </p>
             </div>
           </div>

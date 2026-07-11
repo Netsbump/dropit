@@ -38,10 +38,10 @@ function HomeLayout() {
   return (
     <PageMetaProvider>
       <div className="min-h-screen w-full">
-        <div className="h-screen w-full glass-container flex">
+        <div className="h-screen w-full max-w-app mx-auto glass-container flex">
           <AppSidebar />
 
-          <main className="flex-1 flex flex-col">
+          <main className="flex-1 min-w-0 flex flex-col">
             <AppHeader tabs={tabs} />
 
             <div className="flex-1 min-h-0 pb-3 px-3 pt-0 ">

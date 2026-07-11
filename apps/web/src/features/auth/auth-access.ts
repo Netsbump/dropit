@@ -7,12 +7,12 @@ import {
 import { canAccessBackOffice } from './auth-role';
 import { getMemberRole, getSession } from './auth-queries';
 
-export function resolveUserRole(role: unknown) {
+function resolveUserRole(role: unknown) {
   const parsedUserRole = globalRoleSchema.safeParse(role);
   return parsedUserRole.success ? parsedUserRole.data : GLOBAL_ROLE.USER;
 }
 
-export function resolveOrganizationRole(role: unknown) {
+function resolveOrganizationRole(role: unknown) {
   const parsedOrganizationRole = organizationRoleSchema.safeParse(role);
   return parsedOrganizationRole.success
     ? parsedOrganizationRole.data

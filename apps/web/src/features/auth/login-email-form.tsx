@@ -1,5 +1,5 @@
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { authClient } from '@/lib/auth-client';
@@ -31,6 +31,7 @@ export function LoginEmailForm({
   showRedirect = true,
 }: LoginEmailFormProps) {
   const { t } = useTranslation(['auth']);
+  const queryClient = useQueryClient();
 
   const emailFormSchema = z.object({
     email: z.string().email({ message: t('common.validation.emailRequired') }),
@@ -52,6 +53,7 @@ export function LoginEmailForm({
       return values.email;
     },
     onSuccess: (email: string) => {
+      queryClient.invalidateQueries({ queryKey: ['user', 'me'] });
       onSuccess(email);
     },
     onError: (error: Error) => {

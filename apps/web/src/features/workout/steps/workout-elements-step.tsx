@@ -57,14 +57,12 @@ export function WorkoutElementsStep({
   onCancel,
 }: WorkoutElementsStepProps) {
   const { t } = useTranslation(['exercise']);
-  const [exerciseSearch, setExerciseSearch] = useState('');
-  const [complexSearch, setComplexSearch] = useState('');
+  const [search, setSearch] = useState({ exercise: '', complex: '' });
   const [activeTab, setActiveTab] = useState<'exercise' | 'complex'>(
     'exercise'
   );
-  const [createExerciseModalOpen, setCreateExerciseModalOpen] = useState(false);
+  const [modals, setModals] = useState({ exercise: false, complex: false });
   const createExerciseFormId = 'workout-elements-create-exercise-form';
-  const [createComplexModalOpen, setCreateComplexModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Queries pour récupérer les données nécessaires
@@ -173,24 +171,24 @@ export function WorkoutElementsStep({
   const handleExerciseCreationSuccess = async () => {
     // Rafraîchir la liste des exercices
     await queryClient.invalidateQueries({ queryKey: ['exercises'] });
-    setCreateExerciseModalOpen(false);
+    setModals((prev) => ({ ...prev, exercise: false }));
   };
 
   const handleComplexCreationSuccess = async () => {
     // Rafraîchir la liste des complexes
     await queryClient.invalidateQueries({ queryKey: ['complexes'] });
-    setCreateComplexModalOpen(false);
+    setModals((prev) => ({ ...prev, complex: false }));
   };
 
   // Filtrer les exercices et complexes selon la recherche
   const filteredExercises =
     exercises?.filter((exercise) =>
-      exercise.name.toLowerCase().includes(exerciseSearch.toLowerCase())
+      exercise.name.toLowerCase().includes(search.exercise.toLowerCase())
     ) || [];
 
   const filteredComplexes =
     complexes?.filter((complex) => {
-      const searchTerm = complexSearch.toLowerCase();
+      const searchTerm = search.complex.toLowerCase();
       // Recherche dans le nom de la catégorie
       const categoryMatch = complex.complexCategory?.name
         ?.toLowerCase()
@@ -253,8 +251,13 @@ export function WorkoutElementsStep({
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             placeholder="Rechercher un exercice..."
-                            value={exerciseSearch}
-                            onChange={(e) => setExerciseSearch(e.target.value)}
+                            value={search.exercise}
+                            onChange={(e) =>
+                              setSearch((prev) => ({
+                                ...prev,
+                                exercise: e.target.value,
+                              }))
+                            }
                             className="pl-10 bg-background"
                           />
                         </div>
@@ -266,7 +269,10 @@ export function WorkoutElementsStep({
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setCreateExerciseModalOpen(true);
+                              setModals((prev) => ({
+                                ...prev,
+                                exercise: true,
+                              }));
                             }}
                             className="w-full h-10 text-sm"
                           >
@@ -322,8 +328,13 @@ export function WorkoutElementsStep({
                           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                           <Input
                             placeholder="Rechercher un complexe..."
-                            value={complexSearch}
-                            onChange={(e) => setComplexSearch(e.target.value)}
+                            value={search.complex}
+                            onChange={(e) =>
+                              setSearch((prev) => ({
+                                ...prev,
+                                complex: e.target.value,
+                              }))
+                            }
                             className="pl-10 bg-background"
                           />
                         </div>
@@ -335,7 +346,7 @@ export function WorkoutElementsStep({
                             onClick={(e) => {
                               e.preventDefault();
                               e.stopPropagation();
-                              setCreateComplexModalOpen(true);
+                              setModals((prev) => ({ ...prev, complex: true }));
                             }}
                             className="w-full h-10 text-sm"
                           >
@@ -467,8 +478,10 @@ export function WorkoutElementsStep({
 
         {/* Modales de création */}
         <CreationDialog
-          open={createExerciseModalOpen}
-          onOpenChange={setCreateExerciseModalOpen}
+          open={modals.exercise}
+          onOpenChange={(open) =>
+            setModals((prev) => ({ ...prev, exercise: open }))
+          }
           title={t('exercise:creation.title')}
           description={t('exercise:creation.description')}
           cancelLabel={t('exercise:creation.cancel')}
@@ -482,15 +495,17 @@ export function WorkoutElementsStep({
         </CreationDialog>
 
         <CreationDialog
-          open={createComplexModalOpen}
-          onOpenChange={setCreateComplexModalOpen}
+          open={modals.complex}
+          onOpenChange={(open) =>
+            setModals((prev) => ({ ...prev, complex: open }))
+          }
           title="Créer un complexe"
           description="Ajoutez un nouveau complexe à votre catalogue."
           maxWidth="lg"
         >
           <ComplexCreationForm
             onSuccess={handleComplexCreationSuccess}
-            onCancel={() => setCreateComplexModalOpen(false)}
+            onCancel={() => setModals((prev) => ({ ...prev, complex: false }))}
           />
         </CreationDialog>
       </div>

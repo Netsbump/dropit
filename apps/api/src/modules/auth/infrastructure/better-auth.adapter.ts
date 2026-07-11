@@ -165,6 +165,10 @@ export class BetterAuthAdapter implements OnModuleInit {
         });
       },
       sendVerificationOTP: (data) => {
+        if (data.type === 'change-email') {
+          return;
+        }
+
         this.notificationUseCase.sendOtp({
           otp: data.otp,
           email: data.email,

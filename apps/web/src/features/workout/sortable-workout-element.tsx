@@ -26,7 +26,6 @@ import {
 } from '@dropit/schemas';
 import { GripVertical, Trash2, Plus, X } from 'lucide-react';
 import { Control, useFormContext } from 'react-hook-form';
-import { useState, useEffect } from 'react';
 import { z } from 'zod';
 import { useTranslation } from '@dropit/i18n';
 
@@ -51,47 +50,22 @@ interface SortableWorkoutElementProps {
   complexes?: ComplexDto[];
 }
 
+const EMPTY_EXERCISES: ExerciseDto[] = [];
+const EMPTY_COMPLEXES: ComplexDto[] = [];
+
 export function SortableWorkoutElement({
   id,
   index,
   control,
   onRemove,
-  exercises = [],
-  complexes = [],
+  exercises = EMPTY_EXERCISES,
+  complexes = EMPTY_COMPLEXES,
 }: SortableWorkoutElementProps) {
   const { t } = useTranslation();
   const { setValue, watch } = useFormContext<ExtendedWorkoutSchema>();
   const element = watch(`elements.${index}`);
-  const [showCommentary, setShowCommentary] = useState(!!element?.commentary);
-  const [showTempo, setShowTempo] = useState(!!element?.tempo);
-  const [showRest, setShowRest] = useState<Record<number, boolean>>(() => {
-    // Initialiser l'état pour chaque block qui a déjà un rest
-    const initialState: Record<number, boolean> = {};
-    element?.blocks?.forEach((block, idx) => {
-      if (block.rest !== undefined && block.rest !== null) {
-        initialState[idx] = true;
-      }
-    });
-    return initialState;
-  });
-
-  // Synchroniser l'état avec les valeurs du formulaire
-  useEffect(() => {
-    if (element?.commentary) {
-      setShowCommentary(true);
-    }
-    if (element?.tempo) {
-      setShowTempo(true);
-    }
-    // Synchroniser showRest avec les valeurs existantes
-    const newShowRest: Record<number, boolean> = {};
-    element?.blocks?.forEach((block, idx) => {
-      if (block.rest !== undefined && block.rest !== null) {
-        newShowRest[idx] = true;
-      }
-    });
-    setShowRest(newShowRest);
-  }, [element?.commentary, element?.tempo, element?.blocks]);
+  const showCommentary = element?.commentary !== undefined;
+  const showTempo = element?.tempo !== undefined;
 
   const {
     attributes,
@@ -147,14 +121,13 @@ export function SortableWorkoutElement({
 
   // Fonction pour toggle l'affichage du rest
   const toggleRest = (blockIndex: number) => {
-    setShowRest((prev) => ({
-      ...prev,
-      [blockIndex]: !prev[blockIndex],
-    }));
-    // Si on masque, réinitialiser la valeur
-    if (showRest[blockIndex]) {
+    const hasRest = element?.blocks?.[blockIndex]?.rest !== undefined;
+    if (hasRest) {
       setValue(`elements.${index}.blocks.${blockIndex}.rest`, undefined);
+      return;
     }
+
+    setValue(`elements.${index}.blocks.${blockIndex}.rest`, 90);
   };
 
   // Rendu d'un block pour un exercice simple
@@ -255,7 +228,7 @@ export function SortableWorkoutElement({
         />
 
         {/* Bouton pour ajouter repos */}
-        {!showRest[blockIndex] && (
+        {block.rest === undefined && (
           <Button
             type="button"
             variant="outline"
@@ -268,7 +241,7 @@ export function SortableWorkoutElement({
         )}
 
         {/* Repos */}
-        {showRest[blockIndex] && (
+        {block.rest !== undefined && (
           <>
             <span className="text-muted-foreground">-</span>
             <FormField
@@ -434,7 +407,7 @@ export function SortableWorkoutElement({
         />
 
         {/* Bouton pour ajouter repos */}
-        {!showRest[blockIndex] && (
+        {block.rest === undefined && (
           <Button
             type="button"
             variant="outline"
@@ -447,7 +420,7 @@ export function SortableWorkoutElement({
         )}
 
         {/* Repos */}
-        {showRest[blockIndex] && (
+        {block.rest !== undefined && (
           <>
             <span className="text-muted-foreground">-</span>
             <FormField
@@ -585,7 +558,7 @@ export function SortableWorkoutElement({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowCommentary(true)}
+                  onClick={() => setValue(`elements.${index}.commentary`, '')}
                   className="h-8 text-xs rounded-full"
                 >
                   {t('workout:add_commentary')}
@@ -596,7 +569,7 @@ export function SortableWorkoutElement({
                   type="button"
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowTempo(true)}
+                  onClick={() => setValue(`elements.${index}.tempo`, '')}
                   className="h-8 text-xs rounded-full"
                 >
                   {t('workout:add_tempo')}
@@ -620,7 +593,6 @@ export function SortableWorkoutElement({
                         variant="ghost"
                         size="sm"
                         onClick={() => {
-                          setShowCommentary(false);
                           setValue(`elements.${index}.commentary`, undefined);
                         }}
                         className="h-6 w-6 p-0"
@@ -665,7 +637,6 @@ export function SortableWorkoutElement({
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                              setShowTempo(false);
                               setValue(`elements.${index}.tempo`, undefined);
                             }}
                             className="h-6 w-6 p-0"

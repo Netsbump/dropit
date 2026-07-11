@@ -1,7 +1,5 @@
-import {
-  WorkoutCreationStepper,
-  workoutCreationSteps,
-} from '@/features/workout/workout-creation-stepper';
+import { WorkoutCreationStepper } from '@/features/workout/workout-creation-stepper';
+import { workoutCreationSteps } from '@/features/workout/workout-creation-steps';
 import { api } from '@/lib/api';
 import { Steps } from '@/components/ui/steps';
 import { useToast } from '@/hooks/use-toast';

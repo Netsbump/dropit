@@ -1,28 +1,33 @@
 import React, { useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-  Image,
-  TouchableOpacity,
-  ImageBackground,
-  NativeSyntheticEvent,
+  FlatList,
+  ListRenderItem,
   NativeScrollEvent,
+  NativeSyntheticEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  useWindowDimensions,
+  View,
 } from 'react-native';
+import { Image } from 'expo-image';
 
-const { width, height } = Dimensions.get('window');
-const CARD_WIDTH = width - 44; // Reduced width to show more side cards
-const CARD_SPACING = -18; // Normal spacing
+const CARD_SPACING = -18;
+
+type CarouselCardId = 'training' | 'news' | 'history';
 
 interface CarouselCard {
-  id: string;
+  id: CarouselCardId;
   title: string;
   subtitle: string;
-  image?: string;
   backgroundColor: string;
 }
+
+const CARD_IMAGE_SOURCES = {
+  training: require('../../assets/training-image.jpg'),
+  news: require('../../assets/actualite-mobile.jpg'),
+  history: require('../../assets/historique-card-mobile.jpg'),
+};
 
 const cards: CarouselCard[] = [
   {
@@ -49,155 +54,100 @@ interface DashboardCarouselProps {
   onTrainingPress?: () => void;
 }
 
+function Dots({ currentIndex }: { currentIndex: number }) {
+  return (
+    <View style={styles.dotsContainer}>
+      {cards.map((card, index) => (
+        <View
+          key={card.id}
+          style={[styles.dot, { opacity: currentIndex === index ? 1 : 0.3 }]}
+        />
+      ))}
+    </View>
+  );
+}
+
 export default function DashboardCarousel({
   onTrainingPress,
 }: DashboardCarouselProps) {
+  const { width, height } = useWindowDimensions();
+  const cardWidth = width - 44;
+  const cardHeight = height * 0.6;
   const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollViewRef = useRef<ScrollView>(null);
+  const listRef = useRef<FlatList<CarouselCard>>(null);
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+  const handleMomentumScrollEnd = (
+    event: NativeSyntheticEvent<NativeScrollEvent>
+  ) => {
     const contentOffset = event.nativeEvent.contentOffset;
-    const index = Math.round(contentOffset.x / (CARD_WIDTH + CARD_SPACING));
+    const index = Math.round(contentOffset.x / (cardWidth + CARD_SPACING));
     setCurrentIndex(index);
   };
 
   const handleCardPress = (card: CarouselCard) => {
     if (card.id === 'training' && onTrainingPress) {
       onTrainingPress();
-    } else {
-      // Handle other card presses (news, history)
-      console.log(`Card pressed: ${card.id}`);
+      return;
     }
+
+    console.log(`Card pressed: ${card.id}`);
   };
 
-  const renderCard = (card: CarouselCard, index: number) => {
+  const renderCard: ListRenderItem<CarouselCard> = ({ item: card, index }) => {
     const isActive = currentIndex === index;
-    const isLastCard = index === cards.length - 1;
-    const cardStyle = [
-      styles.card,
-      {
-        transform: [
+
+    return (
+      <Pressable
+        style={[
+          styles.card,
           {
-            scale: isActive ? 1 : 0.85, // Side cards are smaller
+            width: cardWidth,
+            height: cardHeight,
+            transform: [{ scale: isActive ? 1 : 0.85 }],
+            opacity: isActive ? 1 : 0.7,
+            marginRight: CARD_SPACING,
           },
-        ],
-        opacity: isActive ? 1 : 0.7, // Side cards are more transparent
-        marginRight: CARD_SPACING,
-      },
-    ];
-
-    // Use ImageBackground for all cards with their respective images
-    if (card.id === 'training') {
-      return (
-        <TouchableOpacity
-          key={card.id}
-          style={cardStyle}
-          activeOpacity={0.9}
-          onPress={() => handleCardPress(card)}
-        >
-          <ImageBackground
-            source={require('../../assets/training-image.jpg')}
-            style={styles.cardContent}
-            imageStyle={styles.cardImage}
-          >
-            <View style={styles.cardOverlay} />
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>{card.title}</Text>
-              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-      );
-    }
-
-    if (card.id === 'news') {
-      return (
-        <TouchableOpacity
-          key={card.id}
-          style={cardStyle}
-          activeOpacity={0.9}
-          onPress={() => handleCardPress(card)}
-        >
-          <ImageBackground
-            source={require('../../assets/actualite-mobile.jpg')}
-            style={styles.cardContent}
-            imageStyle={styles.cardImage}
-          >
-            <View style={styles.cardOverlay} />
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>{card.title}</Text>
-              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-      );
-    }
-
-    if (card.id === 'history') {
-      return (
-        <TouchableOpacity
-          key={card.id}
-          style={cardStyle}
-          activeOpacity={0.9}
-          onPress={() => handleCardPress(card)}
-        >
-          <ImageBackground
-            source={require('../../assets/historique-card-mobile.jpg')}
-            style={styles.cardContent}
-            imageStyle={styles.cardImage}
-          >
-            <View style={styles.cardOverlay} />
-            <View style={styles.cardTextContainer}>
-              <Text style={styles.cardTitle}>{card.title}</Text>
-              <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
-            </View>
-          </ImageBackground>
-        </TouchableOpacity>
-      );
-    }
-
-    // Fallback (should not be reached since all cards have images)
-    return null;
+        ]}
+        onPress={() => handleCardPress(card)}
+      >
+        <View style={styles.cardContent}>
+          <Image
+            source={CARD_IMAGE_SOURCES[card.id]}
+            style={styles.cardImage}
+            contentFit="cover"
+            cachePolicy="memory-disk"
+          />
+          <View style={styles.cardOverlay} />
+          <View style={styles.cardTextContainer}>
+            <Text style={styles.cardTitle}>{card.title}</Text>
+            <Text style={styles.cardSubtitle}>{card.subtitle}</Text>
+          </View>
+        </View>
+      </Pressable>
+    );
   };
-
-  const renderDots = () => (
-    <View style={styles.dotsContainer}>
-      {cards.map((card) => (
-        <View
-          key={card.id}
-          style={[
-            styles.dot,
-            {
-              opacity:
-                currentIndex === cards.findIndex((c) => c.id === card.id)
-                  ? 1
-                  : 0.3,
-            },
-          ]}
-        />
-      ))}
-    </View>
-  );
 
   return (
     <View style={styles.container}>
-      <View style={styles.carouselWrapper}>
-        <ScrollView
-          ref={scrollViewRef}
+      <View style={[styles.carouselWrapper, { height: cardHeight }]}>
+        <FlatList
+          ref={listRef}
+          data={cards}
+          renderItem={renderCard}
+          keyExtractor={(card) => card.id}
           horizontal
-          pagingEnabled={false}
           showsHorizontalScrollIndicator={false}
-          onScroll={handleScroll}
+          onMomentumScrollEnd={handleMomentumScrollEnd}
           scrollEventThrottle={16}
           contentContainerStyle={styles.scrollContainer}
-          snapToInterval={CARD_WIDTH + CARD_SPACING}
+          snapToInterval={cardWidth + CARD_SPACING}
           snapToAlignment="start"
           decelerationRate="fast"
-        >
-          {cards.map((card, index) => renderCard(card, index))}
-        </ScrollView>
+        />
       </View>
-      <View style={styles.dotsWrapper}>{renderDots()}</View>
+      <View style={styles.dotsWrapper}>
+        <Dots currentIndex={currentIndex} />
+      </View>
     </View>
   );
 }
@@ -208,39 +158,34 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   carouselWrapper: {
-    height: height * 0.6, // 60% of screen height for cards
     justifyContent: 'center',
   },
   dotsWrapper: {
-    height: 80, // Fixed height for dots area with more space
+    height: 80,
     justifyContent: 'flex-start',
     alignItems: 'center',
     paddingTop: 20,
   },
   scrollContainer: {
-    paddingHorizontal: 20, // Reduced padding to show more side cards
-    paddingRight: 40, // Extra padding for the last card
+    paddingHorizontal: 20,
+    paddingRight: 40,
     alignItems: 'center',
   },
   card: {
-    width: CARD_WIDTH,
-    height: height * 0.6, // 60% of screen height for card content
     borderRadius: 20,
     borderWidth: 1,
     borderColor: '#414551',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 8,
+    boxShadow: '0px 8px 16px rgba(0, 0, 0, 0.15)',
+    overflow: 'hidden',
   },
   cardContent: {
     flex: 1,
     padding: 32,
     justifyContent: 'space-between',
+  },
+  cardImage: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 20,
   },
   cardTextContainer: {
     alignItems: 'center',
@@ -267,17 +212,6 @@ const styles = StyleSheet.create({
     textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
-  imageContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-  },
-  imagePlaceholder: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 100,
-  },
   dotsContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -289,18 +223,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     marginHorizontal: 6,
   },
-
-  // New styles for image background
-  cardImage: {
-    borderRadius: 20,
-  },
   cardOverlay: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.1)', // Dark overlay for text readability
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
     borderRadius: 20,
   },
 });

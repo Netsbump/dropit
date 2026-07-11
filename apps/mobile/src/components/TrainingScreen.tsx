@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ScrollView,
+  FlatList,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { ChevronLeft, ChevronRight } from 'lucide-react-native';
@@ -81,34 +82,22 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
   const [allTrainingSessions, setAllTrainingSessions] = useState<
     TrainingSessionDto[]
   >([]);
-  const [trainingData, setTrainingData] = useState<TrainingSessionDto | null>(
-    null
-  );
   const [isLoading, setIsLoading] = useState(true);
-  const [athleteId, setAthleteId] = useState<string | null>(null);
 
-  // Fetch athleteId from session on mount
-  useEffect(() => {
-    const fetchSession = async () => {
-      try {
-        const sessionData = await authClient.getSession();
-        if (sessionData.data?.session?.athleteId) {
-          setAthleteId(sessionData.data.session.athleteId);
-        }
-      } catch (error) {
-        console.error('Error fetching session:', error);
-      }
-    };
-    fetchSession();
-  }, []);
+  const trainingData = allTrainingSessions.find((session) => {
+    const sessionDate = new Date(session.scheduledDate);
+    return sessionDate.toDateString() === selectedDate.toDateString();
+  });
 
-  // Fetch all training sessions for the date range when athleteId is available
+  // Fetch all training sessions for the date range from the current session athlete id.
   useEffect(() => {
     const fetchAllTrainingSessions = async () => {
-      if (!athleteId) return;
-
       setIsLoading(true);
       try {
+        const sessionData = await authClient.getSession();
+        const athleteId = sessionData.data?.session?.athleteId;
+        if (!athleteId) return;
+
         const startDate = formatDateForAPI(dateRange[0]);
         const endDate = formatDateForAPI(dateRange[dateRange.length - 1]);
 
@@ -126,42 +115,17 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
 
         if (response.status === 200) {
           setAllTrainingSessions(data);
-          // Set training data for selected date
-          const selectedDateString = selectedDate.toDateString();
-          const sessionForDate = data.find((session: TrainingSessionDto) => {
-            const sessionDate = new Date(session.scheduledDate);
-            return sessionDate.toDateString() === selectedDateString;
-          });
-          setTrainingData(sessionForDate || null);
         }
       } catch (error) {
         console.error('Error fetching training sessions:', error);
         setAllTrainingSessions([]);
-        setTrainingData(null);
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchAllTrainingSessions();
-  }, [athleteId, selectedDate]);
-
-  // Update training data when selected date changes
-  useEffect(() => {
-    if (allTrainingSessions.length === 0) {
-      setTrainingData(null);
-      return;
-    }
-
-    const sessionForDate = allTrainingSessions.find(
-      (session: TrainingSessionDto) => {
-        const sessionDate = new Date(session.scheduledDate);
-        return sessionDate.toDateString() === selectedDate.toDateString();
-      }
-    );
-
-    setTrainingData(sessionForDate || null);
-  }, [selectedDate, allTrainingSessions]);
+  }, []);
 
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
@@ -173,6 +137,51 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
 
   const handleBackFromDetail = () => {
     setSelectedElement(null);
+  };
+
+  const renderDateItem = ({ item: date }: { item: Date }) => {
+    const isSelected = date.toDateString() === selectedDate.toDateString();
+    const dayNumber = date.getDate();
+    const monthName = [
+      'JAN',
+      'FÉV',
+      'MAR',
+      'AVR',
+      'MAI',
+      'JUN',
+      'JUL',
+      'AOÛ',
+      'SEP',
+      'OCT',
+      'NOV',
+      'DÉC',
+    ][date.getMonth()];
+
+    const hasTraining = allTrainingSessions.some(
+      (session: TrainingSessionDto) => {
+        const sessionDate = new Date(session.scheduledDate);
+        return sessionDate.toDateString() === date.toDateString();
+      }
+    );
+
+    return (
+      <Pressable
+        style={[styles.dateItem, isSelected && styles.dateItemSelected]}
+        onPress={() => handleDateSelect(date)}
+      >
+        <Text
+          style={[styles.dateNumber, isSelected && styles.dateNumberSelected]}
+        >
+          {dayNumber}
+        </Text>
+        <Text
+          style={[styles.dateMonth, isSelected && styles.dateMonthSelected]}
+        >
+          {monthName}.
+        </Text>
+        {hasTraining && <View style={styles.trainingIndicator} />}
+      </Pressable>
+    );
   };
 
   // If an element is selected, show the detail screen
@@ -195,11 +204,10 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
       rest: string;
     }
   ) => (
-    <TouchableOpacity
+    <Pressable
       key={displayInfo.id}
       style={styles.exerciseBlock}
       onPress={() => handleExercisePress(element)}
-      activeOpacity={0.8}
     >
       {/* Exercise Image Placeholder */}
       <View style={styles.exerciseImage}>
@@ -227,7 +235,7 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
       <View style={styles.arrowContainer}>
         <ChevronRight color="#a7acae" size={20} />
       </View>
-    </TouchableOpacity>
+    </Pressable>
   );
 
   return (
@@ -236,9 +244,9 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
 
       {/* Header */}
       <View style={styles.header}>
-        <TouchableOpacity onPress={onBack} style={styles.backButton}>
+        <Pressable onPress={onBack} style={styles.backButton}>
           <ChevronLeft color="#f2f6f6" size={24} />
-        </TouchableOpacity>
+        </Pressable>
         <View style={styles.headerContent}>
           <Text style={styles.title}>Entraînements</Text>
         </View>
@@ -247,66 +255,14 @@ export default function TrainingScreen({ onBack }: TrainingScreenProps) {
 
       {/* Date Carousel */}
       <View style={styles.dateCarouselContainer}>
-        <ScrollView
+        <FlatList
+          data={dateRange}
+          renderItem={renderDateItem}
+          keyExtractor={(date) => date.toISOString()}
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.dateCarousel}
-        >
-          {dateRange.map((date) => {
-            const isSelected =
-              date.toDateString() === selectedDate.toDateString();
-            const dayNumber = date.getDate();
-            const monthName = [
-              'JAN',
-              'FÉV',
-              'MAR',
-              'AVR',
-              'MAI',
-              'JUN',
-              'JUL',
-              'AOÛ',
-              'SEP',
-              'OCT',
-              'NOV',
-              'DÉC',
-            ][date.getMonth()];
-            const dateKey = date.toISOString();
-
-            // Check if this date has a training session
-            const hasTraining = allTrainingSessions.some(
-              (session: TrainingSessionDto) => {
-                const sessionDate = new Date(session.scheduledDate);
-                return sessionDate.toDateString() === date.toDateString();
-              }
-            );
-
-            return (
-              <TouchableOpacity
-                key={dateKey}
-                style={[styles.dateItem, isSelected && styles.dateItemSelected]}
-                onPress={() => handleDateSelect(date)}
-              >
-                <Text
-                  style={[
-                    styles.dateNumber,
-                    isSelected && styles.dateNumberSelected,
-                  ]}
-                >
-                  {dayNumber}
-                </Text>
-                <Text
-                  style={[
-                    styles.dateMonth,
-                    isSelected && styles.dateMonthSelected,
-                  ]}
-                >
-                  {monthName}.
-                </Text>
-                {hasTraining && <View style={styles.trainingIndicator} />}
-              </TouchableOpacity>
-            );
-          })}
-        </ScrollView>
+        />
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>

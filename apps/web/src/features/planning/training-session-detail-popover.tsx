@@ -3,7 +3,6 @@ import {
   PopoverAnchor,
   PopoverContent,
 } from '@/components/ui/popover';
-import { useEffect, useState } from 'react';
 import { TrainingSessionDetail } from './training-session-detail';
 
 interface TrainingSessionDetailPopoverProps {
@@ -27,16 +26,8 @@ export function TrainingSessionDetailPopover({
   onViewDetail,
   onAthleteClick,
 }: TrainingSessionDetailPopoverProps) {
-  const [open, setOpen] = useState(isOpen);
-
-  // Synchroniser l'état ouvert/fermé avec la prop isOpen
-  useEffect(() => {
-    setOpen(isOpen);
-  }, [isOpen]);
-
   // Gérer la fermeture du popover
   const handleOpenChange = (open: boolean) => {
-    setOpen(open);
     if (!open) {
       onClose();
     }
@@ -45,7 +36,7 @@ export function TrainingSessionDetailPopover({
   if (!trainingSessionId) return null;
 
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
+    <Popover open={isOpen} onOpenChange={handleOpenChange}>
       {anchorElement && (
         <PopoverAnchor asChild virtualRef={{ current: anchorElement }} />
       )}

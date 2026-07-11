@@ -33,7 +33,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from '@dropit/i18n';
 import { PlusCircle } from 'lucide-react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { CreationDialog } from '@/components/shared/creation-dialog';
@@ -89,6 +89,7 @@ export function ComplexCreationForm({
         title: 'Complex créé avec succès',
         description: 'Le complex a été créé avec succès',
       });
+      queryClient.invalidateQueries({ queryKey: ['complexes'] });
       onSuccess?.();
     },
     onError: (error) => {
@@ -100,24 +101,25 @@ export function ComplexCreationForm({
     },
   });
 
-  // state pour garder une trace de l'index en cours d'édition
-  const [currentEditingIndex, setCurrentEditingIndex] = useState<number | null>(
-    null
-  );
+  const currentEditingIndexRef = useRef<number | null>(null);
 
   const handleExerciseCreationSuccess = async (exerciseId: string) => {
     await queryClient.invalidateQueries({ queryKey: ['exercises'] });
 
-    if (currentEditingIndex !== null) {
-      form.setValue(`exercises.${currentEditingIndex}.exerciseId`, exerciseId, {
-        shouldValidate: true,
-        shouldDirty: true,
-        shouldTouch: true,
-      });
+    if (currentEditingIndexRef.current !== null) {
+      form.setValue(
+        `exercises.${currentEditingIndexRef.current}.exerciseId`,
+        exerciseId,
+        {
+          shouldValidate: true,
+          shouldDirty: true,
+          shouldTouch: true,
+        }
+      );
     }
 
     setCreateExerciseModalOpen(false);
-    setCurrentEditingIndex(null);
+    currentEditingIndexRef.current = null;
   };
 
   const handleCategoryCreationSuccess = async (categoryId: string) => {
@@ -206,9 +208,9 @@ export function ComplexCreationForm({
   };
 
   // Récupérer les exercices déjà sélectionnés (y compris les deux premiers)
-  const selectedExerciseIds = fields
-    .map((field) => field.exerciseId)
-    .filter(Boolean);
+  const selectedExerciseIds = fields.flatMap((field) =>
+    field.exerciseId ? [field.exerciseId] : []
+  );
 
   return (
     <Form {...form}>
@@ -293,7 +295,7 @@ export function ComplexCreationForm({
                       control={form.control}
                       onRemove={remove}
                       onCreateExercise={(index) => {
-                        setCurrentEditingIndex(index);
+                        currentEditingIndexRef.current = index;
                         setCreateExerciseModalOpen(true);
                       }}
                       exercises={exercises}
@@ -325,7 +327,7 @@ export function ComplexCreationForm({
         open={createExerciseModalOpen}
         onOpenChange={(open) => {
           setCreateExerciseModalOpen(open);
-          if (!open) setCurrentEditingIndex(null);
+          if (!open) currentEditingIndexRef.current = null;
         }}
         title={t('exercise:creation.title')}
         description={t('exercise:creation.description')}

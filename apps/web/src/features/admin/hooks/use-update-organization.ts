@@ -1,6 +1,6 @@
 import { authClient } from '@/lib/auth-client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { invalidateOrganizations } from '../lib/admin-query-invalidation';
+import { adminQueryKeys } from '../lib/admin-query-keys';
 
 type UpdateOrganizationInput = {
   organizationId: string;
@@ -24,7 +24,9 @@ export function useUpdateOrganization() {
       return response.data;
     },
     onSuccess: async () => {
-      await invalidateOrganizations(queryClient);
+      await queryClient.invalidateQueries({
+        queryKey: adminQueryKeys.organizations.all(),
+      });
     },
   });
 }

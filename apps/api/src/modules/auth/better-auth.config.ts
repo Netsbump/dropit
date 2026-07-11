@@ -45,7 +45,25 @@ interface BetterAuthDeps {
   databaseHooks: BetterAuthOptions['databaseHooks'];
 }
 
-export function createAuthConfig(deps: BetterAuthDeps) {
+export type BetterAuthInstance = {
+  api: {
+    getSession: (params: { headers: Headers }) => Promise<{
+      user?: unknown;
+      session?: unknown;
+    } | null>;
+    createInvitation: (params: {
+      headers: Headers;
+      body: {
+        email: string;
+        role: string;
+        organizationId: string;
+      };
+    }) => Promise<unknown>;
+  };
+  handler: (request: Request) => Promise<Response>;
+};
+
+export function createAuthConfig(deps: BetterAuthDeps): BetterAuthInstance {
   return betterAuth({
     // === STATIC (env.config) ===
     secret: config.betterAuth.secret,
@@ -117,7 +135,5 @@ export function createAuthConfig(deps: BetterAuthDeps) {
       }),
       customSession(async (ctx) => deps.enrichSession(ctx)),
     ],
-  });
+  }) as unknown as BetterAuthInstance;
 }
-
-export type BetterAuthInstance = ReturnType<typeof createAuthConfig>;

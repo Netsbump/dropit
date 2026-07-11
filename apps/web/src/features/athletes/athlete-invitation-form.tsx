@@ -11,7 +11,7 @@ import { useTranslation } from '@dropit/i18n';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from '@/hooks/use-toast';
 import { Mail, UserPlus } from 'lucide-react';
 import { api } from '@/lib/api';
@@ -27,6 +27,7 @@ export function AthleteInvitationForm({
   onSuccess,
 }: AthleteInvitationFormProps) {
   const { t } = useTranslation(['athletes']);
+  const queryClient = useQueryClient();
 
   const invitationSchema = z.object({
     firstName: z.string().min(1, t('invitation.first_name_required')),
@@ -53,6 +54,7 @@ export function AthleteInvitationForm({
         title: t('invitation.success_title'),
         description: t('invitation.success_description', { email: data.email }),
       });
+      queryClient.invalidateQueries({ queryKey: ['athletes'] });
       onSuccess();
     },
     onError: (error) => {

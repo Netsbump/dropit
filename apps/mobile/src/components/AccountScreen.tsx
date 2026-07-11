@@ -2,7 +2,7 @@ import React from 'react';
 import {
   View,
   Text,
-  TouchableOpacity,
+  Pressable,
   StyleSheet,
   ScrollView,
   Alert,
@@ -14,6 +14,10 @@ import BottomNavigation from './BottomNavigation';
 interface AccountScreenProps {
   onTabPress: (tab: 'pr' | 'dashboard' | 'account') => void;
 }
+
+const handlePlaceholderPress = (feature: string) => {
+  Alert.alert('Fonctionnalité', `${feature} - À implémenter`);
+};
 
 export default function AccountScreen({ onTabPress }: AccountScreenProps) {
   const { logout } = useAuth();
@@ -36,10 +40,6 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
     ]);
   };
 
-  const handlePlaceholderPress = (feature: string) => {
-    Alert.alert('Fonctionnalité', `${feature} - À implémenter`);
-  };
-
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
@@ -54,7 +54,7 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Profil</Text>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Modifier le profil')}
           >
@@ -63,9 +63,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Modifier mon profil</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Changer la photo')}
           >
@@ -74,14 +74,14 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Photo de profil</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Preferences Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Préférences</Text>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Notifications')}
           >
@@ -90,9 +90,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Notifications</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Langue')}
           >
@@ -101,9 +101,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Langue</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Thème')}
           >
@@ -112,14 +112,14 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Thème</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Training Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Entraînement</Text>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Objectifs')}
           >
@@ -128,9 +128,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Mes objectifs</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Historique')}
           >
@@ -139,14 +139,14 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Historique complet</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Support Section */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Support</Text>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Aide')}
           >
@@ -155,9 +155,9 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Centre d\'aide</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
 
-          <TouchableOpacity
+          <Pressable
             style={styles.menuItem}
             onPress={() => handlePlaceholderPress('Contact')}
           >
@@ -166,12 +166,12 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
               <Text style={styles.menuItemText}>Nous contacter</Text>
             </View>
             <View style={styles.chevronRight} />
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Logout Section */}
         <View style={[styles.section, styles.logoutSection]}>
-          <TouchableOpacity
+          <Pressable
             style={[styles.menuItem, styles.logoutItem]}
             onPress={handleLogout}
           >
@@ -181,7 +181,7 @@ export default function AccountScreen({ onTabPress }: AccountScreenProps) {
                 Se déconnecter
               </Text>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         </View>
 
         {/* Bottom spacing for safe area */}

@@ -3,7 +3,7 @@ import { GLOBAL_ROLE } from '@dropit/schemas';
 import { getBackOfficeAccessState } from './auth-access';
 
 export function useCanSeeAdminLink() {
-  const query = useQuery({
+  const { data } = useQuery({
     queryKey: ['auth', 'backoffice-access'],
     queryFn: getBackOfficeAccessState,
     staleTime: 60_000,
@@ -11,10 +11,10 @@ export function useCanSeeAdminLink() {
   });
 
   const canSeeAdminLink =
-    !!query.data?.isAuthenticated && query.data.userRole === GLOBAL_ROLE.ADMIN;
+    !!data?.isAuthenticated && data.userRole === GLOBAL_ROLE.ADMIN;
 
   return {
-    ...query,
+    data,
     canSeeAdminLink,
   };
 }

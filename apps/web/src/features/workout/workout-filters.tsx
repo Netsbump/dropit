@@ -20,11 +20,13 @@ interface WorkoutFiltersProps {
   disabled?: boolean;
 }
 
+const EMPTY_CATEGORIES: WorkoutCategoryDto[] = [];
+
 export function WorkoutFilters({
   onFilterChange,
   onCategoryChange,
   onCreateClick,
-  categories = [],
+  categories = EMPTY_CATEGORIES,
   disabled,
 }: WorkoutFiltersProps) {
   const { t } = useTranslation();
@@ -51,7 +53,7 @@ export function WorkoutFilters({
               <SelectItem value="all">
                 {t('workout:filters.all_categories')}
               </SelectItem>
-              {categories?.map((category) => (
+              {categories.map((category) => (
                 <SelectItem key={category.id} value={category.id}>
                   {category.name}
                 </SelectItem>

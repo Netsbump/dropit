@@ -41,9 +41,29 @@ interface PlanningCalendarProps {
   onEventDrop?: (eventDropInfo: EventDropInfo) => void;
 }
 
+const EMPTY_EVENTS: TrainingSessionDto[] = [];
+
+const renderEventContent = (eventInfo: EventContentArg) => {
+  if (eventInfo.view.type === 'dayGridWeek') {
+    const trainingSession = eventInfo.event.extendedProps
+      .trainingSession as TrainingSessionDto;
+    if (trainingSession) {
+      return <TrainingSessionWeekView trainingSession={trainingSession} />;
+    }
+  }
+
+  return (
+    <div className="p-1">
+      <div className="font-medium text-xs line-clamp-2">
+        {eventInfo.event.title}
+      </div>
+    </div>
+  );
+};
+
 export function PlanningCalendar({
   className,
-  initialEvents = [],
+  initialEvents = EMPTY_EVENTS,
   onEventClick,
   onDateClick,
   onEventDrop,
@@ -132,26 +152,6 @@ export function PlanningCalendar({
       default:
         return t('month');
     }
-  };
-
-  const renderEventContent = (eventInfo: EventContentArg) => {
-    // Rendu personnalisé pour la vue semaine
-    if (eventInfo.view.type === 'dayGridWeek') {
-      const trainingSession = eventInfo.event.extendedProps
-        .trainingSession as TrainingSessionDto;
-      if (trainingSession) {
-        return <TrainingSessionWeekView trainingSession={trainingSession} />;
-      }
-    }
-
-    // Rendu par défaut pour les autres vues
-    return (
-      <div className="p-1">
-        <div className="font-medium text-xs line-clamp-2">
-          {eventInfo.event.title}
-        </div>
-      </div>
-    );
   };
 
   return (

@@ -19,7 +19,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { CreateExerciseInput, createExerciseSchema } from '@dropit/schemas';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -33,6 +33,7 @@ export function ExerciseCreationForm({
   onSuccess,
 }: ExerciseCreationFormProps) {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const { data: exerciseCategories, isLoading: categoriesLoading } = useQuery({
     queryKey: ['exercise-categories'],
@@ -57,6 +58,7 @@ export function ExerciseCreationForm({
         title: 'Exercice créé avec succès',
         description: "L'exercice a été créé avec succès",
       });
+      queryClient.invalidateQueries({ queryKey: ['exercises'] });
       onSuccess?.(data.id);
     },
     onError: (error) => {
