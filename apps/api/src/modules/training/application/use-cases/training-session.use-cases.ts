@@ -9,6 +9,7 @@ import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
+import { toAthleteEntityReference } from '../../../athletes/infrastructure/athlete.mapper';
 import { IWorkoutRepository } from '../ports/workout.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { ITrainingSessionUseCases } from '../ports/training-session-use-cases.port';
@@ -118,14 +119,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         'Athlete not found or not associated with a user'
       );
     }
 
     //3. Check if current user is same as userId in athleteId or is coach of the organization
-    if (athlete.user.id !== userId && !isCoach) {
+    if (athlete.userId !== userId && !isCoach) {
       throw new TrainingSessionAccessDeniedException(
         'User is not authorized to access this resource'
       );
@@ -162,14 +163,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         'Athlete not found or not associated with a user'
       );
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
-    if (athlete.user.id !== userId && !isAdmin) {
+    if (athlete.userId !== userId && !isAdmin) {
       throw new TrainingSessionAccessDeniedException(
         'User is not authorized to access this resource'
       );
@@ -204,14 +205,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         'Athlete not found or not associated with a user'
       );
     }
 
     //3. Check if current user is same as userId in athleteId or is admin of the organization
-    if (athlete.user.id !== userId && !isAdmin) {
+    if (athlete.userId !== userId && !isAdmin) {
       throw new TrainingSessionAccessDeniedException(
         'User is not authorized to access this resource'
       );
@@ -310,8 +311,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     for (const a of athletes) {
       try {
+        if (!a.id) {
+          throw new TrainingSessionValidationException(
+            'Cannot create athlete training session without athlete id'
+          );
+        }
+
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = a;
+        athleteTrainingSession.athlete = toAthleteEntityReference(a.id);
         athleteTrainingSession.trainingSession = createdTrainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession
@@ -398,8 +405,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
       // Create new athlete sessions
       for (const athlete of athletes) {
+        if (!athlete.id) {
+          throw new TrainingSessionValidationException(
+            'Cannot create athlete training session without athlete id'
+          );
+        }
+
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = athlete;
+        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
         athleteTrainingSession.trainingSession = trainingSessionToUpdate;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession
@@ -445,14 +458,14 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //1. Get athlete from repository
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         'Athlete not found or not associated with a user'
       );
     }
 
     //2. Check if current user is same as userId in athleteId
-    if (athlete.user.id !== userId) {
+    if (athlete.userId !== userId) {
       throw new TrainingSessionAccessDeniedException(
         'User is not authorized to access this resource'
       );

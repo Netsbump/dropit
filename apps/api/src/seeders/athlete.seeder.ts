@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { faker } from '@faker-js/faker';
 import { User } from '../modules/auth/domain/auth/user.entity';
 import { hashPassword } from 'better-auth/crypto';

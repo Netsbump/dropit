@@ -1,6 +1,6 @@
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { CompetitorStatus } from '../modules/athletes/domain/competitor-status.entity';
 
 export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {

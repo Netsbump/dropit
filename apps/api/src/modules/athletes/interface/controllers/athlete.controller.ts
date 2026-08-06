@@ -1,5 +1,5 @@
 import { athleteContract } from '@dropit/contract';
-import { Controller, UseGuards, Inject } from '@nestjs/common';
+import { Controller, Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import {
@@ -12,15 +12,21 @@ import {
   CurrentUser,
 } from '../../../auth/infrastructure/decorators/auth.decorator';
 import {
-  IAthleteUseCases,
-  ATHLETE_USE_CASES,
-} from '../../application/ports/athlete-use-cases.port';
+  IAthleteProfiles,
+  ATHLETE_PROFILES,
+} from '../../application/ports/athlete-profiles.port';
 import {
   IInvitationUseCases,
   INVITATION_USE_CASES,
 } from '../../../invitations/application/ports/invitation-use-cases.port';
-import { AthleteMapper } from '../mappers/athlete.mapper';
-import { AthletePresenter } from '../presenter/athlete.presenter';
+import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+import {
+  toAthleteCreation,
+  toAthleteDetailsDto,
+  toAthleteDetailsDtoList,
+  toAthleteDto,
+  toAthleteUpdate,
+} from '../mappers/athlete.mapper';
 
 const c = athleteContract;
 
@@ -38,15 +44,16 @@ const c = athleteContract;
  * and are scoped to the current organization, except for create and update
  * operations which use @NoOrganization() decorator.
  *
- * @see {@link IAthleteUseCases} for business logic contract
+ * @see {@link IAthleteProfiles} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
+@UseFilters(AthleteExceptionFilter)
 @UseGuards(PermissionsGuard)
 @Controller()
 export class AthleteController {
   constructor(
-    @Inject(ATHLETE_USE_CASES)
-    private readonly athleteUseCases: IAthleteUseCases,
+    @Inject(ATHLETE_PROFILES)
+    private readonly athleteProfiles: IAthleteProfiles,
     @Inject(INVITATION_USE_CASES)
     private readonly invitationUseCases: IInvitationUseCases
   ) {}
@@ -58,26 +65,22 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.inviteAthlete>> {
     return tsRestHandler(c.inviteAthlete, async ({ body, headers }) => {
-      try {
-        await this.invitationUseCases.inviteAthlete(
-          {
-            firstName: body.firstName,
-            lastName: body.lastName,
-            email: body.email,
-            organizationId,
-            headers,
-          },
-          {
-            userId: user.id,
-            isSuperAdmin: user.role === 'admin',
-            organizationId,
-          }
-        );
+      await this.invitationUseCases.inviteAthlete(
+        {
+          firstName: body.firstName,
+          lastName: body.lastName,
+          email: body.email,
+          organizationId,
+          headers,
+        },
+        {
+          userId: user.id,
+          isSuperAdmin: user.role === 'admin',
+          organizationId,
+        }
+      );
 
-        return { status: 201 as const, body: { message: 'Invitation sent' } };
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
-      }
+      return { status: 201 as const, body: { message: 'Invitation sent' } };
     });
   }
 
@@ -94,16 +97,17 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
-      try {
-        const athletes = await this.athleteUseCases.findAllWithDetails(
-          user.id,
-          organizationId
-        );
-        const athletesDto = AthleteMapper.toDtoListDetails(athletes);
-        return AthletePresenter.presentListDetails(athletesDto);
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
-      }
+      const athletes = await this.athleteProfiles.findAllWithDetails(
+        user.id,
+        organizationId
+      );
+
+      const athletesDto = toAthleteDetailsDtoList(athletes);
+
+      return {
+        status: 200 as const,
+        body: athletesDto,
+      };
     });
   }
 
@@ -114,31 +118,27 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletesByOrganization>> {
     return tsRestHandler(c.getAthletesByOrganization, async ({ params }) => {
-      try {
-        if (user.role !== 'admin') {
-          return { status: 403, body: { message: 'Forbidden' } };
-        }
-
-        const athletes =
-          await this.athleteUseCases.findAllWithDetailsByOrganization(
-            params.organizationId
-          );
-        const athletesDto = AthleteMapper.toDtoListDetails(athletes).map(
-          (athlete) => ({
-            id: athlete.id,
-            firstName: athlete.firstName,
-            lastName: athlete.lastName,
-            email: athlete.email,
-            birthday: athlete.birthday,
-          })
-        );
-        return {
-          status: 200 as const,
-          body: athletesDto,
-        };
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
+      if (user.role !== 'admin') {
+        return { status: 403, body: { message: 'Forbidden' } };
       }
+
+      const athletes =
+        await this.athleteProfiles.findAllWithDetailsByOrganization(
+          params.organizationId
+        );
+
+      const athletesDto = toAthleteDetailsDtoList(athletes).map((athlete) => ({
+        id: athlete.id,
+        firstName: athlete.firstName,
+        lastName: athlete.lastName,
+        email: athlete.email,
+        birthday: athlete.birthday,
+      }));
+
+      return {
+        status: 200 as const,
+        body: athletesDto,
+      };
     });
   }
 
@@ -157,17 +157,18 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
-      try {
-        const athlete = await this.athleteUseCases.findOneWithDetails(
-          params.id,
-          user.id,
-          organizationId
-        );
-        const athleteDto = AthleteMapper.toDtoDetails(athlete);
-        return AthletePresenter.presentOneDetails(athleteDto);
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
-      }
+      const athlete = await this.athleteProfiles.findOneWithDetails(
+        params.id,
+        user.id,
+        organizationId
+      );
+
+      const athleteDto = toAthleteDetailsDto(athlete);
+
+      return {
+        status: 200 as const,
+        body: athleteDto,
+      };
     });
   }
 
@@ -188,13 +189,16 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.createAthlete>> {
     return tsRestHandler(c.createAthlete, async ({ body }) => {
-      try {
-        const athlete = await this.athleteUseCases.create(body, user.id);
-        const athleteDto = AthleteMapper.toDto(athlete);
-        return AthletePresenter.presentOne(athleteDto);
-      } catch (error) {
-        return AthletePresenter.presentCreationError(error as Error);
-      }
+      const athleteCreation = toAthleteCreation(body, user.id);
+
+      const athlete = await this.athleteProfiles.create(athleteCreation);
+
+      const athleteDto = toAthleteDto(athlete);
+
+      return {
+        status: 201 as const,
+        body: athleteDto,
+      };
     });
   }
 
@@ -215,17 +219,20 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
-      try {
-        const athlete = await this.athleteUseCases.update(
-          params.id,
-          body,
-          user.id
-        );
-        const athleteDto = AthleteMapper.toDto(athlete);
-        return AthletePresenter.presentOne(athleteDto);
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
-      }
+      const athleteUpdate = toAthleteUpdate(body);
+
+      const athlete = await this.athleteProfiles.update(
+        params.id,
+        athleteUpdate,
+        user.id
+      );
+
+      const athleteDto = toAthleteDto(athlete);
+
+      return {
+        status: 200 as const,
+        body: athleteDto,
+      };
     });
   }
 
@@ -244,12 +251,12 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
-      try {
-        await this.athleteUseCases.delete(params.id, user.id);
-        return AthletePresenter.presentSuccess('Athlete deleted successfully');
-      } catch (error) {
-        return AthletePresenter.presentError(error as Error);
-      }
+      await this.athleteProfiles.delete(params.id, user.id);
+
+      return {
+        status: 200 as const,
+        body: { message: 'Athlete deleted successfully' },
+      };
     });
   }
 }

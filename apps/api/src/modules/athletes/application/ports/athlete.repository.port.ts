@@ -1,13 +1,13 @@
-import { Athlete } from '../../domain/athlete.entity';
+import { Athlete } from '../../domain/athlete';
 
 export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 
-export type AthleteBasics = Pick<
-  Athlete,
-  'id' | 'firstName' | 'lastName' | 'birthday' | 'country'
->;
-
-export type AthleteDetails = AthleteBasics & {
+export type AthleteDetails = {
+  id: string;
+  firstName: string;
+  lastName: string;
+  birthday: Date | null;
+  country: string | null;
   email: string;
   image: string;
   weight: number;
@@ -24,6 +24,6 @@ export interface IAthleteRepository {
   getOne(athleteId: string): Promise<Athlete | null>;
   getAll(athleteUserIds: string[]): Promise<Athlete[]>;
   findByUserId(userId: string): Promise<Athlete | null>;
-  save(athlete: Athlete): Promise<void>;
+  save(athlete: Athlete): Promise<Athlete>;
   remove(athlete: Athlete): Promise<void>;
 }

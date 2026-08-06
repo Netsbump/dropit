@@ -1,7 +1,7 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 
-import { Athlete } from './domain/athlete.entity';
+import { AthleteEntity } from '../database/entities/athlete.entity';
 import { CompetitorStatus } from './domain/competitor-status.entity';
 import { PersonalRecord } from './domain/personal-record.entity';
 import { Exercise } from '../training/domain/exercise.entity';
@@ -19,7 +19,7 @@ import {
   PERSONAL_RECORD_REPO,
   IPersonalRecordRepository,
 } from './application/ports/personal-record.repository.port';
-import { ATHLETE_USE_CASES } from './application/ports/athlete-use-cases.port';
+import { ATHLETE_PROFILES } from './application/ports/athlete-profiles.port';
 import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
 import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
 
@@ -28,13 +28,14 @@ import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repositor
 import { MikroCompetitorStatusRepository } from './infrastructure/mikro-competitor-status.repository';
 import { MikroPersonalRecordRepository } from './infrastructure/mikro-personal-record.repository';
 
-// Controllers & use-cases
+// Controllers & application services
 import { AthleteController } from './interface/controllers/athlete.controller';
 import { CompetitorStatusController } from './interface/controllers/competitor-status.controller';
 import { PersonalRecordController } from './interface/controllers/personal-record.controller';
 import { CompetitorStatusUseCases } from './application/use-cases/competitor-status.use-cases';
-import { AthleteUseCases } from './application/use-cases/athlete-use-cases';
+import { AthleteProfiles } from './application/athlete-profiles';
 import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
+import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
 import { InvitationsModule } from '../invitations/invitations.module';
@@ -55,7 +56,7 @@ import {
   imports: [
     // Custom repositories are also declared here
     MikroOrmModule.forFeature({
-      entities: [Athlete, PersonalRecord, CompetitorStatus, Exercise],
+      entities: [AthleteEntity, PersonalRecord, CompetitorStatus, Exercise],
     }),
     forwardRef(() => AuthModule),
     forwardRef(() => InvitationsModule),
@@ -82,22 +83,40 @@ import {
     },
     { provide: PERSONAL_RECORD_REPO, useClass: MikroPersonalRecordRepository },
 
-    // use-cases (concrete implementations)
-    AthleteUseCases,
+    {
+      provide: AthleteAccessPolicy,
+      useFactory: (memberUseCases: IMemberUseCases) => {
+        return new AthleteAccessPolicy(memberUseCases);
+      },
+      inject: [MEMBER_USE_CASES],
+    },
+
+    // Application services still registered directly for legacy use-cases
     CompetitorStatusUseCases,
     PersonalRecordUseCases,
 
-    // Port to implementation bindings (use-cases)
+    // Port to implementation bindings
     {
-      provide: ATHLETE_USE_CASES,
+      provide: ATHLETE_PROFILES,
       useFactory: (
         athleteRepo: IAthleteRepository,
         userUseCases: IUserUseCases,
-        memberUseCases: IMemberUseCases
+        memberUseCases: IMemberUseCases,
+        athleteAccessPolicy: AthleteAccessPolicy
       ) => {
-        return new AthleteUseCases(athleteRepo, userUseCases, memberUseCases);
+        return new AthleteProfiles(
+          athleteRepo,
+          userUseCases,
+          memberUseCases,
+          athleteAccessPolicy
+        );
       },
-      inject: [ATHLETE_REPO, USER_USE_CASES, MEMBER_USE_CASES],
+      inject: [
+        ATHLETE_REPO,
+        USER_USE_CASES,
+        MEMBER_USE_CASES,
+        AthleteAccessPolicy,
+      ],
     },
     {
       provide: PERSONAL_RECORD_USE_CASES,
@@ -143,7 +162,7 @@ import {
     ATHLETE_REPO,
     COMPETITOR_STATUS_REPO,
     PERSONAL_RECORD_REPO,
-    ATHLETE_USE_CASES,
+    ATHLETE_PROFILES,
   ],
 })
 export class AthletesModule {}

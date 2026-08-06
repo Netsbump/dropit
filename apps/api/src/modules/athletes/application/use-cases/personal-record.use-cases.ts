@@ -10,6 +10,7 @@ import { Exercise } from '../../../training/domain/exercise.entity';
 import { IExerciseRepository } from '../../../training/application/ports/exercise.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IPersonalRecordUseCases } from '../ports/personal-record-use-cases.port';
+import { toAthleteEntityReference } from '../../infrastructure/athlete.mapper';
 import {
   PersonalRecordNotFoundException,
   PersonalRecordAccessDeniedException,
@@ -104,7 +105,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
       personalRecord.athlete.id
     );
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException('Athlete not found');
     }
 
@@ -113,7 +114,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
       currentUserId,
       organizationId
     );
-    if (!isUserCoach && currentUserId !== athlete.user.id) {
+    if (!isUserCoach && currentUserId !== athlete.userId) {
       throw new PersonalRecordAccessDeniedException(
         'Access denied. You can only access your own personal records or the personal records of an athlete you are coaching'
       );
@@ -130,7 +131,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     // 1. Get athlete to verify it exists
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${athleteId} not found`
       );
@@ -141,7 +142,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
       currentUserId,
       organizationId
     );
-    if (!isUserCoach && currentUserId !== athlete.user.id) {
+    if (!isUserCoach && currentUserId !== athlete.userId) {
       throw new PersonalRecordAccessDeniedException(
         'Access denied. You can only access your own personal records or the personal records of an athlete you are coaching'
       );
@@ -166,7 +167,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     // 1. Get athlete to verify it exists
     const athlete = await this.athleteRepository.getOne(athleteId);
 
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${athleteId} not found`
       );
@@ -177,7 +178,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
       currentUserId,
       organizationId
     );
-    if (!isUserCoach && currentUserId !== athlete.user.id) {
+    if (!isUserCoach && currentUserId !== athlete.userId) {
       throw new PersonalRecordAccessDeniedException(
         'Access denied. You can only access your own personal records or the personal records of an athlete you are coaching'
       );
@@ -258,7 +259,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     const personalRecord = new PersonalRecord();
     personalRecord.weight = data.weight;
     personalRecord.date = data.date || new Date();
-    personalRecord.athlete = athlete;
+    personalRecord.athlete = toAthleteEntityReference(data.athleteId);
 
     // 4. Get filter conditions via use case
     const coachFilterConditions =

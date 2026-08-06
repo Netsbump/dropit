@@ -7,6 +7,7 @@ import { ICompetitorStatusUseCases } from '../ports/competitor-status-use-cases.
 import { ICompetitorStatusRepository } from '../ports/competitor-status.repository.port';
 import { IAthleteRepository } from '../ports/athlete.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
+import { toAthleteEntityReference } from '../../infrastructure/athlete.mapper';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,
@@ -63,7 +64,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
   ): Promise<CompetitorStatus> {
     // 1. Get athlete to verify it exists and get its userId
     const athlete = await this.athleteRepository.getOne(athleteId);
-    if (!athlete || !athlete.user) {
+    if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${athleteId} not found`
       );
@@ -74,7 +75,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
       currentUserId,
       organizationId
     );
-    if (!isUserCoach && currentUserId !== athlete.user.id) {
+    if (!isUserCoach && currentUserId !== athlete.userId) {
       throw new CompetitorStatusAccessDeniedException(
         'Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching'
       );
@@ -134,7 +135,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
 
     // 5. Create new competitor status
     const competitorStatusToCreate = new CompetitorStatus();
-    competitorStatusToCreate.athlete = athlete;
+    competitorStatusToCreate.athlete = toAthleteEntityReference(data.athleteId);
     competitorStatusToCreate.level = data.level;
     competitorStatusToCreate.sexCategory = data.sexCategory;
     competitorStatusToCreate.weightCategory = data.weightCategory;

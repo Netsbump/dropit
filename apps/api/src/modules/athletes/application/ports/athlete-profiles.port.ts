@@ -1,9 +1,12 @@
-import { CreateAthleteInput, UpdateAthleteInput } from '@dropit/schemas';
-import { Athlete } from '../../domain/athlete.entity';
-import { AthleteDetails } from './athlete.repository.port';
+import type {
+  Athlete,
+  AthleteCreation,
+  AthleteUpdate,
+} from '../../domain/athlete';
+import type { AthleteDetails } from './athlete.repository.port';
 
 /**
- * Athlete Use Cases Port
+ * Athlete Profiles Port
  *
  * @description
  * Defines the contract for athlete business operations.
@@ -12,9 +15,9 @@ import { AthleteDetails } from './athlete.repository.port';
  *
  * @remarks
  * Following hexagonal architecture, this port is implemented by
- * AthleteUseCases and injected into controllers via dependency injection.
+ * AthleteProfiles and injected into controllers via dependency injection.
  */
-export interface IAthleteUseCases {
+export interface IAthleteProfiles {
   /**
    * Find one athlete by ID
    */
@@ -56,14 +59,14 @@ export interface IAthleteUseCases {
   /**
    * Create a new athlete
    */
-  create(data: CreateAthleteInput, userId: string): Promise<Athlete>;
+  create(data: AthleteCreation): Promise<Athlete>;
 
   /**
    * Update an existing athlete
    */
   update(
     idAthlete: string,
-    data: UpdateAthleteInput,
+    data: AthleteUpdate,
     userId: string
   ): Promise<Athlete>;
 
@@ -79,7 +82,7 @@ export interface IAthleteUseCases {
 }
 
 /**
- * Injection token for IAthleteUseCases
+ * Injection token for IAthleteProfiles
  * Use this token in @Inject() decorators in controllers
  */
-export const ATHLETE_USE_CASES = Symbol('ATHLETE_USE_CASES');
+export const ATHLETE_PROFILES = Symbol('ATHLETE_PROFILES');

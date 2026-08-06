@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
 
-import { Athlete } from '../athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../database/entities/athlete.entity';
 import { Workout } from './domain/workout.entity';
 import { TrainingSession } from './domain/training-session.entity';
 import { AthleteTrainingSession } from './domain/athlete-training-session.entity';

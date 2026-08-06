@@ -1,5 +1,5 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { Athlete } from './athlete.entity';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { Exercise } from '../../training/domain/exercise.entity';
 
 @Entity()
@@ -19,8 +19,8 @@ export class PersonalRecord {
   @Property({ onUpdate: () => new Date() })
   updatedAt: Date = new Date();
 
-  @ManyToOne(() => Athlete)
-  athlete!: Athlete;
+  @ManyToOne(() => AthleteEntity)
+  athlete!: AthleteEntity;
 
   @ManyToOne(() => Exercise)
   exercise!: Exercise;

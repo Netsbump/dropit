@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { PersonalRecord } from '../modules/athletes/domain/personal-record.entity';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 

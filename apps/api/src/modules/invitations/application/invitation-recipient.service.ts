@@ -1,4 +1,4 @@
-import { Athlete } from '../../athletes/domain/athlete.entity';
+import { Athlete } from '../../athletes/domain/athlete';
 import { IAthleteRepository } from '../../athletes/application/ports/athlete.repository.port';
 import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
@@ -32,10 +32,11 @@ export class InvitationRecipientService implements IInvitationRecipientService {
         emailVerified: false,
       });
 
-      const athlete = new Athlete();
-      athlete.firstName = firstName;
-      athlete.lastName = lastName;
-      athlete.user = user;
+      const athlete = new Athlete({
+        userId: user.id,
+        firstName,
+        lastName,
+      });
       await this.athleteRepository.save(athlete);
 
       return { isNewUser: true, hasOtherOrganization: false };

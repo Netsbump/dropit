@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { PhysicalMetric } from '../modules/athletes/domain/physical-metric.entity';
 
 const METRICS_PER_ATHLETE = 3;

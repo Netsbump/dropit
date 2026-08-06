@@ -1,5 +1,6 @@
 import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
-import { Athlete } from '../../../athletes/domain/athlete.entity';
+import type { Athlete } from '../../../athletes/domain/athlete';
+import { toAthleteEntityReference } from '../../../athletes/infrastructure/athlete.mapper';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
 import {
@@ -271,8 +272,14 @@ export class WorkoutUseCases implements IWorkoutUseCases {
 
       //9.3. Create links with athletes
       for (const athlete of athletes) {
+        if (!athlete.id) {
+          throw new WorkoutValidationException(
+            'Cannot create athlete training session without athlete id'
+          );
+        }
+
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = athlete;
+        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
         athleteTrainingSession.trainingSession = trainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession

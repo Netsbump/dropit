@@ -1,7 +1,10 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Athlete } from '../domain/athlete.entity';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { Athlete } from '../domain/athlete';
+import { User } from '../../auth/domain/auth/user.entity';
+import { toAthleteDomain, toAthleteEntity } from './athlete.mapper';
 import { PersonalRecord } from '../domain/personal-record.entity';
 import {
   AthleteDetails,
@@ -10,11 +13,11 @@ import {
 
 @Injectable()
 export class MikroAthleteRepository
-  extends EntityRepository<Athlete>
+  extends EntityRepository<AthleteEntity>
   implements IAthleteRepository
 {
   constructor(public readonly em: EntityManager) {
-    super(em, Athlete);
+    super(em, AthleteEntity);
   }
 
   // helper to avoid casting everywhere
@@ -25,8 +28,8 @@ export class MikroAthleteRepository
   private getBaseQuery(
     athleteUserId?: string,
     athleteUserIds?: string[]
-  ): QueryBuilder<Athlete> {
-    const qb = this.sql.createQueryBuilder(Athlete, 'a');
+  ): QueryBuilder<AthleteEntity> {
+    const qb = this.sql.createQueryBuilder(AthleteEntity, 'a');
 
     qb.select([
       'a.id AS id',
@@ -127,30 +130,58 @@ export class MikroAthleteRepository
   }
 
   async getOne(athleteId: string): Promise<Athlete | null> {
-    return await this.em.findOne(
-      Athlete,
+    const entity = await this.em.findOne(
+      AthleteEntity,
       { id: athleteId },
       { populate: ['user.id'] }
     );
+
+    return entity ? toAthleteDomain(entity) : null;
   }
 
   async findByUserId(userId: string): Promise<Athlete | null> {
-    return await this.em.findOne(Athlete, { user: { id: userId } });
+    const entity = await this.em.findOne(
+      AthleteEntity,
+      { user: { id: userId } },
+      { populate: ['user.id'] }
+    );
+
+    return entity ? toAthleteDomain(entity) : null;
   }
 
   async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
-    return await this.em.find(
-      Athlete,
-      { id: { $in: athleteUserIds } },
+    const entities = await this.em.find(
+      AthleteEntity,
+      { user: { id: { $in: athleteUserIds } } },
       { populate: ['user.id'] }
     );
+
+    return entities.map(toAthleteDomain);
   }
 
-  async save(athlete: Athlete) {
-    return await this.em.persistAndFlush(athlete);
+  async save(athlete: Athlete): Promise<Athlete> {
+    const entity = athlete.id
+      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id })
+      : toAthleteEntity(athlete);
+
+    entity.firstName = athlete.firstName;
+    entity.lastName = athlete.lastName;
+    entity.birthday = athlete.birthday;
+    entity.country = athlete.country;
+    entity.user = this.em.getReference(User, athlete.userId);
+
+    await this.em.persistAndFlush(entity);
+
+    return toAthleteDomain(entity);
   }
 
   async remove(athlete: Athlete) {
-    return await this.em.removeAndFlush(athlete);
+    if (!athlete.id) {
+      throw new Error('Cannot remove athlete without id');
+    }
+
+    const entity = this.em.getReference(AthleteEntity, athlete.id);
+
+    return await this.em.removeAndFlush(entity);
   }
 }

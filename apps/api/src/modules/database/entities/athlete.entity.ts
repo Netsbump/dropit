@@ -7,13 +7,13 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { AthleteTrainingSession } from '../../training/domain/athlete-training-session.entity';
-import { CompetitorStatus } from './competitor-status.entity';
-import { PersonalRecord } from './personal-record.entity';
-import { PhysicalMetric } from './physical-metric.entity';
+import { CompetitorStatus } from '../../athletes/domain/competitor-status.entity';
+import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
+import { PhysicalMetric } from '../../athletes/domain/physical-metric.entity';
 import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity()
-export class Athlete {
+export class AthleteEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 
