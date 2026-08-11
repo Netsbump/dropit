@@ -7,13 +7,13 @@ import { ICompetitorStatusUseCases } from '../ports/competitor-status-use-cases.
 import { ICompetitorStatusRepository } from '../ports/competitor-status.repository.port';
 import { IAthleteRepository } from '../ports/athlete.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
-import { toAthleteEntityReference } from '../../infrastructure/athlete.mapper';
+import { toAthleteEntityReference } from '../../infrastructure/mappers/athlete.mapper';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,
   AthleteNotFoundException,
   CompetitorStatusAccessDeniedException,
-} from '../exceptions/competitor-status.exceptions';
+} from '../errors/competitor-status.exceptions';
 
 /**
  * Competitor Status Use Cases Implementation
@@ -63,7 +63,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     organizationId: string
   ): Promise<CompetitorStatus> {
     // 1. Get athlete to verify it exists and get its userId
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
     if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${athleteId} not found`
@@ -117,7 +117,7 @@ export class CompetitorStatusUseCases implements ICompetitorStatusUseCases {
     );
 
     // 3. Get athlete to verify it exists and get the entity
-    const athlete = await this.athleteRepository.getOne(data.athleteId);
+    const athlete = await this.athleteRepository.findById(data.athleteId);
     if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${data.athleteId} not found`

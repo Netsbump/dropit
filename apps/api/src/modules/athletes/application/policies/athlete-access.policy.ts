@@ -2,7 +2,7 @@ import { IMemberUseCases } from '../../../auth/application/ports/member-use-case
 import {
   AthleteAccessDeniedError,
   UserDoesNotBelongToOrganizationError,
-} from '../exceptions/athlete.errors';
+} from '../errors/athlete.errors';
 
 type AssertCanViewAthleteParams = {
   currentUserId: string;

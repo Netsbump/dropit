@@ -1,7 +1,7 @@
-import { Athlete as DomainAthlete } from '../domain/athlete';
-import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { Athlete } from '../../domain/athlete';
+import { AthleteEntity } from '../../../database/entities/athlete.entity';
 
-export const toAthleteEntity = (athlete: DomainAthlete): AthleteEntity => {
+export const toAthleteEntity = (athlete: Athlete): AthleteEntity => {
   const entity = new AthleteEntity();
 
   if (athlete.id) {
@@ -23,8 +23,8 @@ export const toAthleteEntityReference = (athleteId: string): AthleteEntity => {
   return entity;
 };
 
-export const toAthleteDomain = (entity: AthleteEntity): DomainAthlete => {
-  return new DomainAthlete({
+export const toAthleteDomain = (entity: AthleteEntity): Athlete => {
+  return new Athlete({
     id: entity.id,
     userId: entity.user.id,
     firstName: entity.firstName,
@@ -33,3 +33,6 @@ export const toAthleteDomain = (entity: AthleteEntity): DomainAthlete => {
     country: entity.country,
   });
 };
+
+export const toAthleteDomainList = (entities: AthleteEntity[]): Athlete[] =>
+  entities.map(toAthleteDomain);

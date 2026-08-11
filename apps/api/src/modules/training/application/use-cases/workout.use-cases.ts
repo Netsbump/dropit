@@ -1,6 +1,6 @@
 import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
 import type { Athlete } from '../../../athletes/domain/athlete';
-import { toAthleteEntityReference } from '../../../athletes/infrastructure/athlete.mapper';
+import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
 import {
@@ -251,7 +251,7 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       //9.1. Check if all athletes exist
       const athletes: Athlete[] = [];
       for (const athleteId of workout.trainingSession.athleteIds) {
-        const athlete = await this.athleteRepository.getOne(athleteId);
+        const athlete = await this.athleteRepository.findById(athleteId);
         if (!athlete) {
           throw new AthleteNotFoundException(
             `Athlete with ID ${athleteId} not found`

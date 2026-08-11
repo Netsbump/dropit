@@ -9,7 +9,7 @@ import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
-import { toAthleteEntityReference } from '../../../athletes/infrastructure/athlete.mapper';
+import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { IWorkoutRepository } from '../ports/workout.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { ITrainingSessionUseCases } from '../ports/training-session-use-cases.port';
@@ -117,7 +117,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     );
 
     //2. Get athlete from repository
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -161,7 +161,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     );
 
     //2. Get athlete from repository
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -203,7 +203,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     );
 
     //2. Get athlete from repository
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -271,14 +271,25 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       );
     }
 
-    //5. Get all athletes IDs from organization
-    const athleteIds =
-      await this.memberUseCases.getAthleteUserIds(organizationId);
-
-    //5. Valide all requested athletes belong to this organization
-    const invalidAthleteIds = data.athleteIds.filter(
-      (athleteId) => !athleteIds.includes(athleteId)
+    //5. Load requested athletes by athlete IDs
+    const athletes = await this.athleteRepository.listByIds(data.athleteIds);
+    const foundAthleteIds = athletes.map((athlete) => athlete.id);
+    const missingAthleteIds = data.athleteIds.filter(
+      (athleteId) => !foundAthleteIds.includes(athleteId)
     );
+
+    if (missingAthleteIds.length > 0) {
+      throw new AthleteNotFoundException(
+        `Athletes with IDs ${missingAthleteIds.join(', ')} not found`
+      );
+    }
+
+    //6. Validate all requested athletes belong to this organization
+    const authorizedAthleteUserIds =
+      await this.memberUseCases.getAthleteUserIds(organizationId);
+    const invalidAthleteIds = athletes
+      .filter((athlete) => !authorizedAthleteUserIds.includes(athlete.userId))
+      .map((athlete) => athlete.id);
 
     if (invalidAthleteIds.length > 0) {
       throw new AthletesNotInOrganizationException(
@@ -288,7 +299,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       );
     }
 
-    //6. Create training session
+    //7. Create training session
     const trainingSession = new TrainingSession();
     trainingSession.workout = workout;
     trainingSession.scheduledDate = new Date(data.scheduledDate);
@@ -296,7 +307,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     await this.trainingSessionRepository.save(trainingSession);
 
-    //7. Get created training session from repository
+    //8. Get created training session from repository
     const createdTrainingSession = await this.trainingSessionRepository.getOne(
       trainingSession.id,
       organizationId
@@ -306,9 +317,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       throw new TrainingSessionNotFoundException('Training session not found');
     }
 
-    //8. Create athlete training sessions
-    const athletes = await this.athleteRepository.getAll(data.athleteIds);
-
+    //9. Create athlete training sessions
     for (const a of athletes) {
       try {
         if (!a.id) {
@@ -383,24 +392,39 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //4. Update athletes if needed
     if (data.athleteIds) {
-      // Delete existing athlete sessions
-      const existingAthleteSessions =
-        trainingSessionToUpdate.athletes.getItems();
-      for (const athleteSession of existingAthleteSessions) {
-        await this.athleteTrainingSessionRepository.remove(athleteSession);
-      }
-
-      // Validate all athletes exist before creating new sessions
-      const athletes = await this.athleteRepository.getAll(data.athleteIds);
-      const foundAthleteIds = athletes.map((a) => a.id);
+      // Validate all athletes exist before mutating existing sessions
+      const athletes = await this.athleteRepository.listByIds(data.athleteIds);
+      const foundAthleteIds = athletes.map((athlete) => athlete.id);
       const missingAthleteIds = data.athleteIds.filter(
-        (id) => !foundAthleteIds.includes(id)
+        (athleteId) => !foundAthleteIds.includes(athleteId)
       );
 
       if (missingAthleteIds.length > 0) {
         throw new AthleteNotFoundException(
           `Athletes with IDs ${missingAthleteIds.join(', ')} not found`
         );
+      }
+
+      // Validate all requested athletes belong to this organization
+      const authorizedAthleteUserIds =
+        await this.memberUseCases.getAthleteUserIds(organizationId);
+      const invalidAthleteIds = athletes
+        .filter((athlete) => !authorizedAthleteUserIds.includes(athlete.userId))
+        .map((athlete) => athlete.id);
+
+      if (invalidAthleteIds.length > 0) {
+        throw new AthletesNotInOrganizationException(
+          `Athletes with IDs ${invalidAthleteIds.join(
+            ', '
+          )} do not belong to this organization`
+        );
+      }
+
+      // Delete existing athlete sessions
+      const existingAthleteSessions =
+        trainingSessionToUpdate.athletes.getItems();
+      for (const athleteSession of existingAthleteSessions) {
+        await this.athleteTrainingSessionRepository.remove(athleteSession);
       }
 
       // Create new athlete sessions
@@ -456,7 +480,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     userId: string
   ): Promise<AthleteTrainingSession> {
     //1. Get athlete from repository
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(

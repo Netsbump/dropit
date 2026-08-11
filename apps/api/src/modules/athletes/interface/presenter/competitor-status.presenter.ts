@@ -1,5 +1,5 @@
 import { CompetitorStatusDto } from '@dropit/schemas';
-import { CompetitorStatusException } from '../../application/exceptions/competitor-status.exceptions';
+import { CompetitorStatusException } from '../../application/errors/competitor-status.exceptions';
 
 export const CompetitorStatusPresenter = {
   present(competitorStatuses: CompetitorStatusDto[]) {

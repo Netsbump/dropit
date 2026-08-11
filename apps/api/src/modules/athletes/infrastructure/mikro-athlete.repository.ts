@@ -1,20 +1,29 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { Athlete } from '../domain/athlete';
 import { User } from '../../auth/domain/auth/user.entity';
-import { toAthleteDomain, toAthleteEntity } from './athlete.mapper';
-import { PersonalRecord } from '../domain/personal-record.entity';
 import {
-  AthleteDetails,
+  toAthleteDomain,
+  toAthleteDomainList,
+  toAthleteEntity,
+} from './mappers/athlete.mapper';
+import { PersonalRecord } from '../domain/personal-record.entity';
+import type { AthleteDetailsReadModel } from '../application/read-models/athlete-details.read-model';
+import {
+  IAthleteReadRepository,
   IAthleteRepository,
 } from '../application/ports/athlete.repository.port';
+import {
+  toAthleteDetailsReadModel,
+  toAthleteDetailsReadModelList,
+} from './mappers/athlete-details-read-model.mapper';
 
 @Injectable()
 export class MikroAthleteRepository
   extends EntityRepository<AthleteEntity>
-  implements IAthleteRepository
+  implements IAthleteRepository, IAthleteReadRepository
 {
   constructor(public readonly em: EntityManager) {
     super(em, AthleteEntity);
@@ -107,72 +116,82 @@ export class MikroAthleteRepository
     return qb;
   }
 
-  async findAllWithDetails(
+  async listDetailsByUserIds(
     athleteUserIds: string[]
-  ): Promise<AthleteDetails[]> {
+  ): Promise<AthleteDetailsReadModel[]> {
     // Get raw results (table format, non-hydrated) via execute('all')
     const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute(
       'all'
     );
-    return athletes as AthleteDetails[];
+    return toAthleteDetailsReadModelList(athletes);
   }
 
-  async findOneWithDetails(athleteUserId: string): Promise<AthleteDetails> {
+  async findDetailsByUserId(
+    athleteUserId: string
+  ): Promise<AthleteDetailsReadModel | null> {
     const athletes = await this.getBaseQuery(athleteUserId, undefined).execute(
       'all'
     );
 
-    if (!athletes || athletes.length === 0) {
-      throw new NotFoundException('Athlete not found');
-    }
+    const athlete = athletes[0];
 
-    return athletes[0] as AthleteDetails;
+    return athlete ? toAthleteDetailsReadModel(athlete) : null;
   }
 
-  async getOne(athleteId: string): Promise<Athlete | null> {
-    const entity = await this.em.findOne(
+  async findById(athleteId: string): Promise<Athlete | null> {
+    const athleteEntity = await this.em.findOne(
       AthleteEntity,
       { id: athleteId },
       { populate: ['user.id'] }
     );
 
-    return entity ? toAthleteDomain(entity) : null;
+    return athleteEntity ? toAthleteDomain(athleteEntity) : null;
   }
 
   async findByUserId(userId: string): Promise<Athlete | null> {
-    const entity = await this.em.findOne(
+    const athleteEntity = await this.em.findOne(
       AthleteEntity,
       { user: { id: userId } },
       { populate: ['user.id'] }
     );
 
-    return entity ? toAthleteDomain(entity) : null;
+    return athleteEntity ? toAthleteDomain(athleteEntity) : null;
   }
 
-  async getAll(athleteUserIds: string[]): Promise<Athlete[]> {
-    const entities = await this.em.find(
+  async listByIds(athleteIds: string[]): Promise<Athlete[]> {
+    const athleteEntities = await this.em.find(
+      AthleteEntity,
+      { id: { $in: athleteIds } },
+      { populate: ['user.id'] }
+    );
+
+    return toAthleteDomainList(athleteEntities);
+  }
+
+  async listByUserIds(athleteUserIds: string[]): Promise<Athlete[]> {
+    const athleteEntities = await this.em.find(
       AthleteEntity,
       { user: { id: { $in: athleteUserIds } } },
       { populate: ['user.id'] }
     );
 
-    return entities.map(toAthleteDomain);
+    return toAthleteDomainList(athleteEntities);
   }
 
   async save(athlete: Athlete): Promise<Athlete> {
-    const entity = athlete.id
+    const athleteEntity = athlete.id
       ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id })
       : toAthleteEntity(athlete);
 
-    entity.firstName = athlete.firstName;
-    entity.lastName = athlete.lastName;
-    entity.birthday = athlete.birthday;
-    entity.country = athlete.country;
-    entity.user = this.em.getReference(User, athlete.userId);
+    athleteEntity.firstName = athlete.firstName;
+    athleteEntity.lastName = athlete.lastName;
+    athleteEntity.birthday = athlete.birthday;
+    athleteEntity.country = athlete.country;
+    athleteEntity.user = this.em.getReference(User, athlete.userId);
 
-    await this.em.persistAndFlush(entity);
+    await this.em.persistAndFlush(athleteEntity);
 
-    return toAthleteDomain(entity);
+    return toAthleteDomain(athleteEntity);
   }
 
   async remove(athlete: Athlete) {

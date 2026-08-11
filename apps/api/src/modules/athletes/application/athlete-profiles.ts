@@ -5,9 +5,10 @@ import {
   type AthleteUpdate,
 } from '../domain/athlete';
 import type { IAthleteProfiles } from './ports/athlete-profiles.port';
+import type { AthleteDetailsReadModel } from './read-models/athlete-details.read-model';
 import {
   IAthleteRepository,
-  AthleteDetails,
+  IAthleteReadRepository,
 } from './ports/athlete.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
 import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
@@ -18,7 +19,7 @@ import {
   InvalidAthleteCreationError,
   InvalidAthleteStateError,
   UserDoesNotBelongToOrganizationError,
-} from './exceptions/athlete.errors';
+} from './errors/athlete.errors';
 import { AthleteAccessPolicy } from './policies/athlete-access.policy';
 
 /**
@@ -31,13 +32,14 @@ import { AthleteAccessPolicy } from './policies/athlete-access.policy';
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
     private readonly athleteRepository: IAthleteRepository,
+    private readonly athleteReadRepository: IAthleteReadRepository,
     private readonly userUseCases: IUserUseCases,
     private readonly memberUseCases: IMemberUseCases,
     private readonly athleteAccessPolicy: AthleteAccessPolicy
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundError(`Athlete with ID ${athleteId} not found`);
@@ -104,7 +106,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     athleteId: string,
     currentUserId: string,
     organizationId: string
-  ): Promise<AthleteDetails> {
+  ): Promise<AthleteDetailsReadModel> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
     await this.athleteAccessPolicy.assertCanViewAthlete({
@@ -113,9 +115,8 @@ export class AthleteProfiles implements IAthleteProfiles {
       athleteUserId: athlete.userId,
     });
 
-    const athleteWithDetails = await this.athleteRepository.findOneWithDetails(
-      athlete.userId
-    );
+    const athleteWithDetails =
+      await this.athleteReadRepository.findDetailsByUserId(athlete.userId);
 
     if (!athleteWithDetails) {
       throw new AthleteNotFoundError('Athlete not found');
@@ -127,14 +128,14 @@ export class AthleteProfiles implements IAthleteProfiles {
   async findAllWithDetails(
     currentUserId: string,
     organizationId: string
-  ): Promise<AthleteDetails[]> {
+  ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds = await this.getAuthorizedAthleteUserIds(
       currentUserId,
       organizationId
     );
 
     const athletes =
-      await this.athleteRepository.findAllWithDetails(athleteUserIds);
+      await this.athleteReadRepository.listDetailsByUserIds(athleteUserIds);
     if (!athletes) {
       throw new AthleteNotFoundError('Athletes not found');
     }
@@ -144,11 +145,11 @@ export class AthleteProfiles implements IAthleteProfiles {
 
   async findAllWithDetailsByOrganization(
     organizationId: string
-  ): Promise<AthleteDetails[]> {
+  ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds =
       await this.memberUseCases.getAthleteUserIds(organizationId);
     const athletes =
-      await this.athleteRepository.findAllWithDetails(athleteUserIds);
+      await this.athleteReadRepository.listDetailsByUserIds(athleteUserIds);
 
     if (!athletes) {
       throw new AthleteNotFoundError('Athletes not found');
@@ -166,7 +167,7 @@ export class AthleteProfiles implements IAthleteProfiles {
       organizationId
     );
 
-    const athletes = await this.athleteRepository.getAll(athleteUserIds);
+    const athletes = await this.athleteRepository.listByUserIds(athleteUserIds);
     if (!athletes) {
       throw new AthleteNotFoundError('Athletes not found');
     }

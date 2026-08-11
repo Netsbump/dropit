@@ -3,7 +3,7 @@ import type {
   AthleteCreation,
   AthleteUpdate,
 } from '../../domain/athlete';
-import type { AthleteDetails } from './athlete.repository.port';
+import type { AthleteDetailsReadModel } from '../read-models/athlete-details.read-model';
 
 /**
  * Athlete Profiles Port
@@ -34,7 +34,7 @@ export interface IAthleteProfiles {
     athleteId: string,
     currentUserId: string,
     organizationId: string
-  ): Promise<AthleteDetails>;
+  ): Promise<AthleteDetailsReadModel>;
 
   /**
    * Find all athletes in organization
@@ -47,14 +47,14 @@ export interface IAthleteProfiles {
   findAllWithDetails(
     currentUserId: string,
     organizationId: string
-  ): Promise<AthleteDetails[]>;
+  ): Promise<AthleteDetailsReadModel[]>;
 
   /**
    * Find all athletes with details for a given organization (super admin)
    */
   findAllWithDetailsByOrganization(
     organizationId: string
-  ): Promise<AthleteDetails[]>;
+  ): Promise<AthleteDetailsReadModel[]>;
 
   /**
    * Create a new athlete

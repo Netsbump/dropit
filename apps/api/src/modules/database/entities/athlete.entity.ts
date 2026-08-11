@@ -12,7 +12,7 @@ import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
 import { PhysicalMetric } from '../../athletes/domain/physical-metric.entity';
 import { User } from '../../auth/domain/auth/user.entity';
 
-@Entity()
+@Entity({ tableName: 'athlete' })
 export class AthleteEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;

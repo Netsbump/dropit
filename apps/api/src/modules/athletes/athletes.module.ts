@@ -8,7 +8,9 @@ import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
 import {
+  ATHLETE_READ_REPO,
   ATHLETE_REPO,
+  IAthleteReadRepository,
   IAthleteRepository,
 } from './application/ports/athlete.repository.port';
 import {
@@ -77,6 +79,7 @@ import {
 
     // Port to implementation bindings (repositories)
     { provide: ATHLETE_REPO, useClass: MikroAthleteRepository },
+    { provide: ATHLETE_READ_REPO, useClass: MikroAthleteRepository },
     {
       provide: COMPETITOR_STATUS_REPO,
       useClass: MikroCompetitorStatusRepository,
@@ -100,12 +103,14 @@ import {
       provide: ATHLETE_PROFILES,
       useFactory: (
         athleteRepo: IAthleteRepository,
+        athleteReadRepo: IAthleteReadRepository,
         userUseCases: IUserUseCases,
         memberUseCases: IMemberUseCases,
         athleteAccessPolicy: AthleteAccessPolicy
       ) => {
         return new AthleteProfiles(
           athleteRepo,
+          athleteReadRepo,
           userUseCases,
           memberUseCases,
           athleteAccessPolicy
@@ -113,6 +118,7 @@ import {
       },
       inject: [
         ATHLETE_REPO,
+        ATHLETE_READ_REPO,
         USER_USE_CASES,
         MEMBER_USE_CASES,
         AthleteAccessPolicy,
@@ -160,6 +166,7 @@ import {
   // What other modules can inject
   exports: [
     ATHLETE_REPO,
+    ATHLETE_READ_REPO,
     COMPETITOR_STATUS_REPO,
     PERSONAL_RECORD_REPO,
     ATHLETE_PROFILES,

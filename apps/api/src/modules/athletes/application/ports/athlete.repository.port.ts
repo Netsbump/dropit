@@ -1,29 +1,23 @@
 import { Athlete } from '../../domain/athlete';
+import type { AthleteDetailsReadModel } from '../read-models/athlete-details.read-model';
 
 export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
-
-export type AthleteDetails = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  birthday: Date | null;
-  country: string | null;
-  email: string;
-  image: string;
-  weight: number;
-  level: string;
-  sex_category: string;
-  weight_category: string;
-  pr_snatch?: number;
-  pr_cleanAndJerk?: number;
-};
+export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
 
 export interface IAthleteRepository {
-  findOneWithDetails(athleteId: string): Promise<AthleteDetails | null>;
-  findAllWithDetails(athleteUserIds: string[]): Promise<AthleteDetails[]>;
-  getOne(athleteId: string): Promise<Athlete | null>;
-  getAll(athleteUserIds: string[]): Promise<Athlete[]>;
+  findById(athleteId: string): Promise<Athlete | null>;
   findByUserId(userId: string): Promise<Athlete | null>;
+  listByIds(athleteIds: string[]): Promise<Athlete[]>;
+  listByUserIds(athleteUserIds: string[]): Promise<Athlete[]>;
   save(athlete: Athlete): Promise<Athlete>;
   remove(athlete: Athlete): Promise<void>;
+}
+
+export interface IAthleteReadRepository {
+  findDetailsByUserId(
+    athleteUserId: string
+  ): Promise<AthleteDetailsReadModel | null>;
+  listDetailsByUserIds(
+    athleteUserIds: string[]
+  ): Promise<AthleteDetailsReadModel[]>;
 }

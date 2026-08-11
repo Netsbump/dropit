@@ -5,7 +5,7 @@ import type {
   UpdateAthleteInput,
 } from '@dropit/schemas';
 import type { AthleteCreation, AthleteUpdate } from '../../domain/athlete';
-import type { AthleteDetails } from '../../application/ports/athlete.repository.port';
+import type { AthleteDetailsReadModel } from '../../application/read-models/athlete-details.read-model';
 import { Athlete } from '../../domain/athlete';
 
 export const toAthleteCreation = (
@@ -19,9 +19,7 @@ export const toAthleteCreation = (
   country: input.country ?? null,
 });
 
-export const toAthleteUpdate = (
-  input: UpdateAthleteInput
-): AthleteUpdate => ({
+export const toAthleteUpdate = (input: UpdateAthleteInput): AthleteUpdate => ({
   firstName: input.firstName,
   lastName: input.lastName,
   birthday: input.birthday !== undefined ? new Date(input.birthday) : undefined,
@@ -29,7 +27,7 @@ export const toAthleteUpdate = (
 });
 
 export const toAthleteDetailsDto = (
-  athlete: AthleteDetails
+  athlete: AthleteDetailsReadModel
 ): AthleteDetailsDto => ({
   id: athlete.id,
   firstName: athlete.firstName,
@@ -38,28 +36,29 @@ export const toAthleteDetailsDto = (
   email: athlete.email ?? '',
   image: athlete.image ?? '',
   country: athlete.country ?? undefined,
-  metrics: athlete.weight ? { weight: athlete.weight } : undefined,
+  metrics:
+    athlete.currentWeight !== null
+      ? { weight: athlete.currentWeight }
+      : undefined,
   personalRecords:
-    athlete.pr_snatch || athlete.pr_cleanAndJerk
+    athlete.personalRecords.snatch !== null ||
+    athlete.personalRecords.cleanAndJerk !== null
       ? {
-          snatch: athlete.pr_snatch,
-          cleanAndJerk: athlete.pr_cleanAndJerk,
+          snatch: athlete.personalRecords.snatch ?? undefined,
+          cleanAndJerk: athlete.personalRecords.cleanAndJerk ?? undefined,
         }
       : undefined,
-  competitorStatus:
-    athlete.level || athlete.sex_category || athlete.weight_category
-      ? {
-          level: athlete.level ?? '',
-          sexCategory: athlete.sex_category ?? '',
-          weightCategory: athlete.weight_category
-            ? parseInt(athlete.weight_category)
-            : undefined,
-        }
-      : undefined,
+  competitorStatus: athlete.competitorStatus
+    ? {
+        level: athlete.competitorStatus.level,
+        sexCategory: athlete.competitorStatus.sexCategory,
+        weightCategory: athlete.competitorStatus.weightCategory ?? undefined,
+      }
+    : undefined,
 });
 
 export const toAthleteDetailsDtoList = (
-  athletes: AthleteDetails[]
+  athletes: AthleteDetailsReadModel[]
 ): AthleteDetailsDto[] => athletes.map(toAthleteDetailsDto);
 
 export const toAthleteDto = (athlete: Athlete): AthleteDto => {

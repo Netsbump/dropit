@@ -10,7 +10,7 @@ import { Exercise } from '../../../training/domain/exercise.entity';
 import { IExerciseRepository } from '../../../training/application/ports/exercise.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
 import { IPersonalRecordUseCases } from '../ports/personal-record-use-cases.port';
-import { toAthleteEntityReference } from '../../infrastructure/athlete.mapper';
+import { toAthleteEntityReference } from '../../infrastructure/mappers/athlete.mapper';
 import {
   PersonalRecordNotFoundException,
   PersonalRecordAccessDeniedException,
@@ -18,7 +18,7 @@ import {
   ExerciseNotFoundException,
   NoAthletesFoundException,
   NoPersonalRecordsFoundException,
-} from '../exceptions/personal-record.exceptions';
+} from '../errors/personal-record.exceptions';
 
 /**
  * Personal Record Use Cases Implementation
@@ -70,7 +70,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
       }
     } else {
       // 2b. If user is athlete, get only their own personal records
-      const athlete = await this.athleteRepository.getOne(currentUserId);
+      const athlete = await this.athleteRepository.findById(currentUserId);
       if (!athlete) {
         throw new AthleteNotFoundException('Athlete not found');
       }
@@ -101,7 +101,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     }
 
     // 2. Get athlete to verify it exists and get its userId
-    const athlete = await this.athleteRepository.getOne(
+    const athlete = await this.athleteRepository.findById(
       personalRecord.athlete.id
     );
 
@@ -129,7 +129,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     organizationId: string
   ): Promise<PersonalRecord[]> {
     // 1. Get athlete to verify it exists
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -165,7 +165,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     organizationId: string
   ): Promise<PersonalRecordsSummary> {
     // 1. Get athlete to verify it exists
-    const athlete = await this.athleteRepository.getOne(athleteId);
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -248,7 +248,7 @@ export class PersonalRecordUseCases implements IPersonalRecordUseCases {
     );
 
     // 3. Get athlete to verify it exists
-    const athlete = await this.athleteRepository.getOne(data.athleteId);
+    const athlete = await this.athleteRepository.findById(data.athleteId);
     if (!athlete) {
       throw new AthleteNotFoundException(
         `Athlete with ID ${data.athleteId} not found`

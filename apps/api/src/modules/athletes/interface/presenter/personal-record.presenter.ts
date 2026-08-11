@@ -1,5 +1,5 @@
 import { PersonalRecordDto, PersonalRecordsSummary } from '@dropit/schemas';
-import { PersonalRecordException } from '../../application/exceptions/personal-record.exceptions';
+import { PersonalRecordException } from '../../application/errors/personal-record.exceptions';
 
 export const PersonalRecordPresenter = {
   present(personalRecords: PersonalRecordDto[]) {
