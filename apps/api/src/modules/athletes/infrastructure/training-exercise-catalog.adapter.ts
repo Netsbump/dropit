@@ -1,6 +1,4 @@
-import {
-  IExerciseCatalog as ITrainingExerciseCatalog,
-} from '../../training/application/ports/exercise-catalog.port';
+import { IExerciseCatalog as ITrainingExerciseCatalog } from '../../training/application/ports/exercise-catalog.port';
 import {
   AvailableExercise,
   IExerciseCatalog,

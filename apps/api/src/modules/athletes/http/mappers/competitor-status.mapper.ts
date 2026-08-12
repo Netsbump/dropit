@@ -5,7 +5,9 @@ export const toCompetitorStatusDto = (
   competitorStatus: CompetitorStatus
 ): CompetitorStatusDto => {
   if (!competitorStatus.id) {
-    throw new Error('Competitor status id is required to map CompetitorStatusDto');
+    throw new Error(
+      'Competitor status id is required to map CompetitorStatusDto'
+    );
   }
 
   return {

@@ -61,11 +61,10 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
     athleteUserId: string,
     organizationId: string
   ): Promise<void> {
-    const isAthleteInOrganization =
-      await this.organizationMembership.isAthlete(
-        athleteUserId,
-        organizationId
-      );
+    const isAthleteInOrganization = await this.organizationMembership.isAthlete(
+      athleteUserId,
+      organizationId
+    );
 
     if (!isAthleteInOrganization) {
       throw new UserDoesNotBelongToOrganizationError(
