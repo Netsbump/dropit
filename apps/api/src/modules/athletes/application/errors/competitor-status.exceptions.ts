@@ -14,12 +14,6 @@ export class CompetitorStatusNotFoundException extends CompetitorStatusException
   }
 }
 
-export class CompetitorStatusAccessDeniedException extends CompetitorStatusException {
-  constructor(message = 'Access denied') {
-    super(message, 403);
-  }
-}
-
 export class AthleteNotFoundException extends CompetitorStatusException {
   constructor(message = 'Athlete not found') {
     super(message, 404);

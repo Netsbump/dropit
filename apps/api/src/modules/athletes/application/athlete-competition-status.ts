@@ -8,11 +8,11 @@ import { IAthleteCompetitionStatus } from './ports/athlete-competition-status.po
 import { ICompetitorStatusRepository } from './ports/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/athlete.repository.port';
 import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
+import { AthleteAccessPolicy } from './athlete-access.policy';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,
   AthleteNotFoundException,
-  CompetitorStatusAccessDeniedException,
 } from './errors/competitor-status.exceptions';
 
 /**
@@ -26,7 +26,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   constructor(
     private readonly competitorStatusRepository: ICompetitorStatusRepository,
     private readonly athleteRepository: IAthleteRepository,
-    private readonly memberUseCases: IMemberUseCases
+    private readonly memberUseCases: IMemberUseCases,
+    private readonly athleteAccessPolicy: AthleteAccessPolicy
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
@@ -53,56 +54,6 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     }
 
     return competitorStatus;
-  }
-
-  private async assertCanViewCompetitionStatus(
-    currentUserId: string,
-    organizationId: string,
-    athleteUserId: string,
-  ): Promise<void> {
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
-      currentUserId,
-      organizationId
-    );
-
-    if (!isUserCoach && currentUserId !== athleteUserId) {
-      throw new CompetitorStatusAccessDeniedException(
-        'Access denied. You can only access your own competitor status or the competitor status of an athlete you are coaching'
-      );
-    }
-  }
-
-  private async assertCanManageCompetitionStatus(
-    currentUserId: string,
-    organizationId: string
-  ): Promise<void> {
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
-      currentUserId,
-      organizationId
-    );
-
-    if (!isUserCoach) {
-      throw new CompetitorStatusAccessDeniedException(
-        'Access denied. Only coaches can manage competitor status'
-      );
-    }
-  }
-
-  private async assertAthleteBelongsToOrganization(
-    athleteUserId: string,
-    organizationId: string
-  ): Promise<void> {
-    const isAthleteInOrganization =
-      await this.memberUseCases.isUserAthleteInOrganization(
-        athleteUserId,
-        organizationId
-      );
-
-    if (!isAthleteInOrganization) {
-      throw new CompetitorStatusAccessDeniedException(
-        'Access denied. Athlete does not belong to organization'
-      );
-    }
   }
 
   private async closeCurrentStatusIfExists(athleteId: string): Promise<void> {
@@ -156,11 +107,11 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   ): Promise<CompetitorStatus> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
-    await this.assertCanViewCompetitionStatus(
+    await this.athleteAccessPolicy.assertCanViewAthlete({
       currentUserId,
       organizationId,
-      athlete.userId
-    );
+      athleteUserId: athlete.userId,
+    });
 
     const competitorStatus =
       await this.competitorStatusRepository.findByAthleteId(athleteId);
@@ -179,11 +130,14 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus> {
-    await this.assertCanManageCompetitionStatus(currentUserId, organizationId);
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
 
     const athlete = await this.getAthleteOrThrow(data.athleteId);
 
-    await this.assertAthleteBelongsToOrganization(
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );
@@ -206,14 +160,17 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus> {
-    await this.assertCanManageCompetitionStatus(currentUserId, organizationId);
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
 
     const competitorStatusToUpdate = await this.getCompetitorStatusOrThrow(id);
     const athlete = await this.getAthleteOrThrow(
       competitorStatusToUpdate.athleteId
     );
 
-    await this.assertAthleteBelongsToOrganization(
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );

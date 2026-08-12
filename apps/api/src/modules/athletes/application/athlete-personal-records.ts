@@ -7,12 +7,12 @@ import { PersonalRecord } from '../domain/personal-record';
 import type { Athlete } from '../domain/athlete';
 import { IPersonalRecordRepository } from './ports/personal-record.repository.port';
 import { IAthleteRepository } from './ports/athlete.repository.port';
-import { IExerciseRepository } from '../../training/application/ports/exercise.repository.port';
+import { IExerciseCatalog } from '../../training/application/ports/exercise-catalog.port';
 import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
 import { IAthletePersonalRecords } from './ports/athlete-personal-records.port';
+import { AthleteAccessPolicy } from './athlete-access.policy';
 import {
   PersonalRecordNotFoundException,
-  PersonalRecordAccessDeniedException,
   AthleteNotFoundException,
   ExerciseNotFoundException,
   NoAthletesFoundException,
@@ -30,8 +30,9 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   constructor(
     private readonly personalRecordRepository: IPersonalRecordRepository,
     private readonly athleteRepository: IAthleteRepository,
-    private readonly exerciseRepository: IExerciseRepository,
-    private readonly memberUseCases: IMemberUseCases
+    private readonly exerciseCatalog: IExerciseCatalog,
+    private readonly memberUseCases: IMemberUseCases,
+    private readonly athleteAccessPolicy: AthleteAccessPolicy
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
@@ -56,56 +57,6 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     }
 
     return personalRecord;
-  }
-
-  private async assertCanViewAthleteRecords(
-    currentUserId: string,
-    organizationId: string,
-    athleteUserId: string
-  ): Promise<void> {
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
-      currentUserId,
-      organizationId
-    );
-
-    if (!isUserCoach && currentUserId !== athleteUserId) {
-      throw new PersonalRecordAccessDeniedException(
-        'Access denied. You can only access your own personal records or the personal records of an athlete you are coaching'
-      );
-    }
-  }
-
-  private async assertCanManageAthleteRecords(
-    currentUserId: string,
-    organizationId: string
-  ): Promise<void> {
-    const isUserCoach = await this.memberUseCases.isUserCoachInOrganization(
-      currentUserId,
-      organizationId
-    );
-
-    if (!isUserCoach) {
-      throw new PersonalRecordAccessDeniedException(
-        'Access denied. Only coaches can manage personal records'
-      );
-    }
-  }
-
-  private async assertAthleteBelongsToOrganization(
-    athleteUserId: string,
-    organizationId: string
-  ): Promise<void> {
-    const isAthleteInOrganization =
-      await this.memberUseCases.isUserAthleteInOrganization(
-        athleteUserId,
-        organizationId
-      );
-
-    if (!isAthleteInOrganization) {
-      throw new PersonalRecordAccessDeniedException(
-        'Access denied. Athlete does not belong to organization'
-      );
-    }
   }
 
   async findAll(
@@ -163,11 +114,11 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     const personalRecord = await this.getPersonalRecordOrThrow(id);
     const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
 
-    await this.assertCanViewAthleteRecords(
+    await this.athleteAccessPolicy.assertCanViewAthlete({
       currentUserId,
       organizationId,
-      athlete.userId
-    );
+      athleteUserId: athlete.userId,
+    });
 
     return personalRecord;
   }
@@ -179,11 +130,11 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   ): Promise<PersonalRecord[]> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
-    await this.assertCanViewAthleteRecords(
+    await this.athleteAccessPolicy.assertCanViewAthlete({
       currentUserId,
       organizationId,
-      athlete.userId
-    );
+      athleteUserId: athlete.userId,
+    });
 
     const personalRecords =
       await this.personalRecordRepository.listByAthleteId(athleteId);
@@ -202,11 +153,11 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   ): Promise<PersonalRecordsSummary> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
-    await this.assertCanViewAthleteRecords(
+    await this.athleteAccessPolicy.assertCanViewAthlete({
       currentUserId,
       organizationId,
-      athlete.userId
-    );
+      athleteUserId: athlete.userId,
+    });
 
     const personalRecords =
       await this.personalRecordRepository.listByAthleteId(athleteId);
@@ -245,21 +196,21 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord> {
-    await this.assertCanManageAthleteRecords(currentUserId, organizationId);
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
 
     const athlete = await this.getAthleteOrThrow(data.athleteId);
 
-    await this.assertAthleteBelongsToOrganization(
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );
 
-    const coachFilterConditions =
-      await this.memberUseCases.getCoachFilterConditions(organizationId);
-
-    const exercise = await this.exerciseRepository.getOne(
+    const exercise = await this.exerciseCatalog.findExerciseByOrganization(
       data.exerciseId,
-      coachFilterConditions
+      organizationId
     );
     if (!exercise) {
       throw new ExerciseNotFoundException(
@@ -286,12 +237,15 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord> {
-    await this.assertCanManageAthleteRecords(currentUserId, organizationId);
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
 
     const personalRecord = await this.getPersonalRecordOrThrow(id);
     const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
 
-    await this.assertAthleteBelongsToOrganization(
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );
@@ -312,12 +266,15 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     currentUserId: string,
     organizationId: string
   ): Promise<void> {
-    await this.assertCanManageAthleteRecords(currentUserId, organizationId);
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
 
     const personalRecord = await this.getPersonalRecordOrThrow(id);
     const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
 
-    await this.assertAthleteBelongsToOrganization(
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );

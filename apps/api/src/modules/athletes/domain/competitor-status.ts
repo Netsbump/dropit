@@ -1,4 +1,15 @@
-import { CompetitorLevel, SexCategory } from '@dropit/schemas';
+export enum CompetitorLevel {
+  ROOKIE = 'rookie',
+  REGIONAL = 'regional',
+  NATIONAL = 'national',
+  INTERNATIONAL = 'international',
+  ELITE = 'elite',
+}
+
+export enum SexCategory {
+  MEN = 'men',
+  WOMEN = 'women',
+}
 
 export type CompetitorStatusCreation = {
   athleteId: string;

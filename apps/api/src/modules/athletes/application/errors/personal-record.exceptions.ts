@@ -14,12 +14,6 @@ export class PersonalRecordNotFoundException extends PersonalRecordException {
   }
 }
 
-export class PersonalRecordAccessDeniedException extends PersonalRecordException {
-  constructor(message = 'Access denied') {
-    super(message, 403);
-  }
-}
-
 export class AthleteNotFoundException extends PersonalRecordException {
   constructor(message = 'Athlete not found') {
     super(message, 404);

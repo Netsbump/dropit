@@ -20,7 +20,7 @@ import {
   InvalidAthleteStateError,
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
-import { AthleteAccessPolicy } from './policies/athlete-access.policy';
+import { AthleteAccessPolicy } from './athlete-access.policy';
 
 /**
  * Athlete Profiles

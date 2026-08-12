@@ -38,7 +38,7 @@ import { PersonalRecordController } from './http/personal-record.controller';
 import { AthleteCompetitionStatus } from './application/athlete-competition-status';
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
-import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
+import { AthleteAccessPolicy } from './application/athlete-access.policy';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
 import { InvitationsModule } from '../invitations/invitations.module';
@@ -51,9 +51,9 @@ import {
   IMemberUseCases,
 } from '../auth/application/ports/member-use-cases.port';
 import {
-  EXERCISE_REPO,
-  IExerciseRepository,
-} from '../training/application/ports/exercise.repository.port';
+  EXERCISE_CATALOG,
+  IExerciseCatalog,
+} from '../training/application/ports/exercise-catalog.port';
 
 @Module({
   imports: [
@@ -136,21 +136,24 @@ import {
       useFactory: (
         personalRecordRepo: IPersonalRecordRepository,
         athleteRepo: IAthleteRepository,
-        exerciseRepo: IExerciseRepository,
-        memberUseCases: IMemberUseCases
+        exerciseCatalog: IExerciseCatalog,
+        memberUseCases: IMemberUseCases,
+        athleteAccessPolicy: AthleteAccessPolicy
       ) => {
         return new AthletePersonalRecords(
           personalRecordRepo,
           athleteRepo,
-          exerciseRepo,
-          memberUseCases
+          exerciseCatalog,
+          memberUseCases,
+          athleteAccessPolicy
         );
       },
       inject: [
         PERSONAL_RECORD_REPO,
         ATHLETE_REPO,
-        EXERCISE_REPO,
+        EXERCISE_CATALOG,
         MEMBER_USE_CASES,
+        AthleteAccessPolicy,
       ],
     },
     {
@@ -158,15 +161,22 @@ import {
       useFactory: (
         competitorStatusRepo: ICompetitorStatusRepository,
         athleteRepo: IAthleteRepository,
-        memberUseCases: IMemberUseCases
+        memberUseCases: IMemberUseCases,
+        athleteAccessPolicy: AthleteAccessPolicy
       ) => {
         return new AthleteCompetitionStatus(
           competitorStatusRepo,
           athleteRepo,
-          memberUseCases
+          memberUseCases,
+          athleteAccessPolicy
         );
       },
-      inject: [COMPETITOR_STATUS_REPO, ATHLETE_REPO, MEMBER_USE_CASES],
+      inject: [
+        COMPETITOR_STATUS_REPO,
+        ATHLETE_REPO,
+        MEMBER_USE_CASES,
+        AthleteAccessPolicy,
+      ],
     },
   ],
 

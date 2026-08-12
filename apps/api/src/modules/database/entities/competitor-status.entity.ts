@@ -1,4 +1,7 @@
-import { CompetitorLevel, SexCategory } from '@dropit/schemas';
+import {
+  CompetitorLevel,
+  SexCategory,
+} from '../../athletes/domain/competitor-status';
 import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { AthleteEntity } from './athlete.entity';
 
