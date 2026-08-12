@@ -2,10 +2,10 @@ import {
   CreateCompetitorStatusInput,
   UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
-import { CompetitorStatus } from '../../domain/competitor-status.entity';
+import type { CompetitorStatus } from '../../domain/competitor-status';
 
 /**
- * Competitor Status Use Cases Port
+ * Athlete Competition Status Port
  *
  * @description
  * Defines the contract for competitor status business operations.
@@ -14,9 +14,9 @@ import { CompetitorStatus } from '../../domain/competitor-status.entity';
  *
  * @remarks
  * Following hexagonal architecture, this port is implemented by
- * CompetitorStatusUseCases and injected into controllers via dependency injection.
+ * AthleteCompetitionStatus and injected into controllers via dependency injection.
  */
-export interface ICompetitorStatusUseCases {
+export interface IAthleteCompetitionStatus {
   /**
    * Find all competitor statuses in organization
    */
@@ -52,9 +52,7 @@ export interface ICompetitorStatusUseCases {
 }
 
 /**
- * Injection token for ICompetitorStatusUseCases
+ * Injection token for IAthleteCompetitionStatus
  * Use this token in @Inject() decorators in controllers
  */
-export const COMPETITOR_STATUS_USE_CASES = Symbol(
-  'COMPETITOR_STATUS_USE_CASES'
-);
+export const ATHLETE_COMPETITION_STATUS = Symbol('ATHLETE_COMPETITION_STATUS');

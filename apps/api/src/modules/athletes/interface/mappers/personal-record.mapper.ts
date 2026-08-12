@@ -1,15 +1,19 @@
 import { PersonalRecordDto } from '@dropit/schemas';
-import { PersonalRecord } from '../../domain/personal-record.entity';
+import { PersonalRecord } from '../../domain/personal-record';
 
 export const PersonalRecordMapper = {
   toDto(personalRecord: PersonalRecord): PersonalRecordDto {
+    if (!personalRecord.id) {
+      throw new Error(
+        'Personal record id is required to map PersonalRecordDto'
+      );
+    }
+
     return {
       id: personalRecord.id,
       weight: personalRecord.weight,
       date: personalRecord.date,
-      createdAt: personalRecord.createdAt,
-      updatedAt: personalRecord.updatedAt,
-      athleteId: personalRecord.athlete.id,
+      athleteId: personalRecord.athleteId,
       exerciseId: personalRecord.exercise.id,
       exerciseName: personalRecord.exercise.name,
     };

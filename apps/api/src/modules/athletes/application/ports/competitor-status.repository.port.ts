@@ -1,10 +1,11 @@
-import { CompetitorStatus } from '../../domain/competitor-status.entity';
+import { CompetitorStatus } from '../../domain/competitor-status';
 
 export const COMPETITOR_STATUS_REPO = Symbol('COMPETITOR_STATUS_REPO');
 
 export interface ICompetitorStatusRepository {
-  getAll(athleteUserIds: string[]): Promise<CompetitorStatus[]>;
-  getOne(id: string): Promise<CompetitorStatus | null>;
-  save(competitorStatus: CompetitorStatus): Promise<void>;
+  findById(id: string): Promise<CompetitorStatus | null>;
+  findByAthleteId(athleteId: string): Promise<CompetitorStatus | null>;
+  listByAthleteUserIds(athleteUserIds: string[]): Promise<CompetitorStatus[]>;
+  save(competitorStatus: CompetitorStatus): Promise<CompetitorStatus>;
   remove(competitorStatus: CompetitorStatus): Promise<void>;
 }

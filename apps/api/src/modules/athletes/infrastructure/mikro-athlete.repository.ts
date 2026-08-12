@@ -9,7 +9,8 @@ import {
   toAthleteDomainList,
   toAthleteEntity,
 } from './mappers/athlete.mapper';
-import { PersonalRecord } from '../domain/personal-record.entity';
+import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
+import { PhysicalMetricEntity } from '../../database/entities/physical-metric.entity';
 import type { AthleteDetailsReadModel } from '../application/read-models/athlete-details.read-model';
 import {
   IAthleteReadRepository,
@@ -71,7 +72,7 @@ export class MikroAthleteRepository
     // Subquery to get the physical metric closest to today
     qb.addSelect(
       this.sql
-        .createQueryBuilder('PhysicalMetric', 'pm')
+        .createQueryBuilder(PhysicalMetricEntity, 'pm')
         .select('pm.weight')
         .where({ 'pm.athlete': raw('a.id') })
         .orderBy([
@@ -84,7 +85,7 @@ export class MikroAthleteRepository
     // Subquery for the latest Snatch PR
     qb.addSelect(
       this.sql
-        .createQueryBuilder(PersonalRecord, 'pr_snatch')
+        .createQueryBuilder(PersonalRecordEntity, 'pr_snatch')
         .select('pr_snatch.weight')
         .leftJoin('pr_snatch.exercise', 'e_snatch')
         .where({
@@ -99,7 +100,7 @@ export class MikroAthleteRepository
     // Subquery for the latest Clean & Jerk PR
     qb.addSelect(
       this.sql
-        .createQueryBuilder(PersonalRecord, 'pr_cj')
+        .createQueryBuilder(PersonalRecordEntity, 'pr_cj')
         .select('pr_cj.weight')
         .leftJoin('pr_cj.exercise', 'e_cj')
         .where({

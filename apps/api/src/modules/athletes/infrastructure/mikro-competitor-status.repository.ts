@@ -1,20 +1,48 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
-import { CompetitorStatus } from '../domain/competitor-status.entity';
-import { ICompetitorStatusRepository } from '../application/ports/competitor-status.repository.port';
+import { Injectable } from '@nestjs/common';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
+import type { ICompetitorStatusRepository } from '../application/ports/competitor-status.repository.port';
+import type { CompetitorStatus } from '../domain/competitor-status';
+import {
+  toCompetitorStatusDomain,
+  toCompetitorStatusDomainList,
+} from './mappers/competitor-status.mapper';
 
 @Injectable()
 export class MikroCompetitorStatusRepository
-  extends EntityRepository<CompetitorStatus>
+  extends EntityRepository<CompetitorStatusEntity>
   implements ICompetitorStatusRepository
 {
   constructor(public readonly em: EntityManager) {
-    super(em, CompetitorStatus);
+    super(em, CompetitorStatusEntity);
   }
 
-  async getAll(athleteUserIds: string[]): Promise<CompetitorStatus[]> {
-    return await this.em.find(
-      CompetitorStatus,
+  async findById(id: string): Promise<CompetitorStatus | null> {
+    const competitorStatusEntity = await this.findStatusById(id);
+
+    return competitorStatusEntity
+      ? toCompetitorStatusDomain(competitorStatusEntity)
+      : null;
+  }
+
+  async findByAthleteId(athleteId: string): Promise<CompetitorStatus | null> {
+    const competitorStatusEntity = await this.em.findOne(
+      CompetitorStatusEntity,
+      { athlete: { id: athleteId }, endDate: null },
+      { populate: ['athlete'] }
+    );
+
+    return competitorStatusEntity
+      ? toCompetitorStatusDomain(competitorStatusEntity)
+      : null;
+  }
+
+  async listByAthleteUserIds(
+    athleteUserIds: string[]
+  ): Promise<CompetitorStatus[]> {
+    const competitorStatusEntities = await this.em.find(
+      CompetitorStatusEntity,
       {
         athlete: {
           user: { id: { $in: athleteUserIds } },
@@ -22,21 +50,59 @@ export class MikroCompetitorStatusRepository
       },
       { populate: ['athlete'] }
     );
+
+    return toCompetitorStatusDomainList(competitorStatusEntities);
   }
 
-  async getOne(athleteId: string): Promise<CompetitorStatus | null> {
-    return this.em.findOne(
-      CompetitorStatus,
-      { athlete: { id: athleteId } },
-      { populate: ['athlete'] }
+  async save(competitorStatus: CompetitorStatus): Promise<CompetitorStatus> {
+    const competitorStatusEntity = competitorStatus.id
+      ? await this.em.findOneOrFail(CompetitorStatusEntity, {
+          id: competitorStatus.id,
+        })
+      : new CompetitorStatusEntity();
+
+    competitorStatusEntity.level = competitorStatus.level;
+    competitorStatusEntity.sexCategory = competitorStatus.sexCategory;
+    competitorStatusEntity.weightCategory = competitorStatus.weightCategory;
+    competitorStatusEntity.endDate = competitorStatus.endDate;
+    competitorStatusEntity.athlete = this.em.getReference(
+      AthleteEntity,
+      competitorStatus.athleteId
     );
-  }
 
-  async save(competitorStatus: CompetitorStatus): Promise<void> {
-    return this.em.persistAndFlush(competitorStatus);
+    await this.em.persistAndFlush(competitorStatusEntity);
+
+    const savedCompetitorStatusEntity = await this.findStatusById(
+      competitorStatusEntity.id
+    );
+
+    if (!savedCompetitorStatusEntity) {
+      throw new Error('Competitor status not found after save');
+    }
+
+    return toCompetitorStatusDomain(savedCompetitorStatusEntity);
   }
 
   async remove(competitorStatus: CompetitorStatus): Promise<void> {
-    return this.em.removeAndFlush(competitorStatus);
+    if (!competitorStatus.id) {
+      throw new Error('Cannot remove competitor status without id');
+    }
+
+    const competitorStatusEntity = this.em.getReference(
+      CompetitorStatusEntity,
+      competitorStatus.id
+    );
+
+    await this.em.removeAndFlush(competitorStatusEntity);
+  }
+
+  private async findStatusById(
+    id: string
+  ): Promise<CompetitorStatusEntity | null> {
+    return await this.em.findOne(
+      CompetitorStatusEntity,
+      { id },
+      { populate: ['athlete'] }
+    );
   }
 }

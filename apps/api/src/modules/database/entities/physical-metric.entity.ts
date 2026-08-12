@@ -1,8 +1,8 @@
 import { Entity, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { AthleteEntity } from './athlete.entity';
 
-@Entity()
-export class PhysicalMetric {
+@Entity({ tableName: 'physical_metric' })
+export class PhysicalMetricEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 

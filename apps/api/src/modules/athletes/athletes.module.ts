@@ -2,8 +2,9 @@ import { forwardRef, Module } from '@nestjs/common';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 
 import { AthleteEntity } from '../database/entities/athlete.entity';
-import { CompetitorStatus } from './domain/competitor-status.entity';
-import { PersonalRecord } from './domain/personal-record.entity';
+import { CompetitorStatusEntity } from '../database/entities/competitor-status.entity';
+import { PersonalRecordEntity } from '../database/entities/personal-record.entity';
+import { PhysicalMetricEntity } from '../database/entities/physical-metric.entity';
 import { Exercise } from '../training/domain/exercise.entity';
 
 // ports (symboles)
@@ -22,8 +23,8 @@ import {
   IPersonalRecordRepository,
 } from './application/ports/personal-record.repository.port';
 import { ATHLETE_PROFILES } from './application/ports/athlete-profiles.port';
-import { PERSONAL_RECORD_USE_CASES } from './application/ports/personal-record-use-cases.port';
-import { COMPETITOR_STATUS_USE_CASES } from './application/ports/competitor-status-use-cases.port';
+import { ATHLETE_PERSONAL_RECORDS } from './application/ports/athlete-personal-records.port';
+import { ATHLETE_COMPETITION_STATUS } from './application/ports/athlete-competition-status.port';
 
 // MikroORM implementations
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
@@ -34,9 +35,9 @@ import { MikroPersonalRecordRepository } from './infrastructure/mikro-personal-r
 import { AthleteController } from './interface/controllers/athlete.controller';
 import { CompetitorStatusController } from './interface/controllers/competitor-status.controller';
 import { PersonalRecordController } from './interface/controllers/personal-record.controller';
-import { CompetitorStatusUseCases } from './application/use-cases/competitor-status.use-cases';
+import { AthleteCompetitionStatus } from './application/athlete-competition-status';
 import { AthleteProfiles } from './application/athlete-profiles';
-import { PersonalRecordUseCases } from './application/use-cases/personal-record.use-cases';
+import { AthletePersonalRecords } from './application/athlete-personal-records';
 import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
@@ -58,7 +59,13 @@ import {
   imports: [
     // Custom repositories are also declared here
     MikroOrmModule.forFeature({
-      entities: [AthleteEntity, PersonalRecord, CompetitorStatus, Exercise],
+      entities: [
+        AthleteEntity,
+        PersonalRecordEntity,
+        CompetitorStatusEntity,
+        PhysicalMetricEntity,
+        Exercise,
+      ],
     }),
     forwardRef(() => AuthModule),
     forwardRef(() => InvitationsModule),
@@ -94,9 +101,9 @@ import {
       inject: [MEMBER_USE_CASES],
     },
 
-    // Application services still registered directly for legacy use-cases
-    CompetitorStatusUseCases,
-    PersonalRecordUseCases,
+    // Application services still registered directly
+    AthleteCompetitionStatus,
+    AthletePersonalRecords,
 
     // Port to implementation bindings
     {
@@ -125,14 +132,14 @@ import {
       ],
     },
     {
-      provide: PERSONAL_RECORD_USE_CASES,
+      provide: ATHLETE_PERSONAL_RECORDS,
       useFactory: (
         personalRecordRepo: IPersonalRecordRepository,
         athleteRepo: IAthleteRepository,
         exerciseRepo: IExerciseRepository,
         memberUseCases: IMemberUseCases
       ) => {
-        return new PersonalRecordUseCases(
+        return new AthletePersonalRecords(
           personalRecordRepo,
           athleteRepo,
           exerciseRepo,
@@ -147,13 +154,13 @@ import {
       ],
     },
     {
-      provide: COMPETITOR_STATUS_USE_CASES,
+      provide: ATHLETE_COMPETITION_STATUS,
       useFactory: (
         competitorStatusRepo: ICompetitorStatusRepository,
         athleteRepo: IAthleteRepository,
         memberUseCases: IMemberUseCases
       ) => {
-        return new CompetitorStatusUseCases(
+        return new AthleteCompetitionStatus(
           competitorStatusRepo,
           athleteRepo,
           memberUseCases

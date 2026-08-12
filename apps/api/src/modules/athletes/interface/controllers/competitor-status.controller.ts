@@ -9,9 +9,9 @@ import {
   CurrentUser,
 } from '../../../auth/infrastructure/decorators/auth.decorator';
 import {
-  ICompetitorStatusUseCases,
-  COMPETITOR_STATUS_USE_CASES,
-} from '../../application/ports/competitor-status-use-cases.port';
+  IAthleteCompetitionStatus,
+  ATHLETE_COMPETITION_STATUS,
+} from '../../application/ports/athlete-competition-status.port';
 import { CompetitorStatusMapper } from '../mappers/competitor-status.mapper';
 import { CompetitorStatusPresenter } from '../presenter/competitor-status.presenter';
 
@@ -30,15 +30,15 @@ const c = competitorStatusContract;
  * All endpoints require appropriate permissions (read, create, update)
  * and are scoped to the current organization.
  *
- * @see {@link ICompetitorStatusUseCases} for business logic contract
+ * @see {@link IAthleteCompetitionStatus} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class CompetitorStatusController {
   constructor(
-    @Inject(COMPETITOR_STATUS_USE_CASES)
-    private readonly competitorStatusUseCases: ICompetitorStatusUseCases
+    @Inject(ATHLETE_COMPETITION_STATUS)
+    private readonly athleteCompetitionStatus: IAthleteCompetitionStatus
   ) {}
 
   /**
@@ -55,7 +55,7 @@ export class CompetitorStatusController {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
       try {
         const competitorStatuses =
-          await this.competitorStatusUseCases.findAll(organizationId);
+          await this.athleteCompetitionStatus.findAll(organizationId);
         const competitorStatusesDto =
           CompetitorStatusMapper.toDtoList(competitorStatuses);
         return CompetitorStatusPresenter.present(competitorStatusesDto);
@@ -82,7 +82,7 @@ export class CompetitorStatusController {
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
       try {
-        const competitorStatus = await this.competitorStatusUseCases.findOne(
+        const competitorStatus = await this.athleteCompetitionStatus.findOne(
           params.id,
           currentUser.id,
           organizationId
@@ -114,7 +114,7 @@ export class CompetitorStatusController {
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
       try {
-        const competitorStatus = await this.competitorStatusUseCases.create(
+        const competitorStatus = await this.athleteCompetitionStatus.create(
           body,
           currentUser.id,
           organizationId
@@ -145,7 +145,7 @@ export class CompetitorStatusController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
       try {
-        const competitorStatus = await this.competitorStatusUseCases.update(
+        const competitorStatus = await this.athleteCompetitionStatus.update(
           params.id,
           body,
           currentUser.id,

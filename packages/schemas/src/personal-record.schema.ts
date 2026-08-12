@@ -29,8 +29,6 @@ export const personalRecordSchema = z.object({
   id: z.string(),
   weight: z.number(),
   date: z.date(),
-  createdAt: z.date(),
-  updatedAt: z.date(),
   athleteId: z.string(),
   exerciseId: z.string(),
   exerciseName: z.string().optional(),

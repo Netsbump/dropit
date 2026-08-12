@@ -1,7 +1,7 @@
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
 import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
-import { CompetitorStatus } from '../modules/athletes/domain/competitor-status.entity';
+import { CompetitorStatusEntity } from '../modules/database/entities/competitor-status.entity';
 
 export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
   console.log('Seeding competitor statuses...');
@@ -38,12 +38,12 @@ export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
 
   const n = Math.min(athletes.length, competitorData.length);
   for (let i = 0; i < n; i++) {
-    const existing = await em.findOne(CompetitorStatus, {
+    const existing = await em.findOne(CompetitorStatusEntity, {
       athlete: athletes[i],
     });
     if (existing) continue;
 
-    const status = new CompetitorStatus();
+    const status = new CompetitorStatusEntity();
     status.level = competitorData[i].level;
     status.sexCategory = competitorData[i].sexCategory;
     status.weightCategory = competitorData[i].weightCategory;

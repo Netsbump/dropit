@@ -3,10 +3,10 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
-import { PersonalRecord } from '../../domain/personal-record.entity';
+import type { PersonalRecord } from '../../domain/personal-record';
 
 /**
- * Personal Record Use Cases Port
+ * Athlete Personal Records Port
  *
  * @description
  * Interface defining the contract for personal record business logic operations.
@@ -14,19 +14,19 @@ import { PersonalRecord } from '../../domain/personal-record.entity';
  * business logic interface without framework dependencies.
  *
  * @remarks
- * All methods return raw entities or throw errors. Presentation logic
- * (HTTP responses, DTOs) is handled by controllers, not use cases.
+ * Methods return domain objects or throw errors. Presentation logic
+ * (HTTP responses, DTOs) is handled by controllers, not application services.
  */
-export const PERSONAL_RECORD_USE_CASES = Symbol('PERSONAL_RECORD_USE_CASES');
+export const ATHLETE_PERSONAL_RECORDS = Symbol('ATHLETE_PERSONAL_RECORDS');
 
-export interface IPersonalRecordUseCases {
+export interface IAthletePersonalRecords {
   /**
    * Retrieves all personal records accessible to the current user
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  getAll(
+  findAll(
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord[]>;
@@ -36,9 +36,9 @@ export interface IPersonalRecordUseCases {
    * @param id - Personal record ID
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
-   * @returns Personal record entity
+   * @returns Personal record
    */
-  getOne(
+  findOne(
     id: string,
     currentUserId: string,
     organizationId: string
@@ -51,7 +51,7 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  getAllByAthleteId(
+  findAllByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -64,7 +64,7 @@ export interface IPersonalRecordUseCases {
    * @param organizationId - ID of the organization
    * @returns Personal records summary
    */
-  getAllPersonalRecordsSummaryByAthleteId(
+  findBestOlympicLiftsByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -75,7 +75,7 @@ export interface IPersonalRecordUseCases {
    * @param data - Personal record creation data
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
-   * @returns Created personal record entity
+   * @returns Created personal record
    */
   create(
     data: CreatePersonalRecordInput,
@@ -89,7 +89,7 @@ export interface IPersonalRecordUseCases {
    * @param data - Personal record update data
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
-   * @returns Updated personal record entity
+   * @returns Updated personal record
    */
   update(
     id: string,

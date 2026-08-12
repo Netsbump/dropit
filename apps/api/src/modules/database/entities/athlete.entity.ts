@@ -7,9 +7,9 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { AthleteTrainingSession } from '../../training/domain/athlete-training-session.entity';
-import { CompetitorStatus } from '../../athletes/domain/competitor-status.entity';
-import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
-import { PhysicalMetric } from '../../athletes/domain/physical-metric.entity';
+import { CompetitorStatusEntity } from './competitor-status.entity';
+import { PersonalRecordEntity } from './personal-record.entity';
+import { PhysicalMetricEntity } from './physical-metric.entity';
 import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity({ tableName: 'athlete' })
@@ -45,20 +45,20 @@ export class AthleteEntity {
   trainingSessions = new Collection<AthleteTrainingSession>(this);
 
   @OneToMany(
-    () => PhysicalMetric,
+    () => PhysicalMetricEntity,
     (physicalMetric) => physicalMetric.athlete
   )
-  physicalMetrics = new Collection<PhysicalMetric>(this);
+  physicalMetrics = new Collection<PhysicalMetricEntity>(this);
 
   @OneToMany(
-    () => PersonalRecord,
+    () => PersonalRecordEntity,
     (personalRecord) => personalRecord.athlete
   )
-  personalRecords = new Collection<PersonalRecord>(this);
+  personalRecords = new Collection<PersonalRecordEntity>(this);
 
   @OneToMany(
-    () => CompetitorStatus,
+    () => CompetitorStatusEntity,
     (competitorStatus) => competitorStatus.athlete
   )
-  competitorStatuses = new Collection<CompetitorStatus>(this);
+  competitorStatuses = new Collection<CompetitorStatusEntity>(this);
 }

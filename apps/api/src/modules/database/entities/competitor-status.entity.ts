@@ -1,9 +1,9 @@
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
-import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { AthleteEntity } from './athlete.entity';
 
-@Entity()
-export class CompetitorStatus {
+@Entity({ tableName: 'competitor_status' })
+export class CompetitorStatusEntity {
   @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
   id!: string;
 

@@ -1,52 +1,111 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { PersonalRecord } from '../domain/personal-record.entity';
-import { IPersonalRecordRepository } from '../application/ports/personal-record.repository.port';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
+import { Exercise } from '../../training/domain/exercise.entity';
+import type { IPersonalRecordRepository } from '../application/ports/personal-record.repository.port';
+import type { PersonalRecord } from '../domain/personal-record';
+import {
+  toPersonalRecordDomain,
+  toPersonalRecordDomainList,
+} from './mappers/personal-record.mapper';
 
 @Injectable()
 export class MikroPersonalRecordRepository
-  extends EntityRepository<PersonalRecord>
+  extends EntityRepository<PersonalRecordEntity>
   implements IPersonalRecordRepository
 {
   constructor(public readonly em: EntityManager) {
-    super(em, PersonalRecord);
+    super(em, PersonalRecordEntity);
   }
 
-  async getOne(id: string): Promise<PersonalRecord | null> {
+  async findById(id: string): Promise<PersonalRecord | null> {
+    const personalRecordEntity = await this.findPersonalRecordById(id);
+
+    return personalRecordEntity
+      ? toPersonalRecordDomain(personalRecordEntity)
+      : null;
+  }
+
+  async listByAthleteUserIds(
+    athleteUserIds: string[]
+  ): Promise<PersonalRecord[]> {
+    const personalRecordEntities = await this.em.find(
+      PersonalRecordEntity,
+      { athlete: { user: { id: { $in: athleteUserIds } } } },
+      {
+        populate: ['athlete', 'exercise'],
+      }
+    );
+
+    return toPersonalRecordDomainList(personalRecordEntities);
+  }
+
+  async listByAthleteId(athleteId: string): Promise<PersonalRecord[]> {
+    const personalRecordEntities = await this.em.find(
+      PersonalRecordEntity,
+      { athlete: athleteId },
+      {
+        populate: ['athlete', 'exercise'],
+      }
+    );
+
+    return toPersonalRecordDomainList(personalRecordEntities);
+  }
+
+  async save(personalRecord: PersonalRecord): Promise<PersonalRecord> {
+    const personalRecordEntity = personalRecord.id
+      ? await this.em.findOneOrFail(PersonalRecordEntity, {
+          id: personalRecord.id,
+        })
+      : new PersonalRecordEntity();
+
+    personalRecordEntity.weight = personalRecord.weight;
+    personalRecordEntity.date = personalRecord.date;
+    personalRecordEntity.athlete = this.em.getReference(
+      AthleteEntity,
+      personalRecord.athleteId
+    );
+    personalRecordEntity.exercise = this.em.getReference(
+      Exercise,
+      personalRecord.exercise.id
+    );
+
+    await this.em.persistAndFlush(personalRecordEntity);
+
+    const savedPersonalRecordEntity = await this.findPersonalRecordById(
+      personalRecordEntity.id
+    );
+
+    if (!savedPersonalRecordEntity) {
+      throw new Error('Personal record not found after save');
+    }
+
+    return toPersonalRecordDomain(savedPersonalRecordEntity);
+  }
+
+  async remove(personalRecord: PersonalRecord): Promise<void> {
+    if (!personalRecord.id) {
+      throw new Error('Cannot remove personal record without id');
+    }
+
+    const personalRecordEntity = this.em.getReference(
+      PersonalRecordEntity,
+      personalRecord.id
+    );
+
+    await this.em.removeAndFlush(personalRecordEntity);
+  }
+
+  private async findPersonalRecordById(
+    id: string
+  ): Promise<PersonalRecordEntity | null> {
     return await this.em.findOne(
-      PersonalRecord,
+      PersonalRecordEntity,
       { id },
       {
         populate: ['athlete', 'exercise'],
       }
     );
-  }
-
-  async getAll(athleteUserIds: string[]): Promise<PersonalRecord[]> {
-    return await this.em.find(
-      PersonalRecord,
-      { athlete: { $in: athleteUserIds } },
-      {
-        populate: ['athlete', 'exercise'],
-      }
-    );
-  }
-
-  async getAllByAthleteId(athleteId: string): Promise<PersonalRecord[]> {
-    return await this.em.find(
-      PersonalRecord,
-      { athlete: athleteId },
-      {
-        populate: ['exercise'],
-      }
-    );
-  }
-
-  async save(personalRecord: PersonalRecord): Promise<void> {
-    return await this.em.persistAndFlush(personalRecord);
-  }
-
-  async remove(personalRecord: PersonalRecord): Promise<void> {
-    return await this.em.removeAndFlush(personalRecord);
   }
 }

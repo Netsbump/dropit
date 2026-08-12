@@ -2,9 +2,9 @@ import { personalRecordContract } from '@dropit/contract';
 import { Controller, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import {
-  IPersonalRecordUseCases,
-  PERSONAL_RECORD_USE_CASES,
-} from '../../application/ports/personal-record-use-cases.port';
+  IAthletePersonalRecords,
+  ATHLETE_PERSONAL_RECORDS,
+} from '../../application/ports/athlete-personal-records.port';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
@@ -30,15 +30,15 @@ const c = personalRecordContract;
  * All endpoints require appropriate permissions (read, create, update, delete)
  * and are scoped to the current organization.
  *
- * @see {@link IPersonalRecordUseCases} for business logic contract
+ * @see {@link IAthletePersonalRecords} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
 @UseGuards(PermissionsGuard)
 @Controller()
 export class PersonalRecordController {
   constructor(
-    @Inject(PERSONAL_RECORD_USE_CASES)
-    private readonly personalRecordUseCases: IPersonalRecordUseCases
+    @Inject(ATHLETE_PERSONAL_RECORDS)
+    private readonly athletePersonalRecords: IAthletePersonalRecords
   ) {}
 
   /**
@@ -59,7 +59,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecords>> {
     return tsRestHandler(c.getPersonalRecords, async () => {
       try {
-        const personalRecords = await this.personalRecordUseCases.getAll(
+        const personalRecords = await this.athletePersonalRecords.findAll(
           currentUser.id,
           organizationId
         );
@@ -89,7 +89,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
       try {
-        const personalRecord = await this.personalRecordUseCases.getOne(
+        const personalRecord = await this.athletePersonalRecords.findOne(
           params.id,
           currentUser.id,
           organizationId
@@ -120,7 +120,7 @@ export class PersonalRecordController {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
       try {
         const personalRecords =
-          await this.personalRecordUseCases.getAllByAthleteId(
+          await this.athletePersonalRecords.findAllByAthleteId(
             params.id,
             currentUser.id,
             organizationId
@@ -156,7 +156,7 @@ export class PersonalRecordController {
       async ({ params }) => {
         try {
           const summary =
-            await this.personalRecordUseCases.getAllPersonalRecordsSummaryByAthleteId(
+            await this.athletePersonalRecords.findBestOlympicLiftsByAthleteId(
               params.id,
               currentUser.id,
               organizationId
@@ -186,7 +186,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
       try {
-        const personalRecord = await this.personalRecordUseCases.create(
+        const personalRecord = await this.athletePersonalRecords.create(
           body,
           currentUser.id,
           organizationId
@@ -216,7 +216,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
       try {
-        const personalRecord = await this.personalRecordUseCases.update(
+        const personalRecord = await this.athletePersonalRecords.update(
           params.id,
           body,
           currentUser.id,
@@ -247,7 +247,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
       try {
-        await this.personalRecordUseCases.delete(
+        await this.athletePersonalRecords.delete(
           params.id,
           currentUser.id,
           organizationId

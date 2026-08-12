@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
-import { PersonalRecord } from '../modules/athletes/domain/personal-record.entity';
+import { PersonalRecordEntity } from '../modules/database/entities/personal-record.entity';
 import { Exercise } from '../modules/training/domain/exercise.entity';
 
 export async function seedPersonalRecords(em: EntityManager): Promise<void> {
@@ -70,10 +70,13 @@ async function createPR(
   exercise: Exercise,
   weight: number
 ): Promise<void> {
-  const existing = await em.findOne(PersonalRecord, { athlete, exercise });
+  const existing = await em.findOne(PersonalRecordEntity, {
+    athlete,
+    exercise,
+  });
   if (existing) return;
 
-  const pr = new PersonalRecord();
+  const pr = new PersonalRecordEntity();
   pr.athlete = athlete;
   pr.exercise = exercise;
   pr.weight = weight;

@@ -36,7 +36,6 @@ export const competitorStatusSchema = z.object({
   level: z.string(),
   sexCategory: z.string(),
   weightCategory: z.number(),
-  updatedAt: z.string(),
   endDate: z.string().nullable(),
 });
 
