@@ -16,7 +16,7 @@ import { IWorkoutCategoryRepository } from '../ports/workout-category.repository
 import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IComplexRepository } from '../ports/complex.repository.port';
 import { IWorkoutElementRepository } from '../ports/workout-element.repository.port';
-import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
+import { IAthleteRepository } from '../../../athletes/application/ports/out/athlete.repository.port';
 import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IWorkoutUseCases } from '../ports/workout-use-cases.port';

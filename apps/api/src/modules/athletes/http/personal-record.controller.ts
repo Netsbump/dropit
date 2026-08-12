@@ -4,7 +4,7 @@ import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import {
   IAthletePersonalRecords,
   ATHLETE_PERSONAL_RECORDS,
-} from '../application/ports/athlete-personal-records.port';
+} from '../application/ports/in/athlete-personal-records.port';
 import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
 import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';

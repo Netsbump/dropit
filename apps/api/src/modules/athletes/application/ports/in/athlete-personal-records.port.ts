@@ -3,7 +3,7 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
-import type { PersonalRecord } from '../../domain/personal-record';
+import type { PersonalRecord } from '../../../domain/personal-record';
 
 /**
  * Athlete Personal Records Port

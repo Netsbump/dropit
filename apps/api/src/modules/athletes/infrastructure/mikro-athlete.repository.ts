@@ -15,7 +15,7 @@ import type { AthleteDetailsReadModel } from '../application/read-models/athlete
 import {
   IAthleteReadRepository,
   IAthleteRepository,
-} from '../application/ports/athlete.repository.port';
+} from '../application/ports/out/athlete.repository.port';
 import {
   toAthleteDetailsReadModel,
   toAthleteDetailsReadModelList,

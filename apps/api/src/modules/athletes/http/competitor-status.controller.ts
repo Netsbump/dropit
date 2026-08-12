@@ -11,7 +11,7 @@ import {
 import {
   IAthleteCompetitionStatus,
   ATHLETE_COMPETITION_STATUS,
-} from '../application/ports/athlete-competition-status.port';
+} from '../application/ports/in/athlete-competition-status.port';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toCompetitorStatusDto,

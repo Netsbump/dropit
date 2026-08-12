@@ -100,7 +100,7 @@ import { COMPLEX_CATEGORY_USE_CASES } from './application/ports/complex-category
 import {
   ATHLETE_REPO,
   IAthleteRepository,
-} from '../athletes/application/ports/athlete.repository.port';
+} from '../athletes/application/ports/out/athlete.repository.port';
 import {
   USER_USE_CASES,
   IUserUseCases,

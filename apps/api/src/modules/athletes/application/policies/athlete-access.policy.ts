@@ -2,12 +2,12 @@ import {
   IAthleteAccessPolicy,
   type AssertCanManageOwnAthleteParams,
   type AssertCanViewAthleteParams,
-} from './ports/athlete-access-policy.port';
-import { IOrganizationMembership } from './ports/organization-membership.port';
+} from './athlete-access-policy.interface';
+import { IOrganizationMembership } from '../ports/out/organization-membership.port';
 import {
   AthleteAccessDeniedError,
   UserDoesNotBelongToOrganizationError,
-} from './errors/athlete.errors';
+} from '../errors/athlete.errors';
 
 export class AthleteAccessPolicy implements IAthleteAccessPolicy {
   constructor(

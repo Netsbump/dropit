@@ -4,11 +4,11 @@ import {
 } from '@dropit/schemas';
 import { CompetitorStatus } from '../domain/competitor-status';
 import type { Athlete } from '../domain/athlete';
-import { IAthleteCompetitionStatus } from './ports/athlete-competition-status.port';
-import { ICompetitorStatusRepository } from './ports/competitor-status.repository.port';
-import { IAthleteRepository } from './ports/athlete.repository.port';
-import { IAthleteAccessPolicy } from './ports/athlete-access-policy.port';
-import { IOrganizationMembership } from './ports/organization-membership.port';
+import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
+import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
+import { IAthleteRepository } from './ports/out/athlete.repository.port';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,

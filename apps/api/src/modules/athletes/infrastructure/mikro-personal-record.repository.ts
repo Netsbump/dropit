@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
 import { Exercise } from '../../training/domain/exercise.entity';
-import type { IPersonalRecordRepository } from '../application/ports/personal-record.repository.port';
+import type { IPersonalRecordRepository } from '../application/ports/out/personal-record.repository.port';
 import type { PersonalRecord } from '../domain/personal-record';
 import {
   toPersonalRecordDomain,

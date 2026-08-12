@@ -5,12 +5,12 @@ import {
 } from '@dropit/schemas';
 import { PersonalRecord } from '../domain/personal-record';
 import type { Athlete } from '../domain/athlete';
-import { IPersonalRecordRepository } from './ports/personal-record.repository.port';
-import { IAthleteRepository } from './ports/athlete.repository.port';
-import { IExerciseCatalog } from './ports/exercise-catalog.port';
-import { IAthletePersonalRecords } from './ports/athlete-personal-records.port';
-import { IAthleteAccessPolicy } from './ports/athlete-access-policy.port';
-import { IOrganizationMembership } from './ports/organization-membership.port';
+import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
+import { IAthleteRepository } from './ports/out/athlete.repository.port';
+import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
+import { IAthletePersonalRecords } from './ports/in/athlete-personal-records.port';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
   PersonalRecordNotFoundException,
   AthleteNotFoundException,

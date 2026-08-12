@@ -2,8 +2,8 @@ import type {
   Athlete,
   AthleteCreation,
   AthleteUpdate,
-} from '../../domain/athlete';
-import type { AthleteDetailsReadModel } from '../read-models/athlete-details.read-model';
+} from '../../../domain/athlete';
+import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.read-model';
 
 /**
  * Athlete Profiles Port

@@ -1,5 +1,5 @@
 import { Athlete } from '../../athletes/domain/athlete';
-import { IAthleteRepository } from '../../athletes/application/ports/athlete.repository.port';
+import { IAthleteRepository } from '../../athletes/application/ports/out/athlete.repository.port';
 import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
 import {

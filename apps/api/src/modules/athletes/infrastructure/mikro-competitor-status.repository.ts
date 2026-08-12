@@ -2,7 +2,7 @@ import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
-import type { ICompetitorStatusRepository } from '../application/ports/competitor-status.repository.port';
+import type { ICompetitorStatusRepository } from '../application/ports/out/competitor-status.repository.port';
 import type { CompetitorStatus } from '../domain/competitor-status';
 import {
   toCompetitorStatusDomain,

@@ -2,7 +2,7 @@ import { IExerciseCatalog as ITrainingExerciseCatalog } from '../../training/app
 import {
   AvailableExercise,
   IExerciseCatalog,
-} from '../application/ports/exercise-catalog.port';
+} from '../application/ports/out/exercise-catalog.port';
 
 export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
   constructor(

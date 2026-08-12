@@ -1,5 +1,5 @@
 import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
-import { IOrganizationMembership } from '../application/ports/organization-membership.port';
+import { IOrganizationMembership } from '../application/ports/out/organization-membership.port';
 
 export class OrganizationMembershipAdapter implements IOrganizationMembership {
   constructor(private readonly memberUseCases: IMemberUseCases) {}

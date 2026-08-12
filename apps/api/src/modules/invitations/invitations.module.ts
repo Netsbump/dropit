@@ -12,7 +12,7 @@ import {
 import {
   ATHLETE_REPO,
   IAthleteRepository,
-} from '../athletes/application/ports/athlete.repository.port';
+} from '../athletes/application/ports/out/athlete.repository.port';
 import { InvitationUseCases } from './application/invitation.use-cases';
 import { InvitationRecipientService } from './application/invitation-recipient.service';
 import { INVITATION_USE_CASES } from './application/ports/invitation-use-cases.port';

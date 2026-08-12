@@ -4,15 +4,15 @@ import {
   type AthleteCreation,
   type AthleteUpdate,
 } from '../domain/athlete';
-import type { IAthleteProfiles } from './ports/athlete-profiles.port';
+import type { IAthleteProfiles } from './ports/in/athlete-profiles.port';
 import type { AthleteDetailsReadModel } from './read-models/athlete-details.read-model';
 import {
   IAthleteRepository,
   IAthleteReadRepository,
-} from './ports/athlete.repository.port';
+} from './ports/out/athlete.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
-import { IAthleteAccessPolicy } from './ports/athlete-access-policy.port';
-import { IOrganizationMembership } from './ports/organization-membership.port';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
   AthleteNotFoundError,
   UserNotFoundError,

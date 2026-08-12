@@ -24,7 +24,7 @@ import {
 import {
   ATHLETE_REPO,
   IAthleteRepository,
-} from '../../athletes/application/ports/athlete.repository.port';
+} from '../../athletes/application/ports/out/athlete.repository.port';
 import {
   invitableOrganizationRoleSchema,
   organizationRoleSchema,

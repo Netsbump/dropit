@@ -14,7 +14,7 @@ import {
 import {
   IAthleteProfiles,
   ATHLETE_PROFILES,
-} from '../application/ports/athlete-profiles.port';
+} from '../application/ports/in/athlete-profiles.port';
 import {
   IInvitationUseCases,
   INVITATION_USE_CASES,

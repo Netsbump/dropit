@@ -13,18 +13,18 @@ import {
   ATHLETE_REPO,
   IAthleteReadRepository,
   IAthleteRepository,
-} from './application/ports/athlete.repository.port';
+} from './application/ports/out/athlete.repository.port';
 import {
   COMPETITOR_STATUS_REPO,
   ICompetitorStatusRepository,
-} from './application/ports/competitor-status.repository.port';
+} from './application/ports/out/competitor-status.repository.port';
 import {
   PERSONAL_RECORD_REPO,
   IPersonalRecordRepository,
-} from './application/ports/personal-record.repository.port';
-import { ATHLETE_PROFILES } from './application/ports/athlete-profiles.port';
-import { ATHLETE_PERSONAL_RECORDS } from './application/ports/athlete-personal-records.port';
-import { ATHLETE_COMPETITION_STATUS } from './application/ports/athlete-competition-status.port';
+} from './application/ports/out/personal-record.repository.port';
+import { ATHLETE_PROFILES } from './application/ports/in/athlete-profiles.port';
+import { ATHLETE_PERSONAL_RECORDS } from './application/ports/in/athlete-personal-records.port';
+import { ATHLETE_COMPETITION_STATUS } from './application/ports/in/athlete-competition-status.port';
 
 // MikroORM implementations
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
@@ -38,7 +38,7 @@ import { PersonalRecordController } from './http/personal-record.controller';
 import { AthleteCompetitionStatus } from './application/athlete-competition-status';
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
-import { AthleteAccessPolicy } from './application/athlete-access.policy';
+import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
 import { OrganizationMembershipAdapter } from './infrastructure/organization-membership.adapter';
 import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exercise-catalog.adapter';
 import { AuthModule } from '../auth/auth.module';
@@ -59,15 +59,15 @@ import {
 import {
   ATHLETE_ACCESS_POLICY,
   IAthleteAccessPolicy,
-} from './application/ports/athlete-access-policy.port';
+} from './application/policies/athlete-access-policy.interface';
 import {
   IOrganizationMembership,
   ORGANIZATION_MEMBERSHIP,
-} from './application/ports/organization-membership.port';
+} from './application/ports/out/organization-membership.port';
 import {
   ATHLETE_EXERCISE_CATALOG,
   IExerciseCatalog,
-} from './application/ports/exercise-catalog.port';
+} from './application/ports/out/exercise-catalog.port';
 
 @Module({
   imports: [

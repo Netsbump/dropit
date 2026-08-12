@@ -2,7 +2,7 @@ import {
   CreateCompetitorStatusInput,
   UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
-import type { CompetitorStatus } from '../../domain/competitor-status';
+import type { CompetitorStatus } from '../../../domain/competitor-status';
 
 /**
  * Athlete Competition Status Port
