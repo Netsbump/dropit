@@ -8,6 +8,8 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AthleteApplicationError } from '../../application/errors/athlete.errors';
+import { CompetitorStatusException } from '../../application/errors/competitor-status.exceptions';
+import { PersonalRecordException } from '../../application/errors/personal-record.exceptions';
 
 type HttpErrorResponse = {
   statusCode: number;
@@ -40,18 +42,22 @@ const getHttpExceptionMessage = (exception: HttpException): string => {
   return exception.message;
 };
 
-const toHttpErrorResponse = (exception: unknown): HttpErrorResponse => {
-  if (exception instanceof AthleteApplicationError) {
+const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
+  if (
+    error instanceof AthleteApplicationError ||
+    error instanceof CompetitorStatusException ||
+    error instanceof PersonalRecordException
+  ) {
     return {
-      statusCode: exception.statusCode,
-      message: exception.message,
+      statusCode: error.statusCode,
+      message: error.message,
     };
   }
 
-  if (exception instanceof HttpException) {
+  if (error instanceof HttpException) {
     return {
-      statusCode: exception.getStatus(),
-      message: getHttpExceptionMessage(exception),
+      statusCode: error.getStatus(),
+      message: getHttpExceptionMessage(error),
     };
   }
 

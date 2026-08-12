@@ -1,5 +1,5 @@
 import { personalRecordContract } from '@dropit/contract';
-import { Controller, UseGuards, Inject } from '@nestjs/common';
+import { Controller, UseFilters, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import {
   IAthletePersonalRecords,
@@ -12,8 +12,11 @@ import {
   AuthenticatedUser,
   CurrentUser,
 } from '../../../auth/infrastructure/decorators/auth.decorator';
-import { PersonalRecordMapper } from '../mappers/personal-record.mapper';
-import { PersonalRecordPresenter } from '../presenter/personal-record.presenter';
+import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+import {
+  toPersonalRecordDto,
+  toPersonalRecordDtoList,
+} from '../mappers/personal-record.mapper';
 
 const c = personalRecordContract;
 
@@ -33,6 +36,7 @@ const c = personalRecordContract;
  * @see {@link IAthletePersonalRecords} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
+@UseFilters(AthleteExceptionFilter)
 @UseGuards(PermissionsGuard)
 @Controller()
 export class PersonalRecordController {
@@ -58,17 +62,16 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecords>> {
     return tsRestHandler(c.getPersonalRecords, async () => {
-      try {
-        const personalRecords = await this.athletePersonalRecords.findAll(
-          currentUser.id,
-          organizationId
-        );
-        const personalRecordsDto =
-          PersonalRecordMapper.toDtoList(personalRecords);
-        return PersonalRecordPresenter.present(personalRecordsDto);
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      const personalRecords = await this.athletePersonalRecords.findAll(
+        currentUser.id,
+        organizationId
+      );
+      const personalRecordsDto = toPersonalRecordDtoList(personalRecords);
+
+      return {
+        status: 200 as const,
+        body: personalRecordsDto,
+      };
     });
   }
 
@@ -88,17 +91,17 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
-      try {
-        const personalRecord = await this.athletePersonalRecords.findOne(
-          params.id,
-          currentUser.id,
-          organizationId
-        );
-        const personalRecordDto = PersonalRecordMapper.toDto(personalRecord);
-        return PersonalRecordPresenter.presentOne(personalRecordDto);
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      const personalRecord = await this.athletePersonalRecords.findOne(
+        params.id,
+        currentUser.id,
+        organizationId
+      );
+      const personalRecordDto = toPersonalRecordDto(personalRecord);
+
+      return {
+        status: 200 as const,
+        body: personalRecordDto,
+      };
     });
   }
 
@@ -118,19 +121,18 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
-      try {
-        const personalRecords =
-          await this.athletePersonalRecords.findAllByAthleteId(
-            params.id,
-            currentUser.id,
-            organizationId
-          );
-        const personalRecordsDto =
-          PersonalRecordMapper.toDtoList(personalRecords);
-        return PersonalRecordPresenter.present(personalRecordsDto);
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      const personalRecords =
+        await this.athletePersonalRecords.findAllByAthleteId(
+          params.id,
+          currentUser.id,
+          organizationId
+        );
+      const personalRecordsDto = toPersonalRecordDtoList(personalRecords);
+
+      return {
+        status: 200 as const,
+        body: personalRecordsDto,
+      };
     });
   }
 
@@ -154,17 +156,17 @@ export class PersonalRecordController {
     return tsRestHandler(
       c.getAthletePersonalRecordsSummary,
       async ({ params }) => {
-        try {
-          const summary =
-            await this.athletePersonalRecords.findBestOlympicLiftsByAthleteId(
-              params.id,
-              currentUser.id,
-              organizationId
-            );
-          return PersonalRecordPresenter.presentSummary(summary);
-        } catch (error) {
-          return PersonalRecordPresenter.presentError(error as Error);
-        }
+        const summary =
+          await this.athletePersonalRecords.findBestOlympicLiftsByAthleteId(
+            params.id,
+            currentUser.id,
+            organizationId
+          );
+
+        return {
+          status: 200 as const,
+          body: summary,
+        };
       }
     );
   }
@@ -185,17 +187,17 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
-      try {
-        const personalRecord = await this.athletePersonalRecords.create(
-          body,
-          currentUser.id,
-          organizationId
-        );
-        const personalRecordDto = PersonalRecordMapper.toDto(personalRecord);
-        return PersonalRecordPresenter.presentCreated(personalRecordDto);
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      const personalRecord = await this.athletePersonalRecords.create(
+        body,
+        currentUser.id,
+        organizationId
+      );
+      const personalRecordDto = toPersonalRecordDto(personalRecord);
+
+      return {
+        status: 201 as const,
+        body: personalRecordDto,
+      };
     });
   }
 
@@ -215,18 +217,18 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
-      try {
-        const personalRecord = await this.athletePersonalRecords.update(
-          params.id,
-          body,
-          currentUser.id,
-          organizationId
-        );
-        const personalRecordDto = PersonalRecordMapper.toDto(personalRecord);
-        return PersonalRecordPresenter.presentOne(personalRecordDto);
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      const personalRecord = await this.athletePersonalRecords.update(
+        params.id,
+        body,
+        currentUser.id,
+        organizationId
+      );
+      const personalRecordDto = toPersonalRecordDto(personalRecord);
+
+      return {
+        status: 200 as const,
+        body: personalRecordDto,
+      };
     });
   }
 
@@ -246,16 +248,16 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
-      try {
-        await this.athletePersonalRecords.delete(
-          params.id,
-          currentUser.id,
-          organizationId
-        );
-        return PersonalRecordPresenter.presentDeleted();
-      } catch (error) {
-        return PersonalRecordPresenter.presentError(error as Error);
-      }
+      await this.athletePersonalRecords.delete(
+        params.id,
+        currentUser.id,
+        organizationId
+      );
+
+      return {
+        status: 204 as const,
+        body: null,
+      };
     });
   }
 }

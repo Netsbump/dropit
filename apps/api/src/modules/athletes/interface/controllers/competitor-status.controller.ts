@@ -1,5 +1,5 @@
 import { competitorStatusContract } from '@dropit/contract';
-import { Controller, UseGuards, Inject } from '@nestjs/common';
+import { Controller, UseFilters, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
 import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
@@ -12,8 +12,11 @@ import {
   IAthleteCompetitionStatus,
   ATHLETE_COMPETITION_STATUS,
 } from '../../application/ports/athlete-competition-status.port';
-import { CompetitorStatusMapper } from '../mappers/competitor-status.mapper';
-import { CompetitorStatusPresenter } from '../presenter/competitor-status.presenter';
+import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+import {
+  toCompetitorStatusDto,
+  toCompetitorStatusDtoList,
+} from '../mappers/competitor-status.mapper';
 
 const c = competitorStatusContract;
 
@@ -33,6 +36,7 @@ const c = competitorStatusContract;
  * @see {@link IAthleteCompetitionStatus} for business logic contract
  * @see {@link PermissionsGuard} for authorization handling
  */
+@UseFilters(AthleteExceptionFilter)
 @UseGuards(PermissionsGuard)
 @Controller()
 export class CompetitorStatusController {
@@ -53,15 +57,15 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
-      try {
-        const competitorStatuses =
-          await this.athleteCompetitionStatus.findAll(organizationId);
-        const competitorStatusesDto =
-          CompetitorStatusMapper.toDtoList(competitorStatuses);
-        return CompetitorStatusPresenter.present(competitorStatusesDto);
-      } catch (error) {
-        return CompetitorStatusPresenter.presentError(error as Error);
-      }
+      const competitorStatuses =
+        await this.athleteCompetitionStatus.findAll(organizationId);
+      const competitorStatusesDto =
+        toCompetitorStatusDtoList(competitorStatuses);
+
+      return {
+        status: 200 as const,
+        body: competitorStatusesDto,
+      };
     });
   }
 
@@ -81,18 +85,17 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
-      try {
-        const competitorStatus = await this.athleteCompetitionStatus.findOne(
-          params.id,
-          currentUser.id,
-          organizationId
-        );
-        const competitorStatusDto =
-          CompetitorStatusMapper.toDto(competitorStatus);
-        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
-      } catch (error) {
-        return CompetitorStatusPresenter.presentError(error as Error);
-      }
+      const competitorStatus = await this.athleteCompetitionStatus.findOne(
+        params.id,
+        currentUser.id,
+        organizationId
+      );
+      const competitorStatusDto = toCompetitorStatusDto(competitorStatus);
+
+      return {
+        status: 200 as const,
+        body: competitorStatusDto,
+      };
     });
   }
 
@@ -113,18 +116,17 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
-      try {
-        const competitorStatus = await this.athleteCompetitionStatus.create(
-          body,
-          currentUser.id,
-          organizationId
-        );
-        const competitorStatusDto =
-          CompetitorStatusMapper.toDto(competitorStatus);
-        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
-      } catch (error) {
-        return CompetitorStatusPresenter.presentError(error as Error);
-      }
+      const competitorStatus = await this.athleteCompetitionStatus.create(
+        body,
+        currentUser.id,
+        organizationId
+      );
+      const competitorStatusDto = toCompetitorStatusDto(competitorStatus);
+
+      return {
+        status: 201 as const,
+        body: competitorStatusDto,
+      };
     });
   }
 
@@ -144,19 +146,18 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
-      try {
-        const competitorStatus = await this.athleteCompetitionStatus.update(
-          params.id,
-          body,
-          currentUser.id,
-          organizationId
-        );
-        const competitorStatusDto =
-          CompetitorStatusMapper.toDto(competitorStatus);
-        return CompetitorStatusPresenter.presentOne(competitorStatusDto);
-      } catch (error) {
-        return CompetitorStatusPresenter.presentError(error as Error);
-      }
+      const competitorStatus = await this.athleteCompetitionStatus.update(
+        params.id,
+        body,
+        currentUser.id,
+        organizationId
+      );
+      const competitorStatusDto = toCompetitorStatusDto(competitorStatus);
+
+      return {
+        status: 200 as const,
+        body: competitorStatusDto,
+      };
     });
   }
 }
