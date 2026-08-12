@@ -11,7 +11,8 @@ import {
   IAthleteReadRepository,
 } from './ports/athlete.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
-import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
+import { IAthleteAccessPolicy } from './ports/athlete-access-policy.port';
+import { IOrganizationMembership } from './ports/organization-membership.port';
 import {
   AthleteNotFoundError,
   UserNotFoundError,
@@ -20,7 +21,6 @@ import {
   InvalidAthleteStateError,
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
-import { AthleteAccessPolicy } from './athlete-access.policy';
 
 /**
  * Athlete Profiles
@@ -34,8 +34,8 @@ export class AthleteProfiles implements IAthleteProfiles {
     private readonly athleteRepository: IAthleteRepository,
     private readonly athleteReadRepository: IAthleteReadRepository,
     private readonly userUseCases: IUserUseCases,
-    private readonly memberUseCases: IMemberUseCases,
-    private readonly athleteAccessPolicy: AthleteAccessPolicy
+    private readonly organizationMembership: IOrganizationMembership,
+    private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
@@ -53,11 +53,8 @@ export class AthleteProfiles implements IAthleteProfiles {
     organizationId: string
   ): Promise<string[]> {
     const [isUserCoach, athleteUserIds] = await Promise.all([
-      this.memberUseCases.isUserCoachInOrganization(
-        currentUserId,
-        organizationId
-      ),
-      this.memberUseCases.getAthleteUserIds(organizationId),
+      this.organizationMembership.isCoach(currentUserId, organizationId),
+      this.organizationMembership.listAthleteUserIds(organizationId),
     ]);
     const isUserAthlete = athleteUserIds.includes(currentUserId);
 
@@ -147,7 +144,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     organizationId: string
   ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds =
-      await this.memberUseCases.getAthleteUserIds(organizationId);
+      await this.organizationMembership.listAthleteUserIds(organizationId);
     const athletes =
       await this.athleteReadRepository.listDetailsByUserIds(athleteUserIds);
 

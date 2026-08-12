@@ -39,6 +39,8 @@ import { AthleteCompetitionStatus } from './application/athlete-competition-stat
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
 import { AthleteAccessPolicy } from './application/athlete-access.policy';
+import { OrganizationMembershipAdapter } from './infrastructure/organization-membership.adapter';
+import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exercise-catalog.adapter';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
 import { InvitationsModule } from '../invitations/invitations.module';
@@ -51,9 +53,21 @@ import {
   IMemberUseCases,
 } from '../auth/application/ports/member-use-cases.port';
 import {
-  EXERCISE_CATALOG,
-  IExerciseCatalog,
+  EXERCISE_CATALOG as TRAINING_EXERCISE_CATALOG,
+  IExerciseCatalog as ITrainingExerciseCatalog,
 } from '../training/application/ports/exercise-catalog.port';
+import {
+  ATHLETE_ACCESS_POLICY,
+  IAthleteAccessPolicy,
+} from './application/ports/athlete-access-policy.port';
+import {
+  IOrganizationMembership,
+  ORGANIZATION_MEMBERSHIP,
+} from './application/ports/organization-membership.port';
+import {
+  ATHLETE_EXERCISE_CATALOG,
+  IExerciseCatalog,
+} from './application/ports/exercise-catalog.port';
 
 @Module({
   imports: [
@@ -94,16 +108,26 @@ import {
     { provide: PERSONAL_RECORD_REPO, useClass: MikroPersonalRecordRepository },
 
     {
-      provide: AthleteAccessPolicy,
+      provide: ORGANIZATION_MEMBERSHIP,
       useFactory: (memberUseCases: IMemberUseCases) => {
-        return new AthleteAccessPolicy(memberUseCases);
+        return new OrganizationMembershipAdapter(memberUseCases);
       },
       inject: [MEMBER_USE_CASES],
     },
-
-    // Application services still registered directly
-    AthleteCompetitionStatus,
-    AthletePersonalRecords,
+    {
+      provide: ATHLETE_ACCESS_POLICY,
+      useFactory: (organizationMembership: IOrganizationMembership) => {
+        return new AthleteAccessPolicy(organizationMembership);
+      },
+      inject: [ORGANIZATION_MEMBERSHIP],
+    },
+    {
+      provide: ATHLETE_EXERCISE_CATALOG,
+      useFactory: (trainingExerciseCatalog: ITrainingExerciseCatalog) => {
+        return new TrainingExerciseCatalogAdapter(trainingExerciseCatalog);
+      },
+      inject: [TRAINING_EXERCISE_CATALOG],
+    },
 
     // Port to implementation bindings
     {
@@ -112,14 +136,14 @@ import {
         athleteRepo: IAthleteRepository,
         athleteReadRepo: IAthleteReadRepository,
         userUseCases: IUserUseCases,
-        memberUseCases: IMemberUseCases,
-        athleteAccessPolicy: AthleteAccessPolicy
+        organizationMembership: IOrganizationMembership,
+        athleteAccessPolicy: IAthleteAccessPolicy
       ) => {
         return new AthleteProfiles(
           athleteRepo,
           athleteReadRepo,
           userUseCases,
-          memberUseCases,
+          organizationMembership,
           athleteAccessPolicy
         );
       },
@@ -127,8 +151,8 @@ import {
         ATHLETE_REPO,
         ATHLETE_READ_REPO,
         USER_USE_CASES,
-        MEMBER_USE_CASES,
-        AthleteAccessPolicy,
+        ORGANIZATION_MEMBERSHIP,
+        ATHLETE_ACCESS_POLICY,
       ],
     },
     {
@@ -137,23 +161,23 @@ import {
         personalRecordRepo: IPersonalRecordRepository,
         athleteRepo: IAthleteRepository,
         exerciseCatalog: IExerciseCatalog,
-        memberUseCases: IMemberUseCases,
-        athleteAccessPolicy: AthleteAccessPolicy
+        organizationMembership: IOrganizationMembership,
+        athleteAccessPolicy: IAthleteAccessPolicy
       ) => {
         return new AthletePersonalRecords(
           personalRecordRepo,
           athleteRepo,
           exerciseCatalog,
-          memberUseCases,
+          organizationMembership,
           athleteAccessPolicy
         );
       },
       inject: [
         PERSONAL_RECORD_REPO,
         ATHLETE_REPO,
-        EXERCISE_CATALOG,
-        MEMBER_USE_CASES,
-        AthleteAccessPolicy,
+        ATHLETE_EXERCISE_CATALOG,
+        ORGANIZATION_MEMBERSHIP,
+        ATHLETE_ACCESS_POLICY,
       ],
     },
     {
@@ -161,21 +185,21 @@ import {
       useFactory: (
         competitorStatusRepo: ICompetitorStatusRepository,
         athleteRepo: IAthleteRepository,
-        memberUseCases: IMemberUseCases,
-        athleteAccessPolicy: AthleteAccessPolicy
+        organizationMembership: IOrganizationMembership,
+        athleteAccessPolicy: IAthleteAccessPolicy
       ) => {
         return new AthleteCompetitionStatus(
           competitorStatusRepo,
           athleteRepo,
-          memberUseCases,
+          organizationMembership,
           athleteAccessPolicy
         );
       },
       inject: [
         COMPETITOR_STATUS_REPO,
         ATHLETE_REPO,
-        MEMBER_USE_CASES,
-        AthleteAccessPolicy,
+        ORGANIZATION_MEMBERSHIP,
+        ATHLETE_ACCESS_POLICY,
       ],
     },
   ],

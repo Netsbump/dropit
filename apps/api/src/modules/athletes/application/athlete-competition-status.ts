@@ -7,8 +7,8 @@ import type { Athlete } from '../domain/athlete';
 import { IAthleteCompetitionStatus } from './ports/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/athlete.repository.port';
-import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
-import { AthleteAccessPolicy } from './athlete-access.policy';
+import { IAthleteAccessPolicy } from './ports/athlete-access-policy.port';
+import { IOrganizationMembership } from './ports/organization-membership.port';
 import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,
@@ -26,8 +26,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   constructor(
     private readonly competitorStatusRepository: ICompetitorStatusRepository,
     private readonly athleteRepository: IAthleteRepository,
-    private readonly memberUseCases: IMemberUseCases,
-    private readonly athleteAccessPolicy: AthleteAccessPolicy
+    private readonly organizationMembership: IOrganizationMembership,
+    private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
@@ -78,7 +78,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
 
   async findAll(organizationId: string): Promise<CompetitorStatus[]> {
     const athleteUserIds =
-      await this.memberUseCases.getAthleteUserIds(organizationId);
+      await this.organizationMembership.listAthleteUserIds(organizationId);
 
     if (athleteUserIds.length === 0) {
       throw new NoAthletesFoundException(

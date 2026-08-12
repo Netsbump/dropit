@@ -1,32 +1,28 @@
-import { IMemberUseCases } from '../../auth/application/ports/member-use-cases.port';
+import {
+  IAthleteAccessPolicy,
+  type AssertCanManageOwnAthleteParams,
+  type AssertCanViewAthleteParams,
+} from './ports/athlete-access-policy.port';
+import { IOrganizationMembership } from './ports/organization-membership.port';
 import {
   AthleteAccessDeniedError,
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
 
-type AssertCanViewAthleteParams = {
-  currentUserId: string;
-  organizationId: string;
-  athleteUserId: string;
-};
-
-type AssertCanManageOwnAthleteParams = {
-  currentUserId: string;
-  athleteUserId: string;
-};
-
-export class AthleteAccessPolicy {
-  constructor(private readonly memberUseCases: IMemberUseCases) {}
+export class AthleteAccessPolicy implements IAthleteAccessPolicy {
+  constructor(
+    private readonly organizationMembership: IOrganizationMembership
+  ) {}
 
   async assertCanViewAthlete(
     params: AssertCanViewAthleteParams
   ): Promise<void> {
     const [isCoach, isAthleteInOrganization] = await Promise.all([
-      this.memberUseCases.isUserCoachInOrganization(
+      this.organizationMembership.isCoach(
         params.currentUserId,
         params.organizationId
       ),
-      this.memberUseCases.isUserAthleteInOrganization(
+      this.organizationMembership.isAthlete(
         params.athleteUserId,
         params.organizationId
       ),
@@ -49,7 +45,7 @@ export class AthleteAccessPolicy {
     currentUserId: string,
     organizationId: string
   ): Promise<void> {
-    const isCoach = await this.memberUseCases.isUserCoachInOrganization(
+    const isCoach = await this.organizationMembership.isCoach(
       currentUserId,
       organizationId
     );
@@ -66,7 +62,7 @@ export class AthleteAccessPolicy {
     organizationId: string
   ): Promise<void> {
     const isAthleteInOrganization =
-      await this.memberUseCases.isUserAthleteInOrganization(
+      await this.organizationMembership.isAthlete(
         athleteUserId,
         organizationId
       );
