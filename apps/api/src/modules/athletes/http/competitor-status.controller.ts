@@ -58,7 +58,7 @@ export class CompetitorStatusController {
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
       const competitorStatuses =
-        await this.athleteCompetitionStatus.findAll(organizationId);
+        await this.athleteCompetitionStatus.listByOrganization(organizationId);
       const competitorStatusesDto =
         toCompetitorStatusDtoList(competitorStatuses);
 
@@ -85,11 +85,12 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
-      const competitorStatus = await this.athleteCompetitionStatus.findOne(
-        params.id,
-        currentUser.id,
-        organizationId
-      );
+      const competitorStatus =
+        await this.athleteCompetitionStatus.findActiveByAthleteId(
+          params.id,
+          currentUser.id,
+          organizationId
+        );
       const competitorStatusDto = toCompetitorStatusDto(competitorStatus);
 
       return {
@@ -116,7 +117,7 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
-      const competitorStatus = await this.athleteCompetitionStatus.create(
+      const competitorStatus = await this.athleteCompetitionStatus.change(
         body,
         currentUser.id,
         organizationId
@@ -146,7 +147,7 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
-      const competitorStatus = await this.athleteCompetitionStatus.update(
+      const competitorStatus = await this.athleteCompetitionStatus.amend(
         params.id,
         body,
         currentUser.id,

@@ -59,7 +59,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return personalRecord;
   }
 
-  async findAll(
+  async listAccessible(
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord[]> {
@@ -106,7 +106,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return personalRecords;
   }
 
-  async findOne(
+  async findById(
     id: string,
     currentUserId: string,
     organizationId: string
@@ -123,7 +123,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return personalRecord;
   }
 
-  async findAllByAthleteId(
+  async listByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -191,7 +191,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return summary;
   }
 
-  async create(
+  async record(
     data: CreatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
@@ -231,7 +231,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return await this.personalRecordRepository.save(personalRecord);
   }
 
-  async update(
+  async amend(
     id: string,
     data: UpdatePersonalRecordInput,
     currentUserId: string,
@@ -261,7 +261,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return await this.personalRecordRepository.save(personalRecordToUpdate);
   }
 
-  async delete(
+  async remove(
     id: string,
     currentUserId: string,
     organizationId: string

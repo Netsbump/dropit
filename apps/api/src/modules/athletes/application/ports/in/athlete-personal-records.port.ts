@@ -26,7 +26,7 @@ export interface IAthletePersonalRecords {
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  findAll(
+  listAccessible(
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord[]>;
@@ -38,7 +38,7 @@ export interface IAthletePersonalRecords {
    * @param organizationId - ID of the organization
    * @returns Personal record
    */
-  findOne(
+  findById(
     id: string,
     currentUserId: string,
     organizationId: string
@@ -51,7 +51,7 @@ export interface IAthletePersonalRecords {
    * @param organizationId - ID of the organization
    * @returns Array of personal records
    */
-  findAllByAthleteId(
+  listByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -77,7 +77,7 @@ export interface IAthletePersonalRecords {
    * @param organizationId - ID of the organization
    * @returns Created personal record
    */
-  create(
+  record(
     data: CreatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
@@ -91,7 +91,7 @@ export interface IAthletePersonalRecords {
    * @param organizationId - ID of the organization
    * @returns Updated personal record
    */
-  update(
+  amend(
     id: string,
     data: UpdatePersonalRecordInput,
     currentUserId: string,
@@ -104,7 +104,7 @@ export interface IAthletePersonalRecords {
    * @param currentUserId - ID of the current user
    * @param organizationId - ID of the organization
    */
-  delete(
+  remove(
     id: string,
     currentUserId: string,
     organizationId: string

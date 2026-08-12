@@ -62,7 +62,7 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecords>> {
     return tsRestHandler(c.getPersonalRecords, async () => {
-      const personalRecords = await this.athletePersonalRecords.findAll(
+      const personalRecords = await this.athletePersonalRecords.listAccessible(
         currentUser.id,
         organizationId
       );
@@ -91,7 +91,7 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
-      const personalRecord = await this.athletePersonalRecords.findOne(
+      const personalRecord = await this.athletePersonalRecords.findById(
         params.id,
         currentUser.id,
         organizationId
@@ -122,7 +122,7 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
       const personalRecords =
-        await this.athletePersonalRecords.findAllByAthleteId(
+        await this.athletePersonalRecords.listByAthleteId(
           params.id,
           currentUser.id,
           organizationId
@@ -187,7 +187,7 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
-      const personalRecord = await this.athletePersonalRecords.create(
+      const personalRecord = await this.athletePersonalRecords.record(
         body,
         currentUser.id,
         organizationId
@@ -217,7 +217,7 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
-      const personalRecord = await this.athletePersonalRecords.update(
+      const personalRecord = await this.athletePersonalRecords.amend(
         params.id,
         body,
         currentUser.id,
@@ -248,7 +248,7 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
-      await this.athletePersonalRecords.delete(
+      await this.athletePersonalRecords.remove(
         params.id,
         currentUser.id,
         organizationId

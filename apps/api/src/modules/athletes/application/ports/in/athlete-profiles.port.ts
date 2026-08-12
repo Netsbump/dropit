@@ -19,40 +19,43 @@ import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.
  */
 export interface IAthleteProfiles {
   /**
-   * Find one athlete by ID
+   * Find an accessible athlete profile by ID
    */
-  findOne(
+  findById(
     athleteId: string,
     currentUserId: string,
     organizationId: string
   ): Promise<Athlete>;
 
   /**
-   * Find one athlete with details (relations populated)
+   * Find accessible athlete profile details by ID
    */
-  findOneWithDetails(
+  findDetailsById(
     athleteId: string,
     currentUserId: string,
     organizationId: string
   ): Promise<AthleteDetailsReadModel>;
 
   /**
-   * Find all athletes in organization
+   * List athlete profiles accessible to the current user
    */
-  findAll(currentUserId: string, organizationId: string): Promise<Athlete[]>;
+  listAccessible(
+    currentUserId: string,
+    organizationId: string
+  ): Promise<Athlete[]>;
 
   /**
-   * Find all athletes with details in organization
+   * List athlete profile details accessible to the current user
    */
-  findAllWithDetails(
+  listAccessibleDetails(
     currentUserId: string,
     organizationId: string
   ): Promise<AthleteDetailsReadModel[]>;
 
   /**
-   * Find all athletes with details for a given organization (super admin)
+   * List athlete profile details for a given organization (super admin)
    */
-  findAllWithDetailsByOrganization(
+  listDetailsByOrganization(
     organizationId: string
   ): Promise<AthleteDetailsReadModel[]>;
 
@@ -62,23 +65,23 @@ export interface IAthleteProfiles {
   create(data: AthleteCreation): Promise<Athlete>;
 
   /**
-   * Update an existing athlete
+   * Update the current user's own athlete profile
    */
-  update(
+  updateOwn(
     idAthlete: string,
     data: AthleteUpdate,
     userId: string
   ): Promise<Athlete>;
 
   /**
-   * Delete an athlete
+   * Delete the current user's own athlete profile
    */
-  delete(idAthlete: string, userId: string): Promise<void>;
+  deleteOwn(idAthlete: string, userId: string): Promise<void>;
 
   /**
-   * Get the athlete ID for a given user, null if no athlete profile exists
+   * Find the athlete profile ID for a given user, null if no athlete profile exists
    */
-  getAthleteId(userId: string): Promise<string | null>;
+  findIdByUserId(userId: string): Promise<string | null>;
 }
 
 /**

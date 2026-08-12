@@ -20,12 +20,12 @@ export interface IAthleteCompetitionStatus {
   /**
    * Find all competitor statuses in organization
    */
-  findAll(organizationId: string): Promise<CompetitorStatus[]>;
+  listByOrganization(organizationId: string): Promise<CompetitorStatus[]>;
 
   /**
    * Find one competitor status by athlete ID
    */
-  findOne(
+  findActiveByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -34,7 +34,7 @@ export interface IAthleteCompetitionStatus {
   /**
    * Create a new competitor status
    */
-  create(
+  change(
     data: CreateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string
@@ -43,7 +43,7 @@ export interface IAthleteCompetitionStatus {
   /**
    * Update an existing competitor status
    */
-  update(
+  amend(
     id: string,
     data: UpdateCompetitorStatusInput,
     currentUserId: string,

@@ -83,7 +83,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     throw error;
   }
 
-  async findOne(
+  async findById(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -99,7 +99,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     return athlete;
   }
 
-  async findOneWithDetails(
+  async findDetailsById(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -122,7 +122,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     return athleteWithDetails;
   }
 
-  async findAllWithDetails(
+  async listAccessibleDetails(
     currentUserId: string,
     organizationId: string
   ): Promise<AthleteDetailsReadModel[]> {
@@ -140,7 +140,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     return athletes;
   }
 
-  async findAllWithDetailsByOrganization(
+  async listDetailsByOrganization(
     organizationId: string
   ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds =
@@ -155,7 +155,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     return athletes;
   }
 
-  async findAll(
+  async listAccessible(
     currentUserId: string,
     organizationId: string
   ): Promise<Athlete[]> {
@@ -198,7 +198,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     }
   }
 
-  async update(
+  async updateOwn(
     idAthlete: string,
     data: AthleteUpdate,
     userId: string
@@ -227,12 +227,12 @@ export class AthleteProfiles implements IAthleteProfiles {
     }
   }
 
-  async getAthleteId(userId: string): Promise<string | null> {
+  async findIdByUserId(userId: string): Promise<string | null> {
     const athlete = await this.athleteRepository.findByUserId(userId);
     return athlete?.id ?? null;
   }
 
-  async delete(idAthlete: string, userId: string): Promise<void> {
+  async deleteOwn(idAthlete: string, userId: string): Promise<void> {
     const athlete = await this.getAthleteOrThrow(idAthlete);
 
     this.athleteAccessPolicy.assertCanManageOwnAthlete({

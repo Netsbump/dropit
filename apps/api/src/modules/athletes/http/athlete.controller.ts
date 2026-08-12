@@ -97,7 +97,7 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
-      const athletes = await this.athleteProfiles.findAllWithDetails(
+      const athletes = await this.athleteProfiles.listAccessibleDetails(
         user.id,
         organizationId
       );
@@ -122,10 +122,9 @@ export class AthleteController {
         return { status: 403, body: { message: 'Forbidden' } };
       }
 
-      const athletes =
-        await this.athleteProfiles.findAllWithDetailsByOrganization(
-          params.organizationId
-        );
+      const athletes = await this.athleteProfiles.listDetailsByOrganization(
+        params.organizationId
+      );
 
       const athletesDto = toAthleteDetailsDtoList(athletes).map((athlete) => ({
         id: athlete.id,
@@ -157,7 +156,7 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
-      const athlete = await this.athleteProfiles.findOneWithDetails(
+      const athlete = await this.athleteProfiles.findDetailsById(
         params.id,
         user.id,
         organizationId
@@ -221,7 +220,7 @@ export class AthleteController {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       const athleteUpdate = toAthleteUpdate(body);
 
-      const athlete = await this.athleteProfiles.update(
+      const athlete = await this.athleteProfiles.updateOwn(
         params.id,
         athleteUpdate,
         user.id
@@ -251,7 +250,7 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
-      await this.athleteProfiles.delete(params.id, user.id);
+      await this.athleteProfiles.deleteOwn(params.id, user.id);
 
       return {
         status: 200 as const,

@@ -76,7 +76,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     await this.competitorStatusRepository.save(closedCompetitorStatus);
   }
 
-  async findAll(organizationId: string): Promise<CompetitorStatus[]> {
+  async listByOrganization(organizationId: string): Promise<CompetitorStatus[]> {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
 
@@ -100,7 +100,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return competitorStatuses;
   }
 
-  async findOne(
+  async findActiveByAthleteId(
     athleteId: string,
     currentUserId: string,
     organizationId: string
@@ -125,7 +125,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return competitorStatus;
   }
 
-  async create(
+  async change(
     data: CreateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string
@@ -154,7 +154,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return await this.competitorStatusRepository.save(competitorStatusToCreate);
   }
 
-  async update(
+  async amend(
     id: string,
     data: UpdateCompetitorStatusInput,
     currentUserId: string,
