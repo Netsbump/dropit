@@ -4,19 +4,19 @@ import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
 import {
   IAthletePersonalRecords,
   ATHLETE_PERSONAL_RECORDS,
-} from '../../application/ports/athlete-personal-records.port';
-import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+} from '../application/ports/athlete-personal-records.port';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
 import {
   AuthenticatedUser,
   CurrentUser,
-} from '../../../auth/infrastructure/decorators/auth.decorator';
-import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+} from '../../auth/infrastructure/decorators/auth.decorator';
+import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toPersonalRecordDto,
   toPersonalRecordDtoList,
-} from '../mappers/personal-record.mapper';
+} from './mappers/personal-record.mapper';
 
 const c = personalRecordContract;
 

@@ -1,22 +1,22 @@
 import { competitorStatusContract } from '@dropit/contract';
 import { Controller, UseFilters, UseGuards, Inject } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
+import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
 import {
   AuthenticatedUser,
   CurrentUser,
-} from '../../../auth/infrastructure/decorators/auth.decorator';
+} from '../../auth/infrastructure/decorators/auth.decorator';
 import {
   IAthleteCompetitionStatus,
   ATHLETE_COMPETITION_STATUS,
-} from '../../application/ports/athlete-competition-status.port';
-import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+} from '../application/ports/athlete-competition-status.port';
+import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toCompetitorStatusDto,
   toCompetitorStatusDtoList,
-} from '../mappers/competitor-status.mapper';
+} from './mappers/competitor-status.mapper';
 
 const c = competitorStatusContract;
 

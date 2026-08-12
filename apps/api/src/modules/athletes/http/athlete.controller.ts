@@ -1,32 +1,32 @@
 import { athleteContract } from '@dropit/contract';
 import { Controller, Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../../auth/infrastructure/guards/permissions.guard';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
 import {
   NoOrganization,
   RequirePermissions,
-} from '../../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../../auth/infrastructure/decorators/organization.decorator';
+} from '../../auth/infrastructure/decorators/permissions.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
 import {
   AuthenticatedUser,
   CurrentUser,
-} from '../../../auth/infrastructure/decorators/auth.decorator';
+} from '../../auth/infrastructure/decorators/auth.decorator';
 import {
   IAthleteProfiles,
   ATHLETE_PROFILES,
-} from '../../application/ports/athlete-profiles.port';
+} from '../application/ports/athlete-profiles.port';
 import {
   IInvitationUseCases,
   INVITATION_USE_CASES,
-} from '../../../invitations/application/ports/invitation-use-cases.port';
-import { AthleteExceptionFilter } from '../filters/athlete-exception.filter';
+} from '../../invitations/application/ports/invitation-use-cases.port';
+import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toAthleteCreation,
   toAthleteDetailsDto,
   toAthleteDetailsDtoList,
   toAthleteDto,
   toAthleteUpdate,
-} from '../mappers/athlete.mapper';
+} from './mappers/athlete.mapper';
 
 const c = athleteContract;
 

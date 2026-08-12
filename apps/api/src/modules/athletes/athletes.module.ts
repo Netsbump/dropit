@@ -32,9 +32,9 @@ import { MikroCompetitorStatusRepository } from './infrastructure/mikro-competit
 import { MikroPersonalRecordRepository } from './infrastructure/mikro-personal-record.repository';
 
 // Controllers & application services
-import { AthleteController } from './http/controllers/athlete.controller';
-import { CompetitorStatusController } from './http/controllers/competitor-status.controller';
-import { PersonalRecordController } from './http/controllers/personal-record.controller';
+import { AthleteController } from './http/athlete.controller';
+import { CompetitorStatusController } from './http/competitor-status.controller';
+import { PersonalRecordController } from './http/personal-record.controller';
 import { AthleteCompetitionStatus } from './application/athlete-competition-status';
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';

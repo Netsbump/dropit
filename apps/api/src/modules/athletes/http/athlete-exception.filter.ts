@@ -7,9 +7,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { AthleteApplicationError } from '../../application/errors/athlete.errors';
-import { CompetitorStatusException } from '../../application/errors/competitor-status.exceptions';
-import { PersonalRecordException } from '../../application/errors/personal-record.exceptions';
+import { AthleteApplicationError } from '../application/errors/athlete.errors';
+import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
+import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
 
 type HttpErrorResponse = {
   statusCode: number;
