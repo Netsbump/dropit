@@ -38,7 +38,7 @@ import { AthleteCompetitionStatus } from './application/athlete-competition-stat
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
 import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
-import { OrganizationMembershipAdapter } from './infrastructure/auth-organization-membership.adapter';
+import { AuthOrganizationMembershipAdapter } from './infrastructure/auth-organization-membership.adapter';
 import { AuthAthleteUserProfileAdapter } from './infrastructure/auth-athlete-user-profile.adapter';
 import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exercise-catalog.adapter';
 import { AuthModule } from '../auth/auth.module';
@@ -114,7 +114,7 @@ import {
     {
       provide: ORGANIZATION_MEMBERSHIP,
       useFactory: (memberUseCases: IMemberUseCases) => {
-        return new OrganizationMembershipAdapter(memberUseCases);
+        return new AuthOrganizationMembershipAdapter(memberUseCases);
       },
       inject: [MEMBER_USE_CASES],
     },

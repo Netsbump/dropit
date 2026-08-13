@@ -51,7 +51,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
 
   private async closeCurrentStatusIfExists(athleteId: string): Promise<void> {
     const currentCompetitorStatus =
-      await this.competitorStatusRepository.findByAthleteId(athleteId);
+      await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
 
     if (!currentCompetitorStatus) {
       return;
@@ -109,7 +109,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     });
 
     const competitorStatus =
-      await this.competitorStatusRepository.findByAthleteId(athleteId);
+      await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
 
     if (!competitorStatus) {
       throw new CompetitorStatusNotFoundException(

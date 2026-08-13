@@ -19,14 +19,16 @@ export class MikroCompetitorStatusRepository
   }
 
   async findById(id: string): Promise<CompetitorStatus | null> {
-    const competitorStatusEntity = await this.findStatusById(id);
+    const competitorStatusEntity = await this.findCompetitorStatusById(id);
 
     return competitorStatusEntity
       ? toCompetitorStatusDomain(competitorStatusEntity)
       : null;
   }
 
-  async findByAthleteId(athleteId: string): Promise<CompetitorStatus | null> {
+  async findActiveByAthleteId(
+    athleteId: string
+  ): Promise<CompetitorStatus | null> {
     const competitorStatusEntity = await this.em.findOne(
       CompetitorStatusEntity,
       { athlete: { id: athleteId }, endDate: null },
@@ -76,7 +78,7 @@ export class MikroCompetitorStatusRepository
 
     await this.em.persistAndFlush(competitorStatusEntity);
 
-    const savedCompetitorStatusEntity = await this.findStatusById(
+    const savedCompetitorStatusEntity = await this.findCompetitorStatusById(
       competitorStatusEntity.id
     );
 
@@ -100,7 +102,7 @@ export class MikroCompetitorStatusRepository
     await this.em.removeAndFlush(competitorStatusEntity);
   }
 
-  private async findStatusById(
+  private async findCompetitorStatusById(
     id: string
   ): Promise<CompetitorStatusEntity | null> {
     return await this.em.findOne(
