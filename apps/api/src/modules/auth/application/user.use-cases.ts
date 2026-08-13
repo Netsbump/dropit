@@ -2,19 +2,12 @@ import { User } from '../domain/auth/user.entity';
 import { IUserRepository } from './ports/user.repository.port';
 import { IUserUseCases } from './ports/user-use-cases.port';
 
-/**
- * User Use Cases Implementation
- *
- * @description
- * Framework-agnostic implementation of user business logic.
- * No NestJS dependencies - pure TypeScript.
- *
- * @remarks
- * Dependencies are injected via constructor following dependency inversion principle.
- * All dependencies are interfaces (ports), not concrete implementations.
- */
 export class UserUseCases implements IUserUseCases {
   constructor(private readonly userRepository: IUserRepository) {}
+
+  async findById(userId: string): Promise<User | null> {
+    return await this.userRepository.getOne(userId);
+  }
 
   async getOne(userId: string): Promise<User> {
     const user = await this.userRepository.getOne(userId);

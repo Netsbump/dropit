@@ -19,13 +19,6 @@ import {
   NoPersonalRecordsFoundException,
 } from './errors/personal-record.exceptions';
 
-/**
- * Athlete Personal Records
- *
- * @remarks
- * Dependencies are injected via constructor following dependency inversion principle.
- * All dependencies are interfaces (ports), not concrete implementations.
- */
 export class AthletePersonalRecords implements IAthletePersonalRecords {
   constructor(
     private readonly personalRecordRepository: IPersonalRecordRepository,

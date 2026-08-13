@@ -30,6 +30,10 @@ export class MikroPersonalRecordRepository
   async listByAthleteUserIds(
     athleteUserIds: string[]
   ): Promise<PersonalRecord[]> {
+    if (athleteUserIds.length === 0) {
+      return [];
+    }
+
     const personalRecordEntities = await this.em.find(
       PersonalRecordEntity,
       { athlete: { user: { id: { $in: athleteUserIds } } } },

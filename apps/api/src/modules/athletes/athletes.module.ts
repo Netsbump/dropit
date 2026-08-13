@@ -25,7 +25,6 @@ import {
 import { ATHLETE_PROFILES } from './application/ports/in/athlete-profiles.port';
 import { ATHLETE_PERSONAL_RECORDS } from './application/ports/in/athlete-personal-records.port';
 import { ATHLETE_COMPETITION_STATUS } from './application/ports/in/athlete-competition-status.port';
-
 // MikroORM implementations
 import { MikroAthleteRepository } from './infrastructure/mikro-athlete.repository';
 import { MikroCompetitorStatusRepository } from './infrastructure/mikro-competitor-status.repository';
@@ -39,7 +38,8 @@ import { AthleteCompetitionStatus } from './application/athlete-competition-stat
 import { AthleteProfiles } from './application/athlete-profiles';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
 import { AthleteAccessPolicy } from './application/policies/athlete-access.policy';
-import { OrganizationMembershipAdapter } from './infrastructure/organization-membership.adapter';
+import { OrganizationMembershipAdapter } from './infrastructure/auth-organization-membership.adapter';
+import { AuthAthleteUserProfileAdapter } from './infrastructure/auth-athlete-user-profile.adapter';
 import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exercise-catalog.adapter';
 import { AuthModule } from '../auth/auth.module';
 import { TrainingModule } from '../training/training.module';
@@ -68,6 +68,10 @@ import {
   ATHLETE_EXERCISE_CATALOG,
   IExerciseCatalog,
 } from './application/ports/out/exercise-catalog.port';
+import {
+  IAthleteUserProfile,
+  ATHLETE_USER_PROFILE,
+} from './application/ports/out/athlete-user-profile.port';
 
 @Module({
   imports: [
@@ -128,6 +132,13 @@ import {
       },
       inject: [TRAINING_EXERCISE_CATALOG],
     },
+    {
+      provide: ATHLETE_USER_PROFILE,
+      useFactory: (userUseCases: IUserUseCases) => {
+        return new AuthAthleteUserProfileAdapter(userUseCases);
+      },
+      inject: [USER_USE_CASES],
+    },
 
     // Port to implementation bindings
     {
@@ -135,14 +146,14 @@ import {
       useFactory: (
         athleteRepo: IAthleteRepository,
         athleteReadRepo: IAthleteReadRepository,
-        userUseCases: IUserUseCases,
+        athleteUserProfile: IAthleteUserProfile,
         organizationMembership: IOrganizationMembership,
         athleteAccessPolicy: IAthleteAccessPolicy
       ) => {
         return new AthleteProfiles(
           athleteRepo,
           athleteReadRepo,
-          userUseCases,
+          athleteUserProfile,
           organizationMembership,
           athleteAccessPolicy
         );
@@ -150,7 +161,7 @@ import {
       inject: [
         ATHLETE_REPO,
         ATHLETE_READ_REPO,
-        USER_USE_CASES,
+        ATHLETE_USER_PROFILE,
         ORGANIZATION_MEMBERSHIP,
         ATHLETE_ACCESS_POLICY,
       ],

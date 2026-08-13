@@ -4,18 +4,6 @@ import {
 } from '@dropit/schemas';
 import type { CompetitorStatus } from '../../../domain/competitor-status';
 
-/**
- * Athlete Competition Status Port
- *
- * @description
- * Defines the contract for competitor status business operations.
- * This interface ensures the application layer remains independent
- * from any framework (NestJS, Express, etc.)
- *
- * @remarks
- * Following hexagonal architecture, this port is implemented by
- * AthleteCompetitionStatus and injected into controllers via dependency injection.
- */
 export interface IAthleteCompetitionStatus {
   /**
    * Find all competitor statuses in organization

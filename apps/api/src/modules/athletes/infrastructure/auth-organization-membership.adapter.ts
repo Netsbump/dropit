@@ -19,6 +19,6 @@ export class OrganizationMembershipAdapter implements IOrganizationMembership {
   }
 
   async listAthleteUserIds(organizationId: string): Promise<string[]> {
-    return await this.memberUseCases.getAthleteUserIds(organizationId);
+    return await this.memberUseCases.listAthleteUserIds(organizationId);
   }
 }

@@ -121,12 +121,11 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
-      const personalRecords =
-        await this.athletePersonalRecords.listByAthleteId(
-          params.id,
-          currentUser.id,
-          organizationId
-        );
+      const personalRecords = await this.athletePersonalRecords.listByAthleteId(
+        params.id,
+        currentUser.id,
+        organizationId
+      );
       const personalRecordsDto = toPersonalRecordDtoList(personalRecords);
 
       return {

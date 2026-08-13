@@ -120,6 +120,10 @@ export class MikroAthleteRepository
   async listDetailsByUserIds(
     athleteUserIds: string[]
   ): Promise<AthleteDetailsReadModel[]> {
+    if (athleteUserIds.length === 0) {
+      return [];
+    }
+
     // Get raw results (table format, non-hydrated) via execute('all')
     const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute(
       'all'
@@ -160,6 +164,10 @@ export class MikroAthleteRepository
   }
 
   async listByIds(athleteIds: string[]): Promise<Athlete[]> {
+    if (athleteIds.length === 0) {
+      return [];
+    }
+
     const athleteEntities = await this.em.find(
       AthleteEntity,
       { id: { $in: athleteIds } },
@@ -170,6 +178,10 @@ export class MikroAthleteRepository
   }
 
   async listByUserIds(athleteUserIds: string[]): Promise<Athlete[]> {
+    if (athleteUserIds.length === 0) {
+      return [];
+    }
+
     const athleteEntities = await this.em.find(
       AthleteEntity,
       { user: { id: { $in: athleteUserIds } } },

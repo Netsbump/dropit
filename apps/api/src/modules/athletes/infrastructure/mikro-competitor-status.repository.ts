@@ -41,6 +41,10 @@ export class MikroCompetitorStatusRepository
   async listByAthleteUserIds(
     athleteUserIds: string[]
   ): Promise<CompetitorStatus[]> {
+    if (athleteUserIds.length === 0) {
+      return [];
+    }
+
     const competitorStatusEntities = await this.em.find(
       CompetitorStatusEntity,
       {

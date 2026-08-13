@@ -15,13 +15,6 @@ import {
   AthleteNotFoundException,
 } from './errors/competitor-status.exceptions';
 
-/**
- * Athlete Competition Status
- *
- * @remarks
- * Dependencies are injected via constructor following dependency inversion principle.
- * All dependencies are interfaces (ports), not concrete implementations.
- */
 export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   constructor(
     private readonly competitorStatusRepository: ICompetitorStatusRepository,
@@ -76,7 +69,9 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     await this.competitorStatusRepository.save(closedCompetitorStatus);
   }
 
-  async listByOrganization(organizationId: string): Promise<CompetitorStatus[]> {
+  async listByOrganization(
+    organizationId: string
+  ): Promise<CompetitorStatus[]> {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
 

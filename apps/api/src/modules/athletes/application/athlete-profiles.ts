@@ -10,7 +10,6 @@ import {
   IAthleteRepository,
   IAthleteReadRepository,
 } from './ports/out/athlete.repository.port';
-import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
 import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
 import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
@@ -21,19 +20,13 @@ import {
   InvalidAthleteStateError,
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
+import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
 
-/**
- * Athlete Profiles
- *
- * @remarks
- * Dependencies are injected via constructor following dependency inversion principle.
- * All dependencies are interfaces (ports), not concrete implementations.
- */
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
     private readonly athleteRepository: IAthleteRepository,
     private readonly athleteReadRepository: IAthleteReadRepository,
-    private readonly userUseCases: IUserUseCases,
+    private readonly athleteUserProfile: IAthleteUserProfile,
     private readonly organizationMembership: IOrganizationMembership,
     private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
@@ -173,17 +166,17 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async create(data: AthleteCreation): Promise<Athlete> {
-    const user = await this.userUseCases.getOne(data.userId);
+    const userProfile = await this.athleteUserProfile.exists(data.userId);
 
-    if (!user) {
+    if (!userProfile) {
       throw new UserNotFoundError('User not found');
     }
 
-    const existingAthlete = await this.athleteRepository.findByUserId(
+    const athleteProfile = await this.athleteRepository.findByUserId(
       data.userId
     );
 
-    if (existingAthlete) {
+    if (athleteProfile) {
       throw new AthleteAlreadyExistsError(
         'User already has an athlete profile'
       );
