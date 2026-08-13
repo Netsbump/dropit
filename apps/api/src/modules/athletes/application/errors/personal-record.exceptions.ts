@@ -26,6 +26,12 @@ export class ExerciseNotFoundException extends PersonalRecordException {
   }
 }
 
+export class InvalidPersonalRecordException extends PersonalRecordException {
+  constructor(message = 'Invalid personal record') {
+    super(message, 400);
+  }
+}
+
 export class NoAthletesFoundException extends PersonalRecordException {
   constructor(message = 'No athletes found') {
     super(message, 404);

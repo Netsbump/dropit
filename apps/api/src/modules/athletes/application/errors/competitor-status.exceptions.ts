@@ -20,6 +20,12 @@ export class AthleteNotFoundException extends CompetitorStatusException {
   }
 }
 
+export class InvalidCompetitorStatusException extends CompetitorStatusException {
+  constructor(message = 'Invalid competitor status') {
+    super(message, 400);
+  }
+}
+
 export class NoAthletesFoundException extends CompetitorStatusException {
   constructor(message = 'No athletes found in the organization') {
     super(message, 404);

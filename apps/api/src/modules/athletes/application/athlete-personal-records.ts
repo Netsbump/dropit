@@ -3,7 +3,10 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
-import { PersonalRecord } from '../domain/personal-record';
+import {
+  PersonalRecord,
+  PersonalRecordDomainError,
+} from '../domain/personal-record';
 import type { Athlete } from '../domain/athlete';
 import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -15,6 +18,7 @@ import {
   PersonalRecordNotFoundException,
   AthleteNotFoundException,
   ExerciseNotFoundException,
+  InvalidPersonalRecordException,
   NoAthletesFoundException,
   NoPersonalRecordsFoundException,
 } from './errors/personal-record.exceptions';
@@ -50,6 +54,14 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     }
 
     return personalRecord;
+  }
+
+  private toInvalidPersonalRecordError(error: unknown): never {
+    if (error instanceof PersonalRecordDomainError) {
+      throw new InvalidPersonalRecordException(error.message);
+    }
+
+    throw error;
   }
 
   async listAccessible(
@@ -211,17 +223,21 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       );
     }
 
-    const personalRecord = new PersonalRecord({
-      athleteId: data.athleteId,
-      exercise: {
-        id: exercise.id,
-        name: exercise.name,
-      },
-      weight: data.weight,
-      date: data.date ?? new Date(),
-    });
+    try {
+      const personalRecord = new PersonalRecord({
+        athleteId: data.athleteId,
+        exercise: {
+          id: exercise.id,
+          name: exercise.name,
+        },
+        weight: data.weight,
+        date: data.date ?? new Date(),
+      });
 
-    return await this.personalRecordRepository.save(personalRecord);
+      return await this.personalRecordRepository.save(personalRecord);
+    } catch (error) {
+      this.toInvalidPersonalRecordError(error);
+    }
   }
 
   async amend(
@@ -243,15 +259,19 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    const personalRecordToUpdate = new PersonalRecord({
-      id: personalRecord.id,
-      athleteId: personalRecord.athleteId,
-      exercise: personalRecord.exercise,
-      weight: data.weight ?? personalRecord.weight,
-      date: data.date ?? personalRecord.date,
-    });
+    try {
+      const personalRecordToUpdate = new PersonalRecord({
+        id: personalRecord.id,
+        athleteId: personalRecord.athleteId,
+        exercise: personalRecord.exercise,
+        weight: data.weight ?? personalRecord.weight,
+        date: data.date ?? personalRecord.date,
+      });
 
-    return await this.personalRecordRepository.save(personalRecordToUpdate);
+      return await this.personalRecordRepository.save(personalRecordToUpdate);
+    } catch (error) {
+      this.toInvalidPersonalRecordError(error);
+    }
   }
 
   async remove(

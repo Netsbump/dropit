@@ -2,7 +2,10 @@ import {
   CreateCompetitorStatusInput,
   UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
-import { CompetitorStatus } from '../domain/competitor-status';
+import {
+  CompetitorStatus,
+  CompetitorStatusDomainError,
+} from '../domain/competitor-status';
 import type { Athlete } from '../domain/athlete';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
@@ -13,6 +16,7 @@ import {
   NoAthletesFoundException,
   CompetitorStatusNotFoundException,
   AthleteNotFoundException,
+  InvalidCompetitorStatusException,
 } from './errors/competitor-status.exceptions';
 
 export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
@@ -49,6 +53,14 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return competitorStatus;
   }
 
+  private toInvalidCompetitorStatusError(error: unknown): never {
+    if (error instanceof CompetitorStatusDomainError) {
+      throw new InvalidCompetitorStatusException(error.message);
+    }
+
+    throw error;
+  }
+
   private async closeCurrentStatusIfExists(athleteId: string): Promise<void> {
     const currentCompetitorStatus =
       await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
@@ -57,16 +69,20 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       return;
     }
 
-    const closedCompetitorStatus = new CompetitorStatus({
-      id: currentCompetitorStatus.id,
-      athleteId: currentCompetitorStatus.athleteId,
-      level: currentCompetitorStatus.level,
-      sexCategory: currentCompetitorStatus.sexCategory,
-      weightCategory: currentCompetitorStatus.weightCategory,
-      endDate: new Date(),
-    });
+    try {
+      const closedCompetitorStatus = new CompetitorStatus({
+        id: currentCompetitorStatus.id,
+        athleteId: currentCompetitorStatus.athleteId,
+        level: currentCompetitorStatus.level,
+        sexCategory: currentCompetitorStatus.sexCategory,
+        weightCategory: currentCompetitorStatus.weightCategory,
+        endDate: new Date(),
+      });
 
-    await this.competitorStatusRepository.save(closedCompetitorStatus);
+      await this.competitorStatusRepository.save(closedCompetitorStatus);
+    } catch (error) {
+      this.toInvalidCompetitorStatusError(error);
+    }
   }
 
   async listByOrganization(
@@ -139,14 +155,20 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
 
     await this.closeCurrentStatusIfExists(data.athleteId);
 
-    const competitorStatusToCreate = new CompetitorStatus({
-      athleteId: data.athleteId,
-      level: data.level,
-      sexCategory: data.sexCategory,
-      weightCategory: data.weightCategory,
-    });
+    try {
+      const competitorStatusToCreate = new CompetitorStatus({
+        athleteId: data.athleteId,
+        level: data.level,
+        sexCategory: data.sexCategory,
+        weightCategory: data.weightCategory,
+      });
 
-    return await this.competitorStatusRepository.save(competitorStatusToCreate);
+      return await this.competitorStatusRepository.save(
+        competitorStatusToCreate
+      );
+    } catch (error) {
+      this.toInvalidCompetitorStatusError(error);
+    }
   }
 
   async amend(
@@ -170,18 +192,24 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    const updatedCompetitorStatus = new CompetitorStatus({
-      id: competitorStatusToUpdate.id,
-      athleteId: competitorStatusToUpdate.athleteId,
-      level: data.level ?? competitorStatusToUpdate.level,
-      sexCategory: data.sexCategory ?? competitorStatusToUpdate.sexCategory,
-      weightCategory:
-        data.weightCategory !== undefined
-          ? data.weightCategory
-          : competitorStatusToUpdate.weightCategory,
-      endDate: competitorStatusToUpdate.endDate,
-    });
+    try {
+      const updatedCompetitorStatus = new CompetitorStatus({
+        id: competitorStatusToUpdate.id,
+        athleteId: competitorStatusToUpdate.athleteId,
+        level: data.level ?? competitorStatusToUpdate.level,
+        sexCategory: data.sexCategory ?? competitorStatusToUpdate.sexCategory,
+        weightCategory:
+          data.weightCategory !== undefined
+            ? data.weightCategory
+            : competitorStatusToUpdate.weightCategory,
+        endDate: competitorStatusToUpdate.endDate,
+      });
 
-    return await this.competitorStatusRepository.save(updatedCompetitorStatus);
+      return await this.competitorStatusRepository.save(
+        updatedCompetitorStatus
+      );
+    } catch (error) {
+      this.toInvalidCompetitorStatusError(error);
+    }
   }
 }
