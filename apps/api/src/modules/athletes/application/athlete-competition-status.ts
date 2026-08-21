@@ -7,6 +7,7 @@ import {
   CompetitorStatusDomainError,
 } from '../domain/competitor-status';
 import type { Athlete } from '../domain/athlete';
+import { AthleteId } from '../domain/athlete-id';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -28,7 +29,9 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
-    const athlete = await this.athleteRepository.findById(athleteId);
+    const athlete = await this.athleteRepository.findById(
+      new AthleteId(athleteId)
+    );
 
     if (!athlete) {
       throw new AthleteNotFoundException(

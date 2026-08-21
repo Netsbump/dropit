@@ -27,6 +27,7 @@ import {
   toAthleteDto,
   toAthleteUpdate,
 } from './mappers/athlete.mapper';
+import { AthleteId } from '../domain/athlete-id';
 
 const c = athleteContract;
 
@@ -156,8 +157,9 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
+
       const athlete = await this.athleteProfiles.findDetailsById(
-        params.id,
+        new AthleteId(params.id),
         user.id,
         organizationId
       );
@@ -218,10 +220,11 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
+
       const athleteUpdate = toAthleteUpdate(body);
 
       const athlete = await this.athleteProfiles.updateOwn(
-        params.id,
+        new AthleteId(params.id),
         athleteUpdate,
         user.id
       );
@@ -250,7 +253,8 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
-      await this.athleteProfiles.deleteOwn(params.id, user.id);
+
+      await this.athleteProfiles.deleteOwn(new AthleteId(params.id), user.id);
 
       return {
         status: 200 as const,

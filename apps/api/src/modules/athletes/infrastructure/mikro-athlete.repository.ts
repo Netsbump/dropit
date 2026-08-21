@@ -20,6 +20,7 @@ import {
   toAthleteDetailsReadModel,
   toAthleteDetailsReadModelList,
 } from './mappers/athlete-details-read-model.mapper';
+import type { AthleteId } from '../domain/athlete-id';
 
 @Injectable()
 export class MikroAthleteRepository
@@ -143,10 +144,10 @@ export class MikroAthleteRepository
     return athlete ? toAthleteDetailsReadModel(athlete) : null;
   }
 
-  async findById(athleteId: string): Promise<Athlete | null> {
+  async findById(athleteId: AthleteId): Promise<Athlete | null> {
     const athleteEntity = await this.em.findOne(
       AthleteEntity,
-      { id: athleteId },
+      { id: athleteId.value },
       { populate: ['user.id'] }
     );
 
@@ -193,7 +194,7 @@ export class MikroAthleteRepository
 
   async save(athlete: Athlete): Promise<Athlete> {
     const athleteEntity = athlete.id
-      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id })
+      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id.value })
       : toAthleteEntity(athlete);
 
     athleteEntity.firstName = athlete.firstName;
@@ -212,7 +213,7 @@ export class MikroAthleteRepository
       throw new Error('Cannot remove athlete without id');
     }
 
-    const entity = this.em.getReference(AthleteEntity, athlete.id);
+    const entity = this.em.getReference(AthleteEntity, athlete.id.value);
 
     return await this.em.removeAndFlush(entity);
   }

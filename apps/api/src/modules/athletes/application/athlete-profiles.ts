@@ -21,6 +21,7 @@ import {
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
 import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
+import type { AthleteId } from '../domain/athlete-id';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -31,11 +32,13 @@ export class AthleteProfiles implements IAthleteProfiles {
     private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
 
-  private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
+  private async getAthleteOrThrow(athleteId: AthleteId): Promise<Athlete> {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new AthleteNotFoundError(`Athlete with ID ${athleteId} not found`);
+      throw new AthleteNotFoundError(
+        `Athlete with ID ${athleteId} not found`
+      );
     }
 
     return athlete;
@@ -77,7 +80,7 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async findById(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<Athlete> {
@@ -93,7 +96,7 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async findDetailsById(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<AthleteDetailsReadModel> {
@@ -192,11 +195,11 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async updateOwn(
-    idAthlete: string,
+    athleteId: AthleteId,
     data: AthleteUpdate,
     userId: string
   ): Promise<Athlete> {
-    const athlete = await this.getAthleteOrThrow(idAthlete);
+    const athlete = await this.getAthleteOrThrow(athleteId);
 
     this.athleteAccessPolicy.assertCanManageOwnAthlete({
       currentUserId: userId,
@@ -222,11 +225,11 @@ export class AthleteProfiles implements IAthleteProfiles {
 
   async findIdByUserId(userId: string): Promise<string | null> {
     const athlete = await this.athleteRepository.findByUserId(userId);
-    return athlete?.id ?? null;
+    return athlete?.id?.value ?? null;
   }
 
-  async deleteOwn(idAthlete: string, userId: string): Promise<void> {
-    const athlete = await this.getAthleteOrThrow(idAthlete);
+  async deleteOwn(athleteId: AthleteId, userId: string): Promise<void> {
+    const athlete = await this.getAthleteOrThrow(athleteId);
 
     this.athleteAccessPolicy.assertCanManageOwnAthlete({
       currentUserId: userId,

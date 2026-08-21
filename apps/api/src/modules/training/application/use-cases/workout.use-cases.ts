@@ -1,5 +1,6 @@
 import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
 import type { Athlete } from '../../../athletes/domain/athlete';
+import { AthleteId } from '../../../athletes/domain/athlete-id';
 import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
@@ -251,7 +252,9 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       //9.1. Check if all athletes exist
       const athletes: Athlete[] = [];
       for (const athleteId of workout.trainingSession.athleteIds) {
-        const athlete = await this.athleteRepository.findById(athleteId);
+        const athlete = await this.athleteRepository.findById(
+          new AthleteId(athleteId)
+        );
         if (!athlete) {
           throw new AthleteNotFoundException(
             `Athlete with ID ${athleteId} not found`
@@ -279,7 +282,9 @@ export class WorkoutUseCases implements IWorkoutUseCases {
         }
 
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
+        athleteTrainingSession.athlete = toAthleteEntityReference(
+          athlete.id.value
+        );
         athleteTrainingSession.trainingSession = trainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession

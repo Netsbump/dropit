@@ -1,11 +1,12 @@
 import { Athlete } from '../../domain/athlete';
+import { AthleteId } from '../../domain/athlete-id';
 import { AthleteEntity } from '../../../database/entities/athlete.entity';
 
 export const toAthleteEntity = (athlete: Athlete): AthleteEntity => {
   const entity = new AthleteEntity();
 
   if (athlete.id) {
-    entity.id = athlete.id;
+    entity.id = athlete.id.value;
   }
 
   entity.firstName = athlete.firstName;
@@ -25,7 +26,7 @@ export const toAthleteEntityReference = (athleteId: string): AthleteEntity => {
 
 export const toAthleteDomain = (entity: AthleteEntity): Athlete => {
   return new Athlete({
-    id: entity.id,
+    id: new AthleteId(entity.id),
     userId: entity.user.id,
     firstName: entity.firstName,
     lastName: entity.lastName,

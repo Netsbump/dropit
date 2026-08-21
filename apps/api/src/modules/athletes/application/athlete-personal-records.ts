@@ -8,6 +8,7 @@ import {
   PersonalRecordDomainError,
 } from '../domain/personal-record';
 import type { Athlete } from '../domain/athlete';
+import { AthleteId } from '../domain/athlete-id';
 import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
 import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
@@ -33,7 +34,9 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   ) {}
 
   private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
-    const athlete = await this.athleteRepository.findById(athleteId);
+    const athlete = await this.athleteRepository.findById(
+      new AthleteId(athleteId)
+    );
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -100,7 +103,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       }
 
       personalRecords = await this.personalRecordRepository.listByAthleteId(
-        athlete.id
+        athlete.id.value
       );
 
       if (!personalRecords || personalRecords.length === 0) {

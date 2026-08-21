@@ -1,3 +1,4 @@
+import type { AthleteId } from '../../../domain/athlete-id';
 import type {
   Athlete,
   AthleteCreation,
@@ -7,13 +8,13 @@ import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.
 
 export interface IAthleteProfiles {
   findById(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<Athlete>;
 
   findDetailsById(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<AthleteDetailsReadModel>;
@@ -41,12 +42,12 @@ export interface IAthleteProfiles {
   create(data: AthleteCreation): Promise<Athlete>;
 
   updateOwn(
-    idAthlete: string,
+    athleteId: AthleteId,
     data: AthleteUpdate,
     userId: string
   ): Promise<Athlete>;
 
-  deleteOwn(idAthlete: string, userId: string): Promise<void>;
+  deleteOwn(athleteId: AthleteId, userId: string): Promise<void>;
 
   findIdByUserId(userId: string): Promise<string | null>;
 }

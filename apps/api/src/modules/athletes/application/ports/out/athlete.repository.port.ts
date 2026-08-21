@@ -1,3 +1,4 @@
+import type { AthleteId } from '../../../domain/athlete-id';
 import { Athlete } from '../../../domain/athlete';
 import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.read-model';
 
@@ -5,7 +6,7 @@ export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
 
 export interface IAthleteRepository {
-  findById(athleteId: string): Promise<Athlete | null>;
+  findById(athleteId: AthleteId): Promise<Athlete | null>;
   findByUserId(userId: string): Promise<Athlete | null>;
   listByIds(athleteIds: string[]): Promise<Athlete[]>;
   listByUserIds(athleteUserIds: string[]): Promise<Athlete[]>;

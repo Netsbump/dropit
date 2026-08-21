@@ -1,3 +1,5 @@
+import type { AthleteId } from './athlete-id';
+
 export type AthleteCreation = {
   userId: string;
   firstName: string;
@@ -14,7 +16,7 @@ export type AthleteUpdate = {
 };
 
 export type AthleteData = AthleteCreation & {
-  id?: string | null;
+  id?: AthleteId | null;
 };
 
 export abstract class AthleteDomainError extends Error {
@@ -27,7 +29,7 @@ export abstract class AthleteDomainError extends Error {
 export class InvalidAthleteError extends AthleteDomainError {}
 
 export class Athlete {
-  public readonly id: string | null;
+  public readonly id: AthleteId | null;
   public readonly userId: string;
   public readonly firstName: string;
   public readonly lastName: string;

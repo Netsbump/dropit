@@ -8,6 +8,7 @@ import {
 } from '@nestjs/common';
 import type { Response } from 'express';
 import { AthleteApplicationError } from '../application/errors/athlete.errors';
+import { InvalidAthleteIdError } from '../domain/athlete-id';
 import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
 import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
 
@@ -43,6 +44,13 @@ const getHttpExceptionMessage = (exception: HttpException): string => {
 };
 
 const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
+  if (error instanceof InvalidAthleteIdError) {
+    return {
+      statusCode: HttpStatus.BAD_REQUEST,
+      message: error.message,
+    };
+  }
+
   if (
     error instanceof AthleteApplicationError ||
     error instanceof CompetitorStatusException ||
