@@ -1,3 +1,6 @@
+import type { AthleteId } from './athlete-id';
+import type { CompetitorStatusId } from './competitor-status-id';
+
 export enum CompetitorLevel {
   ROOKIE = 'rookie',
   REGIONAL = 'regional',
@@ -12,7 +15,7 @@ export enum SexCategory {
 }
 
 export type CompetitorStatusCreation = {
-  athleteId: string;
+  athleteId: AthleteId;
   level: CompetitorLevel;
   sexCategory: SexCategory;
   weightCategory?: number | null;
@@ -26,8 +29,8 @@ export type CompetitorStatusUpdate = {
   endDate?: Date | null;
 };
 
-export type CompetitorStatusData = CompetitorStatusCreation & {
-  id?: string | null;
+export type CompetitorStatusProps = CompetitorStatusCreation & {
+  id?: CompetitorStatusId | null;
 };
 
 export abstract class CompetitorStatusDomainError extends Error {
@@ -40,14 +43,14 @@ export abstract class CompetitorStatusDomainError extends Error {
 export class InvalidCompetitorStatusError extends CompetitorStatusDomainError {}
 
 export class CompetitorStatus {
-  public readonly id: string | null;
-  public readonly athleteId: string;
+  public readonly id: CompetitorStatusId | null;
+  public readonly athleteId: AthleteId;
   public readonly level: CompetitorLevel;
   public readonly sexCategory: SexCategory;
   public readonly weightCategory: number | null;
   public readonly endDate: Date | null;
 
-  constructor(params: CompetitorStatusData) {
+  constructor(params: CompetitorStatusProps) {
     if (!params.athleteId.trim()) {
       throw new InvalidCompetitorStatusError('Athlete id is required');
     }
@@ -72,5 +75,30 @@ export class CompetitorStatus {
     this.sexCategory = params.sexCategory;
     this.weightCategory = params.weightCategory ?? null;
     this.endDate = params.endDate ?? null;
+  }
+
+  close(endDate = new Date()): CompetitorStatus {
+    return new CompetitorStatus({
+      id: this.id,
+      athleteId: this.athleteId,
+      level: this.level,
+      sexCategory: this.sexCategory,
+      weightCategory: this.weightCategory,
+      endDate,
+    });
+  }
+
+  amend(data: CompetitorStatusUpdate): CompetitorStatus {
+    return new CompetitorStatus({
+      id: this.id,
+      athleteId: this.athleteId,
+      level: data.level ?? this.level,
+      sexCategory: data.sexCategory ?? this.sexCategory,
+      weightCategory:
+        data.weightCategory !== undefined
+          ? data.weightCategory
+          : this.weightCategory,
+      endDate: data.endDate !== undefined ? data.endDate : this.endDate,
+    });
   }
 }

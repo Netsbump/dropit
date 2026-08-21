@@ -4,6 +4,8 @@ import {
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
 import type { PersonalRecord } from '../../../domain/personal-record';
+import type { AthleteId } from '../../../domain/athlete-id';
+import type { PersonalRecordId } from '../../../domain/personal-record-id';
 
 export const ATHLETE_PERSONAL_RECORDS = Symbol('ATHLETE_PERSONAL_RECORDS');
 
@@ -17,19 +19,19 @@ export interface IAthletePersonalRecords {
   ): Promise<PersonalRecord[]>;
 
   findById(
-    id: string,
+    id: PersonalRecordId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord>;
 
   listByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord[]>;
 
   findBestOlympicLiftsByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecordsSummary>;
@@ -47,7 +49,7 @@ export interface IAthletePersonalRecords {
    * Updates an existing personal record
    */
   amend(
-    id: string,
+    id: PersonalRecordId,
     data: UpdatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
@@ -57,7 +59,7 @@ export interface IAthletePersonalRecords {
    * Deletes a personal record
    */
   remove(
-    id: string,
+    id: PersonalRecordId,
     currentUserId: string,
     organizationId: string
   ): Promise<void>;

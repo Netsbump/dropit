@@ -1,12 +1,14 @@
 import { CompetitorStatusEntity } from '../../../database/entities/competitor-status.entity';
 import { CompetitorStatus } from '../../domain/competitor-status';
+import { parseAthleteId } from '../../domain/athlete-id';
+import { parseCompetitorStatusId } from '../../domain/competitor-status-id';
 
 export const toCompetitorStatusDomain = (
   entity: CompetitorStatusEntity
 ): CompetitorStatus => {
   return new CompetitorStatus({
-    id: entity.id,
-    athleteId: entity.athlete.id,
+    id: parseCompetitorStatusId(entity.id),
+    athleteId: parseAthleteId(entity.athlete.id),
     level: entity.level,
     sexCategory: entity.sexCategory,
     weightCategory: entity.weightCategory,

@@ -1,10 +1,13 @@
+import type { AthleteId } from './athlete-id';
+import type { PersonalRecordId } from './personal-record-id';
+
 export type PersonalRecordExercise = {
   id: string;
   name: string;
 };
 
 export type PersonalRecordCreation = {
-  athleteId: string;
+  athleteId: AthleteId;
   exercise: PersonalRecordExercise;
   weight: number;
   date?: Date | null;
@@ -15,8 +18,8 @@ export type PersonalRecordUpdate = {
   date?: Date | null;
 };
 
-export type PersonalRecordData = PersonalRecordCreation & {
-  id?: string | null;
+export type PersonalRecordProps = PersonalRecordCreation & {
+  id?: PersonalRecordId | null;
 };
 
 export abstract class PersonalRecordDomainError extends Error {
@@ -29,13 +32,13 @@ export abstract class PersonalRecordDomainError extends Error {
 export class InvalidPersonalRecordError extends PersonalRecordDomainError {}
 
 export class PersonalRecord {
-  public readonly id: string | null;
-  public readonly athleteId: string;
+  public readonly id: PersonalRecordId | null;
+  public readonly athleteId: AthleteId;
   public readonly exercise: PersonalRecordExercise;
   public readonly weight: number;
   public readonly date: Date;
 
-  constructor(params: PersonalRecordData) {
+  constructor(params: PersonalRecordProps) {
     if (!params.athleteId.trim()) {
       throw new InvalidPersonalRecordError('Athlete id is required');
     }
@@ -65,5 +68,15 @@ export class PersonalRecord {
     };
     this.weight = params.weight;
     this.date = date;
+  }
+
+  amend(data: PersonalRecordUpdate): PersonalRecord {
+    return new PersonalRecord({
+      id: this.id,
+      athleteId: this.athleteId,
+      exercise: this.exercise,
+      weight: data.weight ?? this.weight,
+      date: data.date ?? this.date,
+    });
   }
 }

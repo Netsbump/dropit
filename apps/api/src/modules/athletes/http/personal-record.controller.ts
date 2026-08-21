@@ -17,6 +17,8 @@ import {
   toPersonalRecordDto,
   toPersonalRecordDtoList,
 } from './mappers/personal-record.mapper';
+import { parseAthleteId } from '../domain/athlete-id';
+import { parsePersonalRecordId } from '../domain/personal-record-id';
 
 const c = personalRecordContract;
 
@@ -91,8 +93,9 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
+      const personalRecordId = parsePersonalRecordId(params.id);
       const personalRecord = await this.athletePersonalRecords.findById(
-        params.id,
+        personalRecordId,
         currentUser.id,
         organizationId
       );
@@ -121,8 +124,9 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
+      const athleteId = parseAthleteId(params.id);
       const personalRecords = await this.athletePersonalRecords.listByAthleteId(
-        params.id,
+        athleteId,
         currentUser.id,
         organizationId
       );
@@ -155,9 +159,10 @@ export class PersonalRecordController {
     return tsRestHandler(
       c.getAthletePersonalRecordsSummary,
       async ({ params }) => {
+        const athleteId = parseAthleteId(params.id);
         const summary =
           await this.athletePersonalRecords.findBestOlympicLiftsByAthleteId(
-            params.id,
+            athleteId,
             currentUser.id,
             organizationId
           );
@@ -216,8 +221,9 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
+      const personalRecordId = parsePersonalRecordId(params.id);
       const personalRecord = await this.athletePersonalRecords.amend(
-        params.id,
+        personalRecordId,
         body,
         currentUser.id,
         organizationId
@@ -247,8 +253,10 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
+      const personalRecordId = parsePersonalRecordId(params.id);
+
       await this.athletePersonalRecords.remove(
-        params.id,
+        personalRecordId,
         currentUser.id,
         organizationId
       );

@@ -67,7 +67,7 @@ export const toAthleteDto = (athlete: Athlete): AthleteDto => {
   }
 
   return {
-    id: athlete.id.value,
+    id: athlete.id,
     firstName: athlete.firstName,
     lastName: athlete.lastName,
     birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,

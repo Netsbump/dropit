@@ -17,6 +17,8 @@ import {
   toCompetitorStatusDto,
   toCompetitorStatusDtoList,
 } from './mappers/competitor-status.mapper';
+import { parseAthleteId } from '../domain/athlete-id';
+import { parseCompetitorStatusId } from '../domain/competitor-status-id';
 
 const c = competitorStatusContract;
 
@@ -85,9 +87,10 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
+      const athleteId = parseAthleteId(params.id);
       const competitorStatus =
         await this.athleteCompetitionStatus.findActiveByAthleteId(
-          params.id,
+          athleteId,
           currentUser.id,
           organizationId
         );
@@ -147,8 +150,9 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: string
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
+      const competitorStatusId = parseCompetitorStatusId(params.id);
       const competitorStatus = await this.athleteCompetitionStatus.amend(
-        params.id,
+        competitorStatusId,
         body,
         currentUser.id,
         organizationId

@@ -3,6 +3,8 @@ import {
   UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
 import type { CompetitorStatus } from '../../../domain/competitor-status';
+import type { AthleteId } from '../../../domain/athlete-id';
+import type { CompetitorStatusId } from '../../../domain/competitor-status-id';
 
 export interface IAthleteCompetitionStatus {
   /**
@@ -14,7 +16,7 @@ export interface IAthleteCompetitionStatus {
    * Find one competitor status by athlete ID
    */
   findActiveByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus>;
@@ -32,7 +34,7 @@ export interface IAthleteCompetitionStatus {
    * Update an existing competitor status
    */
   amend(
-    id: string,
+    id: CompetitorStatusId,
     data: UpdateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string

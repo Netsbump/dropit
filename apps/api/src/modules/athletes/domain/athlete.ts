@@ -15,7 +15,7 @@ export type AthleteUpdate = {
   country?: string | null;
 };
 
-export type AthleteData = AthleteCreation & {
+export type AthleteProps = AthleteCreation & {
   id?: AthleteId | null;
 };
 
@@ -36,7 +36,7 @@ export class Athlete {
   public readonly birthday: Date | null;
   public readonly country: string | null;
 
-  constructor(params: AthleteData) {
+  constructor(params: AthleteProps) {
     const firstName = params.firstName.trim();
     const lastName = params.lastName.trim();
 
@@ -54,5 +54,16 @@ export class Athlete {
     this.lastName = lastName;
     this.birthday = params.birthday ?? null;
     this.country = params.country ?? null;
+  }
+
+  updateProfile(data: AthleteUpdate): Athlete {
+    return new Athlete({
+      id: this.id,
+      userId: this.userId,
+      firstName: data.firstName ?? this.firstName,
+      lastName: data.lastName ?? this.lastName,
+      birthday: data.birthday !== undefined ? data.birthday : this.birthday,
+      country: data.country !== undefined ? data.country : this.country,
+    });
   }
 }

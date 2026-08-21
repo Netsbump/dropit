@@ -1,12 +1,14 @@
 import { PersonalRecordEntity } from '../../../database/entities/personal-record.entity';
 import { PersonalRecord } from '../../domain/personal-record';
+import { parseAthleteId } from '../../domain/athlete-id';
+import { parsePersonalRecordId } from '../../domain/personal-record-id';
 
 export const toPersonalRecordDomain = (
   entity: PersonalRecordEntity
 ): PersonalRecord => {
   return new PersonalRecord({
-    id: entity.id,
-    athleteId: entity.athlete.id,
+    id: parsePersonalRecordId(entity.id),
+    athleteId: parseAthleteId(entity.athlete.id),
     exercise: {
       id: entity.exercise.id,
       name: entity.exercise.name,

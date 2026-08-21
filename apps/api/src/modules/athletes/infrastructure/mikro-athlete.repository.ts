@@ -147,7 +147,7 @@ export class MikroAthleteRepository
   async findById(athleteId: AthleteId): Promise<Athlete | null> {
     const athleteEntity = await this.em.findOne(
       AthleteEntity,
-      { id: athleteId.value },
+      { id: athleteId },
       { populate: ['user.id'] }
     );
 
@@ -194,7 +194,7 @@ export class MikroAthleteRepository
 
   async save(athlete: Athlete): Promise<Athlete> {
     const athleteEntity = athlete.id
-      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id.value })
+      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id })
       : toAthleteEntity(athlete);
 
     athleteEntity.firstName = athlete.firstName;
@@ -213,7 +213,7 @@ export class MikroAthleteRepository
       throw new Error('Cannot remove athlete without id');
     }
 
-    const entity = this.em.getReference(AthleteEntity, athlete.id.value);
+    const entity = this.em.getReference(AthleteEntity, athlete.id);
 
     return await this.em.removeAndFlush(entity);
   }

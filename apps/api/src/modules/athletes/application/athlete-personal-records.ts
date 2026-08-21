@@ -8,7 +8,8 @@ import {
   PersonalRecordDomainError,
 } from '../domain/personal-record';
 import type { Athlete } from '../domain/athlete';
-import { AthleteId } from '../domain/athlete-id';
+import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
+import type { PersonalRecordId } from '../domain/personal-record-id';
 import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
 import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
@@ -33,10 +34,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
 
-  private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
-    const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
-    );
+  private async getAthleteOrThrow(athleteId: AthleteId): Promise<Athlete> {
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -47,7 +46,9 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     return athlete;
   }
 
-  private async getPersonalRecordOrThrow(id: string): Promise<PersonalRecord> {
+  private async getPersonalRecordOrThrow(
+    id: PersonalRecordId
+  ): Promise<PersonalRecord> {
     const personalRecord = await this.personalRecordRepository.findById(id);
 
     if (!personalRecord) {
@@ -57,14 +58,6 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     }
 
     return personalRecord;
-  }
-
-  private toInvalidPersonalRecordError(error: unknown): never {
-    if (error instanceof PersonalRecordDomainError) {
-      throw new InvalidPersonalRecordException(error.message);
-    }
-
-    throw error;
   }
 
   async listAccessible(
@@ -103,7 +96,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       }
 
       personalRecords = await this.personalRecordRepository.listByAthleteId(
-        athlete.id.value
+        athlete.id
       );
 
       if (!personalRecords || personalRecords.length === 0) {
@@ -115,7 +108,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async findById(
-    id: string,
+    id: PersonalRecordId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord> {
@@ -132,7 +125,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async listByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecord[]> {
@@ -155,7 +148,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async findBestOlympicLiftsByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<PersonalRecordsSummary> {
@@ -209,7 +202,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    const athlete = await this.getAthleteOrThrow(data.athleteId);
+    const athleteId = parseAthleteId(data.athleteId);
+    const athlete = await this.getAthleteOrThrow(athleteId);
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
@@ -226,9 +220,11 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       );
     }
 
+    let personalRecord: PersonalRecord;
+
     try {
-      const personalRecord = new PersonalRecord({
-        athleteId: data.athleteId,
+      personalRecord = new PersonalRecord({
+        athleteId,
         exercise: {
           id: exercise.id,
           name: exercise.name,
@@ -236,15 +232,19 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
         weight: data.weight,
         date: data.date ?? new Date(),
       });
-
-      return await this.personalRecordRepository.save(personalRecord);
     } catch (error) {
-      this.toInvalidPersonalRecordError(error);
+      if (error instanceof PersonalRecordDomainError) {
+        throw new InvalidPersonalRecordException(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.personalRecordRepository.save(personalRecord);
   }
 
   async amend(
-    id: string,
+    id: PersonalRecordId,
     data: UpdatePersonalRecordInput,
     currentUserId: string,
     organizationId: string
@@ -262,23 +262,23 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    try {
-      const personalRecordToUpdate = new PersonalRecord({
-        id: personalRecord.id,
-        athleteId: personalRecord.athleteId,
-        exercise: personalRecord.exercise,
-        weight: data.weight ?? personalRecord.weight,
-        date: data.date ?? personalRecord.date,
-      });
+    let personalRecordToUpdate: PersonalRecord;
 
-      return await this.personalRecordRepository.save(personalRecordToUpdate);
+    try {
+      personalRecordToUpdate = personalRecord.amend(data);
     } catch (error) {
-      this.toInvalidPersonalRecordError(error);
+      if (error instanceof PersonalRecordDomainError) {
+        throw new InvalidPersonalRecordException(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.personalRecordRepository.save(personalRecordToUpdate);
   }
 
   async remove(
-    id: string,
+    id: PersonalRecordId,
     currentUserId: string,
     organizationId: string
   ): Promise<void> {

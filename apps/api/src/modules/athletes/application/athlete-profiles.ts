@@ -17,7 +17,7 @@ import {
   UserNotFoundError,
   AthleteAlreadyExistsError,
   InvalidAthleteCreationError,
-  InvalidAthleteStateError,
+  InvalidAthleteUpdateError,
   UserDoesNotBelongToOrganizationError,
 } from './errors/athlete.errors';
 import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
@@ -61,22 +61,6 @@ export class AthleteProfiles implements IAthleteProfiles {
     }
 
     return athleteUserIds;
-  }
-
-  private toInvalidAthleteCreationError(error: unknown): never {
-    if (error instanceof AthleteDomainError) {
-      throw new InvalidAthleteCreationError(error.message);
-    }
-
-    throw error;
-  }
-
-  private toInvalidAthleteStateError(error: unknown): never {
-    if (error instanceof AthleteDomainError) {
-      throw new InvalidAthleteStateError(error.message);
-    }
-
-    throw error;
   }
 
   async findById(
@@ -185,13 +169,19 @@ export class AthleteProfiles implements IAthleteProfiles {
       );
     }
 
-    try {
-      const athlete = new Athlete(data);
+    let athlete: Athlete;
 
-      return await this.athleteRepository.save(athlete);
+    try {
+      athlete = new Athlete(data);
     } catch (error) {
-      this.toInvalidAthleteCreationError(error);
+      if (error instanceof AthleteDomainError) {
+        throw new InvalidAthleteCreationError(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.athleteRepository.save(athlete);
   }
 
   async updateOwn(
@@ -206,26 +196,24 @@ export class AthleteProfiles implements IAthleteProfiles {
       athleteUserId: athlete.userId,
     });
 
-    try {
-      const updatedAthlete = new Athlete({
-        id: athlete.id,
-        userId: athlete.userId,
-        firstName: data.firstName ?? athlete.firstName,
-        lastName: data.lastName ?? athlete.lastName,
-        birthday:
-          data.birthday !== undefined ? data.birthday : athlete.birthday,
-        country: data.country !== undefined ? data.country : athlete.country,
-      });
+    let updatedAthlete: Athlete;
 
-      return await this.athleteRepository.save(updatedAthlete);
+    try {
+      updatedAthlete = athlete.updateProfile(data);
     } catch (error) {
-      this.toInvalidAthleteStateError(error);
+      if (error instanceof AthleteDomainError) {
+        throw new InvalidAthleteUpdateError(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.athleteRepository.save(updatedAthlete);
   }
 
   async findIdByUserId(userId: string): Promise<string | null> {
     const athlete = await this.athleteRepository.findByUserId(userId);
-    return athlete?.id?.value ?? null;
+    return athlete?.id ?? null;
   }
 
   async deleteOwn(athleteId: AthleteId, userId: string): Promise<void> {

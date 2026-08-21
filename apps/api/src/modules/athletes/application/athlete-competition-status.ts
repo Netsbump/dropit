@@ -7,7 +7,8 @@ import {
   CompetitorStatusDomainError,
 } from '../domain/competitor-status';
 import type { Athlete } from '../domain/athlete';
-import { AthleteId } from '../domain/athlete-id';
+import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
+import type { CompetitorStatusId } from '../domain/competitor-status-id';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -28,10 +29,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     private readonly athleteAccessPolicy: IAthleteAccessPolicy
   ) {}
 
-  private async getAthleteOrThrow(athleteId: string): Promise<Athlete> {
-    const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
-    );
+  private async getAthleteOrThrow(athleteId: AthleteId): Promise<Athlete> {
+    const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
       throw new AthleteNotFoundException(
@@ -43,7 +42,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   }
 
   private async getCompetitorStatusOrThrow(
-    id: string
+    id: CompetitorStatusId
   ): Promise<CompetitorStatus> {
     const competitorStatus = await this.competitorStatusRepository.findById(id);
 
@@ -56,15 +55,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return competitorStatus;
   }
 
-  private toInvalidCompetitorStatusError(error: unknown): never {
-    if (error instanceof CompetitorStatusDomainError) {
-      throw new InvalidCompetitorStatusException(error.message);
-    }
-
-    throw error;
-  }
-
-  private async closeCurrentStatusIfExists(athleteId: string): Promise<void> {
+  private async closeCurrentStatusIfExists(athleteId: AthleteId): Promise<void> {
     const currentCompetitorStatus =
       await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
 
@@ -72,20 +63,19 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       return;
     }
 
-    try {
-      const closedCompetitorStatus = new CompetitorStatus({
-        id: currentCompetitorStatus.id,
-        athleteId: currentCompetitorStatus.athleteId,
-        level: currentCompetitorStatus.level,
-        sexCategory: currentCompetitorStatus.sexCategory,
-        weightCategory: currentCompetitorStatus.weightCategory,
-        endDate: new Date(),
-      });
+    let closedCompetitorStatus: CompetitorStatus;
 
-      await this.competitorStatusRepository.save(closedCompetitorStatus);
+    try {
+      closedCompetitorStatus = currentCompetitorStatus.close();
     } catch (error) {
-      this.toInvalidCompetitorStatusError(error);
+      if (error instanceof CompetitorStatusDomainError) {
+        throw new InvalidCompetitorStatusException(error.message);
+      }
+
+      throw error;
     }
+
+    await this.competitorStatusRepository.save(closedCompetitorStatus);
   }
 
   async listByOrganization(
@@ -115,7 +105,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   }
 
   async findActiveByAthleteId(
-    athleteId: string,
+    athleteId: AthleteId,
     currentUserId: string,
     organizationId: string
   ): Promise<CompetitorStatus> {
@@ -149,33 +139,38 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    const athlete = await this.getAthleteOrThrow(data.athleteId);
+    const athleteId = parseAthleteId(data.athleteId);
+    const athlete = await this.getAthleteOrThrow(athleteId);
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );
 
-    await this.closeCurrentStatusIfExists(data.athleteId);
+    await this.closeCurrentStatusIfExists(athleteId);
+
+    let competitorStatusToCreate: CompetitorStatus;
 
     try {
-      const competitorStatusToCreate = new CompetitorStatus({
-        athleteId: data.athleteId,
+      competitorStatusToCreate = new CompetitorStatus({
+        athleteId,
         level: data.level,
         sexCategory: data.sexCategory,
         weightCategory: data.weightCategory,
       });
-
-      return await this.competitorStatusRepository.save(
-        competitorStatusToCreate
-      );
     } catch (error) {
-      this.toInvalidCompetitorStatusError(error);
+      if (error instanceof CompetitorStatusDomainError) {
+        throw new InvalidCompetitorStatusException(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.competitorStatusRepository.save(competitorStatusToCreate);
   }
 
   async amend(
-    id: string,
+    id: CompetitorStatusId,
     data: UpdateCompetitorStatusInput,
     currentUserId: string,
     organizationId: string
@@ -186,6 +181,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     );
 
     const competitorStatusToUpdate = await this.getCompetitorStatusOrThrow(id);
+
     const athlete = await this.getAthleteOrThrow(
       competitorStatusToUpdate.athleteId
     );
@@ -195,24 +191,18 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    try {
-      const updatedCompetitorStatus = new CompetitorStatus({
-        id: competitorStatusToUpdate.id,
-        athleteId: competitorStatusToUpdate.athleteId,
-        level: data.level ?? competitorStatusToUpdate.level,
-        sexCategory: data.sexCategory ?? competitorStatusToUpdate.sexCategory,
-        weightCategory:
-          data.weightCategory !== undefined
-            ? data.weightCategory
-            : competitorStatusToUpdate.weightCategory,
-        endDate: competitorStatusToUpdate.endDate,
-      });
+    let updatedCompetitorStatus: CompetitorStatus;
 
-      return await this.competitorStatusRepository.save(
-        updatedCompetitorStatus
-      );
+    try {
+      updatedCompetitorStatus = competitorStatusToUpdate.amend(data);
     } catch (error) {
-      this.toInvalidCompetitorStatusError(error);
+      if (error instanceof CompetitorStatusDomainError) {
+        throw new InvalidCompetitorStatusException(error.message);
+      }
+
+      throw error;
     }
+
+    return await this.competitorStatusRepository.save(updatedCompetitorStatus);
   }
 }

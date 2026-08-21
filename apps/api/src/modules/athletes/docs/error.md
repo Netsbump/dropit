@@ -5,9 +5,10 @@ The `athletes` bounded context does not throw NestJS HTTP exceptions from the do
 Instead:
 
 1. Domain objects throw domain errors.
-2. Application use cases convert expected domain errors to application errors.
-3. HTTP controllers let errors bubble up.
-4. `AthleteExceptionFilter` converts errors to HTTP responses.
+2. HTTP controllers parse external route IDs with domain parsers such as `parseAthleteId`, `parseCompetitorStatusId`, and `parsePersonalRecordId`.
+3. Application use cases convert expected domain validation errors to application errors.
+4. HTTP controllers let errors bubble up.
+5. `AthleteExceptionFilter` converts errors to HTTP responses.
 
 ## Error flow
 
@@ -32,10 +33,13 @@ sequenceDiagram
     App--xHTTP: Throw known BC error
     HTTP--xFilter: Bubble up
     Filter-->>Client: statusCode + message
+  else Invalid external ID
+    HTTP--xFilter: parse*Id throws Invalid*IdError
+    Filter-->>Client: 400 + message
   else Domain validation error
     App->>Domain: Build / update object
     Domain--xApp: Throw DomainError
-    App--xHTTP: Convert to Invalid* error
+    App--xHTTP: Convert to Invalid* application error
     HTTP--xFilter: Bubble up
     Filter-->>Client: 400 + message
   else Unexpected technical error
@@ -53,13 +57,15 @@ flowchart TD
   E([Error thrown]) --> F[AthleteExceptionFilter]
   F --> T{Error type}
 
+  T -->|Invalid*IdError| I[Return 400 and message]
   T -->|Known BC error| B[Use its statusCode and message]
   T -->|Nest HttpException| H[Use Nest status and message]
   T -->|Unknown error| U[Log server-side stack]
 
   U --> G[Return generic 500 message]
 
-  B --> R([HTTP JSON response])
+  I --> R([HTTP JSON response])
+  B --> R
   H --> R
   G --> R
 ```
@@ -68,6 +74,7 @@ Known BC errors are:
 
 | Error family | Source | Example HTTP result |
 | --- | --- | --- |
+| `Invalid*IdError` | Domain ID parsers at HTTP boundary/application boundary | `400` |
 | `AthleteApplicationError` | Athlete profile use cases and access policy | `403`, `404`, `400` |
 | `PersonalRecordException` | Personal record use cases | `400`, `404` |
 | `CompetitorStatusException` | Competition status use cases | `400`, `404` |
@@ -75,7 +82,9 @@ Known BC errors are:
 ## Rules of thumb
 
 - Domain objects throw domain errors only.
+- Parse external route IDs at the HTTP boundary before calling use cases.
 - Application use cases convert domain validation errors to application errors with HTTP-safe status codes.
+- Keep repository calls outside domain-validation `try/catch` blocks unless mapping a known semantic persistence error.
 - Controllers do not translate business errors manually.
 - `AthleteExceptionFilter` is responsible for converting known errors to HTTP responses.
 - Unknown technical errors are logged server-side and returned as a generic `500` message.

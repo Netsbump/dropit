@@ -5,6 +5,8 @@ import { PersonalRecordEntity } from '../../database/entities/personal-record.en
 import { Exercise } from '../../training/domain/exercise.entity';
 import type { IPersonalRecordRepository } from '../application/ports/out/personal-record.repository.port';
 import type { PersonalRecord } from '../domain/personal-record';
+import type { AthleteId } from '../domain/athlete-id';
+import type { PersonalRecordId } from '../domain/personal-record-id';
 import {
   toPersonalRecordDomain,
   toPersonalRecordDomainList,
@@ -19,7 +21,7 @@ export class MikroPersonalRecordRepository
     super(em, PersonalRecordEntity);
   }
 
-  async findById(id: string): Promise<PersonalRecord | null> {
+  async findById(id: PersonalRecordId): Promise<PersonalRecord | null> {
     const personalRecordEntity = await this.findPersonalRecordById(id);
 
     return personalRecordEntity
@@ -45,7 +47,7 @@ export class MikroPersonalRecordRepository
     return toPersonalRecordDomainList(personalRecordEntities);
   }
 
-  async listByAthleteId(athleteId: string): Promise<PersonalRecord[]> {
+  async listByAthleteId(athleteId: AthleteId): Promise<PersonalRecord[]> {
     const personalRecordEntities = await this.em.find(
       PersonalRecordEntity,
       { athlete: athleteId },
@@ -102,7 +104,7 @@ export class MikroPersonalRecordRepository
   }
 
   private async findPersonalRecordById(
-    id: string
+    id: PersonalRecordId | string
   ): Promise<PersonalRecordEntity | null> {
     return await this.em.findOne(
       PersonalRecordEntity,

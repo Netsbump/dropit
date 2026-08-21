@@ -9,6 +9,8 @@ import {
 import type { Response } from 'express';
 import { AthleteApplicationError } from '../application/errors/athlete.errors';
 import { InvalidAthleteIdError } from '../domain/athlete-id';
+import { InvalidCompetitorStatusIdError } from '../domain/competitor-status-id';
+import { InvalidPersonalRecordIdError } from '../domain/personal-record-id';
 import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
 import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
 
@@ -44,7 +46,11 @@ const getHttpExceptionMessage = (exception: HttpException): string => {
 };
 
 const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
-  if (error instanceof InvalidAthleteIdError) {
+  if (
+    error instanceof InvalidAthleteIdError ||
+    error instanceof InvalidCompetitorStatusIdError ||
+    error instanceof InvalidPersonalRecordIdError
+  ) {
     return {
       statusCode: HttpStatus.BAD_REQUEST,
       message: error.message,

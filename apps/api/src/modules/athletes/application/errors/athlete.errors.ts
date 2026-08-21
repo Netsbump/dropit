@@ -44,8 +44,8 @@ export class AthleteCreationFailedError extends AthleteApplicationError {
   }
 }
 
-export class InvalidAthleteStateError extends AthleteApplicationError {
-  constructor(message = 'Invalid athlete state') {
+export class InvalidAthleteUpdateError extends AthleteApplicationError {
+  constructor(message = 'Invalid athlete update') {
     super(message, 400);
   }
 }

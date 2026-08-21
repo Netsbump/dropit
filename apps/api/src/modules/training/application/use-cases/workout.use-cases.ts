@@ -1,6 +1,6 @@
 import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
 import type { Athlete } from '../../../athletes/domain/athlete';
-import { AthleteId } from '../../../athletes/domain/athlete-id';
+import { parseAthleteId } from '../../../athletes/domain/athlete-id';
 import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
@@ -253,7 +253,7 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       const athletes: Athlete[] = [];
       for (const athleteId of workout.trainingSession.athleteIds) {
         const athlete = await this.athleteRepository.findById(
-          new AthleteId(athleteId)
+          parseAthleteId(athleteId)
         );
         if (!athlete) {
           throw new AthleteNotFoundException(
@@ -282,9 +282,7 @@ export class WorkoutUseCases implements IWorkoutUseCases {
         }
 
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = toAthleteEntityReference(
-          athlete.id.value
-        );
+        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
         athleteTrainingSession.trainingSession = trainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession

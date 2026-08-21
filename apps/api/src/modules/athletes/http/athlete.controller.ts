@@ -27,7 +27,7 @@ import {
   toAthleteDto,
   toAthleteUpdate,
 } from './mappers/athlete.mapper';
-import { AthleteId } from '../domain/athlete-id';
+import { parseAthleteId } from '../domain/athlete-id';
 
 const c = athleteContract;
 
@@ -157,9 +157,10 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {
+      const athleteId = parseAthleteId(params.id);
 
       const athlete = await this.athleteProfiles.findDetailsById(
-        new AthleteId(params.id),
+        athleteId,
         user.id,
         organizationId
       );
@@ -220,11 +221,11 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
-
+      const athleteId = parseAthleteId(params.id);
       const athleteUpdate = toAthleteUpdate(body);
 
       const athlete = await this.athleteProfiles.updateOwn(
-        new AthleteId(params.id),
+        athleteId,
         athleteUpdate,
         user.id
       );
@@ -253,8 +254,9 @@ export class AthleteController {
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.deleteAthlete>> {
     return tsRestHandler(c.deleteAthlete, async ({ params }) => {
+      const athleteId = parseAthleteId(params.id);
 
-      await this.athleteProfiles.deleteOwn(new AthleteId(params.id), user.id);
+      await this.athleteProfiles.deleteOwn(athleteId, user.id);
 
       return {
         status: 200 as const,

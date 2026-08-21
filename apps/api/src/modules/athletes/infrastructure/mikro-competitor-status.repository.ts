@@ -4,6 +4,8 @@ import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
 import type { ICompetitorStatusRepository } from '../application/ports/out/competitor-status.repository.port';
 import type { CompetitorStatus } from '../domain/competitor-status';
+import type { AthleteId } from '../domain/athlete-id';
+import type { CompetitorStatusId } from '../domain/competitor-status-id';
 import {
   toCompetitorStatusDomain,
   toCompetitorStatusDomainList,
@@ -18,7 +20,7 @@ export class MikroCompetitorStatusRepository
     super(em, CompetitorStatusEntity);
   }
 
-  async findById(id: string): Promise<CompetitorStatus | null> {
+  async findById(id: CompetitorStatusId): Promise<CompetitorStatus | null> {
     const competitorStatusEntity = await this.findCompetitorStatusById(id);
 
     return competitorStatusEntity
@@ -27,7 +29,7 @@ export class MikroCompetitorStatusRepository
   }
 
   async findActiveByAthleteId(
-    athleteId: string
+    athleteId: AthleteId
   ): Promise<CompetitorStatus | null> {
     const competitorStatusEntity = await this.em.findOne(
       CompetitorStatusEntity,
@@ -103,7 +105,7 @@ export class MikroCompetitorStatusRepository
   }
 
   private async findCompetitorStatusById(
-    id: string
+    id: CompetitorStatusId | string
   ): Promise<CompetitorStatusEntity | null> {
     return await this.em.findOne(
       CompetitorStatusEntity,

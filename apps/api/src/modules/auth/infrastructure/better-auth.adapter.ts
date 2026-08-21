@@ -114,7 +114,7 @@ export class BetterAuthAdapter implements OnModuleInit {
           : null;
       }
       const athlete = await this.athleteRepository.findByUserId(user.id);
-      athleteId = athlete?.id?.value ?? null;
+      athleteId = athlete?.id ?? null;
     }
 
     return {

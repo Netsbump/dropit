@@ -9,7 +9,7 @@ import { TrainingSession } from '../../domain/training-session.entity';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IAthleteRepository } from '../../../athletes/application/ports/out/athlete.repository.port';
-import { AthleteId } from '../../../athletes/domain/athlete-id';
+import { parseAthleteId } from '../../../athletes/domain/athlete-id';
 import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { IWorkoutRepository } from '../ports/workout.repository.port';
 import { IMemberUseCases } from '../../../auth/application/ports/member-use-cases.port';
@@ -119,7 +119,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
+      parseAthleteId(athleteId)
     );
 
     if (!athlete) {
@@ -165,7 +165,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
+      parseAthleteId(athleteId)
     );
 
     if (!athlete) {
@@ -209,7 +209,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //2. Get athlete from repository
     const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
+      parseAthleteId(athleteId)
     );
 
     if (!athlete) {
@@ -280,9 +280,9 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
 
     //5. Load requested athletes by athlete IDs
     const athletes = await this.athleteRepository.listByIds(data.athleteIds);
-    const foundAthleteIds = athletes
-      .map((athlete) => athlete.id?.value)
-      .filter((athleteId): athleteId is string => athleteId !== undefined);
+    const foundAthleteIds: string[] = athletes.flatMap((athlete) =>
+      athlete.id ? [athlete.id] : []
+    );
     const missingAthleteIds = data.athleteIds.filter(
       (athleteId) => !foundAthleteIds.includes(athleteId)
     );
@@ -296,10 +296,9 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     //6. Validate all requested athletes belong to this organization
     const authorizedAthleteUserIds =
       await this.memberUseCases.getAthleteUserIds(organizationId);
-    const invalidAthleteIds = athletes
+    const invalidAthleteIds: string[] = athletes
       .filter((athlete) => !authorizedAthleteUserIds.includes(athlete.userId))
-      .map((athlete) => athlete.id?.value)
-      .filter((athleteId): athleteId is string => athleteId !== undefined);
+      .flatMap((athlete) => (athlete.id ? [athlete.id] : []));
 
     if (invalidAthleteIds.length > 0) {
       throw new AthletesNotInOrganizationException(
@@ -337,7 +336,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
         }
 
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = toAthleteEntityReference(a.id.value);
+        athleteTrainingSession.athlete = toAthleteEntityReference(a.id);
         athleteTrainingSession.trainingSession = createdTrainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession
@@ -404,9 +403,9 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
     if (data.athleteIds) {
       // Validate all athletes exist before mutating existing sessions
       const athletes = await this.athleteRepository.listByIds(data.athleteIds);
-      const foundAthleteIds = athletes
-        .map((athlete) => athlete.id?.value)
-        .filter((athleteId): athleteId is string => athleteId !== undefined);
+      const foundAthleteIds: string[] = athletes.flatMap((athlete) =>
+        athlete.id ? [athlete.id] : []
+      );
       const missingAthleteIds = data.athleteIds.filter(
         (athleteId) => !foundAthleteIds.includes(athleteId)
       );
@@ -420,10 +419,9 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
       // Validate all requested athletes belong to this organization
       const authorizedAthleteUserIds =
         await this.memberUseCases.getAthleteUserIds(organizationId);
-      const invalidAthleteIds = athletes
+      const invalidAthleteIds: string[] = athletes
         .filter((athlete) => !authorizedAthleteUserIds.includes(athlete.userId))
-        .map((athlete) => athlete.id?.value)
-        .filter((athleteId): athleteId is string => athleteId !== undefined);
+        .flatMap((athlete) => (athlete.id ? [athlete.id] : []));
 
       if (invalidAthleteIds.length > 0) {
         throw new AthletesNotInOrganizationException(
@@ -449,9 +447,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
         }
 
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = toAthleteEntityReference(
-          athlete.id.value
-        );
+        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
         athleteTrainingSession.trainingSession = trainingSessionToUpdate;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession
@@ -496,7 +492,7 @@ export class TrainingSessionUseCase implements ITrainingSessionUseCases {
   ): Promise<AthleteTrainingSession> {
     //1. Get athlete from repository
     const athlete = await this.athleteRepository.findById(
-      new AthleteId(athleteId)
+      parseAthleteId(athleteId)
     );
 
     if (!athlete) {
