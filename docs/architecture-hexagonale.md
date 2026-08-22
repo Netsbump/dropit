@@ -1,284 +1,521 @@
 # Architecture Hexagonale dans DropIt
 
-Ce document est la **référence française** pour les patterns transverses de l’API (ports, adapters, injection Nest avec tokens, `useFactory`, découpage canal/transport). Les README des modules (ex. notification, auth) renvoient ici pour la théorie et gardent les détails propres au module.
+Ce document est la **référence** pour les patterns transverses de l’API DropIt : ports, adapters, injection Nest avec tokens, `useFactory`, découpage canal/transport, séparation HTTP / application / infrastructure, et compromis pragmatiques du projet.
 
-## Vue d'ensemble
+Il garde aussi une dimension de **journal d’évolution** : l’API a commencé avec une architecture n-tiers plus classique, puis certains bounded contexts ont été migrés progressivement vers une architecture hexagonale. Aujourd’hui, le bounded context **`athletes`** est le cas de référence le plus abouti.
 
-DropIt utilise une approche inspirée de l'architecture hexagonale (aussi appelée "Ports & Adapters") pour isoler la **logique métier** des **frameworks et infrastructures**.
+---
 
-### ⚠️ Implémentation Partielle
+## Vue d’ensemble
 
-Cette architecture est une **implémentation pragmatique** de l'hexagonale, avec un compromis assumé :
-- ✅ **Use-cases framework-agnostic** : Logique métier pure TypeScript
-- ✅ **Ports & Adapters** : Injection via interfaces
-- 🟡 **Entités avec MikroORM** : Les entités domaine utilisent les décorateurs ORM pour éviter un double mapping
+DropIt utilise une approche inspirée de l’architecture hexagonale, aussi appelée **Ports & Adapters**, pour isoler la logique métier des frameworks et des détails d’infrastructure.
 
-Ce compromis permet de bénéficier des avantages de l'architecture hexagonale (testabilité, indépendance des use-cases) sans la complexité d'un mapping complet.
+L’objectif n’est pas d’appliquer une Clean Architecture académique partout et immédiatement. L’objectif est plutôt de faire évoluer le monorepo vers une architecture plus testable, plus lisible et moins couplée, en priorisant les bounded contexts qui portent le plus de logique métier.
 
 ### Objectifs
-- ✅ **Indépendance du framework** : La logique métier ne dépend pas de NestJS
-- ✅ **Testabilité** : Les use-cases sont testables sans mock du framework
-- ✅ **Flexibilité** : Possibilité de changer de framework (NestJS → Express, etc.) sans toucher au métier
-- ✅ **Clarté** : Séparation nette des responsabilités
+
+- ✅ **Indépendance du framework** : la logique métier ne dépend pas de NestJS.
+- ✅ **Testabilité** : les use cases sont testables sans `TestingModule` Nest.
+- ✅ **Découplage infrastructure** : l’application dépend de ports, pas de MikroORM, Auth, Training, Brevo, etc.
+- ✅ **Clarté des responsabilités** : HTTP, application, domaine et infrastructure ne jouent pas le même rôle.
+- ✅ **Migration progressive** : un module peut être amélioré sans réécrire toute l’API.
 
 ### Pourquoi cette architecture ?
 
-L'API a progressivement évolué d'une architecture n-tiers classique vers cette approche hexagonale partielle. Cette évolution répond à une double motivation : approfondir ma compréhension de patterns architecturaux rencontrés en contexte professionnel, et anticiper des évolutions futures nécessitant l'isolation de la logique métier (intégration matériel externe, sources de données tierces).
+L’API a progressivement évolué d’une architecture **n-tiers classique** vers cette approche hexagonale partielle. Cette évolution répond à une double motivation : approfondir des patterns architecturaux rencontrés en contexte professionnel, et anticiper des évolutions futures nécessitant l’isolation de la logique métier, par exemple l’intégration de matériel externe, de sources de données tierces ou de nouveaux canaux d’entrée.
 
-Cette implémentation reste partielle : mes entités domaine conservent les décorateurs MikroORM plutôt que d'être des objets métier purs. Ce compromis pragmatique m'a permis de livrer un MVP fonctionnel tout en explorant concrètement les bénéfices et contraintes de l'architecture hexagonale, au-delà de la théorie.
+Cette migration reste pragmatique : tous les modules ne sont pas au même niveau de maturité. Certains modules historiques conservent encore des entités ou services plus couplés à l’ORM ou à NestJS. En revanche, le bounded context **`athletes`** illustre désormais la cible actuelle : domaine TypeScript pur, ports entrants/sortants explicites, adapters isolés, composition Nest dans le module.
 
 ---
 
-## Structure des Couches
+## Implémentation pragmatique
 
-```
+DropIt n’est pas une implémentation exhaustive et dogmatique de l’hexagonal. Les compromis actuels sont assumés.
+
+### Ce qui est visé
+
+- Les classes `application/` et `domain/` ne doivent pas dépendre de NestJS.
+- Les use cases reçoivent leurs dépendances via des interfaces.
+- Les dépendances techniques vivent dans `infrastructure/` ou `http/`.
+- Le `*Module` Nest est la couche de composition : il branche les tokens vers les implémentations concrètes.
+
+### Ce qui varie encore selon les modules
+
+- Certains bounded contexts historiques ont encore des entités domaine couplées à MikroORM.
+- Certains services applicatifs sont encore plus proches du modèle n-tiers.
+- Certains contrats d’erreur ou DTOs sont encore à affiner.
+
+### Cas de référence actuel : `athletes`
+
+Le bounded context `athletes` est aujourd’hui globalement aligné avec l’architecture cible :
+
+- ✅ Domaine pur TypeScript : `Athlete`, `PersonalRecord`, `PhysicalMetric`, `CompetitorStatus`.
+- ✅ Entités MikroORM sorties du domaine et placées dans `modules/database/entities`.
+- ✅ Ports entrants découpés par capacité métier.
+- ✅ Ports sortants pour persistence et dépendances inter-BC.
+- ✅ Repositories MikroORM isolés en infrastructure.
+- ✅ Adapters vers Auth et Training derrière des ports.
+- ✅ Mappers séparés entre persistence/domain et HTTP/DTO.
+- ✅ Policies d’accès dans la couche application.
+- ✅ Exception filter HTTP dédié.
+- ✅ Read-models applicatifs pour les vues optimisées.
+
+Restes, compromis ou chantiers connus :
+
+- Certains inputs applicatifs utilisent encore des types issus de `@dropit/schemas`.
+- Les erreurs applicatives du BC exposent encore un `statusCode`, pratique pour le mapping HTTP mais pas totalement neutre vis-à-vis du transport.
+- Les tests doivent être renforcés pour profiter réellement de cette architecture : tests unitaires des objets domaine et use cases avec ports mockés, sans `TestingModule` Nest ni base de données.
+- La responsabilité de génération des UUID doit être clarifiée : aujourd’hui elle repose encore largement sur MikroORM / la persistence, alors que l’objectif serait que le domaine ou l’application du BC concerné crée explicitement ses IDs, en s’appuyant sur le shared kernel (`IdGenerator`, `UuidIdGenerator`, types d’IDs brandés).
+- Les autres bounded contexts ne sont pas tous au même niveau de séparation.
+
+---
+
+## Structure des couches
+
+Structure cible illustrée par `apps/api/src/modules/athletes` :
+
+```txt
 modules/
 └── athletes/
-    ├── domain/              # 🔵 Couche Domain (Entités métier)
-    │   └── athlete.entity.ts
+    ├── domain/
+    │   ├── athlete.ts
+    │   ├── personal-record.ts
+    │   ├── physical-metric.ts
+    │   ├── competitor-status.ts
+    │   └── *-id.ts
     │
-    ├── application/         # 🟢 Couche Application (Logique métier)
-    │   ├── ports/          # Interfaces (contrats)
-    │   │   ├── athlete.repository.ts        # IAthleteRepository (Output Port)
-    │   │   └── athlete-use-cases.port.ts    # IAthleteUseCases (Input Port)
-    │   └── use-cases/
-    │       └── athlete-use-cases.ts         # Implémentation (framework-agnostic)
+    ├── application/
+    │   ├── athlete-profiles.ts
+    │   ├── athlete-personal-records.ts
+    │   ├── athlete-physical-metrics.ts
+    │   ├── athlete-competition-status.ts
+    │   ├── ports/
+    │   │   ├── in/
+    │   │   └── out/
+    │   ├── policies/
+    │   ├── errors/
+    │   └── read-models/
     │
-    ├── infrastructure/      # 🟡 Couche Infrastructure (Adaptateurs sortants)
-    │   └── mikro-athlete.repository.ts      # Implémentation MikroORM
+    ├── infrastructure/
+    │   ├── mikro-athlete.repository.ts
+    │   ├── mikro-personal-record.repository.ts
+    │   ├── mikro-physical-metric.repository.ts
+    │   ├── mikro-competitor-status.repository.ts
+    │   ├── auth-organization-membership.adapter.ts
+    │   ├── auth-athlete-user-profile.adapter.ts
+    │   ├── training-exercise-catalog.adapter.ts
+    │   └── mappers/
     │
-    └── interface/          # 🔴 Couche Interface (Adaptateurs entrants)
-        ├── controllers/
-        │   └── athlete.controller.ts        # Controller NestJS
-        ├── mappers/
-        │   └── athlete.mapper.ts            # Entité → DTO
-        └── presenters/
-            └── athlete.presenter.ts         # DTO → Réponse HTTP
+    ├── http/
+    │   ├── athlete.controller.ts
+    │   ├── personal-record.controller.ts
+    │   ├── physical-metric.controller.ts
+    │   ├── competitor-status.controller.ts
+    │   ├── athlete-exception.filter.ts
+    │   └── mappers/
+    │
+    └── athletes.module.ts
 ```
 
-### Règle de placement (application / infrastructure / interface)
+### Règle de placement
 
-- **`application/`** : ports (contrats), use-cases sans décorateurs Nest, types et exceptions métier. Aucune dépendance à NestJS, à l’ORM ni aux SDK externes.
-- **`infrastructure/`** : implémentations des ports sortants (`@Injectable()`, `@Inject()`, accès base de données, APIs tierces, email, etc.).
-- **`interface/`** : adaptateurs entrants (controllers, mappers, presenters).
-- **`*Module` Nest** : composition uniquement — enregistre les `providers`, `useFactory` / `useClass`, et relie chaque **token** (`Symbol`) à son implémentation.
+- **`domain/`** : objets métier, invariants, value objects/IDs, erreurs domaine. Pas de NestJS, pas de MikroORM, pas d’API externe.
+- **`application/`** : use cases, ports, policies, erreurs applicatives, read-models. Pas de décorateurs Nest, pas d’accès direct à l’ORM.
+- **`application/ports/in/`** : contrats appelés par les adapters entrants, par exemple HTTP.
+- **`application/ports/out/`** : contrats utilisés par les use cases pour sortir du cœur applicatif : repositories, autres BC, APIs externes.
+- **`infrastructure/`** : adapters sortants : repositories MikroORM, adapters vers Auth/Training, SDKs externes, mappers persistence.
+- **`http/`** : adapters entrants HTTP : controllers, mappers DTO, filters, parsing des paramètres externes.
+- **`*Module` Nest** : composition uniquement — enregistre les providers, `useFactory` / `useClass`, et relie chaque token `Symbol` à son implémentation.
+
+> Dans d’anciens exemples ou dans de la littérature, la couche HTTP peut être appelée `interface/`. Dans DropIt, le BC `athletes` utilise désormais le nom explicite `http/` pour l’adapter entrant HTTP.
 
 ---
 
-## Flux de Données
+## Flux de données
 
-### Requête HTTP → Réponse
+### Requête HTTP → réponse HTTP
 
-```
+```txt
 1. HTTP Request
    ↓
-2. 🔴 Controller (NestJS)
-   - Valide les permissions
-   - Extrait les paramètres
+2. 🔴 Controller HTTP NestJS
+   - Applique guards / permissions
+   - Parse les IDs externes
+   - Mappe body/params vers inputs applicatifs
    ↓
-3. 🟢 Use-Case (Pure TypeScript)
-   - Logique métier
-   - Règles de validation
-   - Orchestration
+3. 🟢 Use case application
+   - Orchestre le cas d’usage
+   - Applique les règles applicatives
+   - Appelle les policies et ports sortants
    ↓
-4. 🟡 Repository (MikroORM)
-   - Accès base de données
+4. 🔵 Domaine
+   - Porte les invariants métier
+   - Construit / modifie des objets valides
    ↓
-5. 🔵 Entity (Domain)
-   - Retourne l'entité métier
+5. 🟡 Adapter infrastructure
+   - Repository MikroORM, adapter Auth, adapter Training, API externe...
    ↓
-6. 🔴 Mapper (Interface)
-   - Entité → DTO
+6. 🟢 Use case application
+   - Retourne domaine ou read-model
    ↓
-7. 🔴 Presenter (Interface)
-   - DTO → Réponse HTTP (status code, format)
+7. 🔴 Mapper HTTP / Exception filter
+   - Transforme le résultat ou l’erreur en réponse HTTP
    ↓
 8. HTTP Response
+```
+
+```mermaid
+flowchart TD
+  Client[Client HTTP] --> Controller[HTTP Controller]
+  Controller --> UseCase[Application Use Case]
+  UseCase --> Domain[Domain Object]
+  UseCase --> OutPort[Output Port]
+  OutPort --> Adapter[Infrastructure Adapter]
+  Adapter --> DB[(DB / External BC / API)]
+  UseCase --> Controller
+  Controller --> Response[HTTP Response]
 ```
 
 ---
 
 ## Ports & Adapters
 
-### 🔌 Qu'est-ce qu'un Port ?
+### Qu’est-ce qu’un port ?
 
-Un **port** est une **interface** qui définit un contrat. C'est un point d'entrée ou de sortie de l'application.
+Un **port** est une interface qui définit un contrat. Il représente ce que le cœur applicatif expose ou ce dont il a besoin.
 
-#### Input Port (Port d'entrée)
-Interface exposée par l'application (ce que l'extérieur peut appeler).
+#### Input port
 
-**Exemple** : `IAthleteUseCases`
+Un input port décrit ce qu’un adapter entrant peut appeler.
+
+Exemple dans `athletes` :
 
 ```typescript
-// application/ports/athlete-use-cases.port.ts
-export interface IAthleteUseCases {
-  findOne(id: string, userId: string, orgId: string): Promise<Athlete>;
-  create(data: CreateAthlete, userId: string): Promise<Athlete>;
-  // ...
-}
+// application/ports/in/athlete-profiles.port.ts
+export const ATHLETE_PROFILES = Symbol('ATHLETE_PROFILES');
 
-export const ATHLETE_USE_CASES = Symbol('ATHLETE_USE_CASES'); // Token d'injection
+export interface IAthleteProfiles {
+  findById(athleteId: AthleteId, currentUserId: UserId, organizationId: OrganizationId): Promise<Athlete>;
+  create(data: AthleteCreation): Promise<Athlete>;
+  updateOwn(athleteId: AthleteId, data: AthleteUpdate, userId: UserId): Promise<Athlete>;
+}
 ```
 
-#### Output Port (Port de sortie)
-Interface que l'application utilise pour communiquer avec l'extérieur (DB, API, etc.).
+Le BC `athletes` expose plusieurs ports entrants au lieu d’un seul gros service :
 
-**Exemple** : `IAthleteRepository`
+- `ATHLETE_PROFILES`
+- `ATHLETE_PERSONAL_RECORDS`
+- `ATHLETE_PHYSICAL_METRICS`
+- `ATHLETE_COMPETITION_STATUS`
+
+Ce découpage rend les responsabilités plus lisibles qu’un unique `AthleteUseCases` monolithique.
+
+#### Output port
+
+Un output port décrit une dépendance dont l’application a besoin.
+
+Exemple repository :
 
 ```typescript
-// application/ports/athlete.repository.ts
+// application/ports/out/athlete.repository.port.ts
+export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
+export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
+
 export interface IAthleteRepository {
-  getOne(id: string): Promise<Athlete | null>;
-  save(athlete: Athlete): Promise<void>;
-  // ...
+  findById(athleteId: AthleteId): Promise<Athlete | null>;
+  findByUserId(userId: UserId): Promise<Athlete | null>;
+  save(athlete: Athlete): Promise<Athlete>;
+  remove(athlete: Athlete): Promise<void>;
 }
-
-export const ATHLETE_REPO = Symbol('ATHLETE_REPO'); // Token d'injection
 ```
 
-### 🔌 Qu'est-ce qu'un Adapter ?
+Exemples de ports inter-BC dans `athletes` :
 
-Un **adapter** est une **implémentation** d'un port. Il adapte une technologie spécifique au contrat défini.
+- `IOrganizationMembership` : masque le BC Auth / membership.
+- `IAthleteUserProfile` : masque le profil utilisateur Auth.
+- `IExerciseCatalog` : masque le catalogue d’exercices du BC Training.
 
-#### Driving Adapter (Adaptateur entrant)
-Appelle l'application depuis l'extérieur.
+Ainsi, les use cases `athletes` ne dépendent pas directement des implémentations Auth ou Training.
 
-**Exemple** : `AthleteController` (adapter NestJS)
+### Qu’est-ce qu’un adapter ?
+
+Un **adapter** est une implémentation concrète d’un port.
+
+#### Driving adapter / adapter entrant
+
+Il appelle l’application depuis l’extérieur.
+
+Exemple : un controller HTTP NestJS.
 
 ```typescript
-// interface/controllers/athlete.controller.ts
 @Controller()
 export class AthleteController {
   constructor(
-    @Inject(ATHLETE_USE_CASES) // ✅ Dépend de l'interface, pas de l'implémentation
-    private readonly athleteUseCases: IAthleteUseCases
+    @Inject(ATHLETE_PROFILES)
+    private readonly athleteProfiles: IAthleteProfiles
   ) {}
 }
 ```
 
-#### Driven Adapter (Adaptateur sortant)
-Implémente les ports de sortie avec une technologie spécifique.
+Le controller dépend du port `IAthleteProfiles`, pas d’une classe concrète de use case.
 
-**Exemple** : `MikroAthleteRepository` (adapter MikroORM)
+#### Driven adapter / adapter sortant
 
-```typescript
-// infrastructure/mikro-athlete.repository.ts
-@Injectable()
-export class MikroAthleteRepository implements IAthleteRepository {
-  // Utilise MikroORM pour accéder à la DB
-}
-```
+Il implémente un port sortant avec une technologie précise.
+
+Exemples dans `athletes` :
+
+- `MikroAthleteRepository` implémente `IAthleteRepository` et `IAthleteReadRepository` avec MikroORM.
+- `AuthOrganizationMembershipAdapter` implémente `IOrganizationMembership` en s’appuyant sur Auth.
+- `AuthAthleteUserProfileAdapter` implémente `IAthleteUserProfile` en s’appuyant sur Auth/User.
+- `TrainingExerciseCatalogAdapter` implémente `IExerciseCatalog` en s’appuyant sur Training.
 
 ---
 
-## Injection de Dépendances
+## Domaine pur et persistence séparée
 
-### Qu'est-ce qu'un Token d'Injection ?
+Le BC `athletes` ne met plus les décorateurs MikroORM dans ses objets domaine.
 
-Un **token** est un **identifiant unique** utilisé par NestJS pour savoir **quelle implémentation injecter** quand on demande une interface.
-
-#### Pourquoi des Symbols ?
-
-En TypeScript, les interfaces n'existent pas au runtime. On ne peut pas faire :
-```typescript
-@Inject(IAthleteUseCases) // ❌ IAthleteUseCases n'existe pas au runtime
-```
-
-On utilise donc un **Symbol** comme token :
-```typescript
-export const ATHLETE_USE_CASES = Symbol('ATHLETE_USE_CASES'); // ✅ Existe au runtime
-
-@Inject(ATHLETE_USE_CASES) // ✅ Fonctionne !
-```
-
-### Configuration dans le Module NestJS
-
-Le module NestJS fait le lien entre les **ports** (interfaces) et les **adapters** (implémentations).
+### Domaine
 
 ```typescript
-// athletes.module.ts
-@Module({
-  providers: [
-    // 1️⃣ Repositories : Port → Adapter
-    MikroAthleteRepository, // Implémentation concrète
-    {
-      provide: ATHLETE_REPO, // Token (identifiant)
-      useClass: MikroAthleteRepository, // Quelle classe injecter
-    },
+export class Athlete {
+  public readonly id: AthleteId | null;
+  public readonly userId: UserId;
+  public readonly firstName: string;
+  public readonly lastName: string;
 
-    // 2️⃣ Use-Cases : Port → Adapter
-    AthleteUseCases, // Implémentation concrète
-    {
-      provide: ATHLETE_USE_CASES, // Token
-      useFactory: (
-        athleteRepo: IAthleteRepository,
-        userUseCases: UserUseCases,
-        memberUseCases: MemberUseCases
-      ) => {
-        // Factory : on construit l'instance manuellement
-        return new AthleteUseCases(athleteRepo, userUseCases, memberUseCases);
-      },
-      inject: [ATHLETE_REPO, UserUseCases, MemberUseCases], // Dépendances à injecter
-    },
-  ],
-})
-export class AthletesModule {}
-```
+  constructor(params: AthleteProps) {
+    const firstName = params.firstName.trim();
+    const lastName = params.lastName.trim();
 
-### Pourquoi pas de `@Injectable()` dans les Use Cases ?
+    if (!firstName) {
+      throw new InvalidAthleteError('First name is required');
+    }
 
-Les use cases sont dans la couche **application** et doivent rester **framework-agnostic**.
+    if (!lastName) {
+      throw new InvalidAthleteError('Last name is required');
+    }
 
-```typescript
-// ❌ MAUVAIS - Couplage à NestJS
-@Injectable() // <- Dépendance à NestJS !
-export class AthleteUseCases {
-  constructor(
-    @Inject(ATHLETE_REPO) // <- Dépendance à NestJS !
-    private readonly athleteRepository: IAthleteRepository
-  ) {}
-}
-
-// ✅ BON - Framework-agnostic
-export class AthleteUseCases { // <- Pur TypeScript !
-  constructor(
-    private readonly athleteRepository: IAthleteRepository // <- Pas de décorateur !
-  ) {}
+    this.id = params.id ?? null;
+    this.userId = params.userId;
+    this.firstName = firstName;
+    this.lastName = lastName;
+  }
 }
 ```
 
-**Résultat** : Le même use-case peut être utilisé dans NestJS, Express, CLI, Lambda, etc.
+### Persistence
+
+Les entités MikroORM vivent dans `apps/api/src/modules/database/entities` et sont converties via des mappers dans `infrastructure/mappers`.
+
+Ce choix évite que le domaine dépende de MikroORM et permet de faire évoluer la persistence sans faire fuiter ses détails dans les use cases.
+
+---
+
+## Injection de dépendances NestJS
+
+### Pourquoi des tokens `Symbol` ?
+
+En TypeScript, les interfaces n’existent pas au runtime. On ne peut pas injecter une interface directement :
+
+```typescript
+@Inject(IAthleteProfiles) // ❌ IAthleteProfiles n'existe pas au runtime
+```
+
+On utilise donc un token :
+
+```typescript
+export const ATHLETE_PROFILES = Symbol('ATHLETE_PROFILES');
+
+@Inject(ATHLETE_PROFILES) // ✅ Existe au runtime
+```
+
+### Pourquoi pas de `@Injectable()` dans les use cases ?
+
+Les use cases sont dans la couche application et doivent rester framework-agnostic.
+
+```typescript
+// ❌ Mauvais : couplage NestJS
+@Injectable()
+export class AthleteProfiles {
+  constructor(@Inject(ATHLETE_REPO) private readonly repo: IAthleteRepository) {}
+}
+
+// ✅ Bon : TypeScript pur
+export class AthleteProfiles {
+  constructor(private readonly repo: IAthleteRepository) {}
+}
+```
+
+Le même use case peut alors être utilisé depuis NestJS, une CLI, un worker, une Lambda, etc.
 
 ### Pourquoi utiliser `useFactory` ?
 
-#### Option 1 : `useClass` (simple)
+Comme les use cases n’ont pas de décorateurs Nest, le module Nest est responsable de leur construction.
+
 ```typescript
 {
-  provide: ATHLETE_USE_CASES,
-  useClass: AthleteUseCases, // ❌ NestJS ne peut pas résoudre les dépendances
+  provide: ATHLETE_PROFILES,
+  useFactory: (
+    athleteRepo: IAthleteRepository,
+    athleteReadRepo: IAthleteReadRepository,
+    athleteUserProfile: IAthleteUserProfile,
+    organizationMembership: IOrganizationMembership,
+    athleteAccessPolicy: IAthleteAccessPolicy
+  ) => {
+    return new AthleteProfiles(
+      athleteRepo,
+      athleteReadRepo,
+      athleteUserProfile,
+      organizationMembership,
+      athleteAccessPolicy
+    );
+  },
+  inject: [
+    ATHLETE_REPO,
+    ATHLETE_READ_REPO,
+    ATHLETE_USER_PROFILE,
+    ORGANIZATION_MEMBERSHIP,
+    ATHLETE_ACCESS_POLICY,
+  ],
 }
 ```
-**Problème** : NestJS ne peut pas injecter automatiquement car `AthleteUseCases` n'a plus `@Injectable()`.
 
-#### Option 2 : `useFactory` (flexible) ✅
-```typescript
-{
-  provide: ATHLETE_USE_CASES,
-  useFactory: (repo, user, member) => new AthleteUseCases(repo, user, member),
-  inject: [ATHLETE_REPO, UserUseCases, MemberUseCases],
-}
+Le `*Module` Nest devient la racine de composition : il sait quelles implémentations concrètes brancher, mais cette connaissance ne remonte pas dans l’application.
+
+---
+
+## Ports inter-BC
+
+Un point important de la refactorisation `athletes` est l’isolation des dépendances vers les autres bounded contexts.
+
+```mermaid
+flowchart LR
+  AthleteUseCase[Use case athletes]
+  MembershipPort[IOrganizationMembership]
+  UserPort[IAthleteUserProfile]
+  ExercisePort[IExerciseCatalog]
+  AuthMembership[AuthOrganizationMembershipAdapter]
+  AuthUser[AuthAthleteUserProfileAdapter]
+  TrainingExercise[TrainingExerciseCatalogAdapter]
+  AuthBC[BC Auth]
+  TrainingBC[BC Training]
+
+  AthleteUseCase --> MembershipPort
+  AthleteUseCase --> UserPort
+  AthleteUseCase --> ExercisePort
+  MembershipPort --> AuthMembership --> AuthBC
+  UserPort --> AuthUser --> AuthBC
+  ExercisePort --> TrainingExercise --> TrainingBC
 ```
-**Avantage** : On contrôle la création de l'instance et on injecte les dépendances manuellement.
 
-### Composition d’adaptateurs sortants : port → canal → transport
+Les use cases `athletes` parlent uniquement à des contrats métier locaux. Les adapters traduisent ensuite ces contrats vers Auth ou Training.
 
-Parfois un seul adapter ne suffit pas : on découpe en **plusieurs responsabilités**, chacune derrière un petit contrat.
+Cette règle limite les dépendances directes entre bounded contexts et évite que des choix internes à Auth ou Training contaminent le cœur applicatif `athletes`.
 
-- **Port sortant large** : ce que le use-case voit (ex. « envoyer une notification »).
-- **Canal** : traduit une demande métier en message adapté au médium (ex. construire un email HTML à partir d’un `NotificationRequest`).
-- **Transport** : envoie réellement le message avec une technologie précise (ex. SMTP local en dev, API HTTP en prod).
+---
 
-Le use-case et les ports **application** ne choisissent pas Maildev vs Brevo : ce choix vit dans une **factory** enregistrée dans le module (voir ci-dessous). Exemple concret dans le dépôt : module **notification** — `INotificationPort` / `NotificationAdapter`, canaux email/SMS/push, et `EMAIL_TRANSPORT` pour Brevo ou Maildev.
+## Policies applicatives
+
+Les règles d’accès qui relèvent du métier applicatif vivent dans `application/policies`.
+
+Exemple : `AthleteAccessPolicy` centralise les règles du type :
+
+- un coach peut voir les athlètes de son organisation ;
+- un athlète peut voir ses propres données ;
+- seul un coach peut gérer certaines données d’athlète ;
+- un athlète doit appartenir à l’organisation courante.
+
+Cela évite de disperser ces règles dans les controllers HTTP ou dans les repositories.
+
+---
+
+## Read-models
+
+Le BC `athletes` distingue les objets domaine et certains read-models applicatifs.
+
+Exemple : `AthleteDetailsReadModel` sert à retourner une vue enrichie d’un athlète avec des informations agrégées ou optimisées pour l’affichage.
+
+La logique de requête optimisée vit dans l’infrastructure, mais le type retourné au use case est un read-model applicatif. Cela permet d’éviter de forcer le domaine à représenter toutes les projections nécessaires à l’UI.
+
+Règle pratique :
+
+- **Domaine** : objets qui portent des invariants et comportements métier.
+- **Read-model** : projection utile à une lecture, sans prétendre être une entité métier complète.
+
+---
+
+## Gestion des erreurs
+
+Le BC `athletes` ne traduit plus les erreurs business manuellement dans chaque controller.
+
+Flux actuel :
+
+```txt
+Domain object
+  → throw DomainError
+Use case application
+  → convertit en erreur applicative connue si nécessaire
+Controller HTTP
+  → laisse remonter
+AthleteExceptionFilter
+  → convertit en réponse HTTP
+```
+
+```mermaid
+sequenceDiagram
+  autonumber
+  participant Client
+  participant HTTP as Controller HTTP
+  participant App as Use case
+  participant Domain
+  participant Filter as AthleteExceptionFilter
+
+  Client->>HTTP: Request
+  HTTP->>App: Execute use case
+
+  alt Success
+    App->>Domain: Build / update object
+    Domain-->>App: Valid domain object
+    App-->>HTTP: Result
+    HTTP-->>Client: 2xx response
+  else Expected error
+    App--xHTTP: Throw known BC error
+    HTTP--xFilter: Bubble up
+    Filter-->>Client: statusCode + message
+  else Unexpected technical error
+    App--xHTTP: Throw unknown error
+    HTTP--xFilter: Bubble up
+    Filter->>Filter: Log stack
+    Filter-->>Client: 500 + generic message
+  end
+```
+
+Règles :
+
+- Le domaine jette des erreurs domaine.
+- Les IDs externes sont parsés à la frontière HTTP avec des parseurs domaine (`parseAthleteId`, `parsePersonalRecordId`, etc.).
+- Les use cases convertissent les erreurs de validation domaine attendues en erreurs applicatives.
+- Les controllers ne font pas de mapping d’erreur business à la main.
+- `AthleteExceptionFilter` convertit les erreurs connues en réponses HTTP.
+- Les erreurs techniques inconnues sont loggées côté serveur et retournées comme `500` générique.
+
+Compromis actuel : certaines erreurs applicatives portent un `statusCode`. C’est simple et efficace pour le filter HTTP, mais une amélioration future pourrait consister à exposer un code métier neutre, puis mapper ce code vers HTTP uniquement dans l’adapter HTTP.
+
+---
+
+## Composition d’adaptateurs sortants : port → canal → transport
+
+Parfois un seul adapter ne suffit pas. Certains modules découpent l’infrastructure en plusieurs responsabilités, chacune derrière un petit contrat.
+
+- **Port sortant large** : ce que le use case voit, par exemple « envoyer une notification ».
+- **Canal** : traduit une demande métier en message adapté au médium, par exemple construire un email HTML.
+- **Transport** : envoie réellement le message avec une technologie précise, par exemple SMTP local en dev ou API HTTP en prod.
+
+Le use case et les ports application ne choisissent pas Maildev ou Brevo. Ce choix vit dans une factory enregistrée dans le module.
+
+Exemple concret dans le dépôt : module **notification** — `INotificationPort` / `NotificationAdapter`, canaux email/SMS/push, et `EMAIL_TRANSPORT` pour Brevo ou Maildev.
 
 ```mermaid
 flowchart LR
@@ -302,9 +539,7 @@ flowchart LR
 
 ### Factory pilotée par l’environnement
 
-Quand l’implémentation dépend du **contexte d’exécution** (dev, test, prod), un `useFactory` sans dépendances injectées, ou avec la config, permet de retourner la bonne classe **sans** que les adapters métier contiennent de `if (env === 'production')`.
-
-Pattern typique dans un `@Module` :
+Quand l’implémentation dépend du contexte d’exécution, un `useFactory` permet de retourner la bonne classe sans mettre de `if (env === 'production')` dans les use cases ou adapters métier.
 
 ```typescript
 {
@@ -313,280 +548,195 @@ Pattern typique dans un `@Module` :
     if (config.env !== 'production') {
       return new MaildevAdapter(/* … */);
     }
+
     if (!config.email.brevo.apiKey) {
       throw new Error('BREVO_API_KEY is required in production');
     }
+
     return new BrevoAdapter(/* … */);
   },
 }
 ```
 
-Les adapters (canal) reçoivent uniquement `IEmailTransport` via `@Inject(EMAIL_TRANSPORT)` : ils restent testables et découplés du fournisseur concret.
-
-### Fail-fast au démarrage
-
-Pour l’infra **indispensable** (clés API, URLs, secrets), il est préférable de **faire échouer le bootstrap** de l’application si la configuration est invalide, plutôt que de découvrir l’erreur au premier envoi en production. Les `useFactory` du module sont un endroit naturel pour ces validations.
+Pour l’infrastructure indispensable, les factories sont aussi un bon endroit pour faire du **fail-fast** au démarrage : mieux vaut échouer au bootstrap si une clé API ou une URL critique manque, plutôt que découvrir l’erreur au premier appel en production.
 
 ---
 
-## Flux de Démarrage
+## Chantiers de consolidation
 
-### 1. NestJS démarre et scanne les modules
+### Tests métier
 
-```typescript
-@Module({
-  imports: [AthletesModule],
-})
-export class AppModule {}
-```
+La refactorisation hexagonale n’a de valeur que si elle est exploitée dans les tests.
 
-### 2. NestJS enregistre les providers
+Pour les bounded contexts alignés avec cette architecture, les tests à privilégier sont :
 
-Pour chaque provider dans `AthletesModule` :
-- `ATHLETE_REPO` → `MikroAthleteRepository`
-- `ATHLETE_USE_CASES` → Factory qui crée `AthleteUseCases`
+- tests unitaires du domaine : invariants, méthodes métier, erreurs domaine ;
+- tests unitaires des use cases : ports sortants remplacés par des doubles simples, sans NestJS ;
+- tests des policies applicatives : règles d’accès et cas limites ;
+- tests d’adapters séparés : repositories MikroORM, mappers persistence, mappers HTTP ;
+- quelques tests d’intégration HTTP pour vérifier le wiring Nest, les guards et les filters.
 
-### 3. Injection dans le Controller
+L’objectif est d’éviter que chaque test métier démarre Nest ou touche la base de données. Les tests lourds doivent vérifier l’intégration, pas remplacer les tests du cœur métier.
 
-```typescript
-@Controller()
-export class AthleteController {
-  constructor(
-    @Inject(ATHLETE_USE_CASES) // NestJS cherche le provider avec ce token
-    private readonly athleteUseCases: IAthleteUseCases
-  ) {}
-}
-```
+### Génération des UUID
 
-**Ce qui se passe** :
-1. NestJS voit `@Inject(ATHLETE_USE_CASES)`
-2. Il cherche le provider avec `provide: ATHLETE_USE_CASES`
-3. Il exécute la factory : `(repo, user, member) => new AthleteUseCases(...)`
-4. Pour exécuter la factory, il injecte les dépendances listées dans `inject: [...]`
-5. Il retourne l'instance créée au controller
+Un autre chantier concerne la responsabilité de génération des IDs.
 
----
+Aujourd’hui, une partie des IDs est encore générée implicitement côté persistence / MikroORM. C’est pratique, mais cela veut dire que le domaine manipule parfois des objets sans identité jusqu’au `save`, et que la création de l’identité dépend d’un détail d’infrastructure.
 
-## Gestion des Erreurs
+La cible serait plutôt :
 
-### Dans le Use-Case (Application Layer)
+- le bounded context décide quand une identité est créée ;
+- le domaine ou le use case reçoit un ID déjà généré au moment de construire l’objet ;
+- la génération concrète reste abstraite derrière un port du shared kernel, par exemple `IdGenerator` / `UuidIdGenerator` ;
+- les types d’IDs brandés (`AthleteId`, `PersonalRecordId`, `UserId`, etc.) continuent de valider et documenter les frontières.
 
-On utilise des **erreurs JavaScript standard** pour rester framework-agnostic :
+Exemple d’intention :
 
 ```typescript
-// application/use-cases/athlete-use-cases.ts
-async findOne(id: string): Promise<Athlete> {
-  const athlete = await this.athleteRepository.getOne(id);
-
-  if (!athlete) {
-    throw new Error(`Athlete with ID ${id} not found`); // ✅ Standard JS
-  }
-
-  return athlete;
-}
-```
-
-### Dans le Controller (Interface Layer)
-
-Le **Presenter** convertit les erreurs en réponses HTTP appropriées :
-
-```typescript
-// interface/controllers/athlete.controller.ts
-@TsRestHandler(c.getAthlete)
-getAthlete() {
-  return tsRestHandler(c.getAthlete, async ({ params }) => {
-    try {
-      const athlete = await this.athleteUseCases.findOne(params.id);
-      const dto = AthleteMapper.toDto(athlete);
-      return AthletePresenter.presentOne(dto); // 200 OK
-    } catch (error) {
-      return AthletePresenter.presentError(error as Error); // 404, 500, etc.
-    }
-  });
-}
-```
-
-Le **Presenter** analyse l'erreur et retourne le bon code HTTP :
-- `"not found"` → `404 Not Found`
-- `"already exists"` → `400 Bad Request`
-- Autre → `500 Internal Server Error`
-
----
-
-## Avantages de cette Architecture
-
-### ✅ Indépendance du Framework
-
-**Sans architecture hexagonale :**
-```typescript
-import { Injectable, NotFoundException } from '@nestjs/common'; // ❌ Couplage NestJS
-
-@Injectable()
-export class AthleteUseCases {
-  async findOne(id: string) {
-    if (!athlete) {
-      throw new NotFoundException(); // ❌ Exception NestJS
-    }
-  }
-}
-```
-
-**Avec architecture hexagonale :**
-```typescript
-// ✅ Zéro import NestJS, pure TypeScript
-export class AthleteUseCases implements IAthleteUseCases {
-  async findOne(id: string): Promise<Athlete> {
-    if (!athlete) {
-      throw new Error('Athlete not found'); // ✅ Standard JS
-    }
-  }
-}
-```
-
-→ Ce code peut tourner dans **n'importe quel environnement** (Express, CLI, Lambda, etc.)
-
-### ✅ Testabilité
-
-**Tests unitaires simples** sans mock NestJS :
-
-```typescript
-describe('AthleteUseCases', () => {
-  it('should find athlete', async () => {
-    // Arrange : Mock simple de l'interface
-    const mockRepo: IAthleteRepository = {
-      getOne: jest.fn().mockResolvedValue(athlete),
-    };
-    const useCase = new AthleteUseCases(mockRepo, mockUser, mockMember);
-
-    // Act
-    const result = await useCase.findOne('123', 'user-id', 'org-id');
-
-    // Assert
-    expect(result).toBe(athlete);
-  });
+const athlete = new Athlete({
+  id: parseAthleteId(this.idGenerator.generate()),
+  userId,
+  firstName,
+  lastName,
 });
 ```
 
-→ Pas besoin de `TestingModule`, `@nestjs/testing`, etc.
-
-### ✅ Réutilisabilité
-
-Le même use-case peut être utilisé dans :
-- API REST (NestJS)
-- GraphQL (Apollo)
-- CLI
-- Message Queue (Bull, RabbitMQ)
-- Serverless (Lambda)
-
-→ Seuls les **adapters** changent, la **logique métier** reste identique.
+Ce point reste à concevoir finement : selon le cas, la génération peut appartenir au use case, à une factory domaine, ou à un service domaine. L’important est d’éviter que MikroORM soit la seule source implicite de l’identité métier.
 
 ---
 
-## Checklist : Comment implémenter un nouveau Use-Case
+## Checklist pour un nouveau use case
 
-### 1. Définir le Port (Interface)
+### 1. Définir le port entrant
 
 ```typescript
-// application/ports/my-feature-use-cases.port.ts
-export interface IMyFeatureUseCases {
-  doSomething(data: CreateData): Promise<Entity>;
-}
+export const MY_FEATURE = Symbol('MY_FEATURE');
 
-export const MY_FEATURE_USE_CASES = Symbol('MY_FEATURE_USE_CASES');
+export interface IMyFeature {
+  doSomething(input: DoSomethingInput): Promise<MyResult>;
+}
 ```
 
-### 2. Implémenter le Use-Case
+### 2. Définir les ports sortants nécessaires
 
 ```typescript
-// application/use-cases/my-feature-use-cases.ts
-export class MyFeatureUseCases implements IMyFeatureUseCases {
-  constructor(
-    private readonly repository: IMyRepository, // Interface !
-    private readonly otherService: IOtherService, // Interface !
-  ) {}
+export const MY_REPOSITORY = Symbol('MY_REPOSITORY');
 
-  async doSomething(data: CreateData): Promise<Entity> {
-    // Logique métier pure
-    // Pas d'import NestJS, juste TypeScript
-    const entity = await this.repository.save(data);
-    return entity;
+export interface IMyRepository {
+  save(entity: MyEntity): Promise<MyEntity>;
+}
+```
+
+### 3. Implémenter le use case en TypeScript pur
+
+```typescript
+export class MyFeature implements IMyFeature {
+  constructor(private readonly repository: IMyRepository) {}
+
+  async doSomething(input: DoSomethingInput): Promise<MyResult> {
+    const entity = new MyEntity(input);
+    return await this.repository.save(entity);
   }
 }
 ```
 
-### 3. Créer le Controller
+### 4. Implémenter les adapters
 
 ```typescript
-// interface/controllers/my-feature.controller.ts
-@Controller()
-export class MyFeatureController {
-  constructor(
-    @Inject(MY_FEATURE_USE_CASES)
-    private readonly useCases: IMyFeatureUseCases
-  ) {}
-
-  @TsRestHandler(contract.doSomething)
-  doSomething() {
-    return tsRestHandler(contract.doSomething, async ({ body }) => {
-      try {
-        const entity = await this.useCases.doSomething(body);
-        const dto = MyMapper.toDto(entity);
-        return MyPresenter.presentOne(dto);
-      } catch (error) {
-        return MyPresenter.presentError(error as Error);
-      }
-    });
-  }
+@Injectable()
+export class MikroMyRepository implements IMyRepository {
+  // Accès MikroORM et mapping entity persistence <-> domaine
 }
 ```
 
-### 4. Configurer le Module
+### 5. Brancher dans le module Nest
 
 ```typescript
-// my-feature.module.ts
 @Module({
   providers: [
-    MyFeatureUseCases,
+    MikroMyRepository,
+    { provide: MY_REPOSITORY, useClass: MikroMyRepository },
     {
-      provide: MY_FEATURE_USE_CASES,
-      useFactory: (repo: IMyRepository, other: IOtherService) => {
-        return new MyFeatureUseCases(repo, other);
-      },
-      inject: [MY_REPOSITORY, OTHER_SERVICE],
+      provide: MY_FEATURE,
+      useFactory: (repository: IMyRepository) => new MyFeature(repository),
+      inject: [MY_REPOSITORY],
     },
   ],
 })
 export class MyFeatureModule {}
 ```
 
+### 6. Exposer via un adapter entrant
+
+```typescript
+@Controller()
+export class MyFeatureController {
+  constructor(
+    @Inject(MY_FEATURE)
+    private readonly myFeature: IMyFeature
+  ) {}
+}
+```
+
+---
+
+## Règles pratiques
+
+- Ne pas importer `@nestjs/*` dans `domain/` ou dans les use cases `application/`.
+- Ne pas importer MikroORM dans `domain/` ou dans les use cases `application/`.
+- Les controllers ne doivent pas contenir les règles métier principales.
+- Les repositories ne doivent pas décider des règles métier : ils persistent et reconstruisent.
+- Les dépendances vers d’autres bounded contexts passent par des ports locaux.
+- Le module Nest est le seul endroit qui connaît le wiring concret.
+- Les mappers HTTP et les mappers persistence sont deux responsabilités différentes.
+- Les read-models sont acceptables pour les vues optimisées, à condition de ne pas polluer le domaine.
+
+---
+
+## État actuel du projet
+
+### ✅ Athletes BC
+
+État : **globalement aligné avec l’architecture cible**.
+
+- `AthleteProfiles` ✅
+- `AthletePersonalRecords` ✅
+- `AthletePhysicalMetrics` ✅
+- `AthleteCompetitionStatus` ✅
+- Domaine pur TypeScript ✅
+- Entités MikroORM séparées ✅
+- Ports `in/out` explicites ✅
+- Adapters Auth/Training derrière des ports ✅
+- Exception filter HTTP dédié ✅
+
+### ✅ Notification Module
+
+État : architecture hexagonale adaptée au besoin du module.
+
+- Ports IN/OUT, use case pur, adapters canaux + factory transport Maildev / Brevo ✅
+- Voir [`apps/api/src/modules/notification/README.md`](../apps/api/src/modules/notification/README.md)
+
+### 🟡 Auth Module
+
+État : structure hexagonale en place, avec affinages au fil des besoins produit.
+
+- Ports, use cases, adapters Better Auth, repositories MikroORM.
+- Certaines zones restent liées aux contraintes du provider Auth et aux flows produit.
+
+### 🟡 Training Module
+
+État : migration partielle.
+
+- Certains ports existent, notamment ceux consommés par `athletes`.
+- Le module n’est pas encore au même niveau de séparation que `athletes`.
+
 ---
 
 ## Ressources
 
-- [Hexagonal Architecture (Alistair Cockburn)](https://alistair.cockburn.us/hexagonal-architecture/)
+- [Hexagonal Architecture — Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
 - [NestJS Dependency Injection](https://docs.nestjs.com/fundamentals/custom-providers)
-- [Clean Architecture (Robert C. Martin)](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- Exemple appliqué dans le dépôt : [module notification](../apps/api/src/modules/notification/README.md) (flux métier, canaux, wiring Nest)
-
----
-
-## État Actuel du Projet
-
-### ✅ Modules refactorisés en architecture hexagonale
-
-**Athletes Module :**
-- `athlete-use-cases` ✅
-- `personal-record-use-cases` (à refactoriser)
-- `competitor-status-use-cases` (à refactoriser)
-
-**Training Module :**
-- `exercise-use-cases` (à refactoriser)
-- `complex-use-cases` (à refactoriser)
-- `workout-use-cases` (à refactoriser)
-- `training-session-use-cases` (à refactoriser)
-
-**Notification Module :**
-- Ports IN/OUT, use-case pur, adapters canaux + factory transport (Maildev / Brevo) ✅ — voir [apps/api/src/modules/notification/README.md](../apps/api/src/modules/notification/README.md)
-
-**Auth Module :**
-- Structure hexagonale en place (ports, use-cases, adapters better-auth, repositories MikroORM) ; affinages et alignement avec le reste du monorepo en cours selon les besoins produit (OTP, organisations, etc.)
+- [Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
+- Exemple appliqué dans le dépôt : [`apps/api/src/modules/athletes`](../apps/api/src/modules/athletes)
+- Exemple notification : [`apps/api/src/modules/notification/README.md`](../apps/api/src/modules/notification/README.md)
