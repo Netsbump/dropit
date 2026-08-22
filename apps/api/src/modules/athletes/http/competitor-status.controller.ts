@@ -1,25 +1,25 @@
 import { competitorStatusContract } from '@dropit/contract';
-import { Controller, UseFilters, UseGuards, Inject } from '@nestjs/common';
+import { Controller, Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
+import type { OrganizationId } from '../../../shared/kernel/identity';
 import {
   AuthenticatedUser,
   CurrentUser,
 } from '../../auth/infrastructure/decorators/auth.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
+import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
 import {
-  IAthleteCompetitionStatus,
   ATHLETE_COMPETITION_STATUS,
+  IAthleteCompetitionStatus,
 } from '../application/ports/in/athlete-competition-status.port';
+import { parseAthleteId } from '../domain/athlete-id';
+import { parseCompetitorStatusId } from '../domain/competitor-status-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toCompetitorStatusDto,
   toCompetitorStatusDtoList,
 } from './mappers/competitor-status.mapper';
-import { parseAthleteId } from '../domain/athlete-id';
-import { parseCompetitorStatusId } from '../domain/competitor-status-id';
-import type { OrganizationId } from '../../../shared/kernel/identity';
 
 const c = competitorStatusContract;
 
@@ -120,8 +120,10 @@ export class CompetitorStatusController {
     @CurrentUser() currentUser: AuthenticatedUser,
     @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
-    return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
+    return tsRestHandler(c.createCompetitorStatus, async ({ params, body }) => {
+      const athleteId = parseAthleteId(params.id);
       const competitorStatus = await this.athleteCompetitionStatus.change(
+        athleteId,
         body,
         currentUser.id,
         organizationId

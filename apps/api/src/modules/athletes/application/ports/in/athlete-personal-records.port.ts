@@ -3,13 +3,13 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
-import type { PersonalRecord } from '../../../domain/personal-record';
-import type { AthleteId } from '../../../domain/athlete-id';
-import type { PersonalRecordId } from '../../../domain/personal-record-id';
 import type {
   OrganizationId,
   UserId,
 } from '../../../../../shared/kernel/identity';
+import type { AthleteId } from '../../../domain/athlete-id';
+import type { PersonalRecord } from '../../../domain/personal-record';
+import type { PersonalRecordId } from '../../../domain/personal-record-id';
 
 export const ATHLETE_PERSONAL_RECORDS = Symbol('ATHLETE_PERSONAL_RECORDS');
 
@@ -44,6 +44,7 @@ export interface IAthletePersonalRecords {
    * Creates a new personal record
    */
   record(
+    athleteId: AthleteId,
     data: CreatePersonalRecordInput,
     currentUserId: UserId,
     organizationId: OrganizationId

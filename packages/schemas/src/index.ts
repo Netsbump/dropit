@@ -9,6 +9,7 @@ export * from './workout-category.schema';
 export * from './workout.schema';
 export * from './competitor-status.schema';
 export * from './personal-record.schema';
+export * from './physical-metric.schema';
 export * from './common.schema';
 export * from './role.schema';
 export * from './user.schema';

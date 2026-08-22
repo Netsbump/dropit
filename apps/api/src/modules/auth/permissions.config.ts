@@ -29,6 +29,12 @@ const ATHLETE_PERMISSIONS: Record<string, readonly AppAction[]> = {
   ],
   session: [AppAction.read],
   personalRecord: [AppAction.read, AppAction.create],
+  physicalMetric: [
+    AppAction.read,
+    AppAction.create,
+    AppAction.update,
+    AppAction.delete,
+  ],
   trainingSession: [AppAction.read],
   athleteTrainingSession: [AppAction.read, AppAction.update],
   competitorStatus: [AppAction.read],
@@ -91,6 +97,7 @@ const COACH_PERMISSIONS: Record<string, readonly AppAction[]> = {
     AppAction.update,
     AppAction.delete,
   ],
+  physicalMetric: [AppAction.read],
   trainingSession: [
     AppAction.read,
     AppAction.create,

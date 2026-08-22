@@ -7,13 +7,15 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response } from 'express';
+import { InvalidOrganizationIdError } from '../../../shared/kernel/identity';
 import { AthleteApplicationError } from '../application/errors/athlete.errors';
+import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
+import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
+import { PhysicalMetricException } from '../application/errors/physical-metric.exceptions';
 import { InvalidAthleteIdError } from '../domain/athlete-id';
 import { InvalidCompetitorStatusIdError } from '../domain/competitor-status-id';
 import { InvalidPersonalRecordIdError } from '../domain/personal-record-id';
-import { InvalidOrganizationIdError } from '../../../shared/kernel/identity';
-import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
-import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
+import { InvalidPhysicalMetricIdError } from '../domain/physical-metric-id';
 
 type HttpErrorResponse = {
   statusCode: number;
@@ -51,6 +53,7 @@ const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
     error instanceof InvalidAthleteIdError ||
     error instanceof InvalidCompetitorStatusIdError ||
     error instanceof InvalidPersonalRecordIdError ||
+    error instanceof InvalidPhysicalMetricIdError ||
     error instanceof InvalidOrganizationIdError
   ) {
     return {
@@ -62,7 +65,8 @@ const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
   if (
     error instanceof AthleteApplicationError ||
     error instanceof CompetitorStatusException ||
-    error instanceof PersonalRecordException
+    error instanceof PersonalRecordException ||
+    error instanceof PhysicalMetricException
   ) {
     return {
       statusCode: error.statusCode,

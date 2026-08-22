@@ -9,7 +9,7 @@ import { z } from 'zod';
 export const personalRecordContract = {
   getPersonalRecords: {
     method: 'GET',
-    path: '/personal-record',
+    path: '/personal-records',
     summary: 'Get all personal records',
     responses: {
       200: z.array(personalRecordSchema),
@@ -21,7 +21,7 @@ export const personalRecordContract = {
 
   getPersonalRecord: {
     method: 'GET',
-    path: '/personal-record/:id',
+    path: '/personal-records/:id',
     summary: 'Get a personal record by id',
     pathParams: z.object({
       id: z.string(),
@@ -39,7 +39,7 @@ export const personalRecordContract = {
 
   getAthletePersonalRecords: {
     method: 'GET',
-    path: '/athlete/:id/personal-records',
+    path: '/athletes/:id/personal-records',
     summary: 'Get all personal records for an athlete',
     pathParams: z.object({
       id: z.string(),
@@ -57,7 +57,7 @@ export const personalRecordContract = {
 
   getAthletePersonalRecordsSummary: {
     method: 'GET',
-    path: '/athlete/:id/personal-records/summary',
+    path: '/athletes/:id/personal-records/summary',
     summary: 'Get summary of personal records for an athlete',
     pathParams: z.object({
       id: z.string(),
@@ -75,8 +75,11 @@ export const personalRecordContract = {
 
   createPersonalRecord: {
     method: 'POST',
-    path: '/personal-record',
-    summary: 'Create a personal record',
+    path: '/athletes/:id/personal-records',
+    summary: 'Create a personal record for an athlete',
+    pathParams: z.object({
+      id: z.string(),
+    }),
     body: createPersonalRecordSchema,
     responses: {
       201: personalRecordSchema,
@@ -91,7 +94,7 @@ export const personalRecordContract = {
 
   updatePersonalRecord: {
     method: 'PATCH',
-    path: '/personal-record/:id',
+    path: '/personal-records/:id',
     summary: 'Update a personal record',
     pathParams: z.object({
       id: z.string(),
@@ -110,7 +113,7 @@ export const personalRecordContract = {
 
   deletePersonalRecord: {
     method: 'DELETE',
-    path: '/personal-record/:id',
+    path: '/personal-records/:id',
     summary: 'Delete a personal record',
     pathParams: z.object({
       id: z.string(),

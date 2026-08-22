@@ -3,28 +3,28 @@ import {
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
+import type { Athlete } from '../domain/athlete';
+import type { AthleteId } from '../domain/athlete-id';
 import {
   PersonalRecord,
   PersonalRecordDomainError,
 } from '../domain/personal-record';
-import type { Athlete } from '../domain/athlete';
-import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { PersonalRecordId } from '../domain/personal-record-id';
-import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
-import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
-import { IAthleteRepository } from './ports/out/athlete.repository.port';
-import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
-import { IAthletePersonalRecords } from './ports/in/athlete-personal-records.port';
-import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
-import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
-  PersonalRecordNotFoundException,
   AthleteNotFoundException,
   ExerciseNotFoundException,
   InvalidPersonalRecordException,
   NoAthletesFoundException,
   NoPersonalRecordsFoundException,
+  PersonalRecordNotFoundException,
 } from './errors/personal-record.exceptions';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IAthletePersonalRecords } from './ports/in/athlete-personal-records.port';
+import { IAthleteRepository } from './ports/out/athlete.repository.port';
+import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
+import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 
 export class AthletePersonalRecords implements IAthletePersonalRecords {
   constructor(
@@ -194,6 +194,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async record(
+    athleteId: AthleteId,
     data: CreatePersonalRecordInput,
     currentUserId: UserId,
     organizationId: OrganizationId
@@ -203,7 +204,6 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    const athleteId = parseAthleteId(data.athleteId);
     const athlete = await this.getAthleteOrThrow(athleteId);
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(

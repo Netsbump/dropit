@@ -1,25 +1,25 @@
 import { personalRecordContract } from '@dropit/contract';
-import { Controller, UseFilters, UseGuards, Inject } from '@nestjs/common';
+import { Controller, Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import {
-  IAthletePersonalRecords,
-  ATHLETE_PERSONAL_RECORDS,
-} from '../application/ports/in/athlete-personal-records.port';
-import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
-import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
+import type { OrganizationId } from '../../../shared/kernel/identity';
 import {
   AuthenticatedUser,
   CurrentUser,
 } from '../../auth/infrastructure/decorators/auth.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
+import { RequirePermissions } from '../../auth/infrastructure/decorators/permissions.decorator';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
+import {
+  ATHLETE_PERSONAL_RECORDS,
+  IAthletePersonalRecords,
+} from '../application/ports/in/athlete-personal-records.port';
+import { parseAthleteId } from '../domain/athlete-id';
+import { parsePersonalRecordId } from '../domain/personal-record-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toPersonalRecordDto,
   toPersonalRecordDtoList,
 } from './mappers/personal-record.mapper';
-import { parseAthleteId } from '../domain/athlete-id';
-import { parsePersonalRecordId } from '../domain/personal-record-id';
-import type { OrganizationId } from '../../../shared/kernel/identity';
 
 const c = personalRecordContract;
 
@@ -191,8 +191,10 @@ export class PersonalRecordController {
     @CurrentUser() currentUser: AuthenticatedUser,
     @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
-    return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
+    return tsRestHandler(c.createPersonalRecord, async ({ params, body }) => {
+      const athleteId = parseAthleteId(params.id);
       const personalRecord = await this.athletePersonalRecords.record(
+        athleteId,
         body,
         currentUser.id,
         organizationId

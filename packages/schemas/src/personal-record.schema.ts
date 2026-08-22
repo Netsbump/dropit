@@ -6,7 +6,6 @@ export const createPersonalRecordSchema = z.object({
     .date()
     .optional()
     .default(() => new Date()),
-  athleteId: z.string(),
   exerciseId: z.string(),
 });
 
@@ -17,7 +16,6 @@ export type CreatePersonalRecordInput = z.infer<
 export const updatePersonalRecordSchema = createPersonalRecordSchema
   .partial()
   .omit({
-    athleteId: true,
     exerciseId: true,
   });
 

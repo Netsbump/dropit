@@ -2,25 +2,25 @@ import {
   CreateCompetitorStatusInput,
   UpdateCompetitorStatusInput,
 } from '@dropit/schemas';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
+import type { Athlete } from '../domain/athlete';
+import type { AthleteId } from '../domain/athlete-id';
 import {
   CompetitorStatus,
   CompetitorStatusDomainError,
 } from '../domain/competitor-status';
-import type { Athlete } from '../domain/athlete';
-import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { CompetitorStatusId } from '../domain/competitor-status-id';
-import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
-import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
-import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
-import { IAthleteRepository } from './ports/out/athlete.repository.port';
-import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
-import { IOrganizationMembership } from './ports/out/organization-membership.port';
 import {
-  NoAthletesFoundException,
-  CompetitorStatusNotFoundException,
   AthleteNotFoundException,
+  CompetitorStatusNotFoundException,
   InvalidCompetitorStatusException,
+  NoAthletesFoundException,
 } from './errors/competitor-status.exceptions';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
+import { IAthleteRepository } from './ports/out/athlete.repository.port';
+import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
 
 export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   constructor(
@@ -133,6 +133,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   }
 
   async change(
+    athleteId: AthleteId,
     data: CreateCompetitorStatusInput,
     currentUserId: UserId,
     organizationId: OrganizationId
@@ -142,7 +143,6 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    const athleteId = parseAthleteId(data.athleteId);
     const athlete = await this.getAthleteOrThrow(athleteId);
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(

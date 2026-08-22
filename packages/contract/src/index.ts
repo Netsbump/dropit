@@ -1,4 +1,5 @@
 import { initContract } from '@ts-rest/core';
+import { adminContract } from './admin.contract';
 import { athleteTrainingSessionContract } from './athlete-training-session.contract';
 import { athleteContract } from './athlete.contract';
 import { competitorStatusContract } from './competitor-status.contract';
@@ -6,13 +7,13 @@ import { complexCategoryContract } from './complex-category.contract';
 import { complexContract } from './complex.contract';
 import { exerciseCategoryContract } from './exercise-category.contract';
 import { exerciseContract } from './exercise.contract';
+import { onboardingContract } from './onboarding.contract';
 import { personalRecordContract } from './personal-record.contract';
+import { physicalMetricContract } from './physical-metric.contract';
 import { trainingSessionContract } from './training-session.contract';
+import { userContract } from './user.contract';
 import { workoutCategoryContract } from './workout-category.contract';
 import { workoutContract } from './workout.contract';
-import { userContract } from './user.contract';
-import { onboardingContract } from './onboarding.contract';
-import { adminContract } from './admin.contract';
 
 const c = initContract();
 
@@ -28,6 +29,7 @@ export const apiContract = c.router({
   workout: workoutContract,
   competitorStatus: competitorStatusContract,
   personalRecord: personalRecordContract,
+  physicalMetric: physicalMetricContract,
   user: userContract,
   admin: adminContract,
   onboarding: onboardingContract,
@@ -44,6 +46,7 @@ export * from './workout-category.contract';
 export * from './workout.contract';
 export * from './competitor-status.contract';
 export * from './personal-record.contract';
+export * from './physical-metric.contract';
 export * from './user.contract';
 export * from './onboarding.contract';
 export * from './admin.contract';
