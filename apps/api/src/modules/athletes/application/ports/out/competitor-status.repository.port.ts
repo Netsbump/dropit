@@ -6,9 +6,7 @@ export const COMPETITOR_STATUS_REPO = Symbol('COMPETITOR_STATUS_REPO');
 
 export interface ICompetitorStatusRepository {
   findById(id: CompetitorStatusId): Promise<CompetitorStatus | null>;
-  findActiveByAthleteId(
-    athleteId: AthleteId
-  ): Promise<CompetitorStatus | null>;
+  findActiveByAthleteId(athleteId: AthleteId): Promise<CompetitorStatus | null>;
   listByAthleteUserIds(athleteUserIds: string[]): Promise<CompetitorStatus[]>;
   save(competitorStatus: CompetitorStatus): Promise<CompetitorStatus>;
   remove(competitorStatus: CompetitorStatus): Promise<void>;

@@ -10,10 +10,7 @@ import {
 import type { Athlete } from '../domain/athlete';
 import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { PersonalRecordId } from '../domain/personal-record-id';
-import type {
-  OrganizationId,
-  UserId,
-} from '../../../shared/kernel/identity';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
 import { IExerciseCatalog } from './ports/out/exercise-catalog.port';

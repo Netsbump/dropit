@@ -129,9 +129,8 @@ export class AthleteController {
 
       const organizationId = parseOrganizationId(params.organizationId);
 
-      const athletes = await this.athleteProfiles.listDetailsByOrganization(
-        organizationId
-      );
+      const athletes =
+        await this.athleteProfiles.listDetailsByOrganization(organizationId);
 
       const athletesDto = toAthleteDetailsDtoList(athletes).map((athlete) => ({
         id: athlete.id,

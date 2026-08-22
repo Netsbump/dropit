@@ -14,7 +14,9 @@ export interface IAthleteCompetitionStatus {
   /**
    * Find all competitor statuses in organization
    */
-  listByOrganization(organizationId: OrganizationId): Promise<CompetitorStatus[]>;
+  listByOrganization(
+    organizationId: OrganizationId
+  ): Promise<CompetitorStatus[]>;
 
   /**
    * Find one competitor status by athlete ID

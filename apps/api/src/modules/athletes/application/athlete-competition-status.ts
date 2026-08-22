@@ -9,10 +9,7 @@ import {
 import type { Athlete } from '../domain/athlete';
 import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { CompetitorStatusId } from '../domain/competitor-status-id';
-import type {
-  OrganizationId,
-  UserId,
-} from '../../../shared/kernel/identity';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -59,7 +56,9 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     return competitorStatus;
   }
 
-  private async closeCurrentStatusIfExists(athleteId: AthleteId): Promise<void> {
+  private async closeCurrentStatusIfExists(
+    athleteId: AthleteId
+  ): Promise<void> {
     const currentCompetitorStatus =
       await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
 

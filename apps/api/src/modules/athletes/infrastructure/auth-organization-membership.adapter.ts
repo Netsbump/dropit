@@ -11,7 +11,10 @@ export class AuthOrganizationMembershipAdapter
 {
   constructor(private readonly memberUseCases: IMemberUseCases) {}
 
-  async isCoach(userId: UserId, organizationId: OrganizationId): Promise<boolean> {
+  async isCoach(
+    userId: UserId,
+    organizationId: OrganizationId
+  ): Promise<boolean> {
     return await this.memberUseCases.isUserCoachInOrganization(
       userId,
       organizationId
@@ -29,9 +32,8 @@ export class AuthOrganizationMembershipAdapter
   }
 
   async listAthleteUserIds(organizationId: OrganizationId): Promise<UserId[]> {
-    const athleteUserIds = await this.memberUseCases.listAthleteUserIds(
-      organizationId
-    );
+    const athleteUserIds =
+      await this.memberUseCases.listAthleteUserIds(organizationId);
 
     return athleteUserIds.map(parseUserId);
   }

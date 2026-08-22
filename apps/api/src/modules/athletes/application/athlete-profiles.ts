@@ -22,10 +22,7 @@ import {
 } from './errors/athlete.errors';
 import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
 import type { AthleteId } from '../domain/athlete-id';
-import type {
-  OrganizationId,
-  UserId,
-} from '../../../shared/kernel/identity';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -40,9 +37,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new AthleteNotFoundError(
-        `Athlete with ID ${athleteId} not found`
-      );
+      throw new AthleteNotFoundError(`Athlete with ID ${athleteId} not found`);
     }
 
     return athlete;
