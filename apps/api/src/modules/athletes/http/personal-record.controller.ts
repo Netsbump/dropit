@@ -19,6 +19,7 @@ import {
 } from './mappers/personal-record.mapper';
 import { parseAthleteId } from '../domain/athlete-id';
 import { parsePersonalRecordId } from '../domain/personal-record-id';
+import type { OrganizationId } from '../../../shared/kernel/identity';
 
 const c = personalRecordContract;
 
@@ -61,7 +62,7 @@ export class PersonalRecordController {
   @RequirePermissions('read')
   getPersonalRecords(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecords>> {
     return tsRestHandler(c.getPersonalRecords, async () => {
       const personalRecords = await this.athletePersonalRecords.listAccessible(
@@ -90,7 +91,7 @@ export class PersonalRecordController {
   @RequirePermissions('read')
   getPersonalRecord(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
       const personalRecordId = parsePersonalRecordId(params.id);
@@ -121,7 +122,7 @@ export class PersonalRecordController {
   @RequirePermissions('read')
   getAthletePersonalRecords(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
       const athleteId = parseAthleteId(params.id);
@@ -152,7 +153,7 @@ export class PersonalRecordController {
   @RequirePermissions('read')
   getAthletePersonalRecordsSummary(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<
     typeof tsRestHandler<typeof c.getAthletePersonalRecordsSummary>
   > {
@@ -188,7 +189,7 @@ export class PersonalRecordController {
   @RequirePermissions('create')
   createPersonalRecord(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ body }) => {
       const personalRecord = await this.athletePersonalRecords.record(
@@ -218,7 +219,7 @@ export class PersonalRecordController {
   @RequirePermissions('update')
   updatePersonalRecord(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.updatePersonalRecord>> {
     return tsRestHandler(c.updatePersonalRecord, async ({ params, body }) => {
       const personalRecordId = parsePersonalRecordId(params.id);
@@ -250,7 +251,7 @@ export class PersonalRecordController {
   @RequirePermissions('delete')
   deletePersonalRecord(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.deletePersonalRecord>> {
     return tsRestHandler(c.deletePersonalRecord, async ({ params }) => {
       const personalRecordId = parsePersonalRecordId(params.id);

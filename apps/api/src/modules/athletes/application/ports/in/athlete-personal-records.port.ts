@@ -6,6 +6,10 @@ import {
 import type { PersonalRecord } from '../../../domain/personal-record';
 import type { AthleteId } from '../../../domain/athlete-id';
 import type { PersonalRecordId } from '../../../domain/personal-record-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../../shared/kernel/identity';
 
 export const ATHLETE_PERSONAL_RECORDS = Symbol('ATHLETE_PERSONAL_RECORDS');
 
@@ -14,26 +18,26 @@ export interface IAthletePersonalRecords {
    * Retrieves all personal records accessible to the current user
    */
   listAccessible(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord[]>;
 
   findById(
     id: PersonalRecordId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord>;
 
   listByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord[]>;
 
   findBestOlympicLiftsByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecordsSummary>;
 
   /**
@@ -41,8 +45,8 @@ export interface IAthletePersonalRecords {
    */
   record(
     data: CreatePersonalRecordInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord>;
 
   /**
@@ -51,8 +55,8 @@ export interface IAthletePersonalRecords {
   amend(
     id: PersonalRecordId,
     data: UpdatePersonalRecordInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord>;
 
   /**
@@ -60,7 +64,7 @@ export interface IAthletePersonalRecords {
    */
   remove(
     id: PersonalRecordId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<void>;
 }

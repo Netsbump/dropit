@@ -7,10 +7,11 @@ import type {
 import type { AthleteCreation, AthleteUpdate } from '../../domain/athlete';
 import type { AthleteDetailsReadModel } from '../../application/read-models/athlete-details.read-model';
 import { Athlete } from '../../domain/athlete';
+import type { UserId } from '../../../../shared/kernel/identity';
 
 export const toAthleteCreation = (
   input: CreateAthleteInput,
-  userId: string
+  userId: UserId
 ): AthleteCreation => ({
   userId,
   firstName: input.firstName,

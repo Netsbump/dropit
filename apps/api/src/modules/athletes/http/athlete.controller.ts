@@ -28,6 +28,10 @@ import {
   toAthleteUpdate,
 } from './mappers/athlete.mapper';
 import { parseAthleteId } from '../domain/athlete-id';
+import {
+  parseOrganizationId,
+  type OrganizationId,
+} from '../../../shared/kernel/identity';
 
 const c = athleteContract;
 
@@ -62,7 +66,7 @@ export class AthleteController {
   @TsRestHandler(c.inviteAthlete)
   @RequirePermissions('create')
   inviteAthlete(
-    @CurrentOrganization() organizationId: string,
+    @CurrentOrganization() organizationId: OrganizationId,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.inviteAthlete>> {
     return tsRestHandler(c.inviteAthlete, async ({ body, headers }) => {
@@ -94,7 +98,7 @@ export class AthleteController {
   @TsRestHandler(c.getAthletes)
   @RequirePermissions('read')
   getAthletes(
-    @CurrentOrganization() organizationId: string,
+    @CurrentOrganization() organizationId: OrganizationId,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
     return tsRestHandler(c.getAthletes, async () => {
@@ -123,8 +127,10 @@ export class AthleteController {
         return { status: 403, body: { message: 'Forbidden' } };
       }
 
+      const organizationId = parseOrganizationId(params.organizationId);
+
       const athletes = await this.athleteProfiles.listDetailsByOrganization(
-        params.organizationId
+        organizationId
       );
 
       const athletesDto = toAthleteDetailsDtoList(athletes).map((athlete) => ({
@@ -153,7 +159,7 @@ export class AthleteController {
   @TsRestHandler(c.getAthlete)
   @RequirePermissions('read')
   getAthlete(
-    @CurrentOrganization() organizationId: string,
+    @CurrentOrganization() organizationId: OrganizationId,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthlete>> {
     return tsRestHandler(c.getAthlete, async ({ params }) => {

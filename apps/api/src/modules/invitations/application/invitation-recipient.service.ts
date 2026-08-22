@@ -7,6 +7,7 @@ import {
   InvitationRecipientProfile,
 } from './ports/invitation-use-cases.port';
 import { IInvitationRecipientService } from './ports/invitation-recipient.port';
+import { parseUserId } from '../../../shared/kernel/identity';
 
 export class InvitationRecipientService implements IInvitationRecipientService {
   constructor(
@@ -33,7 +34,7 @@ export class InvitationRecipientService implements IInvitationRecipientService {
       });
 
       const athlete = new Athlete({
-        userId: user.id,
+        userId: parseUserId(user.id),
         firstName,
         lastName,
       });

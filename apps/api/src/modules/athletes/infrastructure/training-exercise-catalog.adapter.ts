@@ -3,6 +3,7 @@ import {
   AvailableExercise,
   IExerciseCatalog,
 } from '../application/ports/out/exercise-catalog.port';
+import type { OrganizationId } from '../../../shared/kernel/identity';
 
 export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
   constructor(
@@ -11,7 +12,7 @@ export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
 
   async findExerciseByOrganization(
     exerciseId: string,
-    organizationId: string
+    organizationId: OrganizationId
   ): Promise<AvailableExercise | null> {
     const exercise =
       await this.trainingExerciseCatalog.findExerciseByOrganization(

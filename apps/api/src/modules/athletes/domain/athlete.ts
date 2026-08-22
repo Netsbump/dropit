@@ -1,7 +1,8 @@
+import type { UserId } from '../../../shared/kernel/identity';
 import type { AthleteId } from './athlete-id';
 
 export type AthleteCreation = {
-  userId: string;
+  userId: UserId;
   firstName: string;
   lastName: string;
   birthday?: Date | null;
@@ -30,7 +31,7 @@ export class InvalidAthleteError extends AthleteDomainError {}
 
 export class Athlete {
   public readonly id: AthleteId | null;
-  public readonly userId: string;
+  public readonly userId: UserId;
   public readonly firstName: string;
   public readonly lastName: string;
   public readonly birthday: Date | null;

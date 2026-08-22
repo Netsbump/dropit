@@ -22,6 +22,10 @@ import {
 } from './errors/athlete.errors';
 import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
 import type { AthleteId } from '../domain/athlete-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../shared/kernel/identity';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -45,9 +49,9 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   private async getAuthorizedAthleteUserIds(
-    currentUserId: string,
-    organizationId: string
-  ): Promise<string[]> {
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<UserId[]> {
     const [isUserCoach, athleteUserIds] = await Promise.all([
       this.organizationMembership.isCoach(currentUserId, organizationId),
       this.organizationMembership.listAthleteUserIds(organizationId),
@@ -65,8 +69,8 @@ export class AthleteProfiles implements IAthleteProfiles {
 
   async findById(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<Athlete> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -81,8 +85,8 @@ export class AthleteProfiles implements IAthleteProfiles {
 
   async findDetailsById(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -103,8 +107,8 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async listAccessibleDetails(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds = await this.getAuthorizedAthleteUserIds(
       currentUserId,
@@ -121,7 +125,7 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async listDetailsByOrganization(
-    organizationId: string
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel[]> {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
@@ -136,8 +140,8 @@ export class AthleteProfiles implements IAthleteProfiles {
   }
 
   async listAccessible(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<Athlete[]> {
     const athleteUserIds = await this.getAuthorizedAthleteUserIds(
       currentUserId,
@@ -187,7 +191,7 @@ export class AthleteProfiles implements IAthleteProfiles {
   async updateOwn(
     athleteId: AthleteId,
     data: AthleteUpdate,
-    userId: string
+    userId: UserId
   ): Promise<Athlete> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -211,12 +215,12 @@ export class AthleteProfiles implements IAthleteProfiles {
     return await this.athleteRepository.save(updatedAthlete);
   }
 
-  async findIdByUserId(userId: string): Promise<string | null> {
+  async findIdByUserId(userId: UserId): Promise<string | null> {
     const athlete = await this.athleteRepository.findByUserId(userId);
     return athlete?.id ?? null;
   }
 
-  async deleteOwn(athleteId: AthleteId, userId: string): Promise<void> {
+  async deleteOwn(athleteId: AthleteId, userId: UserId): Promise<void> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
     this.athleteAccessPolicy.assertCanManageOwnAthlete({

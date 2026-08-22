@@ -9,6 +9,10 @@ import {
 import type { Athlete } from '../domain/athlete';
 import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { CompetitorStatusId } from '../domain/competitor-status-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../shared/kernel/identity';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { ICompetitorStatusRepository } from './ports/out/competitor-status.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -79,7 +83,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   }
 
   async listByOrganization(
-    organizationId: string
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus[]> {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
@@ -106,8 +110,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
 
   async findActiveByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -131,8 +135,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
 
   async change(
     data: CreateCompetitorStatusInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus> {
     await this.athleteAccessPolicy.assertCanManageAthleteData(
       currentUserId,
@@ -172,8 +176,8 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
   async amend(
     id: CompetitorStatusId,
     data: UpdateCompetitorStatusInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus> {
     await this.athleteAccessPolicy.assertCanManageAthleteData(
       currentUserId,

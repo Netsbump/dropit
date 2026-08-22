@@ -5,20 +5,24 @@ import {
 import type { CompetitorStatus } from '../../../domain/competitor-status';
 import type { AthleteId } from '../../../domain/athlete-id';
 import type { CompetitorStatusId } from '../../../domain/competitor-status-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../../shared/kernel/identity';
 
 export interface IAthleteCompetitionStatus {
   /**
    * Find all competitor statuses in organization
    */
-  listByOrganization(organizationId: string): Promise<CompetitorStatus[]>;
+  listByOrganization(organizationId: OrganizationId): Promise<CompetitorStatus[]>;
 
   /**
    * Find one competitor status by athlete ID
    */
   findActiveByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus>;
 
   /**
@@ -26,8 +30,8 @@ export interface IAthleteCompetitionStatus {
    */
   change(
     data: CreateCompetitorStatusInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus>;
 
   /**
@@ -36,8 +40,8 @@ export interface IAthleteCompetitionStatus {
   amend(
     id: CompetitorStatusId,
     data: UpdateCompetitorStatusInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<CompetitorStatus>;
 }
 

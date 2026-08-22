@@ -8,6 +8,10 @@ import {
   AthleteAccessDeniedError,
   UserDoesNotBelongToOrganizationError,
 } from '../errors/athlete.errors';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../shared/kernel/identity';
 
 export class AthleteAccessPolicy implements IAthleteAccessPolicy {
   constructor(
@@ -42,8 +46,8 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
   }
 
   async assertCanManageAthleteData(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<void> {
     const isCoach = await this.organizationMembership.isCoach(
       currentUserId,
@@ -58,8 +62,8 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
   }
 
   async assertAthleteBelongsToOrganization(
-    athleteUserId: string,
-    organizationId: string
+    athleteUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<void> {
     const isAthleteInOrganization = await this.organizationMembership.isAthlete(
       athleteUserId,

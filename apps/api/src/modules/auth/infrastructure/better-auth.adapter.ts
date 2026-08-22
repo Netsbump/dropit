@@ -31,6 +31,7 @@ import {
   type OrganizationRole,
 } from '@dropit/schemas';
 import type { Invitation } from 'better-auth/plugins/organization';
+import { parseUserId } from '../../../shared/kernel/identity';
 
 /**
  * BetterAuthAdapter - Adapts the better-auth library for NestJS dependency injection.
@@ -113,7 +114,9 @@ export class BetterAuthAdapter implements OnModuleInit {
           ? parsedOrganizationRole.data
           : null;
       }
-      const athlete = await this.athleteRepository.findByUserId(user.id);
+      const athlete = await this.athleteRepository.findByUserId(
+        parseUserId(user.id)
+      );
       athleteId = athlete?.id ?? null;
     }
 

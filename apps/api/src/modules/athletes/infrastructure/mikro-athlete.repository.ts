@@ -21,6 +21,7 @@ import {
   toAthleteDetailsReadModelList,
 } from './mappers/athlete-details-read-model.mapper';
 import type { AthleteId } from '../domain/athlete-id';
+import type { UserId } from '../../../shared/kernel/identity';
 
 @Injectable()
 export class MikroAthleteRepository
@@ -37,8 +38,8 @@ export class MikroAthleteRepository
   }
 
   private getBaseQuery(
-    athleteUserId?: string,
-    athleteUserIds?: string[]
+    athleteUserId?: UserId,
+    athleteUserIds?: UserId[]
   ): QueryBuilder<AthleteEntity> {
     const qb = this.sql.createQueryBuilder(AthleteEntity, 'a');
 
@@ -119,7 +120,7 @@ export class MikroAthleteRepository
   }
 
   async listDetailsByUserIds(
-    athleteUserIds: string[]
+    athleteUserIds: UserId[]
   ): Promise<AthleteDetailsReadModel[]> {
     if (athleteUserIds.length === 0) {
       return [];
@@ -133,7 +134,7 @@ export class MikroAthleteRepository
   }
 
   async findDetailsByUserId(
-    athleteUserId: string
+    athleteUserId: UserId
   ): Promise<AthleteDetailsReadModel | null> {
     const athletes = await this.getBaseQuery(athleteUserId, undefined).execute(
       'all'
@@ -154,7 +155,7 @@ export class MikroAthleteRepository
     return athleteEntity ? toAthleteDomain(athleteEntity) : null;
   }
 
-  async findByUserId(userId: string): Promise<Athlete | null> {
+  async findByUserId(userId: UserId): Promise<Athlete | null> {
     const athleteEntity = await this.em.findOne(
       AthleteEntity,
       { user: { id: userId } },
@@ -178,7 +179,7 @@ export class MikroAthleteRepository
     return toAthleteDomainList(athleteEntities);
   }
 
-  async listByUserIds(athleteUserIds: string[]): Promise<Athlete[]> {
+  async listByUserIds(athleteUserIds: UserId[]): Promise<Athlete[]> {
     if (athleteUserIds.length === 0) {
       return [];
     }

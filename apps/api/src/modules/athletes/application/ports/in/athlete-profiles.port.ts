@@ -5,38 +5,42 @@ import type {
   AthleteUpdate,
 } from '../../../domain/athlete';
 import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.read-model';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../../shared/kernel/identity';
 
 export interface IAthleteProfiles {
   findById(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<Athlete>;
 
   findDetailsById(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel>;
 
   /**
    * List athlete profiles accessible to the current user
    */
   listAccessible(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<Athlete[]>;
 
   /**
    * List athlete profile details accessible to the current user
    */
   listAccessibleDetails(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel[]>;
 
   listDetailsByOrganization(
-    organizationId: string
+    organizationId: OrganizationId
   ): Promise<AthleteDetailsReadModel[]>;
 
   create(data: AthleteCreation): Promise<Athlete>;
@@ -44,12 +48,12 @@ export interface IAthleteProfiles {
   updateOwn(
     athleteId: AthleteId,
     data: AthleteUpdate,
-    userId: string
+    userId: UserId
   ): Promise<Athlete>;
 
-  deleteOwn(athleteId: AthleteId, userId: string): Promise<void>;
+  deleteOwn(athleteId: AthleteId, userId: UserId): Promise<void>;
 
-  findIdByUserId(userId: string): Promise<string | null>;
+  findIdByUserId(userId: UserId): Promise<string | null>;
 }
 
 /**

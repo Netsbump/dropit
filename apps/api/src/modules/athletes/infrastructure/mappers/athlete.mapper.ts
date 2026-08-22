@@ -1,6 +1,7 @@
 import { Athlete } from '../../domain/athlete';
 import { parseAthleteId } from '../../domain/athlete-id';
 import { AthleteEntity } from '../../../database/entities/athlete.entity';
+import { parseUserId } from '../../../../shared/kernel/identity';
 
 export const toAthleteEntity = (athlete: Athlete): AthleteEntity => {
   const entity = new AthleteEntity();
@@ -27,7 +28,7 @@ export const toAthleteEntityReference = (athleteId: string): AthleteEntity => {
 export const toAthleteDomain = (entity: AthleteEntity): Athlete => {
   return new Athlete({
     id: parseAthleteId(entity.id),
-    userId: entity.user.id,
+    userId: parseUserId(entity.user.id),
     firstName: entity.firstName,
     lastName: entity.lastName,
     birthday: entity.birthday,

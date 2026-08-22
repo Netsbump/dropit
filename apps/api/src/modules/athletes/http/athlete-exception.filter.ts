@@ -11,6 +11,7 @@ import { AthleteApplicationError } from '../application/errors/athlete.errors';
 import { InvalidAthleteIdError } from '../domain/athlete-id';
 import { InvalidCompetitorStatusIdError } from '../domain/competitor-status-id';
 import { InvalidPersonalRecordIdError } from '../domain/personal-record-id';
+import { InvalidOrganizationIdError } from '../../../shared/kernel/identity';
 import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
 import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
 
@@ -49,7 +50,8 @@ const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
   if (
     error instanceof InvalidAthleteIdError ||
     error instanceof InvalidCompetitorStatusIdError ||
-    error instanceof InvalidPersonalRecordIdError
+    error instanceof InvalidPersonalRecordIdError ||
+    error instanceof InvalidOrganizationIdError
   ) {
     return {
       statusCode: HttpStatus.BAD_REQUEST,

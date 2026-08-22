@@ -1,3 +1,5 @@
+import type { OrganizationId } from '../../../../../shared/kernel/identity';
+
 export const ATHLETE_EXERCISE_CATALOG = Symbol('ATHLETE_EXERCISE_CATALOG');
 
 export type AvailableExercise = {
@@ -8,6 +10,6 @@ export type AvailableExercise = {
 export interface IExerciseCatalog {
   findExerciseByOrganization(
     exerciseId: string,
-    organizationId: string
+    organizationId: OrganizationId
   ): Promise<AvailableExercise | null>;
 }

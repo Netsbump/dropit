@@ -10,6 +10,10 @@ import {
 import type { Athlete } from '../domain/athlete';
 import { parseAthleteId, type AthleteId } from '../domain/athlete-id';
 import type { PersonalRecordId } from '../domain/personal-record-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../shared/kernel/identity';
 import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
 import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
@@ -61,8 +65,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async listAccessible(
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord[]> {
     const isUserCoach = await this.organizationMembership.isCoach(
       currentUserId,
@@ -109,8 +113,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
 
   async findById(
     id: PersonalRecordId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord> {
     const personalRecord = await this.getPersonalRecordOrThrow(id);
     const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
@@ -126,8 +130,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
 
   async listByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord[]> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -149,8 +153,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
 
   async findBestOlympicLiftsByAthleteId(
     athleteId: AthleteId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecordsSummary> {
     const athlete = await this.getAthleteOrThrow(athleteId);
 
@@ -194,8 +198,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
 
   async record(
     data: CreatePersonalRecordInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord> {
     await this.athleteAccessPolicy.assertCanManageAthleteData(
       currentUserId,
@@ -246,8 +250,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   async amend(
     id: PersonalRecordId,
     data: UpdatePersonalRecordInput,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<PersonalRecord> {
     await this.athleteAccessPolicy.assertCanManageAthleteData(
       currentUserId,
@@ -279,8 +283,8 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
 
   async remove(
     id: PersonalRecordId,
-    currentUserId: string,
-    organizationId: string
+    currentUserId: UserId,
+    organizationId: OrganizationId
   ): Promise<void> {
     await this.athleteAccessPolicy.assertCanManageAthleteData(
       currentUserId,

@@ -19,6 +19,7 @@ import {
 } from './mappers/competitor-status.mapper';
 import { parseAthleteId } from '../domain/athlete-id';
 import { parseCompetitorStatusId } from '../domain/competitor-status-id';
+import type { OrganizationId } from '../../../shared/kernel/identity';
 
 const c = competitorStatusContract;
 
@@ -56,7 +57,7 @@ export class CompetitorStatusController {
   @TsRestHandler(c.getCompetitorStatuses)
   @RequirePermissions('read')
   getCompetitorStatuses(
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatuses>> {
     return tsRestHandler(c.getCompetitorStatuses, async () => {
       const competitorStatuses =
@@ -84,7 +85,7 @@ export class CompetitorStatusController {
   @RequirePermissions('read')
   getCompetitorStatus(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.getCompetitorStatus>> {
     return tsRestHandler(c.getCompetitorStatus, async ({ params }) => {
       const athleteId = parseAthleteId(params.id);
@@ -117,7 +118,7 @@ export class CompetitorStatusController {
   @RequirePermissions('create')
   createCompetitorStatus(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ body }) => {
       const competitorStatus = await this.athleteCompetitionStatus.change(
@@ -147,7 +148,7 @@ export class CompetitorStatusController {
   @RequirePermissions('update')
   updateCompetitorStatus(
     @CurrentUser() currentUser: AuthenticatedUser,
-    @CurrentOrganization() organizationId: string
+    @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.updateCompetitorStatus>> {
     return tsRestHandler(c.updateCompetitorStatus, async ({ params, body }) => {
       const competitorStatusId = parseCompetitorStatusId(params.id);
