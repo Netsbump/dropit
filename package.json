@@ -22,6 +22,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@types/node": "^22",
     "dotenv-cli": "^10.0.0",
     "enquirer": "^2.4.1",
     "react-doctor": "^0.5.8",

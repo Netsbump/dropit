@@ -18,7 +18,7 @@ const config: Config = {
   testEnvironment: 'node',
   moduleNameMapper: {
     '^src/(.*)$': '<rootDir>/$1',
-    '^better-auth/node$': '<rootDir>/../__mocks__/better-auth-node.ts',
+    '^better-auth/node$': '<rootDir>/test/mocks/better-auth-node.mock.ts',
   },
   setupFilesAfterEnv: ['<rootDir>/../jest.setup.js'],
   maxWorkers: 1,
