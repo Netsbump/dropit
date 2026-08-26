@@ -1,131 +1,175 @@
 # DropIt API
 
-Backend API for DropIt application, built with NestJS and MikroORM.
+NestJS backend for DropIt, using PostgreSQL, MikroORM, Better Auth, ts-rest, and shared contracts from the monorepo packages.
 
-## Technologies
+> For the full installation flow, Docker setup, and global environment variables, see the [root README](../../README.md). Commands below are meant to be run from `apps/api`, unless stated otherwise.
 
-- **NestJS**: Modern, progressive Node.js framework
-- **MikroORM**: TypeScript ORM with support for Node.js
-- **PostgreSQL**: Primary database
-- **ts-rest**: Type-safe REST API contracts
-- **Zod**: Schema validation and type inference
-- **@dropit/contract**: Internal package for API contracts
-- **@dropit/schemas**: Internal package for shared schemas and validations
+## Stack
 
-## Available Scripts
+- **NestJS**: Node.js backend framework
+- **MikroORM**: TypeScript ORM for PostgreSQL
+- **Better Auth**: Authentication, sessions, and organizations
+- **ts-rest**: Type-safe REST contracts shared with web/mobile clients
+- **Zod**: Schema validation
+- **Vitest + SWC**: Unit and integration tests
+- **Biome**: Monorepo-level linting and formatting
+
+Internal packages used by the API:
+
+- `@dropit/contract`: ts-rest HTTP contracts
+- `@dropit/schemas`: shared Zod schemas, DTOs, and types
+
+## Scripts
+
+### Development
 
 ```bash
-# Start the API in development mode with hot reload
-pnpm dev
-
-# Build the API for production
-pnpm build
-
-# Run the production build
-pnpm start
-
-# Run tests
-pnpm test          # Unit tests
-pnpm test:watch    # Run tests in watch mode
-pnpm test:e2e      # End-to-end tests
-pnpm test:cov      # Test coverage
-pnpm test:debug    # Debug tests
-pnpm test:e2e:docker  # Run e2e tests in Docker
-
-# Database operations
-pnpm db:create     # Create database and run migrations
-pnpm db:sync       # Sync database schema
-pnpm db:fresh      # Reset database and run seeders
-pnpm db:migration:up     # Run pending migrations
-pnpm db:migration:down   # Revert last migration
-pnpm db:migration:create # Create a new migration
-pnpm db:migration:list   # List all migrations
-pnpm db:seed      # Run database seeders
+pnpm dev          # Run Nest in watch mode
+pnpm build        # Build for production
+pnpm start        # Start the app through Nest
+pnpm start:debug  # Watch mode with debugger
+pnpm start:prod   # Run dist/main after build
+pnpm typecheck    # Run TypeScript without emitting files
+pnpm clean        # Remove dist
 ```
 
-## Database Migrations
-
-For a fresh local setup, run migrations explicitly:
+From the monorepo root:
 
 ```bash
-pnpm db:migration:up
+pnpm --filter api dev
+pnpm --filter api build
+pnpm --filter api typecheck
 ```
 
-When making changes to entities, follow these steps to create and apply migrations:
+## Tests
 
-1. Make changes to your entity files (e.g., `src/entities/*.entity.ts`)
+API tests use **Vitest** with SWC and `reflect-metadata` for NestJS.
 
-2. Generate a migration (replace `<MigrationName>` with a descriptive name):
 ```bash
-pnpm db:migration:create --name <MigrationName>
+pnpm test                    # Run all API tests
+pnpm test:watch              # Run all tests in watch mode
+pnpm test:unit               # Run unit tests only
+pnpm test:unit:watch         # Run unit tests in watch mode
+pnpm test:unit:cov           # Run unit tests with coverage
+pnpm test:integration        # Run integration tests without managing Docker
+pnpm test:integration:docker # Start test DB, run integration tests, then stop Docker
 ```
 
-3. Review the generated migration in `src/modules/database/migrations`
+From the monorepo root:
 
-4. Apply the migration:
 ```bash
-pnpm db:migration:up
+pnpm test:api:unit
+pnpm test:api:integration
 ```
 
-**Note:** For production migrations with real user data, see the [Production Migrations Guide](../../docs/migrations-production.md) which details backup strategies, rollback procedures, and security best practices.
+Current test layout:
 
-## Database Seeding
+- Unit tests: `src/**/*.spec.ts`, excluding `src/test/**`
+- Integration tests: `src/test/**/*.integration.spec.ts`
+- Vitest setup: `src/test/setup/`
+- Vitest config: `vitest.config.ts`
+- SWC config: `.swcrc`
 
-The application includes seeders to populate the database with initial data:
-- Exercise categories (Haltérophilie, Endurance, Cardio, Musculation)
-- Exercises with English names and short names
-- Complex categories (EMOM, TABATA, etc.)
-- Sample complexes with ordered exercises and training parameters
-- Workout categories (Saisons, Deload, etc.)
-- Sample workouts with ordered elements and training parameters
-- Seeders are idempotent and can be safely re-run
+## Database
 
-To run seeders on the current database:
+MikroORM configuration lives in `src/modules/database/mikro-orm.config.ts`.
+Migrations live in `src/modules/database/migrations/`.
 
 ```bash
+pnpm db:create           # Create the database, then run migrations
+pnpm db:sync             # Sync the schema with entities
+pnpm db:migration:check  # Check pending migrations
+pnpm db:migration:up     # Apply migrations
+pnpm db:migration:down   # Revert the latest migration
+pnpm db:migration:list   # List migrations
+pnpm db:migration:fresh  # Recreate the database from migrations (destructive)
+pnpm db:seed             # Run seeders
+pnpm db:seed:prod        # Run seeders from dist
+```
+
+Create a migration after changing entities:
+
+```bash
+pnpm db:migration:create -- --name MigrationName
+```
+
+Reset a local database and seed demo data:
+
+```bash
+pnpm db:migration:fresh
 pnpm db:seed
 ```
 
-To reset and seed the database:
-```bash
-pnpm db:fresh
-```
+Seeders are located in `src/seeders/`.
 
-Seeder source of truth (test users, passwords, fixtures): `src/seeders/`.
+## Environment Variables
+
+Example file: `apps/api/.env.example`.
+
+Main API variables:
+
+- `NODE_ENV`
+- `API_PORT`
+- `APP_URL`
+- `BETTER_AUTH_SECRET`
+- `BETTER_AUTH_URL` or `BETTER_AUTH_BASE_URL`
+- `TRUSTED_ORIGINS`
+- `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME`
+- `DB_HOST_TEST`, `DB_PORT_TEST`, `DB_USER_TEST`, `DB_PASSWORD_TEST`, `DB_NAME_TEST`
+- Email variables: `BREVO_API_KEY`, `EMAIL_FROM_EMAIL`, `EMAIL_FROM_NAME`, `MAILDEV_*`
+
+Environment configuration is validated at startup in `src/config/env.config.ts`.
 
 ## Project Structure
 
-```
+```text
 src/
-├── entities/         # Database entities
-├── modules/         # Feature modules
-│   ├── exercise/    # Exercise module
-│   ├── complex/     # Complex module
-│   └── media/       # Media module
-│   └── database/    # DB config, migrations, and seed tooling
-│       └── migrations/
-├── seeders/         # Database seeders
-└── main.ts          # Application entry point
+├── app.module.ts
+├── app.controller.ts
+├── main.ts
+├── config/                 # Environment and Swagger/OpenAPI config
+├── shared/                 # Shared kernel, primitives, and cross-cutting helpers
+├── seeders/                # MikroORM seeders
+├── test/                   # Integration tests, fixtures, mocks, Vitest setup
+└── modules/
+    ├── admin/              # Application administration
+    ├── athletes/           # Athletes bounded context
+    ├── auth/               # Auth, users, organizations, permissions
+    ├── database/           # DbModule, MikroORM config, migrations, legacy entities
+    ├── invitations/        # Organization invitations
+    ├── media/              # Media entity
+    ├── notification/       # Email/push/SMS notifications
+    └── training/           # Exercises, complexes, workouts, sessions
 ```
+
+Most modules follow a hexagonal architecture:
+
+- `domain/`: entities and business logic
+- `application/`: use cases, ports, policies, application errors
+- `infrastructure/`: technical adapters and MikroORM repositories
+- `interface/` or `http/`: controllers, presenters, mappers, filters
+
+Some modules are newer or more legacy than others: follow the existing patterns of the module you are changing.
 
 ## API Documentation
 
-The API documentation is automatically generated from ts-rest contracts and is available at `http://localhost:3001/api`. 
+When the API is running, Swagger/OpenAPI documentation is available at:
 
-### Features
-- Interactive Swagger/OpenAPI documentation
-- Generated from shared ts-rest contracts (`packages/contract`)
-- Type-safe endpoints and responses
-- Request/response schema validation
-- Try-it-out functionality
+```text
+http://localhost:3000/api
+```
 
-### Accessing the Documentation
-1. Start the API server: `pnpm dev`
-2. Navigate to `http://localhost:3001/api` in your browser
-3. Explore available endpoints, schemas, and test API calls directly
+The global HTTP prefix is `/api`.
+Documentation is generated from ts-rest contracts in `packages/contract` and shared schemas in `packages/schemas`.
 
-The documentation is automatically kept in sync with the API contracts defined in the shared packages, ensuring that it's always up-to-date with the latest API changes.
+## Additional Documentation
 
-## Architecture
-
-This API follows a hexagonal architecture (Ports & Adapters) approach to separate business logic from infrastructure concerns. For a comprehensive guide on the architecture patterns, dependency injection, and implementation details, see the [Hexagonal Architecture Guide](../../docs/architecture-hexagonale.md).
+- [Hexagonal Architecture Guide](../../docs/architecture-hexagonale.md)
+- [Production Migrations Guide](../../docs/migrations-production.md)
+- Module-specific READMEs:
+  - `src/modules/auth/README.md`
+  - `src/modules/auth/README-permissions.md`
+  - `src/modules/auth/README-onboarding.md`
+  - `src/modules/database/README.md`
+  - `src/modules/invitations/README.md`
+  - `src/modules/notification/README.md`

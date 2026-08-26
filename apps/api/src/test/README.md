@@ -8,7 +8,7 @@ Les tests d'intégration utilisent les **use cases** de l'architecture clean pou
 
 ```
 test/
-├── index.integration.spec.ts     # Point d'entrée principal (Jest orchestrateur)
+├── index.integration.spec.ts     # Point d'entrée principal (orchestrateur Vitest)
 ├── organization.integration.spec.ts   # Setup org + users
 ├── exercise.integration.spec.ts       # Tests exercices (use cases)
 ├── complex.integration.spec.ts        # Tests complexes (use cases)
@@ -16,12 +16,12 @@ test/
 ├── utils/
 │   ├── test-setup.ts             # Utilitaires de setup + données de test
 │   └── test-use-cases.ts         # Factory pour créer les use cases
-└── jest-integration.json         # Configuration Jest
+└── setup/                        # Setup Vitest + environnement de test
 ```
 
 ## Flux d'exécution
 
-1. **`index.integration.spec.ts`** → Orchestrateur Jest principal
+1. **`index.integration.spec.ts`** → Orchestrateur Vitest principal
 2. **`organization.integration.spec.ts`** → Setup base (org + users)
 3. **`exercise.integration.spec.ts`** → Tests exercices (use cases)
 4. **`complex.integration.spec.ts`** → Tests complexes (use cases)
