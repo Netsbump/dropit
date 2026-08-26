@@ -1,5 +1,8 @@
 import type { AthleteId } from './athlete-id';
-import type { PersonalRecordId } from './personal-record-id';
+import {
+  type PersonalRecordId,
+  createPersonalRecordId,
+} from './personal-record-id';
 
 export type PersonalRecordExercise = {
   id: string;
@@ -19,7 +22,7 @@ export type PersonalRecordUpdate = {
 };
 
 export type PersonalRecordProps = PersonalRecordCreation & {
-  id?: PersonalRecordId | null;
+  id?: PersonalRecordId;
 };
 
 export abstract class PersonalRecordDomainError extends Error {
@@ -32,7 +35,7 @@ export abstract class PersonalRecordDomainError extends Error {
 export class InvalidPersonalRecordError extends PersonalRecordDomainError {}
 
 export class PersonalRecord {
-  public readonly id: PersonalRecordId | null;
+  public readonly id: PersonalRecordId;
   public readonly athleteId: AthleteId;
   public readonly exercise: PersonalRecordExercise;
   public readonly weight: number;
@@ -60,7 +63,7 @@ export class PersonalRecord {
       throw new InvalidPersonalRecordError('Date must be valid');
     }
 
-    this.id = params.id ?? null;
+    this.id = params.id ?? createPersonalRecordId();
     this.athleteId = params.athleteId;
     this.exercise = {
       id: params.exercise.id,

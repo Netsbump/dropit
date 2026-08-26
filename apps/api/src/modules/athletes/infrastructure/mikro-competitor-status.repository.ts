@@ -3,8 +3,8 @@ import { Injectable } from '@nestjs/common';
 import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
 import type { ICompetitorStatusRepository } from '../application/ports/out/competitor-status.repository.port';
-import type { CompetitorStatus } from '../domain/competitor-status';
 import type { AthleteId } from '../domain/athlete-id';
+import type { CompetitorStatus } from '../domain/competitor-status';
 import type { CompetitorStatusId } from '../domain/competitor-status-id';
 import {
   toCompetitorStatusDomain,
@@ -62,21 +62,30 @@ export class MikroCompetitorStatusRepository
     return toCompetitorStatusDomainList(competitorStatusEntities);
   }
 
-  async save(competitorStatus: CompetitorStatus): Promise<CompetitorStatus> {
-    const competitorStatusEntity = competitorStatus.id
-      ? await this.em.findOneOrFail(CompetitorStatusEntity, {
-          id: competitorStatus.id,
-        })
-      : new CompetitorStatusEntity();
+  async add(competitorStatus: CompetitorStatus): Promise<CompetitorStatus> {
+    const competitorStatusEntity = new CompetitorStatusEntity();
+    competitorStatusEntity.id = competitorStatus.id;
+    this.assignCompetitorStatus(competitorStatusEntity, competitorStatus);
 
-    competitorStatusEntity.level = competitorStatus.level;
-    competitorStatusEntity.sexCategory = competitorStatus.sexCategory;
-    competitorStatusEntity.weightCategory = competitorStatus.weightCategory;
-    competitorStatusEntity.endDate = competitorStatus.endDate;
-    competitorStatusEntity.athlete = this.em.getReference(
-      AthleteEntity,
-      competitorStatus.athleteId
+    await this.em.persistAndFlush(competitorStatusEntity);
+
+    const savedCompetitorStatusEntity = await this.findCompetitorStatusById(
+      competitorStatusEntity.id
     );
+
+    if (!savedCompetitorStatusEntity) {
+      throw new Error('Competitor status not found after add');
+    }
+
+    return toCompetitorStatusDomain(savedCompetitorStatusEntity);
+  }
+
+  async save(competitorStatus: CompetitorStatus): Promise<CompetitorStatus> {
+    const competitorStatusEntity = await this.em.findOneOrFail(
+      CompetitorStatusEntity,
+      { id: competitorStatus.id }
+    );
+    this.assignCompetitorStatus(competitorStatusEntity, competitorStatus);
 
     await this.em.persistAndFlush(competitorStatusEntity);
 
@@ -91,11 +100,21 @@ export class MikroCompetitorStatusRepository
     return toCompetitorStatusDomain(savedCompetitorStatusEntity);
   }
 
-  async remove(competitorStatus: CompetitorStatus): Promise<void> {
-    if (!competitorStatus.id) {
-      throw new Error('Cannot remove competitor status without id');
-    }
+  private assignCompetitorStatus(
+    competitorStatusEntity: CompetitorStatusEntity,
+    competitorStatus: CompetitorStatus
+  ): void {
+    competitorStatusEntity.level = competitorStatus.level;
+    competitorStatusEntity.sexCategory = competitorStatus.sexCategory;
+    competitorStatusEntity.weightCategory = competitorStatus.weightCategory;
+    competitorStatusEntity.endDate = competitorStatus.endDate;
+    competitorStatusEntity.athlete = this.em.getReference(
+      AthleteEntity,
+      competitorStatus.athleteId
+    );
+  }
 
+  async remove(competitorStatus: CompetitorStatus): Promise<void> {
     const competitorStatusEntity = this.em.getReference(
       CompetitorStatusEntity,
       competitorStatus.id

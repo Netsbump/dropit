@@ -1,4 +1,4 @@
-import { type Uuid, parseUuid } from '../../../shared/kernel/uuid';
+import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
 
 export class InvalidPhysicalMetricIdError extends Error {
   constructor(value: string) {
@@ -17,4 +17,8 @@ export function parsePhysicalMetricId(value: string): PhysicalMetricId {
   } catch {
     throw new InvalidPhysicalMetricIdError(value);
   }
+}
+
+export function createPhysicalMetricId(): PhysicalMetricId {
+  return createUuid() as PhysicalMetricId;
 }

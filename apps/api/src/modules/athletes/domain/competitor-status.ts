@@ -1,5 +1,8 @@
 import type { AthleteId } from './athlete-id';
-import type { CompetitorStatusId } from './competitor-status-id';
+import {
+  type CompetitorStatusId,
+  createCompetitorStatusId,
+} from './competitor-status-id';
 
 export enum CompetitorLevel {
   ROOKIE = 'rookie',
@@ -30,7 +33,7 @@ export type CompetitorStatusUpdate = {
 };
 
 export type CompetitorStatusProps = CompetitorStatusCreation & {
-  id?: CompetitorStatusId | null;
+  id?: CompetitorStatusId;
 };
 
 export abstract class CompetitorStatusDomainError extends Error {
@@ -43,7 +46,7 @@ export abstract class CompetitorStatusDomainError extends Error {
 export class InvalidCompetitorStatusError extends CompetitorStatusDomainError {}
 
 export class CompetitorStatus {
-  public readonly id: CompetitorStatusId | null;
+  public readonly id: CompetitorStatusId;
   public readonly athleteId: AthleteId;
   public readonly level: CompetitorLevel;
   public readonly sexCategory: SexCategory;
@@ -69,7 +72,7 @@ export class CompetitorStatus {
       throw new InvalidCompetitorStatusError('End date must be valid');
     }
 
-    this.id = params.id ?? null;
+    this.id = params.id ?? createCompetitorStatusId();
     this.athleteId = params.athleteId;
     this.level = params.level;
     this.sexCategory = params.sexCategory;

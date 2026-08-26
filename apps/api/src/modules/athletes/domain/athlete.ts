@@ -1,5 +1,5 @@
 import type { UserId } from '../../../shared/kernel/identity';
-import type { AthleteId } from './athlete-id';
+import { type AthleteId, createAthleteId } from './athlete-id';
 
 export type AthleteCreation = {
   userId: UserId;
@@ -17,7 +17,7 @@ export type AthleteUpdate = {
 };
 
 export type AthleteProps = AthleteCreation & {
-  id?: AthleteId | null;
+  id?: AthleteId;
 };
 
 export abstract class AthleteDomainError extends Error {
@@ -30,7 +30,7 @@ export abstract class AthleteDomainError extends Error {
 export class InvalidAthleteError extends AthleteDomainError {}
 
 export class Athlete {
-  public readonly id: AthleteId | null;
+  public readonly id: AthleteId;
   public readonly userId: UserId;
   public readonly firstName: string;
   public readonly lastName: string;
@@ -49,7 +49,7 @@ export class Athlete {
       throw new InvalidAthleteError('Last name is required');
     }
 
-    this.id = params.id ?? null;
+    this.id = params.id ?? createAthleteId();
     this.userId = params.userId;
     this.firstName = firstName;
     this.lastName = lastName;

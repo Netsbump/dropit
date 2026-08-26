@@ -1,14 +1,12 @@
+import { parseUserId } from '../../../../shared/kernel/identity';
+import { AthleteEntity } from '../../../database/entities/athlete.entity';
 import { Athlete } from '../../domain/athlete';
 import { parseAthleteId } from '../../domain/athlete-id';
-import { AthleteEntity } from '../../../database/entities/athlete.entity';
-import { parseUserId } from '../../../../shared/kernel/identity';
 
 export const toAthleteEntity = (athlete: Athlete): AthleteEntity => {
   const entity = new AthleteEntity();
 
-  if (athlete.id) {
-    entity.id = athlete.id;
-  }
+  entity.id = athlete.id;
 
   entity.firstName = athlete.firstName;
   entity.lastName = athlete.lastName;

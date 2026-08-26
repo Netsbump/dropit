@@ -4,8 +4,8 @@ import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
 import { Exercise } from '../../training/domain/exercise.entity';
 import type { IPersonalRecordRepository } from '../application/ports/out/personal-record.repository.port';
-import type { PersonalRecord } from '../domain/personal-record';
 import type { AthleteId } from '../domain/athlete-id';
+import type { PersonalRecord } from '../domain/personal-record';
 import type { PersonalRecordId } from '../domain/personal-record-id';
 import {
   toPersonalRecordDomain,
@@ -59,23 +59,30 @@ export class MikroPersonalRecordRepository
     return toPersonalRecordDomainList(personalRecordEntities);
   }
 
-  async save(personalRecord: PersonalRecord): Promise<PersonalRecord> {
-    const personalRecordEntity = personalRecord.id
-      ? await this.em.findOneOrFail(PersonalRecordEntity, {
-          id: personalRecord.id,
-        })
-      : new PersonalRecordEntity();
+  async add(personalRecord: PersonalRecord): Promise<PersonalRecord> {
+    const personalRecordEntity = new PersonalRecordEntity();
+    personalRecordEntity.id = personalRecord.id;
+    this.assignPersonalRecord(personalRecordEntity, personalRecord);
 
-    personalRecordEntity.weight = personalRecord.weight;
-    personalRecordEntity.date = personalRecord.date;
-    personalRecordEntity.athlete = this.em.getReference(
-      AthleteEntity,
-      personalRecord.athleteId
+    await this.em.persistAndFlush(personalRecordEntity);
+
+    const savedPersonalRecordEntity = await this.findPersonalRecordById(
+      personalRecordEntity.id
     );
-    personalRecordEntity.exercise = this.em.getReference(
-      Exercise,
-      personalRecord.exercise.id
+
+    if (!savedPersonalRecordEntity) {
+      throw new Error('Personal record not found after add');
+    }
+
+    return toPersonalRecordDomain(savedPersonalRecordEntity);
+  }
+
+  async save(personalRecord: PersonalRecord): Promise<PersonalRecord> {
+    const personalRecordEntity = await this.em.findOneOrFail(
+      PersonalRecordEntity,
+      { id: personalRecord.id }
     );
+    this.assignPersonalRecord(personalRecordEntity, personalRecord);
 
     await this.em.persistAndFlush(personalRecordEntity);
 
@@ -90,11 +97,23 @@ export class MikroPersonalRecordRepository
     return toPersonalRecordDomain(savedPersonalRecordEntity);
   }
 
-  async remove(personalRecord: PersonalRecord): Promise<void> {
-    if (!personalRecord.id) {
-      throw new Error('Cannot remove personal record without id');
-    }
+  private assignPersonalRecord(
+    personalRecordEntity: PersonalRecordEntity,
+    personalRecord: PersonalRecord
+  ): void {
+    personalRecordEntity.weight = personalRecord.weight;
+    personalRecordEntity.date = personalRecord.date;
+    personalRecordEntity.athlete = this.em.getReference(
+      AthleteEntity,
+      personalRecord.athleteId
+    );
+    personalRecordEntity.exercise = this.em.getReference(
+      Exercise,
+      personalRecord.exercise.id
+    );
+  }
 
+  async remove(personalRecord: PersonalRecord): Promise<void> {
     const personalRecordEntity = this.em.getReference(
       PersonalRecordEntity,
       personalRecord.id

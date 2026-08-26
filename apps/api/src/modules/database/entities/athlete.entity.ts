@@ -6,15 +6,15 @@ import {
   PrimaryKey,
   Property,
 } from '@mikro-orm/core';
+import { User } from '../../auth/domain/auth/user.entity';
 import { AthleteTrainingSession } from '../../training/domain/athlete-training-session.entity';
 import { CompetitorStatusEntity } from './competitor-status.entity';
 import { PersonalRecordEntity } from './personal-record.entity';
 import { PhysicalMetricEntity } from './physical-metric.entity';
-import { User } from '../../auth/domain/auth/user.entity';
 
 @Entity({ tableName: 'athlete' })
 export class AthleteEntity {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  @PrimaryKey({ type: 'uuid' })
   id!: string;
 
   @Property()

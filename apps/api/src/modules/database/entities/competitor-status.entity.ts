@@ -1,13 +1,13 @@
+import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import {
   CompetitorLevel,
   SexCategory,
 } from '../../athletes/domain/competitor-status';
-import { Entity, Enum, ManyToOne, PrimaryKey, Property } from '@mikro-orm/core';
 import { AthleteEntity } from './athlete.entity';
 
 @Entity({ tableName: 'competitor_status' })
 export class CompetitorStatusEntity {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  @PrimaryKey({ type: 'uuid' })
   id!: string;
 
   @Enum(() => CompetitorLevel)

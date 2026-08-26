@@ -1,13 +1,13 @@
-import { Athlete } from '../../athletes/domain/athlete';
+import { parseUserId } from '../../../shared/kernel/identity';
 import { IAthleteRepository } from '../../athletes/application/ports/out/athlete.repository.port';
+import { Athlete } from '../../athletes/domain/athlete';
 import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
+import { IInvitationRecipientService } from './ports/invitation-recipient.port';
 import {
   InvitationNotificationContext,
   InvitationRecipientProfile,
 } from './ports/invitation-use-cases.port';
-import { IInvitationRecipientService } from './ports/invitation-recipient.port';
-import { parseUserId } from '../../../shared/kernel/identity';
 
 export class InvitationRecipientService implements IInvitationRecipientService {
   constructor(
@@ -38,7 +38,7 @@ export class InvitationRecipientService implements IInvitationRecipientService {
         firstName,
         lastName,
       });
-      await this.athleteRepository.save(athlete);
+      await this.athleteRepository.add(athlete);
 
       return { isNewUser: true, hasOtherOrganization: false };
     }

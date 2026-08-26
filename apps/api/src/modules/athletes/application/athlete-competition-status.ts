@@ -169,7 +169,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       throw error;
     }
 
-    return await this.competitorStatusRepository.save(competitorStatusToCreate);
+    return await this.competitorStatusRepository.add(competitorStatusToCreate);
   }
 
   async amend(

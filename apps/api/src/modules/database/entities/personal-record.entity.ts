@@ -4,7 +4,7 @@ import { AthleteEntity } from './athlete.entity';
 
 @Entity({ tableName: 'personal_record' })
 export class PersonalRecordEntity {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  @PrimaryKey({ type: 'uuid' })
   id!: string;
 
   @Property({ type: 'float' })

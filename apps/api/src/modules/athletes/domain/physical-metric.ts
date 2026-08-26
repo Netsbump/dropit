@@ -1,5 +1,8 @@
 import type { AthleteId } from './athlete-id';
-import type { PhysicalMetricId } from './physical-metric-id';
+import {
+  type PhysicalMetricId,
+  createPhysicalMetricId,
+} from './physical-metric-id';
 
 export type PhysicalMetricCreation = {
   athleteId: AthleteId;
@@ -15,7 +18,7 @@ export type PhysicalMetricUpdate = {
 };
 
 export type PhysicalMetricData = PhysicalMetricCreation & {
-  id?: PhysicalMetricId | null;
+  id?: PhysicalMetricId;
 };
 
 export abstract class PhysicalMetricDomainError extends Error {
@@ -28,7 +31,7 @@ export abstract class PhysicalMetricDomainError extends Error {
 export class InvalidPhysicalMetricError extends PhysicalMetricDomainError {}
 
 export class PhysicalMetric {
-  public readonly id: PhysicalMetricId | null;
+  public readonly id: PhysicalMetricId;
   public readonly athleteId: AthleteId;
   public readonly weight: number | null;
   public readonly height: number | null;
@@ -66,7 +69,7 @@ export class PhysicalMetric {
       throw new InvalidPhysicalMetricError('Date must be valid');
     }
 
-    this.id = params.id ?? null;
+    this.id = params.id ?? createPhysicalMetricId();
     this.athleteId = params.athleteId;
     this.weight = params.weight ?? null;
     this.height = params.height ?? null;

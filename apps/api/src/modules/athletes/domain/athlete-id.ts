@@ -1,4 +1,4 @@
-import { type Uuid, parseUuid } from '../../../shared/kernel/uuid';
+import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
 
 export class InvalidAthleteIdError extends Error {
   constructor(value: string) {
@@ -15,4 +15,8 @@ export function parseAthleteId(value: string): AthleteId {
   } catch {
     throw new InvalidAthleteIdError(value);
   }
+}
+
+export function createAthleteId(): AthleteId {
+  return createUuid() as AthleteId;
 }

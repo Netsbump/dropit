@@ -3,7 +3,7 @@ import { AthleteEntity } from './athlete.entity';
 
 @Entity({ tableName: 'physical_metric' })
 export class PhysicalMetricEntity {
-  @PrimaryKey({ type: 'uuid', defaultRaw: 'gen_random_uuid()' })
+  @PrimaryKey({ type: 'uuid' })
   id!: string;
 
   @Property({ nullable: true })

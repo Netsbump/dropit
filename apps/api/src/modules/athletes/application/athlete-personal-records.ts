@@ -241,7 +241,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       throw error;
     }
 
-    return await this.personalRecordRepository.save(personalRecord);
+    return await this.personalRecordRepository.add(personalRecord);
   }
 
   async amend(

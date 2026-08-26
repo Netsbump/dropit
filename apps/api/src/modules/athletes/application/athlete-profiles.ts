@@ -1,28 +1,28 @@
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import {
   Athlete,
-  AthleteDomainError,
   type AthleteCreation,
+  AthleteDomainError,
   type AthleteUpdate,
 } from '../domain/athlete';
-import type { IAthleteProfiles } from './ports/in/athlete-profiles.port';
-import type { AthleteDetailsReadModel } from './read-models/athlete-details.read-model';
+import type { AthleteId } from '../domain/athlete-id';
 import {
-  IAthleteRepository,
-  IAthleteReadRepository,
-} from './ports/out/athlete.repository.port';
-import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
-import { IOrganizationMembership } from './ports/out/organization-membership.port';
-import {
-  AthleteNotFoundError,
-  UserNotFoundError,
   AthleteAlreadyExistsError,
+  AthleteNotFoundError,
   InvalidAthleteCreationError,
   InvalidAthleteUpdateError,
   UserDoesNotBelongToOrganizationError,
+  UserNotFoundError,
 } from './errors/athlete.errors';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import type { IAthleteProfiles } from './ports/in/athlete-profiles.port';
 import { IAthleteUserProfile } from './ports/out/athlete-user-profile.port';
-import type { AthleteId } from '../domain/athlete-id';
-import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
+import {
+  IAthleteReadRepository,
+  IAthleteRepository,
+} from './ports/out/athlete.repository.port';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
+import type { AthleteDetailsReadModel } from './read-models/athlete-details.read-model';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -180,7 +180,7 @@ export class AthleteProfiles implements IAthleteProfiles {
       throw error;
     }
 
-    return await this.athleteRepository.save(athlete);
+    return await this.athleteRepository.add(athlete);
   }
 
   async updateOwn(

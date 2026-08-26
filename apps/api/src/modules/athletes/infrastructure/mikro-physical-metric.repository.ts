@@ -41,20 +41,30 @@ export class MikroPhysicalMetricRepository
     return toPhysicalMetricDomainList(physicalMetricEntities);
   }
 
-  async save(physicalMetric: PhysicalMetric): Promise<PhysicalMetric> {
-    const physicalMetricEntity = physicalMetric.id
-      ? await this.em.findOneOrFail(PhysicalMetricEntity, {
-          id: physicalMetric.id,
-        })
-      : new PhysicalMetricEntity();
+  async add(physicalMetric: PhysicalMetric): Promise<PhysicalMetric> {
+    const physicalMetricEntity = new PhysicalMetricEntity();
+    physicalMetricEntity.id = physicalMetric.id;
+    this.assignPhysicalMetric(physicalMetricEntity, physicalMetric);
 
-    physicalMetricEntity.weight = physicalMetric.weight;
-    physicalMetricEntity.height = physicalMetric.height;
-    physicalMetricEntity.date = physicalMetric.date;
-    physicalMetricEntity.athlete = this.em.getReference(
-      AthleteEntity,
-      physicalMetric.athleteId
+    await this.em.persistAndFlush(physicalMetricEntity);
+
+    const savedPhysicalMetricEntity = await this.findPhysicalMetricById(
+      physicalMetricEntity.id
     );
+
+    if (!savedPhysicalMetricEntity) {
+      throw new Error('Physical metric not found after add');
+    }
+
+    return toPhysicalMetricDomain(savedPhysicalMetricEntity);
+  }
+
+  async save(physicalMetric: PhysicalMetric): Promise<PhysicalMetric> {
+    const physicalMetricEntity = await this.em.findOneOrFail(
+      PhysicalMetricEntity,
+      { id: physicalMetric.id }
+    );
+    this.assignPhysicalMetric(physicalMetricEntity, physicalMetric);
 
     await this.em.persistAndFlush(physicalMetricEntity);
 
@@ -69,11 +79,20 @@ export class MikroPhysicalMetricRepository
     return toPhysicalMetricDomain(savedPhysicalMetricEntity);
   }
 
-  async remove(physicalMetric: PhysicalMetric): Promise<void> {
-    if (!physicalMetric.id) {
-      throw new Error('Cannot remove physical metric without id');
-    }
+  private assignPhysicalMetric(
+    physicalMetricEntity: PhysicalMetricEntity,
+    physicalMetric: PhysicalMetric
+  ): void {
+    physicalMetricEntity.weight = physicalMetric.weight;
+    physicalMetricEntity.height = physicalMetric.height;
+    physicalMetricEntity.date = physicalMetric.date;
+    physicalMetricEntity.athlete = this.em.getReference(
+      AthleteEntity,
+      physicalMetric.athleteId
+    );
+  }
 
+  async remove(physicalMetric: PhysicalMetric): Promise<void> {
     const physicalMetricEntity = this.em.getReference(
       PhysicalMetricEntity,
       physicalMetric.id

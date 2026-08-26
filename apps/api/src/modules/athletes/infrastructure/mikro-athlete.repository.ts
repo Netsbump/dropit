@@ -1,27 +1,27 @@
 import { EntityManager, EntityRepository } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
-import { AthleteEntity } from '../../database/entities/athlete.entity';
-import { Athlete } from '../domain/athlete';
+import type { UserId } from '../../../shared/kernel/identity';
 import { User } from '../../auth/domain/auth/user.entity';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
+import { PhysicalMetricEntity } from '../../database/entities/physical-metric.entity';
+import {
+  IAthleteReadRepository,
+  IAthleteRepository,
+} from '../application/ports/out/athlete.repository.port';
+import type { AthleteDetailsReadModel } from '../application/read-models/athlete-details.read-model';
+import { Athlete } from '../domain/athlete';
+import type { AthleteId } from '../domain/athlete-id';
+import {
+  toAthleteDetailsReadModel,
+  toAthleteDetailsReadModelList,
+} from './mappers/athlete-details-read-model.mapper';
 import {
   toAthleteDomain,
   toAthleteDomainList,
   toAthleteEntity,
 } from './mappers/athlete.mapper';
-import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
-import { PhysicalMetricEntity } from '../../database/entities/physical-metric.entity';
-import type { AthleteDetailsReadModel } from '../application/read-models/athlete-details.read-model';
-import {
-  IAthleteReadRepository,
-  IAthleteRepository,
-} from '../application/ports/out/athlete.repository.port';
-import {
-  toAthleteDetailsReadModel,
-  toAthleteDetailsReadModelList,
-} from './mappers/athlete-details-read-model.mapper';
-import type { AthleteId } from '../domain/athlete-id';
-import type { UserId } from '../../../shared/kernel/identity';
 
 @Injectable()
 export class MikroAthleteRepository
@@ -193,27 +193,35 @@ export class MikroAthleteRepository
     return toAthleteDomainList(athleteEntities);
   }
 
-  async save(athlete: Athlete): Promise<Athlete> {
-    const athleteEntity = athlete.id
-      ? await this.em.findOneOrFail(AthleteEntity, { id: athlete.id })
-      : toAthleteEntity(athlete);
-
-    athleteEntity.firstName = athlete.firstName;
-    athleteEntity.lastName = athlete.lastName;
-    athleteEntity.birthday = athlete.birthday;
-    athleteEntity.country = athlete.country;
-    athleteEntity.user = this.em.getReference(User, athlete.userId);
+  async add(athlete: Athlete): Promise<Athlete> {
+    const athleteEntity = toAthleteEntity(athlete);
+    this.assignAthlete(athleteEntity, athlete);
 
     await this.em.persistAndFlush(athleteEntity);
 
     return toAthleteDomain(athleteEntity);
   }
 
-  async remove(athlete: Athlete) {
-    if (!athlete.id) {
-      throw new Error('Cannot remove athlete without id');
-    }
+  async save(athlete: Athlete): Promise<Athlete> {
+    const athleteEntity = await this.em.findOneOrFail(AthleteEntity, {
+      id: athlete.id,
+    });
+    this.assignAthlete(athleteEntity, athlete);
 
+    await this.em.persistAndFlush(athleteEntity);
+
+    return toAthleteDomain(athleteEntity);
+  }
+
+  private assignAthlete(athleteEntity: AthleteEntity, athlete: Athlete): void {
+    athleteEntity.firstName = athlete.firstName;
+    athleteEntity.lastName = athlete.lastName;
+    athleteEntity.birthday = athlete.birthday;
+    athleteEntity.country = athlete.country;
+    athleteEntity.user = this.em.getReference(User, athlete.userId);
+  }
+
+  async remove(athlete: Athlete) {
     const entity = this.em.getReference(AthleteEntity, athlete.id);
 
     return await this.em.removeAndFlush(entity);

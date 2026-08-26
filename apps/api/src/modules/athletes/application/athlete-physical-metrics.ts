@@ -129,7 +129,7 @@ export class AthletePhysicalMetrics implements IAthletePhysicalMetrics {
       throw error;
     }
 
-    return await this.physicalMetricRepository.save(physicalMetric);
+    return await this.physicalMetricRepository.add(physicalMetric);
   }
 
   async amend(

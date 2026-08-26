@@ -1,4 +1,4 @@
-import { type Uuid, parseUuid } from '../../../shared/kernel/uuid';
+import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
 
 export class InvalidPersonalRecordIdError extends Error {
   constructor(value: string) {
@@ -17,4 +17,8 @@ export function parsePersonalRecordId(value: string): PersonalRecordId {
   } catch {
     throw new InvalidPersonalRecordIdError(value);
   }
+}
+
+export function createPersonalRecordId(): PersonalRecordId {
+  return createUuid() as PersonalRecordId;
 }

@@ -1,4 +1,4 @@
-import { type Uuid, parseUuid } from '../../../shared/kernel/uuid';
+import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
 
 export class InvalidCompetitorStatusIdError extends Error {
   constructor(value: string) {
@@ -17,4 +17,8 @@ export function parseCompetitorStatusId(value: string): CompetitorStatusId {
   } catch {
     throw new InvalidCompetitorStatusIdError(value);
   }
+}
+
+export function createCompetitorStatusId(): CompetitorStatusId {
+  return createUuid() as CompetitorStatusId;
 }
