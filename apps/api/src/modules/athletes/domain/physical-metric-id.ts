@@ -1,3 +1,5 @@
+import { type Uuid, parseUuid } from '../../../shared/kernel/uuid';
+
 export class InvalidPhysicalMetricIdError extends Error {
   constructor(value: string) {
     super(`Invalid physical metric id: ${value}`);
@@ -5,17 +7,14 @@ export class InvalidPhysicalMetricIdError extends Error {
   }
 }
 
-const uuidRegex =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-
-export type PhysicalMetricId = string & {
+export type PhysicalMetricId = Uuid & {
   readonly __brand: 'PhysicalMetricId';
 };
 
 export function parsePhysicalMetricId(value: string): PhysicalMetricId {
-  if (!uuidRegex.test(value)) {
+  try {
+    return parseUuid(value) as PhysicalMetricId;
+  } catch {
     throw new InvalidPhysicalMetricIdError(value);
   }
-
-  return value as PhysicalMetricId;
 }

@@ -1,4 +1,4 @@
-import { isUuid } from './uuid';
+import { type Uuid, parseUuid } from './uuid';
 
 export class InvalidUserIdError extends Error {
   constructor(value: string) {
@@ -14,22 +14,22 @@ export class InvalidOrganizationIdError extends Error {
   }
 }
 
-export type UserId = string & { readonly __brand: 'UserId' };
+export type UserId = Uuid & { readonly __brand: 'UserId' };
 
-export type OrganizationId = string & { readonly __brand: 'OrganizationId' };
+export type OrganizationId = Uuid & { readonly __brand: 'OrganizationId' };
 
 export function parseUserId(value: string): UserId {
-  if (!isUuid(value)) {
+  try {
+    return parseUuid(value) as UserId;
+  } catch {
     throw new InvalidUserIdError(value);
   }
-
-  return value as UserId;
 }
 
 export function parseOrganizationId(value: string): OrganizationId {
-  if (!isUuid(value)) {
+  try {
+    return parseUuid(value) as OrganizationId;
+  } catch {
     throw new InvalidOrganizationIdError(value);
   }
-
-  return value as OrganizationId;
 }
