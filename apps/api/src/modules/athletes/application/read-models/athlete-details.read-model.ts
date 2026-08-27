@@ -1,3 +1,5 @@
+import type { PaginatedResult } from '../../../../shared/kernel/pagination';
+
 export type AthleteDetailsReadModel = {
   id: string;
   firstName: string;
@@ -17,3 +19,6 @@ export type AthleteDetailsReadModel = {
     cleanAndJerk: number | null;
   };
 };
+
+export type PaginatedAthleteDetailsReadModel =
+  PaginatedResult<AthleteDetailsReadModel>;

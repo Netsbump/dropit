@@ -1,24 +1,29 @@
 import { athleteContract } from '@dropit/contract';
 import { Controller, Inject, UseFilters, UseGuards } from '@nestjs/common';
 import { TsRestHandler, tsRestHandler } from '@ts-rest/nest';
-import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
 import {
-  NoOrganization,
-  RequirePermissions,
-} from '../../auth/infrastructure/decorators/permissions.decorator';
-import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
+  type OrganizationId,
+  parseOrganizationId,
+} from '../../../shared/kernel/identity';
 import {
   AuthenticatedUser,
   CurrentUser,
 } from '../../auth/infrastructure/decorators/auth.decorator';
+import { CurrentOrganization } from '../../auth/infrastructure/decorators/organization.decorator';
 import {
-  IAthleteProfiles,
-  ATHLETE_PROFILES,
-} from '../application/ports/in/athlete-profiles.port';
+  NoOrganization,
+  RequirePermissions,
+} from '../../auth/infrastructure/decorators/permissions.decorator';
+import { PermissionsGuard } from '../../auth/infrastructure/guards/permissions.guard';
 import {
   IInvitationUseCases,
   INVITATION_USE_CASES,
 } from '../../invitations/application/ports/invitation-use-cases.port';
+import {
+  ATHLETE_PROFILES,
+  IAthleteProfiles,
+} from '../application/ports/in/athlete-profiles.port';
+import { parseAthleteId } from '../domain/athlete-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
   toAthleteCreation,
@@ -27,11 +32,6 @@ import {
   toAthleteDto,
   toAthleteUpdate,
 } from './mappers/athlete.mapper';
-import { parseAthleteId } from '../domain/athlete-id';
-import {
-  parseOrganizationId,
-  type OrganizationId,
-} from '../../../shared/kernel/identity';
 
 const c = athleteContract;
 
@@ -90,10 +90,10 @@ export class AthleteController {
   }
 
   /**
-   * Retrieves all athletes in the current organization.
+   * Lists athletes in the current organization.
    *
    * @param organizationId - The ID of the current organization (injected via the `@CurrentOrganization` decorator)
-   * @returns A list of all athletes in the organization with their details.
+   * @returns A paginated list of athletes in the organization with their details.
    */
   @TsRestHandler(c.getAthletes)
   @RequirePermissions('read')
@@ -101,17 +101,21 @@ export class AthleteController {
     @CurrentOrganization() organizationId: OrganizationId,
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletes>> {
-    return tsRestHandler(c.getAthletes, async () => {
+    return tsRestHandler(c.getAthletes, async ({ query }) => {
       const athletes = await this.athleteProfiles.listAccessibleDetails(
         user.id,
-        organizationId
+        organizationId,
+        query
       );
 
-      const athletesDto = toAthleteDetailsDtoList(athletes);
+      const athletesDto = toAthleteDetailsDtoList(athletes.data);
 
       return {
         status: 200 as const,
-        body: athletesDto,
+        body: {
+          data: athletesDto,
+          pagination: athletes.pagination,
+        },
       };
     });
   }
@@ -122,29 +126,39 @@ export class AthleteController {
   getAthletesByOrganization(
     @CurrentUser() user: AuthenticatedUser
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletesByOrganization>> {
-    return tsRestHandler(c.getAthletesByOrganization, async ({ params }) => {
-      if (user.role !== 'admin') {
-        return { status: 403, body: { message: 'Forbidden' } };
+    return tsRestHandler(
+      c.getAthletesByOrganization,
+      async ({ params, query }) => {
+        if (user.role !== 'admin') {
+          return { status: 403, body: { message: 'Forbidden' } };
+        }
+
+        const organizationId = parseOrganizationId(params.organizationId);
+
+        const athletes = await this.athleteProfiles.listDetailsByOrganization(
+          organizationId,
+          query
+        );
+
+        const athletesDto = toAthleteDetailsDtoList(athletes.data).map(
+          (athlete) => ({
+            id: athlete.id,
+            firstName: athlete.firstName,
+            lastName: athlete.lastName,
+            email: athlete.email,
+            birthday: athlete.birthday,
+          })
+        );
+
+        return {
+          status: 200 as const,
+          body: {
+            data: athletesDto,
+            pagination: athletes.pagination,
+          },
+        };
       }
-
-      const organizationId = parseOrganizationId(params.organizationId);
-
-      const athletes =
-        await this.athleteProfiles.listDetailsByOrganization(organizationId);
-
-      const athletesDto = toAthleteDetailsDtoList(athletes).map((athlete) => ({
-        id: athlete.id,
-        firstName: athlete.firstName,
-        lastName: athlete.lastName,
-        email: athlete.email,
-        birthday: athlete.birthday,
-      }));
-
-      return {
-        status: 200 as const,
-        body: athletesDto,
-      };
-    });
+    );
   }
 
   /**

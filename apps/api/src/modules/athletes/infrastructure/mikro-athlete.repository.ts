@@ -1,16 +1,25 @@
-import { EntityManager, EntityRepository } from '@mikro-orm/core';
+import {
+  EntityManager,
+  EntityRepository,
+  type FilterQuery,
+} from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
 import type { UserId } from '../../../shared/kernel/identity';
+import type { SearchablePaginationQuery } from '../../../shared/kernel/pagination';
 import { User } from '../../auth/domain/auth/user.entity';
 import { AthleteEntity } from '../../database/entities/athlete.entity';
+import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
 import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
 import { PhysicalMetricEntity } from '../../database/entities/physical-metric.entity';
 import {
   IAthleteReadRepository,
   IAthleteRepository,
 } from '../application/ports/out/athlete.repository.port';
-import type { AthleteDetailsReadModel } from '../application/read-models/athlete-details.read-model';
+import type {
+  AthleteDetailsReadModel,
+  PaginatedAthleteDetailsReadModel,
+} from '../application/read-models/athlete-details.read-model';
 import { Athlete } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
 import {
@@ -37,6 +46,71 @@ export class MikroAthleteRepository
     return this.em as unknown as SqlEntityManager;
   }
 
+  private getNameSearchTokens(search?: string): string[] {
+    if (!search) {
+      return [];
+    }
+
+    const trimmedSearch = search.trim();
+
+    if (!trimmedSearch) {
+      return [];
+    }
+
+    return trimmedSearch.split(/\s+/);
+  }
+
+  private buildNameSearchFilters(search?: string) {
+    const tokens = this.getNameSearchTokens(search);
+
+    return tokens.map((token) => ({
+      $or: [
+        { firstName: { $ilike: `%${token}%` } },
+        { lastName: { $ilike: `%${token}%` } },
+      ],
+    }));
+  }
+
+  private buildListCriteria(
+    athleteUserIds: UserId[],
+    search?: string
+  ): FilterQuery<AthleteEntity> {
+    const userFilter: FilterQuery<AthleteEntity> = {
+      user: { id: { $in: athleteUserIds } },
+    };
+
+    const searchFilters = this.buildNameSearchFilters(search);
+
+    if (searchFilters.length === 0) {
+      return userFilter;
+    }
+
+    return { $and: [userFilter, ...searchFilters] };
+  }
+
+  private applyNameSearch(
+    qb: QueryBuilder<AthleteEntity>,
+    search?: string
+  ): QueryBuilder<AthleteEntity> {
+    const searchFilters = this.buildNameSearchFilters(search);
+
+    for (const searchFilter of searchFilters) {
+      qb.andWhere(searchFilter);
+    }
+
+    return qb;
+  }
+
+  private applyStableListOrder(
+    qb: QueryBuilder<AthleteEntity>
+  ): QueryBuilder<AthleteEntity> {
+    return qb.orderBy({
+      'a.lastName': 'ASC',
+      'a.firstName': 'ASC',
+      'a.id': 'ASC',
+    });
+  }
+
   private getBaseQuery(
     athleteUserId?: UserId,
     athleteUserIds?: UserId[]
@@ -52,9 +126,6 @@ export class MikroAthleteRepository
       'u.id AS userId',
       'u.email',
       'u.image',
-      'cs.level',
-      'cs.sexCategory',
-      'cs.weightCategory',
     ]);
 
     // Filter by organization (always applied)
@@ -114,23 +185,92 @@ export class MikroAthleteRepository
         .as('pr_cleanAndJerk')
     );
 
-    qb.leftJoin('a.competitorStatuses', 'cs');
+    // Subqueries for the active competitor status
+    qb.addSelect(
+      this.sql
+        .createQueryBuilder(CompetitorStatusEntity, 'cs_level')
+        .select('cs_level.level')
+        .where({
+          'cs_level.athlete': raw('a.id'),
+          'cs_level.endDate': null,
+        })
+        .orderBy({ 'cs_level.createdAt': 'DESC' })
+        .limit(1)
+        .as('level')
+    );
+
+    // Subquery for the active competitor sex category
+    qb.addSelect(
+      this.sql
+        .createQueryBuilder(CompetitorStatusEntity, 'cs_sex')
+        .select('cs_sex.sexCategory')
+        .where({
+          'cs_sex.athlete': raw('a.id'),
+          'cs_sex.endDate': null,
+        })
+        .orderBy({ 'cs_sex.createdAt': 'DESC' })
+        .limit(1)
+        .as('sexCategory')
+    );
+
+    // Subquery for the active competitor weight category
+    qb.addSelect(
+      this.sql
+        .createQueryBuilder(CompetitorStatusEntity, 'cs_weight')
+        .select('cs_weight.weightCategory')
+        .where({
+          'cs_weight.athlete': raw('a.id'),
+          'cs_weight.endDate': null,
+        })
+        .orderBy({ 'cs_weight.createdAt': 'DESC' })
+        .limit(1)
+        .as('weightCategory')
+    );
 
     return qb;
   }
 
   async listDetailsByUserIds(
-    athleteUserIds: UserId[]
-  ): Promise<AthleteDetailsReadModel[]> {
+    athleteUserIds: UserId[],
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel> {
     if (athleteUserIds.length === 0) {
-      return [];
+      return {
+        data: [],
+        pagination: {
+          limit: query.limit,
+          offset: query.offset,
+          total: 0,
+          hasNext: false,
+        },
+      };
     }
 
-    // Get raw results (table format, non-hydrated) via execute('all')
-    const athletes = await this.getBaseQuery(undefined, athleteUserIds).execute(
-      'all'
-    );
-    return toAthleteDetailsReadModelList(athletes);
+    const qb = this.getBaseQuery(undefined, athleteUserIds);
+
+    this.applyNameSearch(qb, query.search);
+
+    this.applyStableListOrder(qb).limit(query.limit).offset(query.offset);
+
+    const [athletes, total] = await Promise.all([
+      qb.execute('all'),
+      this.em.count(
+        AthleteEntity,
+        this.buildListCriteria(athleteUserIds, query.search)
+      ),
+    ]);
+
+    const data = toAthleteDetailsReadModelList(athletes);
+
+    return {
+      data,
+      pagination: {
+        limit: query.limit,
+        offset: query.offset,
+        total,
+        hasNext: query.offset + data.length < total,
+      },
+    };
   }
 
   async findDetailsByUserId(

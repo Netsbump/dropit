@@ -1,24 +1,29 @@
-import { api } from '@/lib/api';
+import { CreationDialog } from '@/components/shared/creation-dialog';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
+import { HeroCard } from '@/components/ui/hero-card';
+import { Input } from '@/components/ui/input';
+import { ServerPagination } from '@/components/ui/server-pagination';
+import { useAthleteColumns } from '@/features/athletes/columns';
 import { getBackOfficeAccessState } from '@/features/auth/auth-access';
+import { useOffsetPagination } from '@/hooks/use-offset-pagination';
+import { usePageMeta } from '@/hooks/use-page-meta';
 import { useTranslation } from '@dropit/i18n';
 import { GLOBAL_ROLE, ORGANIZATION_ROLE } from '@dropit/schemas';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   Outlet,
   createFileRoute,
   redirect,
   useMatches,
 } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
-import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
-import { useAthleteColumns } from '@/features/athletes/columns';
-import { DataTable } from '@/components/ui/data-table';
-import { CreationDialog } from '@/components/shared/creation-dialog';
-import { usePageMeta } from '@/hooks/use-page-meta';
-import { Button } from '@/components/ui/button';
-import { HeroCard } from '@/components/ui/hero-card';
-import { Input } from '@/components/ui/input';
 import { Search, Users } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { AthleteInvitationForm } from '../../features/athletes/athlete-invitation-form';
+import { useAthletesPageQuery } from '../../features/athletes/use-athletes-page-query';
+
+const ATHLETES_PAGE_SIZE_OPTIONS = [10, 20, 50, 100];
+const INITIAL_ATHLETES_PAGE_SIZE = 20;
 
 export const Route = createFileRoute('/_home/athletes')({
   beforeLoad: async () => {
@@ -39,6 +44,7 @@ function AthletesPage() {
   const { setPageMeta } = usePageMeta();
   const [createAthleteModalOpen, setCreateAthleteModalOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const athletesPagination = useOffsetPagination(INITIAL_ATHLETES_PAGE_SIZE);
   const invitationFormId = 'athlete-invitation-form';
   const queryClient = useQueryClient();
   const columns = useAthleteColumns();
@@ -52,24 +58,38 @@ function AthletesPage() {
     setPageMeta({ title: t('athletes:title') });
   }, [setPageMeta, t]);
 
-  const { data: athletes, isLoading: athletesLoading } = useQuery({
-    queryKey: ['athletes'],
-    queryFn: async () => {
-      const response = await api.athlete.getAthletes();
-      if (response.status !== 200) throw new Error('Failed to load athletes');
-      return response.body;
-    },
+  const searchQuery = search.trim();
+
+  const {
+    data: athletesPage,
+    isLoading: athletesLoading,
+    isFetching: athletesFetching,
+  } = useAthletesPageQuery({
+    limit: athletesPagination.limit,
+    offset: athletesPagination.offset,
+    search,
   });
 
+  const athletes = athletesPage?.data ?? [];
+  const pagination = athletesPage?.pagination ?? {
+    limit: athletesPagination.limit,
+    offset: athletesPagination.offset,
+    total: 0,
+    hasNext: false,
+  };
   const handleCreationSuccess = () => {
     setCreateAthleteModalOpen(false);
     queryClient.invalidateQueries({ queryKey: ['athletes'] });
   };
 
-  const filteredAthletes = (athletes ?? []).filter((athlete) => {
-    const fullName = `${athlete.firstName} ${athlete.lastName}`.toLowerCase();
-    return fullName.includes(search.toLowerCase());
-  });
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    athletesPagination.reset();
+  };
+
+  const handlePageSizeChange = (value: number) => {
+    athletesPagination.setLimit(value);
+  };
 
   // Si on est sur un détail d'athlète, on affiche directement le contenu
   if (isAthleteDetail) {
@@ -86,7 +106,7 @@ function AthletesPage() {
           description={t('athletes:hero.description')}
           stat={{
             label: t('athletes:hero.stat_label'),
-            value: athletes?.length || 0,
+            value: pagination.total,
             icon: Users,
             description: t('athletes:hero.stat_description'),
             callToAction: {
@@ -100,18 +120,10 @@ function AthletesPage() {
       </div>
 
       {/* DataTable with internal scroll management */}
-      <div className="flex-1 min-h-0">
+      <div className="flex min-h-0 flex-1 flex-col">
         {athletesLoading ? (
           <div className="flex items-center justify-center h-32">
             {t('common:loading')}
-          </div>
-        ) : !athletes?.length ? (
-          <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
-            <p>{t('common:no_results')}</p>
-            <p className="text-sm">{t('common:start_create')}</p>
-            <Button onClick={() => setCreateAthleteModalOpen(true)}>
-              {t('athletes:filters.create_athlete')}
-            </Button>
           </div>
         ) : (
           <>
@@ -121,7 +133,7 @@ function AthletesPage() {
                 <Input
                   placeholder={t('athletes:filters.search_placeholder')}
                   value={search}
-                  onChange={(event) => setSearch(event.target.value)}
+                  onChange={(event) => handleSearchChange(event.target.value)}
                   className="bg-background pl-8"
                 />
               </div>
@@ -130,18 +142,37 @@ function AthletesPage() {
               </Button>
             </div>
 
-            <DataTable
-              columns={columns}
-              data={filteredAthletes}
-              pagination={
-                filteredAthletes.length > 10
-                  ? { initialPageSize: 10 }
-                  : undefined
-              }
-              onRowClick={(athleteId) =>
-                navigate({ to: `/athletes/${athleteId}` })
-              }
-            />
+            {athletes.length === 0 ? (
+              <div className="flex flex-col items-center justify-center h-32 gap-2 text-muted-foreground">
+                <p>{t('common:no_results')}</p>
+                {!searchQuery ? (
+                  <p className="text-sm">{t('common:start_create')}</p>
+                ) : null}
+                <Button onClick={() => setCreateAthleteModalOpen(true)}>
+                  {t('athletes:filters.create_athlete')}
+                </Button>
+              </div>
+            ) : (
+              <div className="flex min-h-0 flex-1 flex-col">
+                <DataTable
+                  columns={columns}
+                  data={athletes}
+                  onRowClick={(athleteId) =>
+                    navigate({ to: `/athletes/${athleteId}` })
+                  }
+                />
+
+                <ServerPagination
+                  pagination={pagination}
+                  itemCount={athletes.length}
+                  isFetching={athletesFetching}
+                  pageSizeOptions={ATHLETES_PAGE_SIZE_OPTIONS}
+                  onPageSizeChange={handlePageSizeChange}
+                  onPreviousPage={athletesPagination.previousPage}
+                  onNextPage={athletesPagination.nextPage}
+                />
+              </div>
+            )}
           </>
         )}
       </div>

@@ -17,5 +17,19 @@ export const dateRangeFilterSchema = z.object({
   endDate: z.string().date().optional(),
 });
 
+export const paginationQuerySchema = z.object({
+  limit: z.coerce.number().int().min(1).max(100).default(20),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+export const paginationMetadataSchema = z.object({
+  limit: z.number().int().min(1),
+  offset: z.number().int().min(0),
+  total: z.number().int().min(0),
+  hasNext: z.boolean(),
+});
+
 export type DateFilterInput = z.infer<typeof dateFilterSchema>;
 export type DateRangeFilterInput = z.infer<typeof dateRangeFilterSchema>;
+export type PaginationQueryInput = z.infer<typeof paginationQuerySchema>;
+export type PaginationMetadataDto = z.infer<typeof paginationMetadataSchema>;

@@ -1,10 +1,12 @@
 import {
-  adminOrganizationAthleteSchema,
   athleteDetailsSchema,
+  athleteListQuerySchema,
   athleteSchema,
   athletesByOrganizationParamsSchema,
   createAthleteInvitationSchema,
   createAthleteSchema,
+  paginatedAdminOrganizationAthleteSchema,
+  paginatedAthleteDetailsSchema,
   updateAthleteSchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
@@ -13,9 +15,10 @@ export const athleteContract = {
   getAthletes: {
     method: 'GET',
     path: '/athletes',
-    summary: 'Get all athletes',
+    summary: 'List athletes',
+    query: athleteListQuerySchema,
     responses: {
-      200: z.array(athleteDetailsSchema),
+      200: paginatedAthleteDetailsSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -28,10 +31,11 @@ export const athleteContract = {
   getAthletesByOrganization: {
     method: 'GET',
     path: '/organizations/:organizationId/athletes',
-    summary: 'Get all athletes for an organization (admin)',
+    summary: 'List athletes for an organization (admin)',
     pathParams: athletesByOrganizationParamsSchema,
+    query: athleteListQuerySchema,
     responses: {
-      200: z.array(adminOrganizationAthleteSchema),
+      200: paginatedAdminOrganizationAthleteSchema,
       403: z.object({
         message: z.string(),
       }),

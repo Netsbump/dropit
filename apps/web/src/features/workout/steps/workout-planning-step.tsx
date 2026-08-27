@@ -1,4 +1,3 @@
-import { api } from '@/lib/api';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -13,6 +12,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Switch } from '@/components/ui/switch';
+import { api } from '@/lib/api';
 import { createWorkoutSchema } from '@dropit/schemas';
 import { useQuery } from '@tanstack/react-query';
 import { Search } from 'lucide-react';
@@ -59,9 +59,11 @@ export function WorkoutPlanningStep({
     queryKey: ['athletes'],
     queryFn: async () => {
       try {
-        const response = await api.athlete.getAthletes();
+        const response = await api.athlete.getAthletes({
+          query: { limit: 100, offset: 0 },
+        });
         if (response.status !== 200) throw new Error('Failed to load athletes');
-        return response.body.map((athlete) => ({
+        return response.body.data.map((athlete) => ({
           id: athlete.id,
           firstName: athlete.firstName,
           lastName: athlete.lastName,

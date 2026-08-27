@@ -1,4 +1,5 @@
 import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
+import type { SearchablePaginationQuery } from '../../../shared/kernel/pagination';
 import {
   Athlete,
   type AthleteCreation,
@@ -22,7 +23,10 @@ import {
   IAthleteRepository,
 } from './ports/out/athlete.repository.port';
 import { IOrganizationMembership } from './ports/out/organization-membership.port';
-import type { AthleteDetailsReadModel } from './read-models/athlete-details.read-model';
+import type {
+  AthleteDetailsReadModel,
+  PaginatedAthleteDetailsReadModel,
+} from './read-models/athlete-details.read-model';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -103,35 +107,31 @@ export class AthleteProfiles implements IAthleteProfiles {
 
   async listAccessibleDetails(
     currentUserId: UserId,
-    organizationId: OrganizationId
-  ): Promise<AthleteDetailsReadModel[]> {
+    organizationId: OrganizationId,
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel> {
     const athleteUserIds = await this.getAuthorizedAthleteUserIds(
       currentUserId,
       organizationId
     );
 
-    const athletes =
-      await this.athleteReadRepository.listDetailsByUserIds(athleteUserIds);
-    if (!athletes) {
-      throw new AthleteNotFoundError('Athletes not found');
-    }
-
-    return athletes;
+    return await this.athleteReadRepository.listDetailsByUserIds(
+      athleteUserIds,
+      query
+    );
   }
 
   async listDetailsByOrganization(
-    organizationId: OrganizationId
-  ): Promise<AthleteDetailsReadModel[]> {
+    organizationId: OrganizationId,
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel> {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
-    const athletes =
-      await this.athleteReadRepository.listDetailsByUserIds(athleteUserIds);
 
-    if (!athletes) {
-      throw new AthleteNotFoundError('Athletes not found');
-    }
-
-    return athletes;
+    return await this.athleteReadRepository.listDetailsByUserIds(
+      athleteUserIds,
+      query
+    );
   }
 
   async listAccessible(

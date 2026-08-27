@@ -1,4 +1,8 @@
 import { z } from 'zod';
+import {
+  paginationMetadataSchema,
+  paginationQuerySchema,
+} from './common.schema';
 
 export const createAthleteSchema = z.object({
   firstName: z.string(),
@@ -53,6 +57,27 @@ export const athleteDetailsSchema = z.object({
 
 export type AthleteDetailsDto = z.infer<typeof athleteDetailsSchema>;
 
+const optionalSearchSchema = z.preprocess(
+  (value) =>
+    typeof value === 'string' && value.trim() === '' ? undefined : value,
+  z.string().trim().optional()
+);
+
+export const athleteListQuerySchema = paginationQuerySchema.extend({
+  search: optionalSearchSchema,
+});
+
+export type AthleteListQueryDto = z.infer<typeof athleteListQuerySchema>;
+
+export const paginatedAthleteDetailsSchema = z.object({
+  data: z.array(athleteDetailsSchema),
+  pagination: paginationMetadataSchema,
+});
+
+export type PaginatedAthleteDetailsDto = z.infer<
+  typeof paginatedAthleteDetailsSchema
+>;
+
 export const athletesByOrganizationParamsSchema = z.object({
   organizationId: z.string(),
 });
@@ -71,6 +96,15 @@ export const adminOrganizationAthleteSchema = z.object({
 
 export type AdminOrganizationAthleteDto = z.infer<
   typeof adminOrganizationAthleteSchema
+>;
+
+export const paginatedAdminOrganizationAthleteSchema = z.object({
+  data: z.array(adminOrganizationAthleteSchema),
+  pagination: paginationMetadataSchema,
+});
+
+export type PaginatedAdminOrganizationAthleteDto = z.infer<
+  typeof paginatedAdminOrganizationAthleteSchema
 >;
 
 // Schéma simplifié pour l'affichage dans les listes

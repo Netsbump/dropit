@@ -1,7 +1,11 @@
 import type { UserId } from '../../../../../shared/kernel/identity';
+import type { SearchablePaginationQuery } from '../../../../../shared/kernel/pagination';
 import { Athlete } from '../../../domain/athlete';
 import type { AthleteId } from '../../../domain/athlete-id';
-import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.read-model';
+import type {
+  AthleteDetailsReadModel,
+  PaginatedAthleteDetailsReadModel,
+} from '../../read-models/athlete-details.read-model';
 
 export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
@@ -21,6 +25,7 @@ export interface IAthleteReadRepository {
     athleteUserId: UserId
   ): Promise<AthleteDetailsReadModel | null>;
   listDetailsByUserIds(
-    athleteUserIds: UserId[]
-  ): Promise<AthleteDetailsReadModel[]>;
+    athleteUserIds: UserId[],
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel>;
 }

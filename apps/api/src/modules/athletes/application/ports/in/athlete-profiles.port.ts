@@ -1,14 +1,18 @@
-import type { AthleteId } from '../../../domain/athlete-id';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../../shared/kernel/identity';
+import type { SearchablePaginationQuery } from '../../../../../shared/kernel/pagination';
 import type {
   Athlete,
   AthleteCreation,
   AthleteUpdate,
 } from '../../../domain/athlete';
-import type { AthleteDetailsReadModel } from '../../read-models/athlete-details.read-model';
+import type { AthleteId } from '../../../domain/athlete-id';
 import type {
-  OrganizationId,
-  UserId,
-} from '../../../../../shared/kernel/identity';
+  AthleteDetailsReadModel,
+  PaginatedAthleteDetailsReadModel,
+} from '../../read-models/athlete-details.read-model';
 
 export interface IAthleteProfiles {
   findById(
@@ -36,12 +40,14 @@ export interface IAthleteProfiles {
    */
   listAccessibleDetails(
     currentUserId: UserId,
-    organizationId: OrganizationId
-  ): Promise<AthleteDetailsReadModel[]>;
+    organizationId: OrganizationId,
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel>;
 
   listDetailsByOrganization(
-    organizationId: OrganizationId
-  ): Promise<AthleteDetailsReadModel[]>;
+    organizationId: OrganizationId,
+    query: SearchablePaginationQuery
+  ): Promise<PaginatedAthleteDetailsReadModel>;
 
   create(data: AthleteCreation): Promise<Athlete>;
 
