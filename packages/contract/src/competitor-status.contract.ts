@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const competitorStatusContract = {
   getCompetitorStatuses: {
     method: 'GET',
-    path: '/competitor-status',
+    path: '/competitor-statuses',
     summary: 'Get all competitor statuses',
     responses: {
       200: z.array(competitorStatusSchema),
@@ -23,8 +23,8 @@ export const competitorStatusContract = {
 
   getCompetitorStatus: {
     method: 'GET',
-    path: '/competitor-status/:id',
-    summary: 'Get a competitor status by id',
+    path: '/athletes/:id/competitor-statuses/active',
+    summary: 'Get the active competitor status for an athlete',
     pathParams: z.object({
       id: z.string(),
     }),
@@ -41,8 +41,11 @@ export const competitorStatusContract = {
 
   createCompetitorStatus: {
     method: 'POST',
-    path: '/competitor-status',
-    summary: 'Create a competitor status',
+    path: '/athletes/:id/competitor-statuses',
+    summary: 'Create a competitor status for an athlete',
+    pathParams: z.object({
+      id: z.string(),
+    }),
     body: createCompetitorStatusSchema,
     responses: {
       201: competitorStatusSchema,
@@ -60,7 +63,7 @@ export const competitorStatusContract = {
 
   updateCompetitorStatus: {
     method: 'PATCH',
-    path: '/competitor-status/:id',
+    path: '/competitor-statuses/:id',
     summary: 'Update a competitor status',
     pathParams: z.object({
       id: z.string(),

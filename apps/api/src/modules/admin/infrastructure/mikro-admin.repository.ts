@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { Member } from '../../auth/domain/organization/member.entity';
 import { Invitation } from '../../auth/domain/organization/invitation.entity';
-import { Athlete } from '../../athletes/domain/athlete.entity';
+import { AthleteEntity } from '../../database/entities/athlete.entity';
 import {
   invitableOrganizationRoleSchema,
   type InvitableOrganizationRole,
@@ -35,7 +35,7 @@ export class MikroAdminRepository implements IAdminRepository {
     const userIds = members.map((member) => member.user.id);
     const athletes = userIds.length
       ? await this.em.find(
-          Athlete,
+          AthleteEntity,
           { user: { id: { $in: userIds } } },
           { populate: ['user'] }
         )

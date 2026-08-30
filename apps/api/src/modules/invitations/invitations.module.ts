@@ -9,10 +9,6 @@ import {
   USER_USE_CASES,
   IUserUseCases,
 } from '../auth/application/ports/user-use-cases.port';
-import {
-  ATHLETE_REPO,
-  IAthleteRepository,
-} from '../athletes/application/ports/athlete.repository.port';
 import { InvitationUseCases } from './application/invitation.use-cases';
 import { InvitationRecipientService } from './application/invitation-recipient.service';
 import { INVITATION_USE_CASES } from './application/ports/invitation-use-cases.port';
@@ -24,29 +20,39 @@ import {
   INVITATION_RECIPIENT_SERVICE,
   IInvitationRecipientService,
 } from './application/ports/invitation-recipient.port';
+import {
+  INVITATION_ATHLETE_CREATION,
+  IInvitationAthleteCreation,
+} from './application/ports/out/invitation-athlete-creation.port';
+import { AthleteInvitationCreationAdapter } from './infrastructure/athlete-invitation-creation.adapter';
 import { BetterAuthInvitationProviderAdapter } from './infrastructure/better-auth-invitation-provider.adapter';
 
 @Module({
   imports: [forwardRef(() => AuthModule), forwardRef(() => AthletesModule)],
   providers: [
     BetterAuthInvitationProviderAdapter,
+    AthleteInvitationCreationAdapter,
     {
       provide: INVITATION_AUTH_PROVIDER,
       useClass: BetterAuthInvitationProviderAdapter,
+    },
+    {
+      provide: INVITATION_ATHLETE_CREATION,
+      useClass: AthleteInvitationCreationAdapter,
     },
     {
       provide: INVITATION_RECIPIENT_SERVICE,
       useFactory: (
         memberRepo: IMemberRepository,
         userUseCases: IUserUseCases,
-        athleteRepository: IAthleteRepository
+        invitationAthleteCreation: IInvitationAthleteCreation
       ) =>
         new InvitationRecipientService(
           memberRepo,
           userUseCases,
-          athleteRepository
+          invitationAthleteCreation
         ),
-      inject: [MEMBER_REPO, USER_USE_CASES, ATHLETE_REPO],
+      inject: [MEMBER_REPO, USER_USE_CASES, INVITATION_ATHLETE_CREATION],
     },
     {
       provide: INVITATION_USE_CASES,

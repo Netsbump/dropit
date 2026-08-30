@@ -5,7 +5,7 @@ import { Member } from '../auth/domain/organization/member.entity';
 import { Invitation } from '../auth/domain/organization/invitation.entity';
 import { Organization } from '../auth/domain/organization/organization.entity';
 import { User } from '../auth/domain/auth/user.entity';
-import { Athlete } from '../athletes/domain/athlete.entity';
+import { AthleteEntity } from '../database/entities/athlete.entity';
 import { MikroAdminRepository } from './infrastructure/mikro-admin.repository';
 import { ADMIN_REPOSITORY } from './application/ports/admin.repository.port';
 import { AdminUseCases } from './application/use-cases/admin.use-cases';
@@ -23,7 +23,7 @@ import { InvitationsModule } from '../invitations/invitations.module';
       Invitation,
       Organization,
       User,
-      Athlete,
+      AthleteEntity,
     ]),
     forwardRef(() => InvitationsModule),
   ],

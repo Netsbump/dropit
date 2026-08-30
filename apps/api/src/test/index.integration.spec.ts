@@ -1,34 +1,44 @@
 import { MikroORM } from '@mikro-orm/core';
 import { Test, TestingModule } from '@nestjs/testing';
+import { vi } from 'vitest';
 import { AppModule } from '../app.module';
 import { createTestMikroOrmOptions } from '../modules/database/mikro-orm.config';
 import { BrevoAdapter } from '../modules/notification/infrastructure/channels/email/brevo.adapter';
-import { setupOrganization } from './organization.integration';
-import { runExerciseTests } from './exercise.integration';
 import { runComplexTests } from './complex.integration';
+import { runExerciseTests } from './exercise.integration';
+import { setupOrganization } from './organization.integration';
 import { runWorkoutTests } from './workout.integration';
 
 describe('Integration Tests Suite', () => {
   let orm: MikroORM;
 
   beforeAll(async () => {
-    // Suppress console logs during integration tests
-    jest.spyOn(console, 'log').mockImplementation(() => {});
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-    jest.spyOn(console, 'warn').mockImplementation(() => {});
+    try {
+      // Suppress console logs during integration tests
+      vi.spyOn(console, 'log').mockImplementation(() => {});
+      vi.spyOn(console, 'error').mockImplementation(() => {});
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    })
-      .overrideProvider(MikroORM)
-      .useFactory({
-        factory: () => MikroORM.init(createTestMikroOrmOptions()),
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
       })
-      .overrideProvider(BrevoAdapter)
-      .useValue({ send: jest.fn() })
-      .compile();
+        .overrideProvider(MikroORM)
+        .useFactory({
+          factory: () => MikroORM.init(createTestMikroOrmOptions()),
+        })
+        .overrideProvider(BrevoAdapter)
+        .useValue({ send: vi.fn() })
+        .compile();
 
-    orm = moduleFixture.get<MikroORM>(MikroORM);
+      orm = moduleFixture.get<MikroORM>(MikroORM);
+    } catch (error) {
+      process.stderr.write(
+        `${
+          error instanceof Error ? error.stack ?? error.message : String(error)
+        }\n`
+      );
+      throw error;
+    }
   });
 
   afterAll(async () => {

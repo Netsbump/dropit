@@ -13,6 +13,7 @@
   "table": {
     "columns": "Columns",
     "selected_rows": "{{count}} of {{total}} column(s) selected",
+    "rows_range": "{{start}}-{{end}} of {{total}} row(s)",
     "rows_per_page": "Rows per page"
   },
   "routes": {

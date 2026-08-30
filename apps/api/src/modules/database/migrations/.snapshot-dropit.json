@@ -1123,7 +1123,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
         "first_name": {
@@ -1239,7 +1238,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
         "weight": {
@@ -1334,7 +1332,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
         "weight": {
@@ -1437,7 +1434,6 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
-          "default": "gen_random_uuid()",
           "mappedType": "uuid"
         },
         "level": {

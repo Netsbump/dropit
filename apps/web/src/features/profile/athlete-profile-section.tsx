@@ -193,9 +193,7 @@ export function AthleteProfileSection() {
       form.reset({
         firstName: athlete.firstName,
         lastName: athlete.lastName,
-        birthday: athlete.birthday
-          ? new Date(athlete.birthday).toISOString().split('T')[0]
-          : '',
+        birthday: athlete.birthday ?? '',
         country: athlete.country || '',
       });
     }
@@ -214,9 +212,7 @@ export function AthleteProfileSection() {
       form.reset({
         firstName: athlete.firstName,
         lastName: athlete.lastName,
-        birthday: athlete.birthday
-          ? new Date(athlete.birthday).toISOString().split('T')[0]
-          : '',
+        birthday: athlete.birthday ?? '',
         country: athlete.country || '',
       });
     }

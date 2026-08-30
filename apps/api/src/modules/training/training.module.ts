@@ -4,7 +4,7 @@ import { forwardRef, Module } from '@nestjs/common';
 import { AthletesModule } from '../athletes/athletes.module';
 import { AuthModule } from '../auth/auth.module';
 
-import { Athlete } from '../athletes/domain/athlete.entity';
+import { AthleteEntity as Athlete } from '../database/entities/athlete.entity';
 import { Workout } from './domain/workout.entity';
 import { TrainingSession } from './domain/training-session.entity';
 import { AthleteTrainingSession } from './domain/athlete-training-session.entity';
@@ -30,6 +30,7 @@ import { ComplexUseCase } from './application/use-cases/complex.use-cases';
 import { ComplexCategoryUseCase } from './application/use-cases/complex-category.use-cases';
 import { ExerciseCategoryUseCase } from './application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from './application/use-cases/exercise.use-cases';
+import { ExerciseCatalog } from './application/exercise-catalog';
 import { WorkoutCategoryUseCase } from './application/use-cases/workout-category.use-cases';
 import { WorkoutUseCases } from './application/use-cases/workout.use-cases';
 
@@ -89,6 +90,7 @@ import {
 import { TRAINING_SESSION_USE_CASES } from './application/ports/training-session-use-cases.port';
 import { WORKOUT_USE_CASES } from './application/ports/workout-use-cases.port';
 import { EXERCISE_USE_CASES } from './application/ports/exercise-use-cases.port';
+import { EXERCISE_CATALOG } from './application/ports/exercise-catalog.port';
 import { COMPLEX_USE_CASES } from './application/ports/complex-use-cases.port';
 import { WORKOUT_CATEGORY_USE_CASES } from './application/ports/workout-category-use-cases.port';
 import { EXERCISE_CATEGORY_USE_CASES } from './application/ports/exercise-category-use-cases.port';
@@ -98,7 +100,7 @@ import { COMPLEX_CATEGORY_USE_CASES } from './application/ports/complex-category
 import {
   ATHLETE_REPO,
   IAthleteRepository,
-} from '../athletes/application/ports/athlete.repository.port';
+} from '../athletes/application/ports/out/athlete.repository.port';
 import {
   USER_USE_CASES,
   IUserUseCases,
@@ -191,6 +193,7 @@ import {
     ComplexCategoryUseCase,
     ExerciseCategoryUseCase,
     ExerciseUseCase,
+    ExerciseCatalog,
     WorkoutCategoryUseCase,
     WorkoutUseCases,
 
@@ -289,6 +292,16 @@ import {
       ],
     },
     {
+      provide: EXERCISE_CATALOG,
+      useFactory: (
+        exerciseRepo: IExerciseRepository,
+        memberUseCases: IMemberUseCases
+      ) => {
+        return new ExerciseCatalog(exerciseRepo, memberUseCases);
+      },
+      inject: [EXERCISE_REPO, MEMBER_USE_CASES],
+    },
+    {
       provide: COMPLEX_USE_CASES,
       useFactory: (
         complexRepo: IComplexRepository,
@@ -379,6 +392,7 @@ import {
     TRAINING_SESSION_USE_CASES,
     WORKOUT_USE_CASES,
     EXERCISE_USE_CASES,
+    EXERCISE_CATALOG,
     COMPLEX_USE_CASES,
     WORKOUT_CATEGORY_USE_CASES,
     EXERCISE_CATEGORY_USE_CASES,

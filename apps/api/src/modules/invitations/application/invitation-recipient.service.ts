@@ -1,18 +1,18 @@
-import { Athlete } from '../../athletes/domain/athlete.entity';
-import { IAthleteRepository } from '../../athletes/application/ports/athlete.repository.port';
+import { parseUserId } from '../../../shared/kernel/identity';
 import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
+import type { IInvitationAthleteCreation } from './ports/out/invitation-athlete-creation.port';
+import { IInvitationRecipientService } from './ports/invitation-recipient.port';
 import {
   InvitationNotificationContext,
   InvitationRecipientProfile,
 } from './ports/invitation-use-cases.port';
-import { IInvitationRecipientService } from './ports/invitation-recipient.port';
 
 export class InvitationRecipientService implements IInvitationRecipientService {
   constructor(
     private readonly memberRepository: IMemberRepository,
     private readonly userUseCases: IUserUseCases,
-    private readonly athleteRepository: IAthleteRepository
+    private readonly invitationAthleteCreation: IInvitationAthleteCreation
   ) {}
 
   async prepareRecipient(
@@ -32,11 +32,11 @@ export class InvitationRecipientService implements IInvitationRecipientService {
         emailVerified: false,
       });
 
-      const athlete = new Athlete();
-      athlete.firstName = firstName;
-      athlete.lastName = lastName;
-      athlete.user = user;
-      await this.athleteRepository.save(athlete);
+      await this.invitationAthleteCreation.createAthleteForInvitation({
+        userId: parseUserId(user.id),
+        firstName,
+        lastName,
+      });
 
       return { isNewUser: true, hasOtherOrganization: false };
     }

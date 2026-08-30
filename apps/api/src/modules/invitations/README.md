@@ -17,15 +17,17 @@ flowchart TD
   B --> C[InvitationRecipientService.prepareRecipient]
   C --> D{User exists?}
   D -- no --> E[UserUseCases.create]
-  E --> F[AthleteRepository.save]
-  D -- yes --> G[Check member/org context]
-  F --> H[BetterAuthInvitationProviderAdapter]
-  G --> H
-  H --> I[BetterAuthAdapter.api.createInvitation\nrole: member]
-  I --> J[better-auth organization plugin]
-  J --> K[afterCreateInvitation]
-  K --> L[InvitationRecipientService.getNotificationContext]
-  L --> M[NotificationUseCase.sendOrganizationInvitation]
+  E --> F[IInvitationAthleteCreation.createAthleteForInvitation]
+  F --> G[AthleteInvitationCreationAdapter]
+  G --> H[IAthleteInvitationCreation.createFromInvitation]
+  D -- yes --> I[Check member/org context]
+  H --> J[BetterAuthInvitationProviderAdapter]
+  I --> J
+  J --> K[BetterAuthAdapter.api.createInvitation<br/>role: member]
+  K --> L[better-auth organization plugin]
+  L --> M[afterCreateInvitation]
+  M --> N[InvitationRecipientService.getNotificationContext]
+  N --> O[NotificationUseCase.sendOrganizationInvitation]
 ```
 
 ```mermaid
@@ -58,15 +60,17 @@ flowchart TD
   C --> D[InvitationRecipientService.prepareRecipient]
   D --> E{User exists?}
   E -- no --> F[UserUseCases.create]
-  F --> G[AthleteRepository.save]
-  E -- yes --> H[Check member/org context]
-  G --> I[BetterAuthInvitationProviderAdapter]
-  H --> I
-  I --> J[BetterAuthAdapter.api.createInvitation\nrole: input member/admin]
-  J --> K[better-auth organization plugin]
-  K --> L[afterCreateInvitation]
-  L --> M[InvitationRecipientService.getNotificationContext]
-  M --> N[NotificationUseCase.sendOrganizationInvitation]
+  F --> G[IInvitationAthleteCreation.createAthleteForInvitation]
+  G --> H[AthleteInvitationCreationAdapter]
+  H --> I[IAthleteInvitationCreation.createFromInvitation]
+  E -- yes --> J[Check member/org context]
+  I --> K[BetterAuthInvitationProviderAdapter]
+  J --> K
+  K --> L[BetterAuthAdapter.api.createInvitation<br/>role: input member/admin]
+  L --> M[better-auth organization plugin]
+  M --> N[afterCreateInvitation]
+  N --> O[InvitationRecipientService.getNotificationContext]
+  O --> P[NotificationUseCase.sendOrganizationInvitation]
 ```
 
 ```mermaid
@@ -100,16 +104,18 @@ flowchart LR
 
   C --> D[InvitationRecipientService]
   D --> E[UserUseCases]
-  D --> F[AthleteRepository]
-  D --> G[MemberRepository]
+  D --> F[IInvitationAthleteCreation]
+  F --> G[AthleteInvitationCreationAdapter]
+  G --> H[IAthleteInvitationCreation]
+  D --> I[MemberRepository]
 
-  C --> H[InvitationAuthProvider]
-  H --> I[BetterAuthAdapter]
-  I --> J[better-auth]
+  C --> J[InvitationAuthProvider]
+  J --> K[BetterAuthAdapter]
+  K --> L[better-auth]
 
-  J --> K[afterCreateInvitation]
-  K --> D
-  K --> L[NotificationUseCase]
+  L --> M[afterCreateInvitation]
+  M --> D
+  M --> N[NotificationUseCase]
 ```
 
 ## Current Boundaries

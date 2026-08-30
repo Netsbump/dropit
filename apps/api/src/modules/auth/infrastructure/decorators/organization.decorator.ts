@@ -1,9 +1,26 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import {
+  createParamDecorator,
+  ExecutionContext,
+  UnauthorizedException,
+} from '@nestjs/common';
+import {
+  parseOrganizationId,
+  type OrganizationId,
+} from '../../../../shared/kernel/identity';
 
 export const CurrentOrganization = createParamDecorator(
-  (data: unknown, ctx: ExecutionContext) => {
+  (_data: unknown, ctx: ExecutionContext): OrganizationId => {
     const request = ctx.switchToHttp().getRequest();
-    const session = request.session;
-    return session?.session?.activeOrganizationId;
+    const organizationId = request.session?.session?.activeOrganizationId;
+
+    if (typeof organizationId !== 'string') {
+      throw new UnauthorizedException('Missing active organization');
+    }
+
+    try {
+      return parseOrganizationId(organizationId);
+    } catch {
+      throw new UnauthorizedException('Invalid active organization');
+    }
   }
 );

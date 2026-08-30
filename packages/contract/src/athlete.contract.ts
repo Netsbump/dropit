@@ -1,10 +1,12 @@
 import {
-  adminOrganizationAthleteSchema,
   athleteDetailsSchema,
+  athleteListQuerySchema,
   athleteSchema,
   athletesByOrganizationParamsSchema,
   createAthleteInvitationSchema,
   createAthleteSchema,
+  paginatedAdminOrganizationAthleteSchema,
+  paginatedAthleteDetailsSchema,
   updateAthleteSchema,
 } from '@dropit/schemas';
 import { z } from 'zod';
@@ -12,10 +14,11 @@ import { z } from 'zod';
 export const athleteContract = {
   getAthletes: {
     method: 'GET',
-    path: '/athlete',
-    summary: 'Get all athletes',
+    path: '/athletes',
+    summary: 'List athletes',
+    query: athleteListQuerySchema,
     responses: {
-      200: z.array(athleteDetailsSchema),
+      200: paginatedAthleteDetailsSchema,
       404: z.object({
         message: z.string(),
       }),
@@ -27,11 +30,12 @@ export const athleteContract = {
 
   getAthletesByOrganization: {
     method: 'GET',
-    path: '/athlete/organization/:organizationId',
-    summary: 'Get all athletes for an organization (admin)',
+    path: '/organizations/:organizationId/athletes',
+    summary: 'List athletes for an organization (admin)',
     pathParams: athletesByOrganizationParamsSchema,
+    query: athleteListQuerySchema,
     responses: {
-      200: z.array(adminOrganizationAthleteSchema),
+      200: paginatedAdminOrganizationAthleteSchema,
       403: z.object({
         message: z.string(),
       }),
@@ -46,7 +50,7 @@ export const athleteContract = {
 
   getAthlete: {
     method: 'GET',
-    path: '/athlete/:id',
+    path: '/athletes/:id',
     summary: 'Get an athlete by id',
     pathParams: z.object({
       id: z.string(),
@@ -64,7 +68,7 @@ export const athleteContract = {
 
   createAthlete: {
     method: 'POST',
-    path: '/athlete',
+    path: '/athletes',
     summary: 'Create an athlete',
     body: createAthleteSchema,
     responses: {
@@ -78,6 +82,9 @@ export const athleteContract = {
       404: z.object({
         message: z.string(),
       }),
+      409: z.object({
+        message: z.string(),
+      }),
       500: z.object({
         message: z.string(),
       }),
@@ -86,7 +93,7 @@ export const athleteContract = {
 
   inviteAthlete: {
     method: 'POST',
-    path: '/athlete/invitations',
+    path: '/athletes/invitations',
     summary: 'Invite an athlete by email',
     body: createAthleteInvitationSchema,
     responses: {
@@ -99,7 +106,7 @@ export const athleteContract = {
 
   updateAthlete: {
     method: 'PATCH',
-    path: '/athlete/:id',
+    path: '/athletes/:id',
     summary: 'Update an athlete',
     pathParams: z.object({
       id: z.string(),
@@ -121,7 +128,7 @@ export const athleteContract = {
 
   deleteAthlete: {
     method: 'DELETE',
-    path: '/athlete/:id',
+    path: '/athletes/:id',
     summary: 'Delete an athlete',
     pathParams: z.object({
       id: z.string(),

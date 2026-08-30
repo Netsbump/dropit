@@ -1,8 +1,9 @@
 import { MikroORM } from '@mikro-orm/core';
+import { expect } from 'vitest';
 import {
+  TestData,
   cleanDatabase,
   createTestOrganization,
-  TestData,
 } from './utils/test-setup';
 
 /**

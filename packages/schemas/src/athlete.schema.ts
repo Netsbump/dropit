@@ -1,9 +1,17 @@
 import { z } from 'zod';
+import {
+  paginationMetadataSchema,
+  paginationQuerySchema,
+} from './common.schema';
+
+const birthdayInputSchema = z
+  .string()
+  .date('Birthday must use the YYYY-MM-DD format');
 
 export const createAthleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.string().or(z.date()).optional(),
+  birthday: birthdayInputSchema.optional(),
   country: z.string().optional(),
 });
 
@@ -17,7 +25,7 @@ export const athleteSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
   userId: z.string(),
 });
 
@@ -29,7 +37,7 @@ export const athleteDetailsSchema = z.object({
   lastName: z.string(),
   email: z.string().email(),
   image: z.string().optional(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
   country: z.string().optional(),
   metrics: z
     .object({
@@ -53,6 +61,27 @@ export const athleteDetailsSchema = z.object({
 
 export type AthleteDetailsDto = z.infer<typeof athleteDetailsSchema>;
 
+const optionalSearchSchema = z.preprocess(
+  (value) =>
+    typeof value === 'string' && value.trim() === '' ? undefined : value,
+  z.string().trim().optional()
+);
+
+export const athleteListQuerySchema = paginationQuerySchema.extend({
+  search: optionalSearchSchema,
+});
+
+export type AthleteListQueryDto = z.infer<typeof athleteListQuerySchema>;
+
+export const paginatedAthleteDetailsSchema = z.object({
+  data: z.array(athleteDetailsSchema),
+  pagination: paginationMetadataSchema,
+});
+
+export type PaginatedAthleteDetailsDto = z.infer<
+  typeof paginatedAthleteDetailsSchema
+>;
+
 export const athletesByOrganizationParamsSchema = z.object({
   organizationId: z.string(),
 });
@@ -66,11 +95,20 @@ export const adminOrganizationAthleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
 });
 
 export type AdminOrganizationAthleteDto = z.infer<
   typeof adminOrganizationAthleteSchema
+>;
+
+export const paginatedAdminOrganizationAthleteSchema = z.object({
+  data: z.array(adminOrganizationAthleteSchema),
+  pagination: paginationMetadataSchema,
+});
+
+export type PaginatedAdminOrganizationAthleteDto = z.infer<
+  typeof paginatedAdminOrganizationAthleteSchema
 >;
 
 // Schéma simplifié pour l'affichage dans les listes

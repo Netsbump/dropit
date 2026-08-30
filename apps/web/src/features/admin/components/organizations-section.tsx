@@ -1,7 +1,6 @@
-import { DataTable } from '@/components/ui/data-table';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { CreationDialog } from '@/components/shared/creation-dialog';
+import { Button } from '@/components/ui/button';
+import { DataTable } from '@/components/ui/data-table';
 import { DetailsPanel } from '@/components/ui/details-panel';
 import {
   DropdownMenu,
@@ -9,20 +8,25 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ServerPagination } from '@/components/ui/server-pagination';
+import { useOffsetPagination } from '@/hooks/use-offset-pagination';
 import { useTranslation } from '@dropit/i18n';
 import { type ColumnDef } from '@tanstack/react-table';
-import { useQuery } from '@tanstack/react-query';
-import { useMemo, useState } from 'react';
 import { MoreHorizontal, Search } from 'lucide-react';
-import { api } from '@/lib/api';
-import { CreateOrganizationDialogForm } from './create-organization-dialog-form';
+import { useMemo, useState } from 'react';
+import {
+  ORGANIZATION_ATHLETES_PAGE_SIZE,
+  useOrganizationAthletesQuery,
+} from '../hooks/use-organization-athletes-query';
 import { useOrganizationsQuery } from '../hooks/use-organizations-query';
 import { useUpdateOrganization } from '../hooks/use-update-organization';
+import { CreateOrganizationDialogForm } from './create-organization-dialog-form';
 
 type OrganizationRow = { id: string; name: string };
 
 export function OrganizationsSection() {
-  const { t } = useTranslation(['admin']);
+  const { t } = useTranslation(['admin', 'common']);
   const { data = [], isLoading } = useOrganizationsQuery();
   const updateOrganization = useUpdateOrganization();
   const [detailPanel, setDetailPanel] = useState<{
@@ -35,6 +39,9 @@ export function OrganizationsSection() {
     editingName: '',
   });
   const [search, setSearch] = useState('');
+  const organizationAthletesPagination = useOffsetPagination(
+    ORGANIZATION_ATHLETES_PAGE_SIZE
+  );
   const [createOpen, setCreateOpen] = useState(false);
   const createOrganizationFormId = 'create-organization-form';
 
@@ -43,25 +50,19 @@ export function OrganizationsSection() {
   );
   const hasScrollableTable = filteredData.length > 10;
 
-  const { data: associatedAthletes = [] } = useQuery({
-    queryKey: ['admin', 'organization-athletes', detailPanel.organization?.id],
-    enabled: detailPanel.open && Boolean(detailPanel.organization?.id),
-    queryFn: async () => {
-      if (!detailPanel.organization) return [];
-
-      const response = await api.athlete.getAthletesByOrganization({
-        params: { organizationId: detailPanel.organization.id },
-      });
-
-      if (response.status !== 200) return [];
-
-      return response.body.map((athlete) => ({
-        id: athlete.id,
-        name: `${athlete.firstName} ${athlete.lastName}`,
-        birthday: athlete.birthday,
-      }));
-    },
+  const { data: associatedAthletesPage } = useOrganizationAthletesQuery({
+    organizationId: detailPanel.organization?.id,
+    offset: organizationAthletesPagination.offset,
+    enabled: detailPanel.open,
   });
+
+  const associatedAthletes = associatedAthletesPage?.data ?? [];
+  const associatedAthletesPagination = associatedAthletesPage?.pagination ?? {
+    limit: ORGANIZATION_ATHLETES_PAGE_SIZE,
+    offset: organizationAthletesPagination.offset,
+    total: 0,
+    hasNext: false,
+  };
 
   const columns = useMemo<ColumnDef<OrganizationRow>[]>(
     () => [
@@ -83,6 +84,7 @@ export function OrganizationsSection() {
               <DropdownMenuContent align="end">
                 <DropdownMenuItem
                   onClick={() => {
+                    organizationAthletesPagination.reset();
                     setDetailPanel({
                       organization: org,
                       editingName: org.name,
@@ -101,7 +103,7 @@ export function OrganizationsSection() {
         },
       },
     ],
-    [t]
+    [t, organizationAthletesPagination.reset]
   );
 
   return (
@@ -191,7 +193,10 @@ export function OrganizationsSection() {
 
       <DetailsPanel
         open={detailPanel.open}
-        onClose={() => setDetailPanel((prev) => ({ ...prev, open: false }))}
+        onClose={() => {
+          organizationAthletesPagination.reset();
+          setDetailPanel((prev) => ({ ...prev, open: false }));
+        }}
         title={t('admin:organizations.details.title')}
       >
         {detailPanel.organization ? (
@@ -243,25 +248,33 @@ export function OrganizationsSection() {
                 {t('admin:organizations.details.athletes_title')}
               </h3>
               {associatedAthletes.length ? (
-                <div className="space-y-2">
-                  {associatedAthletes.map((athlete) => (
-                    <div
-                      key={athlete.id}
-                      className="rounded-md border p-2 text-sm"
-                    >
-                      <p className="font-mono text-xs text-muted-foreground">
-                        {athlete.id}
-                      </p>
-                      <p>{athlete.name}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {athlete.birthday
-                          ? new Date(athlete.birthday).toLocaleDateString(
-                              'fr-FR'
-                            )
-                          : '-'}
-                      </p>
-                    </div>
-                  ))}
+                <div className="space-y-3">
+                  <div className="space-y-2">
+                    {associatedAthletes.map((athlete) => (
+                      <div
+                        key={athlete.id}
+                        className="rounded-md border p-2 text-sm"
+                      >
+                        <p className="font-mono text-xs text-muted-foreground">
+                          {athlete.id}
+                        </p>
+                        <p>{athlete.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {athlete.birthday
+                            ? new Date(athlete.birthday).toLocaleDateString(
+                                'fr-FR'
+                              )
+                            : '-'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <ServerPagination
+                    pagination={associatedAthletesPagination}
+                    itemCount={associatedAthletes.length}
+                    onPreviousPage={organizationAthletesPagination.previousPage}
+                    onNextPage={organizationAthletesPagination.nextPage}
+                  />
                 </div>
               ) : (
                 <p className="text-sm text-muted-foreground">

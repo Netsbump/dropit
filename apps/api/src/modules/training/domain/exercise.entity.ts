@@ -7,7 +7,7 @@ import {
   Property,
 } from '@mikro-orm/core';
 import { Media } from '../../media/media.entity';
-import { PersonalRecord } from '../../athletes/domain/personal-record.entity';
+import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
 import { ExerciseCategory } from './exercise-category.entity';
 import { ExerciseComplex } from './exercise-complex.entity';
 import { User } from '../../auth/domain/auth/user.entity';
@@ -48,8 +48,8 @@ export class Exercise {
   complexes = new Collection<ExerciseComplex>(this);
 
   @OneToMany(
-    () => PersonalRecord,
+    () => PersonalRecordEntity,
     (personalRecord) => personalRecord.exercise
   )
-  personalRecords = new Collection<PersonalRecord>(this);
+  personalRecords = new Collection<PersonalRecordEntity>(this);
 }

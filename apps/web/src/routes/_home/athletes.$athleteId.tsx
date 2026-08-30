@@ -1,7 +1,8 @@
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { AthleteDetail } from '@/features/athletes/athlete-detail';
-import { api } from '@/lib/api';
-import { toast } from '@/hooks/use-toast';
 import { usePageMeta } from '@/hooks/use-page-meta';
+import { toast } from '@/hooks/use-toast';
+import { api } from '@/lib/api';
 import { useTranslation } from '@dropit/i18n';
 import {
   CompetitorLevel,
@@ -14,9 +15,8 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ScrollArea } from '@/components/ui/scroll-area';
 
 export const Route = createFileRoute('/_home/athletes/$athleteId')({
   component: AthleteDetailPage,
@@ -116,10 +116,10 @@ function AthleteDetailPage() {
         level: data.level,
         sexCategory: data.sexCategory,
         weightCategory: data.weightCategory,
-        athleteId: athlete.id,
       };
 
       const response = await api.competitorStatus.createCompetitorStatus({
+        params: { id: athlete.id },
         body: requestBody,
       });
 

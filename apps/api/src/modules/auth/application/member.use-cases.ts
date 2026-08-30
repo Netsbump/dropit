@@ -58,6 +58,18 @@ export class MemberUseCases implements IMemberUseCases {
   }
 
   /**
+   * List the IDs of the athletes of an organization
+   * @param organizationId - ID of the organization
+   * @returns Array of IDs of the athletes, empty when there are none
+   */
+  async listAthleteUserIds(organizationId: string): Promise<string[]> {
+    const athleteMembers =
+      await this.memberRepository.getAthleteUserIds(organizationId);
+
+    return athleteMembers.map((member) => member.user.id);
+  }
+
+  /**
    * Check if a user is a coach of an organization
    * @param userId - ID of the user
    * @param organizationId - ID of the organization

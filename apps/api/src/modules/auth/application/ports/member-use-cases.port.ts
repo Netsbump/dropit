@@ -21,6 +21,12 @@ export interface IMemberUseCases {
   getAthleteUserIds(organizationId: string): Promise<string[]>;
 
   /**
+   * List the IDs of the athletes of an organization.
+   * Returns an empty array when the organization has no athletes.
+   */
+  listAthleteUserIds(organizationId: string): Promise<string[]>;
+
+  /**
    * Check if a user is a coach of an organization
    */
   isUserCoachInOrganization(

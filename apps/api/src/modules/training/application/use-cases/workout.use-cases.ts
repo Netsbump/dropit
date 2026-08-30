@@ -1,5 +1,7 @@
 import { CreateWorkoutInput, UpdateWorkoutInput } from '@dropit/schemas';
-import { Athlete } from '../../../athletes/domain/athlete.entity';
+import type { Athlete } from '../../../athletes/domain/athlete';
+import { parseAthleteId } from '../../../athletes/domain/athlete-id';
+import { toAthleteEntityReference } from '../../../athletes/infrastructure/mappers/athlete.mapper';
 import { AthleteTrainingSession } from '../../domain/athlete-training-session.entity';
 import { TrainingSession } from '../../domain/training-session.entity';
 import {
@@ -15,7 +17,7 @@ import { IWorkoutCategoryRepository } from '../ports/workout-category.repository
 import { IExerciseRepository } from '../ports/exercise.repository.port';
 import { IComplexRepository } from '../ports/complex.repository.port';
 import { IWorkoutElementRepository } from '../ports/workout-element.repository.port';
-import { IAthleteRepository } from '../../../athletes/application/ports/athlete.repository.port';
+import { IAthleteRepository } from '../../../athletes/application/ports/out/athlete.repository.port';
 import { ITrainingSessionRepository } from '../ports/training-session.repository.port';
 import { IAthleteTrainingSessionRepository } from '../ports/athlete-training-session.repository.port';
 import { IWorkoutUseCases } from '../ports/workout-use-cases.port';
@@ -250,7 +252,9 @@ export class WorkoutUseCases implements IWorkoutUseCases {
       //9.1. Check if all athletes exist
       const athletes: Athlete[] = [];
       for (const athleteId of workout.trainingSession.athleteIds) {
-        const athlete = await this.athleteRepository.getOne(athleteId);
+        const athlete = await this.athleteRepository.findById(
+          parseAthleteId(athleteId)
+        );
         if (!athlete) {
           throw new AthleteNotFoundException(
             `Athlete with ID ${athleteId} not found`
@@ -271,8 +275,14 @@ export class WorkoutUseCases implements IWorkoutUseCases {
 
       //9.3. Create links with athletes
       for (const athlete of athletes) {
+        if (!athlete.id) {
+          throw new WorkoutValidationException(
+            'Cannot create athlete training session without athlete id'
+          );
+        }
+
         const athleteTrainingSession = new AthleteTrainingSession();
-        athleteTrainingSession.athlete = athlete;
+        athleteTrainingSession.athlete = toAthleteEntityReference(athlete.id);
         athleteTrainingSession.trainingSession = trainingSession;
         await this.athleteTrainingSessionRepository.save(
           athleteTrainingSession

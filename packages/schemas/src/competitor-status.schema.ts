@@ -17,7 +17,6 @@ export const createCompetitorStatusSchema = z.object({
   level: z.nativeEnum(CompetitorLevel),
   sexCategory: z.nativeEnum(SexCategory),
   weightCategory: z.number(),
-  athleteId: z.string(),
 });
 
 export type CreateCompetitorStatusInput = z.infer<
@@ -36,7 +35,6 @@ export const competitorStatusSchema = z.object({
   level: z.string(),
   sexCategory: z.string(),
   weightCategory: z.number(),
-  updatedAt: z.string(),
   endDate: z.string().nullable(),
 });
 

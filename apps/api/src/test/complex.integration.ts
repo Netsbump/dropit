@@ -1,15 +1,16 @@
 import { MikroORM } from '@mikro-orm/core';
+import { expect } from 'vitest';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { ComplexCategoryUseCase } from '../modules/training/application/use-cases/complex-category.use-cases';
 import { ComplexUseCase } from '../modules/training/application/use-cases/complex.use-cases';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
-import { Exercise } from '../modules/training/domain/exercise.entity';
-import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
-import { Complex } from '../modules/training/domain/complex.entity';
 import { ComplexCategory } from '../modules/training/domain/complex-category.entity';
+import { Complex } from '../modules/training/domain/complex.entity';
+import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
+import { Exercise } from '../modules/training/domain/exercise.entity';
 import { setupOrganization } from './organization.integration';
-import { cleanDatabase, TestData } from './utils/test-setup';
+import { TestData, cleanDatabase } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**

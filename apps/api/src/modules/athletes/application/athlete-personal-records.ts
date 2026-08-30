@@ -1,0 +1,238 @@
+import {
+  PersonalRecordsSummary,
+  UpdatePersonalRecordInput,
+} from '@dropit/schemas';
+import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
+import type { Athlete } from '../domain/athlete';
+import type { AthleteId } from '../domain/athlete-id';
+import { PersonalRecord } from '../domain/personal-record';
+import type { PersonalRecordId } from '../domain/personal-record-id';
+import { AthleteNotFoundError } from './errors/athlete.errors';
+import { PersonalRecordExerciseNotFoundError } from './errors/personal-record-exercise.errors';
+import { PersonalRecordNotFoundError } from './errors/personal-record.errors';
+import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
+import { IAthletePersonalRecords } from './ports/in/athlete-personal-records.port';
+import type { PersonalRecordRequest } from './models/personal-record-request';
+import { IAthleteRepository } from './ports/out/athlete.repository.port';
+import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
+import { IOrganizationMembership } from './ports/out/organization-membership.port';
+import { IPersonalRecordRepository } from './ports/out/personal-record.repository.port';
+
+export class AthletePersonalRecords implements IAthletePersonalRecords {
+  constructor(
+    private readonly personalRecordRepository: IPersonalRecordRepository,
+    private readonly athleteRepository: IAthleteRepository,
+    private readonly exerciseCatalog: IExerciseCatalog,
+    private readonly organizationMembership: IOrganizationMembership,
+    private readonly athleteAccessPolicy: IAthleteAccessPolicy
+  ) {}
+
+  private async getAthleteOrThrow(athleteId: AthleteId): Promise<Athlete> {
+    const athlete = await this.athleteRepository.findById(athleteId);
+
+    if (!athlete) {
+      throw new AthleteNotFoundError(athleteId);
+    }
+
+    return athlete;
+  }
+
+  private async getPersonalRecordOrThrow(
+    id: PersonalRecordId
+  ): Promise<PersonalRecord> {
+    const personalRecord = await this.personalRecordRepository.findById(id);
+
+    if (!personalRecord) {
+      throw new PersonalRecordNotFoundError(id);
+    }
+
+    return personalRecord;
+  }
+
+  async listAccessible(
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecord[]> {
+    const isUserCoach = await this.organizationMembership.isCoach(
+      currentUserId,
+      organizationId
+    );
+
+    if (isUserCoach) {
+      const athleteUserIds =
+        await this.organizationMembership.listAthleteUserIds(organizationId);
+
+      return this.personalRecordRepository.listByAthleteUserIds(athleteUserIds);
+    }
+
+    const athlete = await this.athleteRepository.findByUserId(currentUserId);
+    if (!athlete?.id) {
+      throw new AthleteNotFoundError();
+    }
+
+    return this.personalRecordRepository.listByAthleteId(athlete.id);
+  }
+
+  async findById(
+    id: PersonalRecordId,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecord> {
+    const personalRecord = await this.getPersonalRecordOrThrow(id);
+    const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
+
+    await this.athleteAccessPolicy.assertCanViewAthlete({
+      currentUserId,
+      organizationId,
+      athleteUserId: athlete.userId,
+    });
+
+    return personalRecord;
+  }
+
+  async listByAthleteId(
+    athleteId: AthleteId,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecord[]> {
+    const athlete = await this.getAthleteOrThrow(athleteId);
+
+    await this.athleteAccessPolicy.assertCanViewAthlete({
+      currentUserId,
+      organizationId,
+      athleteUserId: athlete.userId,
+    });
+
+    return this.personalRecordRepository.listByAthleteId(athleteId);
+  }
+
+  async findBestOlympicLiftsByAthleteId(
+    athleteId: AthleteId,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecordsSummary> {
+    const athlete = await this.getAthleteOrThrow(athleteId);
+
+    await this.athleteAccessPolicy.assertCanViewAthlete({
+      currentUserId,
+      organizationId,
+      athleteUserId: athlete.userId,
+    });
+
+    const personalRecords =
+      await this.personalRecordRepository.listByAthleteId(athleteId);
+    const summary: PersonalRecordsSummary = {};
+
+    if (personalRecords.length === 0) {
+      return summary;
+    }
+
+    const snatchRecords = personalRecords.filter((record) =>
+      record.exercise.name.toLowerCase().includes('snatch')
+    );
+    const cleanAndJerkRecords = personalRecords.filter((record) =>
+      record.exercise.name.toLowerCase().includes('clean and jerk')
+    );
+
+    if (snatchRecords.length > 0) {
+      summary.snatch = Math.max(...snatchRecords.map((r) => r.weight));
+    }
+
+    if (cleanAndJerkRecords.length > 0) {
+      summary.cleanAndJerk = Math.max(
+        ...cleanAndJerkRecords.map((r) => r.weight)
+      );
+    }
+
+    if (summary.snatch && summary.cleanAndJerk) {
+      summary.total = summary.snatch + summary.cleanAndJerk;
+    }
+
+    return summary;
+  }
+
+  async record(
+    personalRecordRequest: PersonalRecordRequest,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecord> {
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
+
+    const athlete = await this.getAthleteOrThrow(
+      personalRecordRequest.athleteId
+    );
+
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
+      athlete.userId,
+      organizationId
+    );
+
+    const exercise = await this.exerciseCatalog.findExerciseByOrganization(
+      personalRecordRequest.exerciseId,
+      organizationId
+    );
+    if (!exercise) {
+      throw new PersonalRecordExerciseNotFoundError(
+        personalRecordRequest.exerciseId
+      );
+    }
+
+    const personalRecord = PersonalRecord.create({
+      id: personalRecordRequest.id,
+      athleteId: personalRecordRequest.athleteId,
+      exercise,
+      weight: personalRecordRequest.weight,
+      date: personalRecordRequest.date,
+    });
+
+    return await this.personalRecordRepository.add(personalRecord);
+  }
+
+  async amend(
+    id: PersonalRecordId,
+    data: UpdatePersonalRecordInput,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<PersonalRecord> {
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
+
+    const personalRecord = await this.getPersonalRecordOrThrow(id);
+    const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
+
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
+      athlete.userId,
+      organizationId
+    );
+
+    const personalRecordToUpdate = personalRecord.amend(data);
+
+    return await this.personalRecordRepository.save(personalRecordToUpdate);
+  }
+
+  async remove(
+    id: PersonalRecordId,
+    currentUserId: UserId,
+    organizationId: OrganizationId
+  ): Promise<void> {
+    await this.athleteAccessPolicy.assertCanManageAthleteData(
+      currentUserId,
+      organizationId
+    );
+
+    const personalRecord = await this.getPersonalRecordOrThrow(id);
+    const athlete = await this.getAthleteOrThrow(personalRecord.athleteId);
+
+    await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
+      athlete.userId,
+      organizationId
+    );
+
+    await this.personalRecordRepository.remove(personalRecord);
+  }
+}

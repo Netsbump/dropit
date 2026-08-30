@@ -4,13 +4,14 @@ import {
   ExerciseDto,
 } from '@dropit/schemas';
 import { MikroORM } from '@mikro-orm/core';
+import { expect } from 'vitest';
+import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
 import { ExerciseCategoryUseCase } from '../modules/training/application/use-cases/exercise-category.use-cases';
 import { ExerciseUseCase } from '../modules/training/application/use-cases/exercise.use-cases';
-import { OrganizationUseCases } from '../modules/auth/application/organization.use-cases';
-import { Exercise } from '../modules/training/domain/exercise.entity';
 import { ExerciseCategory } from '../modules/training/domain/exercise-category.entity';
+import { Exercise } from '../modules/training/domain/exercise.entity';
 import { setupOrganization } from './organization.integration';
-import { cleanDatabase, TestData } from './utils/test-setup';
+import { TestData, cleanDatabase } from './utils/test-setup';
 import { TestUseCaseFactory } from './utils/test-use-cases';
 
 /**

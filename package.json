@@ -9,6 +9,8 @@
     "dev:web-api": "pnpm --parallel --filter api --filter web dev",
     "dev:mobile": "pnpm --filter mobile dev",
     "typecheck": "pnpm --recursive --filter '{apps/*}' typecheck",
+    "check": "biome check .",
+    "check:fix": "biome check --apply .",
     "lint": "biome lint .",
     "lint:fix": "biome lint --apply .",
     "format": "biome format --write .",
@@ -20,6 +22,7 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@types/node": "^22",
     "dotenv-cli": "^10.0.0",
     "enquirer": "^2.4.1",
     "react-doctor": "^0.5.8",

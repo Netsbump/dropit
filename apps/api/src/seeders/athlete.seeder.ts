@@ -1,9 +1,10 @@
-import { EntityManager } from '@mikro-orm/core';
-import { Athlete } from '../modules/athletes/domain/athlete.entity';
 import { faker } from '@faker-js/faker';
-import { User } from '../modules/auth/domain/auth/user.entity';
+import { EntityManager } from '@mikro-orm/core';
 import { hashPassword } from 'better-auth/crypto';
+import { generateAthleteId } from '../modules/athletes/domain/athlete-id';
 import { Account } from '../modules/auth/domain/auth/account.entity';
+import { User } from '../modules/auth/domain/auth/user.entity';
+import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 
 /** Coach + 18 generated athletes (same order of magnitude as the old 15–25 range). */
 const TARGET_ATHLETE_COUNT = 19;
@@ -51,6 +52,7 @@ export async function seedAthletes(
   let coach = await em.findOne(Athlete, { user: coachUser });
   if (!coach) {
     coach = new Athlete();
+    coach.id = generateAthleteId();
     coach.firstName = 'Jean';
     coach.lastName = 'Dupont';
     coach.birthday = new Date('1985-05-15');
@@ -81,6 +83,7 @@ export async function seedAthletes(
     await em.persistAndFlush(account);
 
     const athlete = new Athlete();
+    athlete.id = generateAthleteId();
     athlete.firstName = firstName;
     athlete.lastName = lastName;
     athlete.birthday = faker.date.birthdate({ min: 16, max: 35, mode: 'age' });

@@ -10,6 +10,11 @@ import { User } from '../../domain/auth/user.entity';
  */
 export interface IUserUseCases {
   /**
+   * Find a user by ID
+   */
+  findById(userId: string): Promise<User | null>;
+
+  /**
    * Get one user by ID
    */
   getOne(userId: string): Promise<User>;
