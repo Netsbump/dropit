@@ -10,27 +10,25 @@ Il garde aussi une dimension de **journal d’évolution** : l’API a commencé
 
 DropIt utilise une approche inspirée de l’architecture hexagonale, aussi appelée **Ports & Adapters**, pour isoler la logique métier des frameworks et des détails d’infrastructure.
 
-L’objectif n’est pas d’appliquer une Clean Architecture académique partout et immédiatement. L’objectif est plutôt de faire évoluer le monorepo vers une architecture plus testable, plus lisible et moins couplée, en priorisant les bounded contexts qui portent le plus de logique métier.
+L’objectif n’est pas d’appliquer une Clean Architecture académique partout et dogmatique. L’objectif est plutôt de faire évoluer le monorepo vers une architecture plus testable, plus lisible et moins couplée, en priorisant les bounded contexts qui portent le plus de logique métier.
 
 ### Objectifs
 
-- ✅ **Indépendance du framework** : la logique métier ne dépend pas de NestJS.
-- ✅ **Testabilité** : les use cases sont testables sans `TestingModule` Nest.
-- ✅ **Découplage infrastructure** : l’application dépend de ports, pas de MikroORM, Auth, Training, Brevo, etc.
-- ✅ **Clarté des responsabilités** : HTTP, application, domaine et infrastructure ne jouent pas le même rôle.
-- ✅ **Migration progressive** : un module peut être amélioré sans réécrire toute l’API.
+- **Indépendance du framework** : la logique métier ne dépend pas de NestJS.
+- **Testabilité** : les use cases sont testables sans `TestingModule` Nest.
+- **Découplage infrastructure** : l’application dépend de ports, pas de MikroORM, Auth, Training, Brevo, etc.
+- **Clarté des responsabilités** : HTTP, application, domaine et infrastructure ne jouent pas le même rôle.
+- **Migration progressive** : un module peut être amélioré sans réécrire toute l’API.
 
 ### Pourquoi cette architecture ?
 
-L’API a progressivement évolué d’une architecture **n-tiers classique** vers cette approche hexagonale partielle. Cette évolution répond à une double motivation : approfondir des patterns architecturaux rencontrés en contexte professionnel, et anticiper des évolutions futures nécessitant l’isolation de la logique métier, par exemple l’intégration de matériel externe, de sources de données tierces ou de nouveaux canaux d’entrée.
+L’API a progressivement évolué d’une architecture **n-tiers classique** vers cette approche hexagonale. Cette évolution répond à une double motivation : approfondir des patterns architecturaux rencontrés en contexte professionnel, et anticiper des évolutions futures nécessitant l’isolation de la logique métier, par exemple l’intégration de matériel externe, de sources de données tierces ou de nouveaux canaux d’entrée.
 
 Cette migration reste pragmatique : tous les modules ne sont pas au même niveau de maturité. Certains modules historiques conservent encore des entités ou services plus couplés à l’ORM ou à NestJS. En revanche, le bounded context **`athletes`** illustre désormais la cible actuelle : domaine TypeScript pur, ports entrants/sortants explicites, adapters isolés, composition Nest dans le module.
 
 ---
 
 ## Implémentation pragmatique
-
-DropIt n’est pas une implémentation exhaustive et dogmatique de l’hexagonal. Les compromis actuels sont assumés.
 
 ### Ce qui est visé
 
@@ -49,10 +47,11 @@ DropIt n’est pas une implémentation exhaustive et dogmatique de l’hexagonal
 
 Le bounded context `athletes` est aujourd’hui globalement aligné avec l’architecture cible :
 
-- ✅ Domaine pur TypeScript : `Athlete`, `PersonalRecord`, `PhysicalMetric`, `CompetitorStatus`.
+- ✅ Domaine pur TypeScript : `Athlete`, `PersonalRecord`, `PhysicalMetric`, `CompetitorStatus`, `PersonalRecordExercise`.
 - ✅ Entités MikroORM sorties du domaine et placées dans `modules/database/entities`.
 - ✅ Ports entrants découpés par capacité métier.
 - ✅ Ports sortants pour persistence et dépendances inter-BC.
+- ✅ Génération de strong IDs (`AthleteId`, `PersonalRecordId`, etc.) côté application/domaine et passés obligatoirement aux factories du domaine.
 - ✅ Repositories MikroORM isolés en infrastructure.
 - ✅ Adapters vers Auth et Training derrière des ports.
 - ✅ Mappers séparés entre persistence/domain et HTTP/DTO.
@@ -61,12 +60,8 @@ Le bounded context `athletes` est aujourd’hui globalement aligné avec l’arc
 - ✅ Read-models applicatifs pour les vues optimisées.
 
 Restes, compromis ou chantiers connus :
-
 - Certains inputs applicatifs utilisent encore des types issus de `@dropit/schemas`.
-- Les erreurs applicatives du BC exposent encore un `statusCode`, pratique pour le mapping HTTP mais pas totalement neutre vis-à-vis du transport.
-- Les tests doivent être renforcés pour profiter réellement de cette architecture : tests unitaires des objets domaine et use cases avec ports mockés, sans `TestingModule` Nest ni base de données.
-- La responsabilité de génération des UUID doit être clarifiée : aujourd’hui elle repose encore largement sur MikroORM / la persistence, alors que l’objectif serait que le domaine ou l’application du BC concerné crée explicitement ses IDs, en s’appuyant sur le shared kernel (`IdGenerator`, `UuidIdGenerator`, types d’IDs brandés).
-- Les autres bounded contexts ne sont pas tous au même niveau de séparation.
+- Les tests doivent être renforcés pour profiter réellement de cette architecture : tests unitaires des objets domaine et use cases avec ports mockés, sans `TestingModule` Nest ni base de données.- Les autres bounded contexts ne sont pas tous au même niveau de séparation.
 
 ---
 
@@ -80,12 +75,14 @@ modules/
     ├── domain/
     │   ├── athlete.ts
     │   ├── personal-record.ts
+    │   ├── personal-record-exercise.ts
     │   ├── physical-metric.ts
     │   ├── competitor-status.ts
     │   └── *-id.ts
     │
     ├── application/
     │   ├── athlete-profiles.ts
+    │   ├── athlete-invitation-creation.ts
     │   ├── athlete-personal-records.ts
     │   ├── athlete-physical-metrics.ts
     │   ├── athlete-competition-status.ts
@@ -94,7 +91,7 @@ modules/
     │   │   └── out/
     │   ├── policies/
     │   ├── errors/
-    │   └── read-models/
+    │   └── models/
     │
     ├── infrastructure/
     │   ├── mikro-athlete.repository.ts
@@ -119,15 +116,13 @@ modules/
 
 ### Règle de placement
 
-- **`domain/`** : objets métier, invariants, value objects/IDs, erreurs domaine. Pas de NestJS, pas de MikroORM, pas d’API externe.
-- **`application/`** : use cases, ports, policies, erreurs applicatives, read-models. Pas de décorateurs Nest, pas d’accès direct à l’ORM.
+- **`domain/`** : objets métier, invariants, value objects, IDs, erreurs domaine. Pas de NestJS, pas de MikroORM, pas d’API externe.
+- **`application/`** : use cases, ports, policies, erreurs applicatives, models. Pas de décorateurs Nest, pas d’accès direct à l’ORM.
 - **`application/ports/in/`** : contrats appelés par les adapters entrants, par exemple HTTP.
 - **`application/ports/out/`** : contrats utilisés par les use cases pour sortir du cœur applicatif : repositories, autres BC, APIs externes.
 - **`infrastructure/`** : adapters sortants : repositories MikroORM, adapters vers Auth/Training, SDKs externes, mappers persistence.
 - **`http/`** : adapters entrants HTTP : controllers, mappers DTO, filters, parsing des paramètres externes.
 - **`*Module` Nest** : composition uniquement — enregistre les providers, `useFactory` / `useClass`, et relie chaque token `Symbol` à son implémentation.
-
-> Dans d’anciens exemples ou dans de la littérature, la couche HTTP peut être appelée `interface/`. Dans DropIt, le BC `athletes` utilise désormais le nom explicite `http/` pour l’adapter entrant HTTP.
 
 ---
 
@@ -192,18 +187,24 @@ Exemple dans `athletes` :
 
 ```typescript
 // application/ports/in/athlete-profiles.port.ts
-export const ATHLETE_PROFILES = Symbol('ATHLETE_PROFILES');
 
 export interface IAthleteProfiles {
   findById(athleteId: AthleteId, currentUserId: UserId, organizationId: OrganizationId): Promise<Athlete>;
+  findDetailsById(athleteId: AthleteId, currentUserId: UserId, organizationId: OrganizationId): Promise<AthleteDetailsReadModel>;
+  listAccessible(currentUserId: UserId, organizationId: OrganizationId): Promise<Athlete[]>;
+  listAccessibleDetails(currentUserId: UserId, organizationId: OrganizationId, query: SearchablePaginationQuery): Promise<PaginatedAthleteDetailsReadModel>;
+  listDetailsByOrganization(organizationId: OrganizationId, query: SearchablePaginationQuery): Promise<PaginatedAthleteDetailsReadModel>;
   create(data: AthleteCreation): Promise<Athlete>;
   updateOwn(athleteId: AthleteId, data: AthleteUpdate, userId: UserId): Promise<Athlete>;
+  deleteOwn(athleteId: AthleteId, userId: UserId): Promise<void>;
+  findIdByUserId(userId: UserId): Promise<string | null>;
 }
 ```
 
 Le BC `athletes` expose plusieurs ports entrants au lieu d’un seul gros service :
 
 - `ATHLETE_PROFILES`
+- `ATHLETE_INVITATION_CREATION`
 - `ATHLETE_PERSONAL_RECORDS`
 - `ATHLETE_PHYSICAL_METRICS`
 - `ATHLETE_COMPETITION_STATUS`
@@ -218,14 +219,20 @@ Exemple repository :
 
 ```typescript
 // application/ports/out/athlete.repository.port.ts
-export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
-export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');
 
 export interface IAthleteRepository {
   findById(athleteId: AthleteId): Promise<Athlete | null>;
   findByUserId(userId: UserId): Promise<Athlete | null>;
+  listByIds(athleteIds: string[]): Promise<Athlete[]>;
+  listByUserIds(athleteUserIds: UserId[]): Promise<Athlete[]>;
+  add(athlete: Athlete): Promise<Athlete>;
   save(athlete: Athlete): Promise<Athlete>;
   remove(athlete: Athlete): Promise<void>;
+}
+
+export interface IAthleteReadRepository {
+  findDetailsByUserId(athleteUserId: UserId): Promise<AthleteDetailsReadModel | null>;
+  listDetailsByUserIds(athleteUserIds: UserId[], query: SearchablePaginationQuery): Promise<PaginatedAthleteDetailsReadModel>;
 }
 ```
 
@@ -234,6 +241,7 @@ Exemples de ports inter-BC dans `athletes` :
 - `IOrganizationMembership` : masque le BC Auth / membership.
 - `IAthleteUserProfile` : masque le profil utilisateur Auth.
 - `IExerciseCatalog` : masque le catalogue d’exercices du BC Training.
+- `IAthleteAccessPolicy` : port de la policy d’accès, injectable comme les autres dépendances.
 
 Ainsi, les use cases `athletes` ne dépendent pas directement des implémentations Auth ou Training.
 
@@ -259,6 +267,8 @@ export class AthleteController {
 
 Le controller dépend du port `IAthleteProfiles`, pas d’une classe concrète de use case.
 
+> Dans le BC `athletes`, les controllers HTTP utilisent **ts-rest** (`@ts-rest/nest`) pour lier le contrat partagé (`@dropit/contract`) aux handlers. Cela renforce la frontière HTTP/DTO sans que le contrat ne dépende de NestJS.
+
 #### Driven adapter / adapter sortant
 
 Il implémente un port sortant avec une technologie précise.
@@ -278,32 +288,60 @@ Le BC `athletes` ne met plus les décorateurs MikroORM dans ses objets domaine.
 
 ### Domaine
 
+Les objets du BC `athletes` sont **immutables** et exposent des factories explicites (`create`, `reconstitute`) plutôt qu’un constructeur public.
+
 ```typescript
 export class Athlete {
-  public readonly id: AthleteId | null;
-  public readonly userId: UserId;
-  public readonly firstName: string;
-  public readonly lastName: string;
+  private constructor(
+    public readonly id: AthleteId,
+    public readonly userId: UserId,
+    public readonly firstName: string,
+    public readonly lastName: string,
+    public readonly birthday: Date | null,
+    public readonly country: string | null
+  ) {}
 
-  constructor(params: AthleteProps) {
-    const firstName = params.firstName.trim();
-    const lastName = params.lastName.trim();
+  static create(creation: AthleteCreation): Athlete {
+    return Athlete.build({ ...creation, birthday: creation.birthday ?? null, country: creation.country ?? null });
+  }
+
+  static reconstitute(snapshot: AthleteSnapshot): Athlete {
+    return Athlete.build(snapshot);
+  }
+
+  update(changes: AthleteUpdate): Athlete {
+    return Athlete.build({
+      id: this.id,
+      userId: this.userId,
+      firstName: changes.firstName ?? this.firstName,
+      lastName: changes.lastName ?? this.lastName,
+      birthday: changes.birthday !== undefined ? changes.birthday : this.birthday,
+      country: changes.country !== undefined ? changes.country : this.country,
+    });
+  }
+
+  private static build(snapshot: AthleteSnapshot): Athlete {
+    const firstName = snapshot.firstName.trim();
+    const lastName = snapshot.lastName.trim();
 
     if (!firstName) {
-      throw new InvalidAthleteError('First name is required');
+      throw new FirstNameIsRequiredError('First name is required');
     }
 
     if (!lastName) {
-      throw new InvalidAthleteError('Last name is required');
+      throw new LastNameIsRequiredError('Last name is required');
     }
 
-    this.id = params.id ?? null;
-    this.userId = params.userId;
-    this.firstName = firstName;
-    this.lastName = lastName;
+    if (snapshot.birthday !== null && snapshot.birthday.getTime() > Date.now()) {
+      throw new BirthDateCannotBeInFutureError('Birth date cannot be in the future');
+    }
+
+    return new Athlete(snapshot.id, snapshot.userId, firstName, lastName, snapshot.birthday, snapshot.country);
   }
 }
 ```
+
+> L’identité est créée **avant** l’appel à `create` (par exemple `generateAthleteId()` côté application/mapper HTTP), puis passée explicitement au domaine. MikroORM n’est plus la source implicite de l’ID.
 
 ### Persistence
 
@@ -448,7 +486,7 @@ Règle pratique :
 
 ## Gestion des erreurs
 
-Le BC `athletes` ne traduit plus les erreurs business manuellement dans chaque controller.
+Le BC `athletes` ne traduit pas les erreurs business manuellement dans chaque controller.
 
 Flux actuel :
 
@@ -481,11 +519,11 @@ sequenceDiagram
     App-->>HTTP: Result
     HTTP-->>Client: 2xx response
   else Expected error
-    App--xHTTP: Throw known BC error
+    App-->>HTTP: Throw known BC error
     HTTP--xFilter: Bubble up
     Filter-->>Client: statusCode + message
   else Unexpected technical error
-    App--xHTTP: Throw unknown error
+    App-->>HTTP: Throw unknown error
     HTTP--xFilter: Bubble up
     Filter->>Filter: Log stack
     Filter-->>Client: 500 + generic message
@@ -494,14 +532,16 @@ sequenceDiagram
 
 Règles :
 
-- Le domaine jette des erreurs domaine.
+- Le domaine throw des erreurs domaine.
 - Les IDs externes sont parsés à la frontière HTTP avec des parseurs domaine (`parseAthleteId`, `parsePersonalRecordId`, etc.).
 - Les use cases convertissent les erreurs de validation domaine attendues en erreurs applicatives.
 - Les controllers ne font pas de mapping d’erreur business à la main.
 - `AthleteExceptionFilter` convertit les erreurs connues en réponses HTTP.
 - Les erreurs techniques inconnues sont loggées côté serveur et retournées comme `500` générique.
 
-Compromis actuel : certaines erreurs applicatives portent un `statusCode`. C’est simple et efficace pour le filter HTTP, mais une amélioration future pourrait consister à exposer un code métier neutre, puis mapper ce code vers HTTP uniquement dans l’adapter HTTP.
+Le filter ne se contente pas des erreurs "athletes" : il catche aussi des erreurs transversales du shared kernel (`InvalidUuidError`, `NotFoundError`, `ConflictError`, `AccessDeniedError`) avant de tomber sur une réponse `500` générique.
+
+Les erreurs applicatives du BC `athletes` héritent d’erreurs métier neutres du shared kernel (`NotFoundError`, `ConflictError`, `AccessDeniedError`). Le mapping vers le status HTTP est entièrement concentré dans `AthleteExceptionFilter`, ce qui évite que les erreurs applicatives portent elles-mêmes un `statusCode`.
 
 ---
 
@@ -578,158 +618,45 @@ Pour les bounded contexts alignés avec cette architecture, les tests à privil�
 
 L’objectif est d’éviter que chaque test métier démarre Nest ou touche la base de données. Les tests lourds doivent vérifier l’intégration, pas remplacer les tests du cœur métier.
 
-### Génération des UUID
+### Génération des IDs
 
-Un autre chantier concerne la responsabilité de génération des IDs.
-
-Aujourd’hui, une partie des IDs est encore générée implicitement côté persistence / MikroORM. C’est pratique, mais cela veut dire que le domaine manipule parfois des objets sans identité jusqu’au `save`, et que la création de l’identité dépend d’un détail d’infrastructure.
-
-La cible serait plutôt :
-
-- le bounded context décide quand une identité est créée ;
-- le domaine ou le use case reçoit un ID déjà généré au moment de construire l’objet ;
-- la génération concrète reste abstraite derrière un port du shared kernel, par exemple `IdGenerator` / `UuidIdGenerator` ;
-- les types d’IDs brandés (`AthleteId`, `PersonalRecordId`, `UserId`, etc.) continuent de valider et documenter les frontières.
-
-Exemple d’intention :
+Dans le BC `athletes`, la responsabilité de génération des IDs a été déplacée hors de la persistence. Les objets domaine reçoivent leur identité **avant** d’être construits, via les fonctions de génération d’ID brandé :
 
 ```typescript
-const athlete = new Athlete({
-  id: parseAthleteId(this.idGenerator.generate()),
-  userId,
-  firstName,
-  lastName,
-});
-```
+export type AthleteId = Uuid & { readonly __brand: 'AthleteId' };
 
-Ce point reste à concevoir finement : selon le cas, la génération peut appartenir au use case, à une factory domaine, ou à un service domaine. L’important est d’éviter que MikroORM soit la seule source implicite de l’identité métier.
-
----
-
-## Checklist pour un nouveau use case
-
-### 1. Définir le port entrant
-
-```typescript
-export const MY_FEATURE = Symbol('MY_FEATURE');
-
-export interface IMyFeature {
-  doSomething(input: DoSomethingInput): Promise<MyResult>;
+export function generateAthleteId(): AthleteId {
+  return generateUuid() as AthleteId;
 }
 ```
 
-### 2. Définir les ports sortants nécessaires
+Exemples concrets :
 
-```typescript
-export const MY_REPOSITORY = Symbol('MY_REPOSITORY');
+- Le mapper HTTP crée l’ID à la frontière :
+  ```typescript
+  export const toAthleteCreation = (input: CreateAthleteInput, userId: UserId): AthleteCreation => ({
+    id: generateAthleteId(),
+    userId,
+    firstName: input.firstName,
+    lastName: input.lastName,
+    birthday: input.birthday !== undefined ? toBirthdayDate(input.birthday) : null,
+    country: input.country ?? null,
+  });
+  ```
 
-export interface IMyRepository {
-  save(entity: MyEntity): Promise<MyEntity>;
-}
-```
+- Le use case `AthleteInvitationCreation` génère explicitement l’ID :
+  ```typescript
+  const athlete = Athlete.create({
+    id: generateAthleteId(),
+    userId: input.userId,
+    firstName: input.firstName,
+    lastName: input.lastName,
+    birthday: null,
+    country: null,
+  });
+  ```
 
-### 3. Implémenter le use case en TypeScript pur
-
-```typescript
-export class MyFeature implements IMyFeature {
-  constructor(private readonly repository: IMyRepository) {}
-
-  async doSomething(input: DoSomethingInput): Promise<MyResult> {
-    const entity = new MyEntity(input);
-    return await this.repository.save(entity);
-  }
-}
-```
-
-### 4. Implémenter les adapters
-
-```typescript
-@Injectable()
-export class MikroMyRepository implements IMyRepository {
-  // Accès MikroORM et mapping entity persistence <-> domaine
-}
-```
-
-### 5. Brancher dans le module Nest
-
-```typescript
-@Module({
-  providers: [
-    MikroMyRepository,
-    { provide: MY_REPOSITORY, useClass: MikroMyRepository },
-    {
-      provide: MY_FEATURE,
-      useFactory: (repository: IMyRepository) => new MyFeature(repository),
-      inject: [MY_REPOSITORY],
-    },
-  ],
-})
-export class MyFeatureModule {}
-```
-
-### 6. Exposer via un adapter entrant
-
-```typescript
-@Controller()
-export class MyFeatureController {
-  constructor(
-    @Inject(MY_FEATURE)
-    private readonly myFeature: IMyFeature
-  ) {}
-}
-```
-
----
-
-## Règles pratiques
-
-- Ne pas importer `@nestjs/*` dans `domain/` ou dans les use cases `application/`.
-- Ne pas importer MikroORM dans `domain/` ou dans les use cases `application/`.
-- Les controllers ne doivent pas contenir les règles métier principales.
-- Les repositories ne doivent pas décider des règles métier : ils persistent et reconstruisent.
-- Les dépendances vers d’autres bounded contexts passent par des ports locaux.
-- Le module Nest est le seul endroit qui connaît le wiring concret.
-- Les mappers HTTP et les mappers persistence sont deux responsabilités différentes.
-- Les read-models sont acceptables pour les vues optimisées, à condition de ne pas polluer le domaine.
-
----
-
-## État actuel du projet
-
-### ✅ Athletes BC
-
-État : **globalement aligné avec l’architecture cible**.
-
-- `AthleteProfiles` ✅
-- `AthletePersonalRecords` ✅
-- `AthletePhysicalMetrics` ✅
-- `AthleteCompetitionStatus` ✅
-- Domaine pur TypeScript ✅
-- Entités MikroORM séparées ✅
-- Ports `in/out` explicites ✅
-- Adapters Auth/Training derrière des ports ✅
-- Exception filter HTTP dédié ✅
-
-### ✅ Notification Module
-
-État : architecture hexagonale adaptée au besoin du module.
-
-- Ports IN/OUT, use case pur, adapters canaux + factory transport Maildev / Brevo ✅
-- Voir [`apps/api/src/modules/notification/README.md`](../apps/api/src/modules/notification/README.md)
-
-### 🟡 Auth Module
-
-État : structure hexagonale en place, avec affinages au fil des besoins produit.
-
-- Ports, use cases, adapters Better Auth, repositories MikroORM.
-- Certaines zones restent liées aux contraintes du provider Auth et aux flows produit.
-
-### 🟡 Training Module
-
-État : migration partielle.
-
-- Certains ports existent, notamment ceux consommés par `athletes`.
-- Le module n’est pas encore au même niveau de séparation que `athletes`.
+Les repositories déclarent une méthode `add(...)` pour les créations (où l’ID est déjà connu) et `save(...)` pour les mises à jour. Ce pattern limite le risque de double génération ou d’identité implicite.
 
 ---
 
@@ -738,5 +665,3 @@ export class MyFeatureController {
 - [Hexagonal Architecture — Alistair Cockburn](https://alistair.cockburn.us/hexagonal-architecture/)
 - [NestJS Dependency Injection](https://docs.nestjs.com/fundamentals/custom-providers)
 - [Clean Architecture — Robert C. Martin](https://blog.cleancoder.com/uncle-bob/2012/08/13/the-clean-architecture.html)
-- Exemple appliqué dans le dépôt : [`apps/api/src/modules/athletes`](../apps/api/src/modules/athletes)
-- Exemple notification : [`apps/api/src/modules/notification/README.md`](../apps/api/src/modules/notification/README.md)
