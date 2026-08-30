@@ -34,13 +34,15 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
 
     if (!isAthleteInOrganization) {
       throw new UserDoesNotBelongToOrganizationError(
-        'Athlete does not belong to this organization'
+        params.currentUserId,
+        params.organizationId
       );
     }
 
     if (!isCoach && params.currentUserId !== params.athleteUserId) {
       throw new AthleteAccessDeniedError(
-        'Access denied. You can only access your own athlete or athletes you are coaching'
+        params.currentUserId,
+        params.athleteUserId
       );
     }
   }
@@ -55,9 +57,7 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
     );
 
     if (!isCoach) {
-      throw new AthleteAccessDeniedError(
-        'Access denied. Only coaches can manage athlete data'
-      );
+      throw new AthleteAccessDeniedError(currentUserId);
     }
   }
 
@@ -72,14 +72,18 @@ export class AthleteAccessPolicy implements IAthleteAccessPolicy {
 
     if (!isAthleteInOrganization) {
       throw new UserDoesNotBelongToOrganizationError(
-        'Athlete does not belong to this organization'
+        athleteUserId,
+        organizationId
       );
     }
   }
 
   assertCanManageOwnAthlete(params: AssertCanManageOwnAthleteParams): void {
     if (params.currentUserId !== params.athleteUserId) {
-      throw new AthleteAccessDeniedError('Athlete does not belong to User');
+      throw new AthleteAccessDeniedError(
+        params.currentUserId,
+        params.athleteUserId
+      );
     }
   }
 }

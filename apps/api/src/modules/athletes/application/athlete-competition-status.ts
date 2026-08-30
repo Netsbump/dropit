@@ -1,21 +1,17 @@
-import {
-  CreateCompetitorStatusInput,
-  UpdateCompetitorStatusInput,
-} from '@dropit/schemas';
+import { UpdateCompetitorStatusInput } from '@dropit/schemas';
 import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import type { Athlete } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
 import {
   CompetitorStatus,
-  CompetitorStatusDomainError,
+  type CompetitorStatusCreation,
 } from '../domain/competitor-status';
 import type { CompetitorStatusId } from '../domain/competitor-status-id';
+import { AthleteNotFoundError } from './errors/athlete.errors';
 import {
-  AthleteNotFoundException,
-  CompetitorStatusNotFoundException,
-  InvalidCompetitorStatusException,
-  NoAthletesFoundException,
-} from './errors/competitor-status.exceptions';
+  ActiveCompetitorStatusNotFoundError,
+  CompetitorStatusNotFoundError,
+} from './errors/competitor-status.errors';
 import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
 import { IAthleteCompetitionStatus } from './ports/in/athlete-competition-status.port';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -34,9 +30,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new AthleteNotFoundException(
-        `Athlete with ID ${athleteId} not found`
-      );
+      throw new AthleteNotFoundError(athleteId);
     }
 
     return athlete;
@@ -48,9 +42,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     const competitorStatus = await this.competitorStatusRepository.findById(id);
 
     if (!competitorStatus) {
-      throw new CompetitorStatusNotFoundException(
-        `Competitor status with ID ${id} not found`
-      );
+      throw new CompetitorStatusNotFoundError(id);
     }
 
     return competitorStatus;
@@ -66,17 +58,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       return;
     }
 
-    let closedCompetitorStatus: CompetitorStatus;
-
-    try {
-      closedCompetitorStatus = currentCompetitorStatus.close();
-    } catch (error) {
-      if (error instanceof CompetitorStatusDomainError) {
-        throw new InvalidCompetitorStatusException(error.message);
-      }
-
-      throw error;
-    }
+    const closedCompetitorStatus = currentCompetitorStatus.close();
 
     await this.competitorStatusRepository.save(closedCompetitorStatus);
   }
@@ -87,24 +69,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
     const athleteUserIds =
       await this.organizationMembership.listAthleteUserIds(organizationId);
 
-    if (athleteUserIds.length === 0) {
-      throw new NoAthletesFoundException(
-        'No athletes found in the organization'
-      );
-    }
-
-    const competitorStatuses =
-      await this.competitorStatusRepository.listByAthleteUserIds(
-        athleteUserIds
-      );
-
-    if (!competitorStatuses || competitorStatuses.length === 0) {
-      throw new CompetitorStatusNotFoundException(
-        'No competitor statuses found'
-      );
-    }
-
-    return competitorStatuses;
+    return this.competitorStatusRepository.listByAthleteUserIds(athleteUserIds);
   }
 
   async findActiveByAthleteId(
@@ -124,17 +89,14 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       await this.competitorStatusRepository.findActiveByAthleteId(athleteId);
 
     if (!competitorStatus) {
-      throw new CompetitorStatusNotFoundException(
-        `Active competitor status for athlete with ID ${athleteId} not found`
-      );
+      throw new ActiveCompetitorStatusNotFoundError(athleteId);
     }
 
     return competitorStatus;
   }
 
   async change(
-    athleteId: AthleteId,
-    data: CreateCompetitorStatusInput,
+    creation: CompetitorStatusCreation,
     currentUserId: UserId,
     organizationId: OrganizationId
   ): Promise<CompetitorStatus> {
@@ -143,31 +105,16 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    const athlete = await this.getAthleteOrThrow(athleteId);
+    const athlete = await this.getAthleteOrThrow(creation.athleteId);
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
       organizationId
     );
 
-    await this.closeCurrentStatusIfExists(athleteId);
+    await this.closeCurrentStatusIfExists(creation.athleteId);
 
-    let competitorStatusToCreate: CompetitorStatus;
-
-    try {
-      competitorStatusToCreate = new CompetitorStatus({
-        athleteId,
-        level: data.level,
-        sexCategory: data.sexCategory,
-        weightCategory: data.weightCategory,
-      });
-    } catch (error) {
-      if (error instanceof CompetitorStatusDomainError) {
-        throw new InvalidCompetitorStatusException(error.message);
-      }
-
-      throw error;
-    }
+    const competitorStatusToCreate = CompetitorStatus.create(creation);
 
     return await this.competitorStatusRepository.add(competitorStatusToCreate);
   }
@@ -194,17 +141,7 @@ export class AthleteCompetitionStatus implements IAthleteCompetitionStatus {
       organizationId
     );
 
-    let updatedCompetitorStatus: CompetitorStatus;
-
-    try {
-      updatedCompetitorStatus = competitorStatusToUpdate.amend(data);
-    } catch (error) {
-      if (error instanceof CompetitorStatusDomainError) {
-        throw new InvalidCompetitorStatusException(error.message);
-      }
-
-      throw error;
-    }
+    const updatedCompetitorStatus = competitorStatusToUpdate.amend(data);
 
     return await this.competitorStatusRepository.save(updatedCompetitorStatus);
   }

@@ -1,24 +1,17 @@
-import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
-
-export class InvalidPersonalRecordIdError extends Error {
-  constructor(value: string) {
-    super(`Invalid personal record id: ${value}`);
-    this.name = 'InvalidPersonalRecordIdError';
-  }
-}
+import {
+  type Uuid,
+  generateUuid,
+  parseUuid,
+} from '../../../shared/kernel/uuid';
 
 export type PersonalRecordId = Uuid & {
   readonly __brand: 'PersonalRecordId';
 };
 
 export function parsePersonalRecordId(value: string): PersonalRecordId {
-  try {
-    return parseUuid(value) as PersonalRecordId;
-  } catch {
-    throw new InvalidPersonalRecordIdError(value);
-  }
+  return parseUuid(value) as PersonalRecordId;
 }
 
-export function createPersonalRecordId(): PersonalRecordId {
-  return createUuid() as PersonalRecordId;
+export function generatePersonalRecordId(): PersonalRecordId {
+  return generateUuid() as PersonalRecordId;
 }

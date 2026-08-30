@@ -1,6 +1,7 @@
 import { parseUserId } from '../../../shared/kernel/identity';
 import { IAthleteRepository } from '../../athletes/application/ports/out/athlete.repository.port';
 import { Athlete } from '../../athletes/domain/athlete';
+import { generateAthleteId } from '../../athletes/domain/athlete-id';
 import { IMemberRepository } from '../../auth/application/ports/member.repository.port';
 import { IUserUseCases } from '../../auth/application/ports/user-use-cases.port';
 import { IInvitationRecipientService } from './ports/invitation-recipient.port';
@@ -33,11 +34,13 @@ export class InvitationRecipientService implements IInvitationRecipientService {
         emailVerified: false,
       });
 
-      const athlete = new Athlete({
+      const athlete = Athlete.create({
+        id: generateAthleteId(),
         userId: parseUserId(user.id),
         firstName,
         lastName,
       });
+
       await this.athleteRepository.add(athlete);
 
       return { isNewUser: true, hasOtherOrganization: false };

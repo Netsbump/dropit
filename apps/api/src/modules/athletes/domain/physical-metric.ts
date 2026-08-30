@@ -1,24 +1,26 @@
 import type { AthleteId } from './athlete-id';
-import {
-  type PhysicalMetricId,
-  createPhysicalMetricId,
-} from './physical-metric-id';
+import type { PhysicalMetricId } from './physical-metric-id';
 
 export type PhysicalMetricCreation = {
+  id: PhysicalMetricId;
   athleteId: AthleteId;
   weight?: number | null;
   height?: number | null;
   date?: Date | null;
 };
 
+export type PhysicalMetricSnapshot = {
+  id: PhysicalMetricId;
+  athleteId: AthleteId;
+  weight: number | null;
+  height: number | null;
+  date: Date;
+};
+
 export type PhysicalMetricUpdate = {
   weight?: number | null;
   height?: number | null;
   date?: Date | null;
-};
-
-export type PhysicalMetricData = PhysicalMetricCreation & {
-  id?: PhysicalMetricId;
 };
 
 export abstract class PhysicalMetricDomainError extends Error {
@@ -28,61 +30,80 @@ export abstract class PhysicalMetricDomainError extends Error {
   }
 }
 
-export class InvalidPhysicalMetricError extends PhysicalMetricDomainError {}
+export class PhysicalMetricAthleteIdIsRequiredError extends PhysicalMetricDomainError {}
+export class PhysicalMetricWeightMustBePositiveError extends PhysicalMetricDomainError {}
+export class PhysicalMetricHeightMustBePositiveError extends PhysicalMetricDomainError {}
+export class PhysicalMetricValueIsRequiredError extends PhysicalMetricDomainError {}
+export class PhysicalMetricDateMustBeValidError extends PhysicalMetricDomainError {}
 
 export class PhysicalMetric {
-  public readonly id: PhysicalMetricId;
-  public readonly athleteId: AthleteId;
-  public readonly weight: number | null;
-  public readonly height: number | null;
-  public readonly date: Date;
+  private constructor(
+    public readonly id: PhysicalMetricId,
+    public readonly athleteId: AthleteId,
+    public readonly weight: number | null,
+    public readonly height: number | null,
+    public readonly date: Date
+  ) {}
 
-  constructor(params: PhysicalMetricData) {
-    if (!params.athleteId.trim()) {
-      throw new InvalidPhysicalMetricError('Athlete id is required');
+  static create(creation: PhysicalMetricCreation): PhysicalMetric {
+    return PhysicalMetric.build({
+      id: creation.id,
+      athleteId: creation.athleteId,
+      weight: creation.weight ?? null,
+      height: creation.height ?? null,
+      date: creation.date ?? new Date(),
+    });
+  }
+
+  static reconstitute(snapshot: PhysicalMetricSnapshot): PhysicalMetric {
+    return PhysicalMetric.build(snapshot);
+  }
+
+  amend(changes: PhysicalMetricUpdate): PhysicalMetric {
+    return PhysicalMetric.build({
+      id: this.id,
+      athleteId: this.athleteId,
+      weight: changes.weight !== undefined ? changes.weight : this.weight,
+      height: changes.height !== undefined ? changes.height : this.height,
+      date: changes.date ?? this.date,
+    });
+  }
+
+  private static build(snapshot: PhysicalMetricSnapshot): PhysicalMetric {
+    if (!snapshot.athleteId.trim()) {
+      throw new PhysicalMetricAthleteIdIsRequiredError(
+        'Athlete id is required'
+      );
     }
 
-    if (
-      params.weight !== undefined &&
-      params.weight !== null &&
-      params.weight <= 0
-    ) {
-      throw new InvalidPhysicalMetricError('Weight must be positive');
+    if (snapshot.weight !== null && snapshot.weight <= 0) {
+      throw new PhysicalMetricWeightMustBePositiveError(
+        'Weight must be positive'
+      );
     }
 
-    if (
-      params.height !== undefined &&
-      params.height !== null &&
-      params.height <= 0
-    ) {
-      throw new InvalidPhysicalMetricError('Height must be positive');
+    if (snapshot.height !== null && snapshot.height <= 0) {
+      throw new PhysicalMetricHeightMustBePositiveError(
+        'Height must be positive'
+      );
     }
 
-    if (params.weight == null && params.height == null) {
-      throw new InvalidPhysicalMetricError(
+    if (snapshot.weight === null && snapshot.height === null) {
+      throw new PhysicalMetricValueIsRequiredError(
         'At least one physical metric value is required'
       );
     }
 
-    const date = params.date ?? new Date();
-    if (Number.isNaN(date.getTime())) {
-      throw new InvalidPhysicalMetricError('Date must be valid');
+    if (Number.isNaN(snapshot.date.getTime())) {
+      throw new PhysicalMetricDateMustBeValidError('Date must be valid');
     }
 
-    this.id = params.id ?? createPhysicalMetricId();
-    this.athleteId = params.athleteId;
-    this.weight = params.weight ?? null;
-    this.height = params.height ?? null;
-    this.date = date;
-  }
-
-  amend(data: PhysicalMetricUpdate): PhysicalMetric {
-    return new PhysicalMetric({
-      id: this.id,
-      athleteId: this.athleteId,
-      weight: data.weight !== undefined ? data.weight : this.weight,
-      height: data.height !== undefined ? data.height : this.height,
-      date: data.date ?? this.date,
-    });
+    return new PhysicalMetric(
+      snapshot.id,
+      snapshot.athleteId,
+      snapshot.weight,
+      snapshot.height,
+      snapshot.date
+    );
   }
 }

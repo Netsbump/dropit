@@ -3,17 +3,14 @@ import type { SearchablePaginationQuery } from '../../../shared/kernel/paginatio
 import {
   Athlete,
   type AthleteCreation,
-  AthleteDomainError,
   type AthleteUpdate,
 } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
 import {
-  AthleteAlreadyExistsError,
   AthleteNotFoundError,
-  InvalidAthleteCreationError,
-  InvalidAthleteUpdateError,
+  AthleteProfileAlreadyExistsError,
   UserDoesNotBelongToOrganizationError,
-  UserNotFoundError,
+  UserProfileNotFoundError,
 } from './errors/athlete.errors';
 import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
 import type { IAthleteProfiles } from './ports/in/athlete-profiles.port';
@@ -26,7 +23,7 @@ import { IOrganizationMembership } from './ports/out/organization-membership.por
 import type {
   AthleteDetailsReadModel,
   PaginatedAthleteDetailsReadModel,
-} from './read-models/athlete-details.read-model';
+} from './models/athlete-details.read-model';
 
 export class AthleteProfiles implements IAthleteProfiles {
   constructor(
@@ -41,7 +38,7 @@ export class AthleteProfiles implements IAthleteProfiles {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new AthleteNotFoundError(`Athlete with ID ${athleteId} not found`);
+      throw new AthleteNotFoundError(athleteId);
     }
 
     return athlete;
@@ -59,7 +56,8 @@ export class AthleteProfiles implements IAthleteProfiles {
 
     if (!isUserCoach && !isUserAthlete) {
       throw new UserDoesNotBelongToOrganizationError(
-        'User does not belong to this organization'
+        currentUserId,
+        organizationId
       );
     }
 
@@ -99,7 +97,7 @@ export class AthleteProfiles implements IAthleteProfiles {
       await this.athleteReadRepository.findDetailsByUserId(athlete.userId);
 
     if (!athleteWithDetails) {
-      throw new AthleteNotFoundError('Athlete not found');
+      throw new AthleteNotFoundError(athlete.id);
     }
 
     return athleteWithDetails;
@@ -143,49 +141,34 @@ export class AthleteProfiles implements IAthleteProfiles {
       organizationId
     );
 
-    const athletes = await this.athleteRepository.listByUserIds(athleteUserIds);
-    if (!athletes) {
-      throw new AthleteNotFoundError('Athletes not found');
-    }
-
-    return athletes;
+    return this.athleteRepository.listByUserIds(athleteUserIds);
   }
 
-  async create(data: AthleteCreation): Promise<Athlete> {
-    const userProfile = await this.athleteUserProfile.exists(data.userId);
-
-    if (!userProfile) {
-      throw new UserNotFoundError('User not found');
-    }
-
-    const athleteProfile = await this.athleteRepository.findByUserId(
-      data.userId
+  async create(candidate: AthleteCreation): Promise<Athlete> {
+    const existingUserProfileExists = await this.athleteUserProfile.exists(
+      candidate.userId
     );
 
-    if (athleteProfile) {
-      throw new AthleteAlreadyExistsError(
-        'User already has an athlete profile'
-      );
+    if (!existingUserProfileExists) {
+      throw new UserProfileNotFoundError(candidate.userId);
     }
 
-    let athlete: Athlete;
+    const existingAthleteProfile = await this.athleteRepository.findByUserId(
+      candidate.userId
+    );
 
-    try {
-      athlete = new Athlete(data);
-    } catch (error) {
-      if (error instanceof AthleteDomainError) {
-        throw new InvalidAthleteCreationError(error.message);
-      }
-
-      throw error;
+    if (existingAthleteProfile) {
+      throw new AthleteProfileAlreadyExistsError(candidate.userId);
     }
 
-    return await this.athleteRepository.add(athlete);
+    const newAthlete = Athlete.create(candidate);
+
+    return this.athleteRepository.add(newAthlete);
   }
 
   async updateOwn(
     athleteId: AthleteId,
-    data: AthleteUpdate,
+    changes: AthleteUpdate,
     userId: UserId
   ): Promise<Athlete> {
     const athlete = await this.getAthleteOrThrow(athleteId);
@@ -195,19 +178,9 @@ export class AthleteProfiles implements IAthleteProfiles {
       athleteUserId: athlete.userId,
     });
 
-    let updatedAthlete: Athlete;
+    const updatedAthlete = athlete.update(changes);
 
-    try {
-      updatedAthlete = athlete.updateProfile(data);
-    } catch (error) {
-      if (error instanceof AthleteDomainError) {
-        throw new InvalidAthleteUpdateError(error.message);
-      }
-
-      throw error;
-    }
-
-    return await this.athleteRepository.save(updatedAthlete);
+    return this.athleteRepository.save(updatedAthlete);
   }
 
   async findIdByUserId(userId: UserId): Promise<string | null> {

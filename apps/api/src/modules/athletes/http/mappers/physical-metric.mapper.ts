@@ -1,5 +1,24 @@
-import type { PhysicalMetricDto } from '@dropit/schemas';
-import { PhysicalMetric } from '../../domain/physical-metric';
+import type {
+  CreatePhysicalMetricInput,
+  PhysicalMetricDto,
+} from '@dropit/schemas';
+import { parseAthleteId } from '../../domain/athlete-id';
+import {
+  PhysicalMetric,
+  type PhysicalMetricCreation,
+} from '../../domain/physical-metric';
+import { generatePhysicalMetricId } from '../../domain/physical-metric-id';
+
+export const toPhysicalMetricCreation = (
+  input: CreatePhysicalMetricInput,
+  athleteId: string
+): PhysicalMetricCreation => ({
+  id: generatePhysicalMetricId(),
+  athleteId: parseAthleteId(athleteId),
+  weight: input.weight,
+  height: input.height,
+  date: input.date,
+});
 
 export const toPhysicalMetricDto = (
   physicalMetric: PhysicalMetric

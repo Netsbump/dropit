@@ -5,25 +5,35 @@ import type {
   UpdateAthleteInput,
 } from '@dropit/schemas';
 import type { AthleteCreation, AthleteUpdate } from '../../domain/athlete';
-import type { AthleteDetailsReadModel } from '../../application/read-models/athlete-details.read-model';
+import type { AthleteDetailsReadModel } from '../../application/models/athlete-details.read-model';
 import { Athlete } from '../../domain/athlete';
 import type { UserId } from '../../../../shared/kernel/identity';
+import { generateAthleteId } from '../../domain/athlete-id';
+
+const toBirthdayDate = (birthday: string): Date =>
+  new Date(`${birthday}T00:00:00.000Z`);
+
+const toBirthdayString = (birthday: Date): string =>
+  birthday.toISOString().split('T')[0];
 
 export const toAthleteCreation = (
   input: CreateAthleteInput,
   userId: UserId
 ): AthleteCreation => ({
+  id: generateAthleteId(),
   userId,
   firstName: input.firstName,
   lastName: input.lastName,
-  birthday: input.birthday ? new Date(input.birthday) : null,
+  birthday:
+    input.birthday !== undefined ? toBirthdayDate(input.birthday) : null,
   country: input.country ?? null,
 });
 
 export const toAthleteUpdate = (input: UpdateAthleteInput): AthleteUpdate => ({
   firstName: input.firstName,
   lastName: input.lastName,
-  birthday: input.birthday !== undefined ? new Date(input.birthday) : undefined,
+  birthday:
+    input.birthday !== undefined ? toBirthdayDate(input.birthday) : undefined,
   country: input.country,
 });
 
@@ -33,7 +43,7 @@ export const toAthleteDetailsDto = (
   id: athlete.id,
   firstName: athlete.firstName,
   lastName: athlete.lastName,
-  birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
+  birthday: athlete.birthday ? toBirthdayString(athlete.birthday) : undefined,
   email: athlete.email ?? '',
   image: athlete.image ?? '',
   country: athlete.country ?? undefined,
@@ -71,7 +81,7 @@ export const toAthleteDto = (athlete: Athlete): AthleteDto => {
     id: athlete.id,
     firstName: athlete.firstName,
     lastName: athlete.lastName,
-    birthday: athlete.birthday ? new Date(athlete.birthday) : undefined,
+    birthday: athlete.birthday ? toBirthdayString(athlete.birthday) : undefined,
     userId: athlete.userId,
   };
 };

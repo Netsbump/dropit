@@ -1,8 +1,6 @@
 import { IExerciseCatalog as ITrainingExerciseCatalog } from '../../training/application/ports/exercise-catalog.port';
-import {
-  AvailableExercise,
-  IExerciseCatalog,
-} from '../application/ports/out/exercise-catalog.port';
+import { IExerciseCatalog } from '../application/ports/out/exercise-catalog.port';
+import { PersonalRecordExercise } from '../domain/personal-record-exercise';
 import type { OrganizationId } from '../../../shared/kernel/identity';
 
 export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
@@ -13,7 +11,7 @@ export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
   async findExerciseByOrganization(
     exerciseId: string,
     organizationId: OrganizationId
-  ): Promise<AvailableExercise | null> {
+  ): Promise<PersonalRecordExercise | null> {
     const exercise =
       await this.trainingExerciseCatalog.findExerciseByOrganization(
         exerciseId,
@@ -24,9 +22,6 @@ export class TrainingExerciseCatalogAdapter implements IExerciseCatalog {
       return null;
     }
 
-    return {
-      id: exercise.id,
-      name: exercise.name,
-    };
+    return PersonalRecordExercise.create(exercise.id, exercise.name);
   }
 }

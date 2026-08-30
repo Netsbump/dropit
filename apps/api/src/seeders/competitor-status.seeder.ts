@@ -1,6 +1,6 @@
 import { CompetitorLevel, SexCategory } from '@dropit/schemas';
 import { EntityManager } from '@mikro-orm/core';
-import { createCompetitorStatusId } from '../modules/athletes/domain/competitor-status-id';
+import { generateCompetitorStatusId } from '../modules/athletes/domain/competitor-status-id';
 import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { CompetitorStatusEntity } from '../modules/database/entities/competitor-status.entity';
 
@@ -45,7 +45,7 @@ export async function seedCompetitorStatuses(em: EntityManager): Promise<void> {
     if (existing) continue;
 
     const status = new CompetitorStatusEntity();
-    status.id = createCompetitorStatusId();
+    status.id = generateCompetitorStatusId();
     status.level = competitorData[i].level;
     status.sexCategory = competitorData[i].sexCategory;
     status.weightCategory = competitorData[i].weightCategory;

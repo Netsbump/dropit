@@ -1,4 +1,4 @@
-import type { AthleteDetailsReadModel } from '../../application/read-models/athlete-details.read-model';
+import type { AthleteDetailsReadModel } from '../../application/models/athlete-details.read-model';
 
 type NullableNumber = number | string | null | undefined;
 

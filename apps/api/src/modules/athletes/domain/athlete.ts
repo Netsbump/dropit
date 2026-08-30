@@ -1,12 +1,22 @@
 import type { UserId } from '../../../shared/kernel/identity';
-import { type AthleteId, createAthleteId } from './athlete-id';
+import type { AthleteId } from './athlete-id';
 
 export type AthleteCreation = {
+  id: AthleteId;
   userId: UserId;
   firstName: string;
   lastName: string;
   birthday?: Date | null;
   country?: string | null;
+};
+
+export type AthleteSnapshot = {
+  id: AthleteId;
+  userId: UserId;
+  firstName: string;
+  lastName: string;
+  birthday: Date | null;
+  country: string | null;
 };
 
 export type AthleteUpdate = {
@@ -16,10 +26,6 @@ export type AthleteUpdate = {
   country?: string | null;
 };
 
-export type AthleteProps = AthleteCreation & {
-  id?: AthleteId;
-};
-
 export abstract class AthleteDomainError extends Error {
   constructor(message: string) {
     super(message);
@@ -27,44 +33,75 @@ export abstract class AthleteDomainError extends Error {
   }
 }
 
-export class InvalidAthleteError extends AthleteDomainError {}
+export class LastNameIsRequiredError extends AthleteDomainError {}
+export class FirstNameIsRequiredError extends AthleteDomainError {}
+export class BirthDateCannotBeInFutureError extends AthleteDomainError {}
 
 export class Athlete {
-  public readonly id: AthleteId;
-  public readonly userId: UserId;
-  public readonly firstName: string;
-  public readonly lastName: string;
-  public readonly birthday: Date | null;
-  public readonly country: string | null;
+  private constructor(
+    public readonly id: AthleteId,
+    public readonly userId: UserId,
+    public readonly firstName: string,
+    public readonly lastName: string,
+    public readonly birthday: Date | null,
+    public readonly country: string | null
+  ) {}
 
-  constructor(params: AthleteProps) {
-    const firstName = params.firstName.trim();
-    const lastName = params.lastName.trim();
+  static create(creation: AthleteCreation): Athlete {
+    return Athlete.build({
+      id: creation.id,
+      userId: creation.userId,
+      firstName: creation.firstName,
+      lastName: creation.lastName,
+      birthday: creation.birthday ?? null,
+      country: creation.country ?? null,
+    });
+  }
+
+  static reconstitute(snapshot: AthleteSnapshot): Athlete {
+    return Athlete.build(snapshot);
+  }
+
+  update(changes: AthleteUpdate): Athlete {
+    return Athlete.build({
+      id: this.id,
+      userId: this.userId,
+      firstName: changes.firstName ?? this.firstName,
+      lastName: changes.lastName ?? this.lastName,
+      birthday:
+        changes.birthday !== undefined ? changes.birthday : this.birthday,
+      country: changes.country !== undefined ? changes.country : this.country,
+    });
+  }
+
+  private static build(snapshot: AthleteSnapshot): Athlete {
+    const firstName = snapshot.firstName.trim();
+    const lastName = snapshot.lastName.trim();
 
     if (!firstName) {
-      throw new InvalidAthleteError('First name is required');
+      throw new FirstNameIsRequiredError('First name is required');
     }
 
     if (!lastName) {
-      throw new InvalidAthleteError('Last name is required');
+      throw new LastNameIsRequiredError('Last name is required');
     }
 
-    this.id = params.id ?? createAthleteId();
-    this.userId = params.userId;
-    this.firstName = firstName;
-    this.lastName = lastName;
-    this.birthday = params.birthday ?? null;
-    this.country = params.country ?? null;
-  }
+    if (
+      snapshot.birthday !== null &&
+      snapshot.birthday.getTime() > Date.now()
+    ) {
+      throw new BirthDateCannotBeInFutureError(
+        'Birth date cannot be in the future'
+      );
+    }
 
-  updateProfile(data: AthleteUpdate): Athlete {
-    return new Athlete({
-      id: this.id,
-      userId: this.userId,
-      firstName: data.firstName ?? this.firstName,
-      lastName: data.lastName ?? this.lastName,
-      birthday: data.birthday !== undefined ? data.birthday : this.birthday,
-      country: data.country !== undefined ? data.country : this.country,
-    });
+    return new Athlete(
+      snapshot.id,
+      snapshot.userId,
+      firstName,
+      lastName,
+      snapshot.birthday,
+      snapshot.country
+    );
   }
 }

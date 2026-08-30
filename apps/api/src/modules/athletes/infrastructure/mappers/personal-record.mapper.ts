@@ -6,7 +6,7 @@ import { parsePersonalRecordId } from '../../domain/personal-record-id';
 export const toPersonalRecordDomain = (
   entity: PersonalRecordEntity
 ): PersonalRecord => {
-  return new PersonalRecord({
+  return PersonalRecord.reconstitute({
     id: parsePersonalRecordId(entity.id),
     athleteId: parseAthleteId(entity.athlete.id),
     exercise: {

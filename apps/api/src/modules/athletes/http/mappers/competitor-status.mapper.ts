@@ -1,5 +1,25 @@
-import type { CompetitorStatusDto } from '@dropit/schemas';
-import { CompetitorStatus } from '../../domain/competitor-status';
+import type {
+  CompetitorStatusDto,
+  CreateCompetitorStatusInput,
+} from '@dropit/schemas';
+import { parseAthleteId } from '../../domain/athlete-id';
+import {
+  CompetitorStatus,
+  type CompetitorStatusCreation,
+} from '../../domain/competitor-status';
+import { generateCompetitorStatusId } from '../../domain/competitor-status-id';
+
+export const toCompetitorStatusCreation = (
+  input: CreateCompetitorStatusInput,
+  athleteId: string
+): CompetitorStatusCreation => ({
+  id: generateCompetitorStatusId(),
+  athleteId: parseAthleteId(athleteId),
+  level: input.level,
+  sexCategory: input.sexCategory,
+  weightCategory: input.weightCategory,
+  endDate: null,
+});
 
 export const toCompetitorStatusDto = (
   competitorStatus: CompetitorStatus

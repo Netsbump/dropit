@@ -1,15 +1,11 @@
 import type { OrganizationId } from '../../../../../shared/kernel/identity';
+import type { PersonalRecordExercise } from '../../../domain/personal-record-exercise';
 
 export const ATHLETE_EXERCISE_CATALOG = Symbol('ATHLETE_EXERCISE_CATALOG');
-
-export type AvailableExercise = {
-  id: string;
-  name: string;
-};
 
 export interface IExerciseCatalog {
   findExerciseByOrganization(
     exerciseId: string,
     organizationId: OrganizationId
-  ): Promise<AvailableExercise | null>;
+  ): Promise<PersonalRecordExercise | null>;
 }

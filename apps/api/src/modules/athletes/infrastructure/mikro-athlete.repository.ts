@@ -2,6 +2,7 @@ import {
   EntityManager,
   EntityRepository,
   type FilterQuery,
+  UniqueConstraintViolationException,
 } from '@mikro-orm/core';
 import { QueryBuilder, SqlEntityManager, raw } from '@mikro-orm/postgresql';
 import { Injectable } from '@nestjs/common';
@@ -12,6 +13,7 @@ import { AthleteEntity } from '../../database/entities/athlete.entity';
 import { CompetitorStatusEntity } from '../../database/entities/competitor-status.entity';
 import { PersonalRecordEntity } from '../../database/entities/personal-record.entity';
 import { PhysicalMetricEntity } from '../../database/entities/physical-metric.entity';
+import { AthleteProfileAlreadyExistsError } from '../application/errors/athlete.errors';
 import {
   IAthleteReadRepository,
   IAthleteRepository,
@@ -19,7 +21,7 @@ import {
 import type {
   AthleteDetailsReadModel,
   PaginatedAthleteDetailsReadModel,
-} from '../application/read-models/athlete-details.read-model';
+} from '../application/models/athlete-details.read-model';
 import { Athlete } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
 import {
@@ -31,6 +33,15 @@ import {
   toAthleteDomainList,
   toAthleteEntity,
 } from './mappers/athlete.mapper';
+
+const ATHLETE_USER_UNIQUE_CONSTRAINT = 'athlete_user_id_unique';
+
+const isAthleteUserUniqueConstraintViolation = (
+  error: unknown
+): error is UniqueConstraintViolationException =>
+  error instanceof UniqueConstraintViolationException &&
+  'constraint' in error &&
+  error.constraint === ATHLETE_USER_UNIQUE_CONSTRAINT;
 
 @Injectable()
 export class MikroAthleteRepository
@@ -335,9 +346,18 @@ export class MikroAthleteRepository
 
   async add(athlete: Athlete): Promise<Athlete> {
     const athleteEntity = toAthleteEntity(athlete);
+
     this.assignAthlete(athleteEntity, athlete);
 
-    await this.em.persistAndFlush(athleteEntity);
+    try {
+      await this.em.persistAndFlush(athleteEntity);
+    } catch (error) {
+      if (isAthleteUserUniqueConstraintViolation(error)) {
+        throw new AthleteProfileAlreadyExistsError(athlete.userId);
+      }
+
+      throw error;
+    }
 
     return toAthleteDomain(athleteEntity);
   }

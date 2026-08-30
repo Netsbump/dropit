@@ -17,6 +17,7 @@ import { parseAthleteId } from '../domain/athlete-id';
 import { parsePersonalRecordId } from '../domain/personal-record-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
+  toPersonalRecordRequest,
   toPersonalRecordDto,
   toPersonalRecordDtoList,
 } from './mappers/personal-record.mapper';
@@ -69,6 +70,7 @@ export class PersonalRecordController {
         currentUser.id,
         organizationId
       );
+
       const personalRecordsDto = toPersonalRecordDtoList(personalRecords);
 
       return {
@@ -95,11 +97,13 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.getPersonalRecord>> {
     return tsRestHandler(c.getPersonalRecord, async ({ params }) => {
       const personalRecordId = parsePersonalRecordId(params.id);
+
       const personalRecord = await this.athletePersonalRecords.findById(
         personalRecordId,
         currentUser.id,
         organizationId
       );
+
       const personalRecordDto = toPersonalRecordDto(personalRecord);
 
       return {
@@ -126,11 +130,13 @@ export class PersonalRecordController {
   ): ReturnType<typeof tsRestHandler<typeof c.getAthletePersonalRecords>> {
     return tsRestHandler(c.getAthletePersonalRecords, async ({ params }) => {
       const athleteId = parseAthleteId(params.id);
+
       const personalRecords = await this.athletePersonalRecords.listByAthleteId(
         athleteId,
         currentUser.id,
         organizationId
       );
+
       const personalRecordsDto = toPersonalRecordDtoList(personalRecords);
 
       return {
@@ -161,6 +167,7 @@ export class PersonalRecordController {
       c.getAthletePersonalRecordsSummary,
       async ({ params }) => {
         const athleteId = parseAthleteId(params.id);
+
         const summary =
           await this.athletePersonalRecords.findBestOlympicLiftsByAthleteId(
             athleteId,
@@ -192,13 +199,14 @@ export class PersonalRecordController {
     @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createPersonalRecord>> {
     return tsRestHandler(c.createPersonalRecord, async ({ params, body }) => {
-      const athleteId = parseAthleteId(params.id);
+      const personalRecordRequest = toPersonalRecordRequest(body, params.id);
+
       const personalRecord = await this.athletePersonalRecords.record(
-        athleteId,
-        body,
+        personalRecordRequest,
         currentUser.id,
         organizationId
       );
+
       const personalRecordDto = toPersonalRecordDto(personalRecord);
 
       return {

@@ -241,6 +241,7 @@ export class AthleteController {
   ): ReturnType<typeof tsRestHandler<typeof c.updateAthlete>> {
     return tsRestHandler(c.updateAthlete, async ({ params, body }) => {
       const athleteId = parseAthleteId(params.id);
+
       const athleteUpdate = toAthleteUpdate(body);
 
       const athlete = await this.athleteProfiles.updateOwn(

@@ -1,8 +1,8 @@
 import type { IdGenerator } from './id-generator.port';
-import { createUuid } from './uuid';
+import { generateUuid } from './uuid';
 
 export class UuidIdGenerator implements IdGenerator {
   generate(): string {
-    return createUuid();
+    return generateUuid();
   }
 }

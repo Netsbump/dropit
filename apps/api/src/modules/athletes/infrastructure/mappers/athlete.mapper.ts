@@ -24,7 +24,7 @@ export const toAthleteEntityReference = (athleteId: string): AthleteEntity => {
 };
 
 export const toAthleteDomain = (entity: AthleteEntity): Athlete => {
-  return new Athlete({
+  return Athlete.reconstitute({
     id: parseAthleteId(entity.id),
     userId: parseUserId(entity.user.id),
     firstName: entity.firstName,

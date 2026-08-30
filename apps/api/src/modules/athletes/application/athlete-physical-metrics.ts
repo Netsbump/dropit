@@ -1,20 +1,14 @@
-import {
-  CreatePhysicalMetricInput,
-  UpdatePhysicalMetricInput,
-} from '@dropit/schemas';
+import { UpdatePhysicalMetricInput } from '@dropit/schemas';
 import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import type { Athlete } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
 import {
   PhysicalMetric,
-  PhysicalMetricDomainError,
+  type PhysicalMetricCreation,
 } from '../domain/physical-metric';
 import type { PhysicalMetricId } from '../domain/physical-metric-id';
-import {
-  InvalidPhysicalMetricException,
-  PhysicalMetricAthleteNotFoundException,
-  PhysicalMetricNotFoundException,
-} from './errors/physical-metric.exceptions';
+import { AthleteNotFoundError } from './errors/athlete.errors';
+import { PhysicalMetricNotFoundError } from './errors/physical-metric.errors';
 import type { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
 import type { IAthletePhysicalMetrics } from './ports/in/athlete-physical-metrics.port';
 import type { IAthleteRepository } from './ports/out/athlete.repository.port';
@@ -31,9 +25,7 @@ export class AthletePhysicalMetrics implements IAthletePhysicalMetrics {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new PhysicalMetricAthleteNotFoundException(
-        `Athlete with ID ${athleteId} not found`
-      );
+      throw new AthleteNotFoundError(athleteId);
     }
 
     return athlete;
@@ -45,9 +37,7 @@ export class AthletePhysicalMetrics implements IAthletePhysicalMetrics {
     const physicalMetric = await this.physicalMetricRepository.findById(id);
 
     if (!physicalMetric) {
-      throw new PhysicalMetricNotFoundException(
-        `Physical metric with ID ${id} not found`
-      );
+      throw new PhysicalMetricNotFoundError(id);
     }
 
     return physicalMetric;
@@ -103,31 +93,15 @@ export class AthletePhysicalMetrics implements IAthletePhysicalMetrics {
   }
 
   async recordBodyMetric(
-    athleteId: AthleteId,
-    data: CreatePhysicalMetricInput,
+    creation: PhysicalMetricCreation,
     currentUserId: UserId,
     organizationId: OrganizationId
   ): Promise<PhysicalMetric> {
-    const athlete = await this.getAthleteOrThrow(athleteId);
+    const athlete = await this.getAthleteOrThrow(creation.athleteId);
 
     await this.assertCanManageOwnMetric(athlete, currentUserId, organizationId);
 
-    let physicalMetric: PhysicalMetric;
-
-    try {
-      physicalMetric = new PhysicalMetric({
-        athleteId,
-        weight: data.weight,
-        height: data.height,
-        date: data.date,
-      });
-    } catch (error) {
-      if (error instanceof PhysicalMetricDomainError) {
-        throw new InvalidPhysicalMetricException(error.message);
-      }
-
-      throw error;
-    }
+    const physicalMetric = PhysicalMetric.create(creation);
 
     return await this.physicalMetricRepository.add(physicalMetric);
   }
@@ -143,17 +117,7 @@ export class AthletePhysicalMetrics implements IAthletePhysicalMetrics {
 
     await this.assertCanManageOwnMetric(athlete, currentUserId, organizationId);
 
-    let physicalMetricToUpdate: PhysicalMetric;
-
-    try {
-      physicalMetricToUpdate = physicalMetric.amend(data);
-    } catch (error) {
-      if (error instanceof PhysicalMetricDomainError) {
-        throw new InvalidPhysicalMetricException(error.message);
-      }
-
-      throw error;
-    }
+    const physicalMetricToUpdate = physicalMetric.amend(data);
 
     return await this.physicalMetricRepository.save(physicalMetricToUpdate);
   }

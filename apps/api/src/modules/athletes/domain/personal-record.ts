@@ -1,28 +1,26 @@
 import type { AthleteId } from './athlete-id';
-import {
-  type PersonalRecordId,
-  createPersonalRecordId,
-} from './personal-record-id';
-
-export type PersonalRecordExercise = {
-  id: string;
-  name: string;
-};
+import { PersonalRecordExercise } from './personal-record-exercise';
+import type { PersonalRecordId } from './personal-record-id';
 
 export type PersonalRecordCreation = {
+  id: PersonalRecordId;
   athleteId: AthleteId;
   exercise: PersonalRecordExercise;
   weight: number;
   date?: Date | null;
 };
 
+export type PersonalRecordSnapshot = {
+  id: PersonalRecordId;
+  athleteId: AthleteId;
+  exercise: PersonalRecordExercise;
+  weight: number;
+  date: Date;
+};
+
 export type PersonalRecordUpdate = {
   weight?: number;
   date?: Date | null;
-};
-
-export type PersonalRecordProps = PersonalRecordCreation & {
-  id?: PersonalRecordId;
 };
 
 export abstract class PersonalRecordDomainError extends Error {
@@ -32,54 +30,71 @@ export abstract class PersonalRecordDomainError extends Error {
   }
 }
 
-export class InvalidPersonalRecordError extends PersonalRecordDomainError {}
+export class PersonalRecordAthleteIdIsRequiredError extends PersonalRecordDomainError {}
+export class PersonalRecordWeightMustBePositiveError extends PersonalRecordDomainError {}
+export class PersonalRecordDateMustBeValidError extends PersonalRecordDomainError {}
 
 export class PersonalRecord {
-  public readonly id: PersonalRecordId;
-  public readonly athleteId: AthleteId;
-  public readonly exercise: PersonalRecordExercise;
-  public readonly weight: number;
-  public readonly date: Date;
+  private constructor(
+    public readonly id: PersonalRecordId,
+    public readonly athleteId: AthleteId,
+    public readonly exercise: PersonalRecordExercise,
+    public readonly weight: number,
+    public readonly date: Date
+  ) {}
 
-  constructor(params: PersonalRecordProps) {
-    if (!params.athleteId.trim()) {
-      throw new InvalidPersonalRecordError('Athlete id is required');
-    }
-
-    if (!params.exercise.id.trim()) {
-      throw new InvalidPersonalRecordError('Exercise id is required');
-    }
-
-    if (!params.exercise.name.trim()) {
-      throw new InvalidPersonalRecordError('Exercise name is required');
-    }
-
-    if (params.weight <= 0) {
-      throw new InvalidPersonalRecordError('Weight must be positive');
-    }
-
-    const date = params.date ?? new Date();
-    if (Number.isNaN(date.getTime())) {
-      throw new InvalidPersonalRecordError('Date must be valid');
-    }
-
-    this.id = params.id ?? createPersonalRecordId();
-    this.athleteId = params.athleteId;
-    this.exercise = {
-      id: params.exercise.id,
-      name: params.exercise.name.trim(),
-    };
-    this.weight = params.weight;
-    this.date = date;
+  static create(creation: PersonalRecordCreation): PersonalRecord {
+    return PersonalRecord.build({
+      id: creation.id,
+      athleteId: creation.athleteId,
+      exercise: creation.exercise,
+      weight: creation.weight,
+      date: creation.date ?? new Date(),
+    });
   }
 
-  amend(data: PersonalRecordUpdate): PersonalRecord {
-    return new PersonalRecord({
+  static reconstitute(snapshot: PersonalRecordSnapshot): PersonalRecord {
+    return PersonalRecord.build(snapshot);
+  }
+
+  amend(changes: PersonalRecordUpdate): PersonalRecord {
+    return PersonalRecord.build({
       id: this.id,
       athleteId: this.athleteId,
       exercise: this.exercise,
-      weight: data.weight ?? this.weight,
-      date: data.date ?? this.date,
+      weight: changes.weight ?? this.weight,
+      date: changes.date ?? this.date,
     });
+  }
+
+  private static build(snapshot: PersonalRecordSnapshot): PersonalRecord {
+    if (!snapshot.athleteId.trim()) {
+      throw new PersonalRecordAthleteIdIsRequiredError(
+        'Athlete id is required'
+      );
+    }
+
+    const exercise = PersonalRecordExercise.create(
+      snapshot.exercise.id,
+      snapshot.exercise.name
+    );
+
+    if (snapshot.weight <= 0) {
+      throw new PersonalRecordWeightMustBePositiveError(
+        'Weight must be positive'
+      );
+    }
+
+    if (Number.isNaN(snapshot.date.getTime())) {
+      throw new PersonalRecordDateMustBeValidError('Date must be valid');
+    }
+
+    return new PersonalRecord(
+      snapshot.id,
+      snapshot.athleteId,
+      exercise,
+      snapshot.weight,
+      snapshot.date
+    );
   }
 }

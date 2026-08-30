@@ -4,10 +4,14 @@ import {
   paginationQuerySchema,
 } from './common.schema';
 
+const birthdayInputSchema = z
+  .string()
+  .date('Birthday must use the YYYY-MM-DD format');
+
 export const createAthleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.string().or(z.date()).optional(),
+  birthday: birthdayInputSchema.optional(),
   country: z.string().optional(),
 });
 
@@ -21,7 +25,7 @@ export const athleteSchema = z.object({
   id: z.string(),
   firstName: z.string(),
   lastName: z.string(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
   userId: z.string(),
 });
 
@@ -33,7 +37,7 @@ export const athleteDetailsSchema = z.object({
   lastName: z.string(),
   email: z.string().email(),
   image: z.string().optional(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
   country: z.string().optional(),
   metrics: z
     .object({
@@ -91,7 +95,7 @@ export const adminOrganizationAthleteSchema = z.object({
   firstName: z.string(),
   lastName: z.string(),
   email: z.string().email(),
-  birthday: z.date().optional(),
+  birthday: z.string().optional(),
 });
 
 export type AdminOrganizationAthleteDto = z.infer<

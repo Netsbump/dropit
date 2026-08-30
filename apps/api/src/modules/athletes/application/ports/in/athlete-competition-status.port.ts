@@ -1,13 +1,13 @@
-import {
-  CreateCompetitorStatusInput,
-  UpdateCompetitorStatusInput,
-} from '@dropit/schemas';
+import { UpdateCompetitorStatusInput } from '@dropit/schemas';
 import type {
   OrganizationId,
   UserId,
 } from '../../../../../shared/kernel/identity';
 import type { AthleteId } from '../../../domain/athlete-id';
-import type { CompetitorStatus } from '../../../domain/competitor-status';
+import type {
+  CompetitorStatus,
+  CompetitorStatusCreation,
+} from '../../../domain/competitor-status';
 import type { CompetitorStatusId } from '../../../domain/competitor-status-id';
 
 export interface IAthleteCompetitionStatus {
@@ -31,8 +31,7 @@ export interface IAthleteCompetitionStatus {
    * Create a new competitor status
    */
   change(
-    athleteId: AthleteId,
-    data: CreateCompetitorStatusInput,
+    creation: CompetitorStatusCreation,
     currentUserId: UserId,
     organizationId: OrganizationId
   ): Promise<CompetitorStatus>;

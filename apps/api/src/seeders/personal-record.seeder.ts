@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { createPersonalRecordId } from '../modules/athletes/domain/personal-record-id';
+import { generatePersonalRecordId } from '../modules/athletes/domain/personal-record-id';
 import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { PersonalRecordEntity } from '../modules/database/entities/personal-record.entity';
 import { Exercise } from '../modules/training/domain/exercise.entity';
@@ -78,7 +78,7 @@ async function createPR(
   if (existing) return;
 
   const pr = new PersonalRecordEntity();
-  pr.id = createPersonalRecordId();
+  pr.id = generatePersonalRecordId();
   pr.athlete = athlete;
   pr.exercise = exercise;
   pr.weight = weight;

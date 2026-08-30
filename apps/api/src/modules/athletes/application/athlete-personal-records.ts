@@ -1,26 +1,18 @@
 import {
-  CreatePersonalRecordInput,
   PersonalRecordsSummary,
   UpdatePersonalRecordInput,
 } from '@dropit/schemas';
 import type { OrganizationId, UserId } from '../../../shared/kernel/identity';
 import type { Athlete } from '../domain/athlete';
 import type { AthleteId } from '../domain/athlete-id';
-import {
-  PersonalRecord,
-  PersonalRecordDomainError,
-} from '../domain/personal-record';
+import { PersonalRecord } from '../domain/personal-record';
 import type { PersonalRecordId } from '../domain/personal-record-id';
-import {
-  AthleteNotFoundException,
-  ExerciseNotFoundException,
-  InvalidPersonalRecordException,
-  NoAthletesFoundException,
-  NoPersonalRecordsFoundException,
-  PersonalRecordNotFoundException,
-} from './errors/personal-record.exceptions';
+import { AthleteNotFoundError } from './errors/athlete.errors';
+import { PersonalRecordExerciseNotFoundError } from './errors/personal-record-exercise.errors';
+import { PersonalRecordNotFoundError } from './errors/personal-record.errors';
 import { IAthleteAccessPolicy } from './policies/athlete-access-policy.interface';
 import { IAthletePersonalRecords } from './ports/in/athlete-personal-records.port';
+import type { PersonalRecordRequest } from './models/personal-record-request';
 import { IAthleteRepository } from './ports/out/athlete.repository.port';
 import { IExerciseCatalog } from './ports/out/exercise-catalog.port';
 import { IOrganizationMembership } from './ports/out/organization-membership.port';
@@ -39,9 +31,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     const athlete = await this.athleteRepository.findById(athleteId);
 
     if (!athlete) {
-      throw new AthleteNotFoundException(
-        `Athlete with ID ${athleteId} not found`
-      );
+      throw new AthleteNotFoundError(athleteId);
     }
 
     return athlete;
@@ -53,9 +43,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     const personalRecord = await this.personalRecordRepository.findById(id);
 
     if (!personalRecord) {
-      throw new PersonalRecordNotFoundException(
-        `Personal record with ID ${id} not found`
-      );
+      throw new PersonalRecordNotFoundError(id);
     }
 
     return personalRecord;
@@ -70,42 +58,19 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    let personalRecords: PersonalRecord[];
-
     if (isUserCoach) {
       const athleteUserIds =
         await this.organizationMembership.listAthleteUserIds(organizationId);
 
-      if (athleteUserIds.length === 0) {
-        throw new NoAthletesFoundException(
-          'No athletes found in the organization'
-        );
-      }
-
-      personalRecords =
-        await this.personalRecordRepository.listByAthleteUserIds(
-          athleteUserIds
-        );
-
-      if (!personalRecords || personalRecords.length === 0) {
-        throw new NoPersonalRecordsFoundException('No personal records found');
-      }
-    } else {
-      const athlete = await this.athleteRepository.findByUserId(currentUserId);
-      if (!athlete?.id) {
-        throw new AthleteNotFoundException('Athlete not found');
-      }
-
-      personalRecords = await this.personalRecordRepository.listByAthleteId(
-        athlete.id
-      );
-
-      if (!personalRecords || personalRecords.length === 0) {
-        return [];
-      }
+      return this.personalRecordRepository.listByAthleteUserIds(athleteUserIds);
     }
 
-    return personalRecords;
+    const athlete = await this.athleteRepository.findByUserId(currentUserId);
+    if (!athlete?.id) {
+      throw new AthleteNotFoundError();
+    }
+
+    return this.personalRecordRepository.listByAthleteId(athlete.id);
   }
 
   async findById(
@@ -138,14 +103,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       athleteUserId: athlete.userId,
     });
 
-    const personalRecords =
-      await this.personalRecordRepository.listByAthleteId(athleteId);
-
-    if (!personalRecords || personalRecords.length === 0) {
-      return [];
-    }
-
-    return personalRecords;
+    return this.personalRecordRepository.listByAthleteId(athleteId);
   }
 
   async findBestOlympicLiftsByAthleteId(
@@ -194,8 +152,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
   }
 
   async record(
-    athleteId: AthleteId,
-    data: CreatePersonalRecordInput,
+    personalRecordRequest: PersonalRecordRequest,
     currentUserId: UserId,
     organizationId: OrganizationId
   ): Promise<PersonalRecord> {
@@ -204,7 +161,9 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    const athlete = await this.getAthleteOrThrow(athleteId);
+    const athlete = await this.getAthleteOrThrow(
+      personalRecordRequest.athleteId
+    );
 
     await this.athleteAccessPolicy.assertAthleteBelongsToOrganization(
       athlete.userId,
@@ -212,34 +171,22 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
     );
 
     const exercise = await this.exerciseCatalog.findExerciseByOrganization(
-      data.exerciseId,
+      personalRecordRequest.exerciseId,
       organizationId
     );
     if (!exercise) {
-      throw new ExerciseNotFoundException(
-        `Exercise with ID ${data.exerciseId} not found`
+      throw new PersonalRecordExerciseNotFoundError(
+        personalRecordRequest.exerciseId
       );
     }
 
-    let personalRecord: PersonalRecord;
-
-    try {
-      personalRecord = new PersonalRecord({
-        athleteId,
-        exercise: {
-          id: exercise.id,
-          name: exercise.name,
-        },
-        weight: data.weight,
-        date: data.date ?? new Date(),
-      });
-    } catch (error) {
-      if (error instanceof PersonalRecordDomainError) {
-        throw new InvalidPersonalRecordException(error.message);
-      }
-
-      throw error;
-    }
+    const personalRecord = PersonalRecord.create({
+      id: personalRecordRequest.id,
+      athleteId: personalRecordRequest.athleteId,
+      exercise,
+      weight: personalRecordRequest.weight,
+      date: personalRecordRequest.date,
+    });
 
     return await this.personalRecordRepository.add(personalRecord);
   }
@@ -263,17 +210,7 @@ export class AthletePersonalRecords implements IAthletePersonalRecords {
       organizationId
     );
 
-    let personalRecordToUpdate: PersonalRecord;
-
-    try {
-      personalRecordToUpdate = personalRecord.amend(data);
-    } catch (error) {
-      if (error instanceof PersonalRecordDomainError) {
-        throw new InvalidPersonalRecordException(error.message);
-      }
-
-      throw error;
-    }
+    const personalRecordToUpdate = personalRecord.amend(data);
 
     return await this.personalRecordRepository.save(personalRecordToUpdate);
   }

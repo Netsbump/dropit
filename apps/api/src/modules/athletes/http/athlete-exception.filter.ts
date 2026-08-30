@@ -7,15 +7,14 @@ import {
   Logger,
 } from '@nestjs/common';
 import type { Response } from 'express';
-import { InvalidOrganizationIdError } from '../../../shared/kernel/identity';
-import { AthleteApplicationError } from '../application/errors/athlete.errors';
-import { CompetitorStatusException } from '../application/errors/competitor-status.exceptions';
-import { PersonalRecordException } from '../application/errors/personal-record.exceptions';
-import { PhysicalMetricException } from '../application/errors/physical-metric.exceptions';
-import { InvalidAthleteIdError } from '../domain/athlete-id';
-import { InvalidCompetitorStatusIdError } from '../domain/competitor-status-id';
-import { InvalidPersonalRecordIdError } from '../domain/personal-record-id';
-import { InvalidPhysicalMetricIdError } from '../domain/physical-metric-id';
+import { AccessDeniedError } from '../../../shared/application/errors/access-denied.error';
+import { ConflictError } from '../../../shared/application/errors/conflict.error';
+import { NotFoundError } from '../../../shared/application/errors/not-found.error';
+import { InvalidUuidError } from 'src/shared/kernel';
+import { AthleteDomainError } from '../domain/athlete';
+import { CompetitorStatusDomainError } from '../domain/competitor-status';
+import { PersonalRecordDomainError } from '../domain/personal-record';
+import { PhysicalMetricDomainError } from '../domain/physical-metric';
 
 type HttpErrorResponse = {
   statusCode: number;
@@ -49,27 +48,42 @@ const getHttpExceptionMessage = (exception: HttpException): string => {
 };
 
 const toHttpErrorResponse = (error: unknown): HttpErrorResponse => {
-  if (
-    error instanceof InvalidAthleteIdError ||
-    error instanceof InvalidCompetitorStatusIdError ||
-    error instanceof InvalidPersonalRecordIdError ||
-    error instanceof InvalidPhysicalMetricIdError ||
-    error instanceof InvalidOrganizationIdError
-  ) {
+  if (error instanceof InvalidUuidError) {
     return {
       statusCode: HttpStatus.BAD_REQUEST,
       message: error.message,
     };
   }
 
+  if (error instanceof NotFoundError) {
+    return {
+      statusCode: HttpStatus.NOT_FOUND,
+      message: error.message,
+    };
+  }
+
+  if (error instanceof ConflictError) {
+    return {
+      statusCode: HttpStatus.CONFLICT,
+      message: error.message,
+    };
+  }
+
+  if (error instanceof AccessDeniedError) {
+    return {
+      statusCode: HttpStatus.FORBIDDEN,
+      message: 'Access denied',
+    };
+  }
+
   if (
-    error instanceof AthleteApplicationError ||
-    error instanceof CompetitorStatusException ||
-    error instanceof PersonalRecordException ||
-    error instanceof PhysicalMetricException
+    error instanceof AthleteDomainError ||
+    error instanceof CompetitorStatusDomainError ||
+    error instanceof PersonalRecordDomainError ||
+    error instanceof PhysicalMetricDomainError
   ) {
     return {
-      statusCode: error.statusCode,
+      statusCode: HttpStatus.BAD_REQUEST,
       message: error.message,
     };
   }
@@ -94,6 +108,10 @@ export class AthleteExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost): void {
     const response = host.switchToHttp().getResponse<Response>();
     const errorResponse = toHttpErrorResponse(exception);
+
+    if (exception instanceof AccessDeniedError) {
+      this.logger.warn(exception.message);
+    }
 
     if (errorResponse.statusCode === HttpStatus.INTERNAL_SERVER_ERROR) {
       this.logger.error(

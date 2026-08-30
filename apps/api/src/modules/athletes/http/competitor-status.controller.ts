@@ -17,6 +17,7 @@ import { parseAthleteId } from '../domain/athlete-id';
 import { parseCompetitorStatusId } from '../domain/competitor-status-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
+  toCompetitorStatusCreation,
   toCompetitorStatusDto,
   toCompetitorStatusDtoList,
 } from './mappers/competitor-status.mapper';
@@ -121,10 +122,10 @@ export class CompetitorStatusController {
     @CurrentOrganization() organizationId: OrganizationId
   ): ReturnType<typeof tsRestHandler<typeof c.createCompetitorStatus>> {
     return tsRestHandler(c.createCompetitorStatus, async ({ params, body }) => {
-      const athleteId = parseAthleteId(params.id);
+      const creation = toCompetitorStatusCreation(body, params.id);
+
       const competitorStatus = await this.athleteCompetitionStatus.change(
-        athleteId,
-        body,
+        creation,
         currentUser.id,
         organizationId
       );

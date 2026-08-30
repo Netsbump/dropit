@@ -5,7 +5,7 @@ import type { AthleteId } from '../../../domain/athlete-id';
 import type {
   AthleteDetailsReadModel,
   PaginatedAthleteDetailsReadModel,
-} from '../../read-models/athlete-details.read-model';
+} from '../../models/athlete-details.read-model';
 
 export const ATHLETE_REPO = Symbol('ATHLETE_REPO');
 export const ATHLETE_READ_REPO = Symbol('ATHLETE_READ_REPO');

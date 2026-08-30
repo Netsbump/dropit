@@ -1,13 +1,13 @@
-import {
-  CreatePhysicalMetricInput,
-  UpdatePhysicalMetricInput,
-} from '@dropit/schemas';
+import { UpdatePhysicalMetricInput } from '@dropit/schemas';
 import type {
   OrganizationId,
   UserId,
 } from '../../../../../shared/kernel/identity';
 import type { AthleteId } from '../../../domain/athlete-id';
-import type { PhysicalMetric } from '../../../domain/physical-metric';
+import type {
+  PhysicalMetric,
+  PhysicalMetricCreation,
+} from '../../../domain/physical-metric';
 import type { PhysicalMetricId } from '../../../domain/physical-metric-id';
 
 export const ATHLETE_PHYSICAL_METRICS = Symbol('ATHLETE_PHYSICAL_METRICS');
@@ -26,8 +26,7 @@ export interface IAthletePhysicalMetrics {
   ): Promise<PhysicalMetric[]>;
 
   recordBodyMetric(
-    athleteId: AthleteId,
-    data: CreatePhysicalMetricInput,
+    creation: PhysicalMetricCreation,
     currentUserId: UserId,
     organizationId: OrganizationId
   ): Promise<PhysicalMetric>;

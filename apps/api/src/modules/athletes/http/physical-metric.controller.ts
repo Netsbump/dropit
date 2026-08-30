@@ -17,6 +17,7 @@ import { parseAthleteId } from '../domain/athlete-id';
 import { parsePhysicalMetricId } from '../domain/physical-metric-id';
 import { AthleteExceptionFilter } from './athlete-exception.filter';
 import {
+  toPhysicalMetricCreation,
   toPhysicalMetricDto,
   toPhysicalMetricDtoList,
 } from './mappers/physical-metric.mapper';
@@ -86,12 +87,11 @@ export class PhysicalMetricController {
     return tsRestHandler(
       c.createAthletePhysicalMetric,
       async ({ params, body }) => {
-        const athleteId = parseAthleteId(params.id);
+        const creation = toPhysicalMetricCreation(body, params.id);
 
         const physicalMetric =
           await this.athletePhysicalMetrics.recordBodyMetric(
-            athleteId,
-            body,
+            creation,
             currentUser.id,
             organizationId
           );

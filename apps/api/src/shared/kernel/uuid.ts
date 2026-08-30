@@ -22,6 +22,6 @@ export function parseUuid(value: string): Uuid {
   return value;
 }
 
-export function createUuid(): Uuid {
+export function generateUuid(): Uuid {
   return randomUUID() as Uuid;
 }

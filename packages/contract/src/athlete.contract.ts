@@ -82,6 +82,9 @@ export const athleteContract = {
       404: z.object({
         message: z.string(),
       }),
+      409: z.object({
+        message: z.string(),
+      }),
       500: z.object({
         message: z.string(),
       }),

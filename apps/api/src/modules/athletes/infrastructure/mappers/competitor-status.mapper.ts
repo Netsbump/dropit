@@ -6,7 +6,7 @@ import { parseCompetitorStatusId } from '../../domain/competitor-status-id';
 export const toCompetitorStatusDomain = (
   entity: CompetitorStatusEntity
 ): CompetitorStatus => {
-  return new CompetitorStatus({
+  return CompetitorStatus.reconstitute({
     id: parseCompetitorStatusId(entity.id),
     athleteId: parseAthleteId(entity.athlete.id),
     level: entity.level,

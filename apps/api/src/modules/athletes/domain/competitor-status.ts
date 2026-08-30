@@ -1,8 +1,5 @@
 import type { AthleteId } from './athlete-id';
-import {
-  type CompetitorStatusId,
-  createCompetitorStatusId,
-} from './competitor-status-id';
+import type { CompetitorStatusId } from './competitor-status-id';
 
 export enum CompetitorLevel {
   ROOKIE = 'rookie',
@@ -18,11 +15,21 @@ export enum SexCategory {
 }
 
 export type CompetitorStatusCreation = {
+  id: CompetitorStatusId;
   athleteId: AthleteId;
   level: CompetitorLevel;
   sexCategory: SexCategory;
   weightCategory?: number | null;
   endDate?: Date | null;
+};
+
+export type CompetitorStatusSnapshot = {
+  id: CompetitorStatusId;
+  athleteId: AthleteId;
+  level: CompetitorLevel;
+  sexCategory: SexCategory;
+  weightCategory: number | null;
+  endDate: Date | null;
 };
 
 export type CompetitorStatusUpdate = {
@@ -32,10 +39,6 @@ export type CompetitorStatusUpdate = {
   endDate?: Date | null;
 };
 
-export type CompetitorStatusProps = CompetitorStatusCreation & {
-  id?: CompetitorStatusId;
-};
-
 export abstract class CompetitorStatusDomainError extends Error {
   constructor(message: string) {
     super(message);
@@ -43,45 +46,37 @@ export abstract class CompetitorStatusDomainError extends Error {
   }
 }
 
-export class InvalidCompetitorStatusError extends CompetitorStatusDomainError {}
+export class CompetitorStatusAthleteIdIsRequiredError extends CompetitorStatusDomainError {}
+export class WeightCategoryMustBePositiveError extends CompetitorStatusDomainError {}
+export class EndDateMustBeValidError extends CompetitorStatusDomainError {}
 
 export class CompetitorStatus {
-  public readonly id: CompetitorStatusId;
-  public readonly athleteId: AthleteId;
-  public readonly level: CompetitorLevel;
-  public readonly sexCategory: SexCategory;
-  public readonly weightCategory: number | null;
-  public readonly endDate: Date | null;
+  private constructor(
+    public readonly id: CompetitorStatusId,
+    public readonly athleteId: AthleteId,
+    public readonly level: CompetitorLevel,
+    public readonly sexCategory: SexCategory,
+    public readonly weightCategory: number | null,
+    public readonly endDate: Date | null
+  ) {}
 
-  constructor(params: CompetitorStatusProps) {
-    if (!params.athleteId.trim()) {
-      throw new InvalidCompetitorStatusError('Athlete id is required');
-    }
+  static create(creation: CompetitorStatusCreation): CompetitorStatus {
+    return CompetitorStatus.build({
+      id: creation.id,
+      athleteId: creation.athleteId,
+      level: creation.level,
+      sexCategory: creation.sexCategory,
+      weightCategory: creation.weightCategory ?? null,
+      endDate: creation.endDate ?? null,
+    });
+  }
 
-    if (
-      params.weightCategory !== undefined &&
-      params.weightCategory !== null &&
-      params.weightCategory <= 0
-    ) {
-      throw new InvalidCompetitorStatusError(
-        'Weight category must be positive'
-      );
-    }
-
-    if (params.endDate && Number.isNaN(params.endDate.getTime())) {
-      throw new InvalidCompetitorStatusError('End date must be valid');
-    }
-
-    this.id = params.id ?? createCompetitorStatusId();
-    this.athleteId = params.athleteId;
-    this.level = params.level;
-    this.sexCategory = params.sexCategory;
-    this.weightCategory = params.weightCategory ?? null;
-    this.endDate = params.endDate ?? null;
+  static reconstitute(snapshot: CompetitorStatusSnapshot): CompetitorStatus {
+    return CompetitorStatus.build(snapshot);
   }
 
   close(endDate = new Date()): CompetitorStatus {
-    return new CompetitorStatus({
+    return CompetitorStatus.build({
       id: this.id,
       athleteId: this.athleteId,
       level: this.level,
@@ -91,17 +86,44 @@ export class CompetitorStatus {
     });
   }
 
-  amend(data: CompetitorStatusUpdate): CompetitorStatus {
-    return new CompetitorStatus({
+  amend(changes: CompetitorStatusUpdate): CompetitorStatus {
+    return CompetitorStatus.build({
       id: this.id,
       athleteId: this.athleteId,
-      level: data.level ?? this.level,
-      sexCategory: data.sexCategory ?? this.sexCategory,
+      level: changes.level ?? this.level,
+      sexCategory: changes.sexCategory ?? this.sexCategory,
       weightCategory:
-        data.weightCategory !== undefined
-          ? data.weightCategory
+        changes.weightCategory !== undefined
+          ? changes.weightCategory
           : this.weightCategory,
-      endDate: data.endDate !== undefined ? data.endDate : this.endDate,
+      endDate: changes.endDate !== undefined ? changes.endDate : this.endDate,
     });
+  }
+
+  private static build(snapshot: CompetitorStatusSnapshot): CompetitorStatus {
+    if (!snapshot.athleteId.trim()) {
+      throw new CompetitorStatusAthleteIdIsRequiredError(
+        'Athlete id is required'
+      );
+    }
+
+    if (snapshot.weightCategory !== null && snapshot.weightCategory <= 0) {
+      throw new WeightCategoryMustBePositiveError(
+        'Weight category must be positive'
+      );
+    }
+
+    if (snapshot.endDate && Number.isNaN(snapshot.endDate.getTime())) {
+      throw new EndDateMustBeValidError('End date must be valid');
+    }
+
+    return new CompetitorStatus(
+      snapshot.id,
+      snapshot.athleteId,
+      snapshot.level,
+      snapshot.sexCategory,
+      snapshot.weightCategory,
+      snapshot.endDate
+    );
   }
 }

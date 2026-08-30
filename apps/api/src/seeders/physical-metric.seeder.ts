@@ -1,5 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
-import { createPhysicalMetricId } from '../modules/athletes/domain/physical-metric-id';
+import { generatePhysicalMetricId } from '../modules/athletes/domain/physical-metric-id';
 import { AthleteEntity as Athlete } from '../modules/database/entities/athlete.entity';
 import { PhysicalMetricEntity } from '../modules/database/entities/physical-metric.entity';
 
@@ -15,7 +15,7 @@ export async function seedPhysicalMetrics(em: EntityManager): Promise<void> {
     const toAdd = Math.max(0, METRICS_PER_ATHLETE - existingCount);
     for (let i = 0; i < toAdd; i++) {
       const metric = new PhysicalMetricEntity();
-      metric.id = createPhysicalMetricId();
+      metric.id = generatePhysicalMetricId();
       metric.athlete = athlete;
       metric.weight = Math.floor(Math.random() * (100 - 50) + 50);
       metric.height = Number((Math.random() * (1.9 - 1.6) + 1.6).toFixed(2));

@@ -1,22 +1,15 @@
-import { type Uuid, createUuid, parseUuid } from '../../../shared/kernel/uuid';
-
-export class InvalidAthleteIdError extends Error {
-  constructor(value: string) {
-    super(`Invalid athlete id: ${value}`);
-    this.name = 'InvalidAthleteIdError';
-  }
-}
+import {
+  type Uuid,
+  generateUuid,
+  parseUuid,
+} from '../../../shared/kernel/uuid';
 
 export type AthleteId = Uuid & { readonly __brand: 'AthleteId' };
 
 export function parseAthleteId(value: string): AthleteId {
-  try {
-    return parseUuid(value) as AthleteId;
-  } catch {
-    throw new InvalidAthleteIdError(value);
-  }
+  return parseUuid(value) as AthleteId;
 }
 
-export function createAthleteId(): AthleteId {
-  return createUuid() as AthleteId;
+export function generateAthleteId(): AthleteId {
+  return generateUuid() as AthleteId;
 }

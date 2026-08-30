@@ -1,57 +1,42 @@
-export abstract class AthleteApplicationError extends Error {
-  constructor(
-    message: string,
-    public readonly statusCode: number
-  ) {
-    super(message);
-    this.name = this.constructor.name;
+import { AccessDeniedError } from '../../../../shared/application/errors/access-denied.error';
+import { ConflictError } from '../../../../shared/application/errors/conflict.error';
+import { NotFoundError } from '../../../../shared/application/errors/not-found.error';
+import type {
+  OrganizationId,
+  UserId,
+} from '../../../../shared/kernel/identity';
+import type { AthleteId } from '../../domain/athlete-id';
+
+export class AthleteNotFoundError extends NotFoundError {
+  constructor(athleteId?: AthleteId) {
+    super(athleteId ? `Athlete ${athleteId} not found` : 'Athlete not found');
   }
 }
 
-export class AthleteNotFoundError extends AthleteApplicationError {
-  constructor(message = 'Athlete not found') {
-    super(message, 404);
+export class UserProfileNotFoundError extends NotFoundError {
+  constructor(userId: UserId) {
+    super(`User profile ${userId} not found`);
   }
 }
 
-export class AthleteAccessDeniedError extends AthleteApplicationError {
-  constructor(message = 'Access denied') {
-    super(message, 403);
+export class AthleteProfileAlreadyExistsError extends ConflictError {
+  constructor(userId: UserId) {
+    super(`User ${userId} already has an athlete profile`);
   }
 }
 
-export class UserNotFoundError extends AthleteApplicationError {
-  constructor(message = 'User not found') {
-    super(message, 404);
+export class AthleteAccessDeniedError extends AccessDeniedError {
+  constructor(currentUserId: UserId, athleteUserId?: UserId) {
+    super(
+      athleteUserId
+        ? `User ${currentUserId} cannot access athlete profile owned by user ${athleteUserId}`
+        : `Access denied for user ${currentUserId}`
+    );
   }
 }
 
-export class AthleteAlreadyExistsError extends AthleteApplicationError {
-  constructor(message = 'User already has an athlete profile') {
-    super(message, 400);
-  }
-}
-
-export class InvalidAthleteCreationError extends AthleteApplicationError {
-  constructor(message = 'Invalid athlete creation') {
-    super(message, 400);
-  }
-}
-
-export class AthleteCreationFailedError extends AthleteApplicationError {
-  constructor(message = 'Athlete creation failed') {
-    super(message, 500);
-  }
-}
-
-export class InvalidAthleteUpdateError extends AthleteApplicationError {
-  constructor(message = 'Invalid athlete update') {
-    super(message, 400);
-  }
-}
-
-export class UserDoesNotBelongToOrganizationError extends AthleteApplicationError {
-  constructor(message = 'User does not belong to this organization') {
-    super(message, 403);
+export class UserDoesNotBelongToOrganizationError extends AccessDeniedError {
+  constructor(userId: UserId, organizationId: OrganizationId) {
+    super(`User ${userId} does not belong to organization ${organizationId}`);
   }
 }

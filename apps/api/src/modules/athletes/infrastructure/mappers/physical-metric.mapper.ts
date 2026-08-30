@@ -6,7 +6,7 @@ import { parsePhysicalMetricId } from '../../domain/physical-metric-id';
 export const toPhysicalMetricDomain = (
   entity: PhysicalMetricEntity
 ): PhysicalMetric => {
-  return new PhysicalMetric({
+  return PhysicalMetric.reconstitute({
     id: parsePhysicalMetricId(entity.id),
     athleteId: parseAthleteId(entity.athlete.id),
     weight: entity.weight,
