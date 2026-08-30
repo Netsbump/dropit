@@ -1,8 +1,4 @@
-import {
-  type Uuid,
-  generateUuid,
-  parseUuid,
-} from '../../../shared/kernel/uuid';
+import { type Uuid, generateUuid, parseUuid } from '../../../shared/utils/uuid';
 
 export type CompetitorStatusId = Uuid & {
   readonly __brand: 'CompetitorStatusId';

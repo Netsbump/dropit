@@ -10,7 +10,7 @@ import type { Response } from 'express';
 import { AccessDeniedError } from '../../../shared/application/errors/access-denied.error';
 import { ConflictError } from '../../../shared/application/errors/conflict.error';
 import { NotFoundError } from '../../../shared/application/errors/not-found.error';
-import { InvalidUuidError } from 'src/shared/kernel';
+import { InvalidUuidError } from '../../../shared/utils/uuid';
 import { AthleteDomainError } from '../domain/athlete';
 import { CompetitorStatusDomainError } from '../domain/competitor-status';
 import { PersonalRecordDomainError } from '../domain/personal-record';

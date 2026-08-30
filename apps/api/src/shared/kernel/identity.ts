@@ -1,4 +1,4 @@
-import { type Uuid, parseUuid } from './uuid';
+import { type Uuid, parseUuid } from '../utils/uuid';
 
 export type UserId = Uuid & { readonly __brand: 'UserId' };
 

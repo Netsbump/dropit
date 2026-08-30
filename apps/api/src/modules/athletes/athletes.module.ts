@@ -11,6 +11,8 @@ import { ATHLETE_COMPETITION_STATUS } from './application/ports/in/athlete-compe
 import { ATHLETE_PERSONAL_RECORDS } from './application/ports/in/athlete-personal-records.port';
 import { ATHLETE_PHYSICAL_METRICS } from './application/ports/in/athlete-physical-metrics.port';
 import { ATHLETE_PROFILES } from './application/ports/in/athlete-profiles.port';
+import { ATHLETE_INVITATION_CREATION } from './application/ports/in/athlete-invitation-creation.port';
+
 // ports (symboles)
 import {
   ATHLETE_READ_REPO,
@@ -52,6 +54,7 @@ import {
 } from '../training/application/ports/exercise-catalog.port';
 import { TrainingModule } from '../training/training.module';
 import { AthleteCompetitionStatus } from './application/athlete-competition-status';
+import { AthleteInvitationCreation } from './application/athlete-invitation-creation';
 import { AthletePersonalRecords } from './application/athlete-personal-records';
 import { AthletePhysicalMetrics } from './application/athlete-physical-metrics';
 import { AthleteProfiles } from './application/athlete-profiles';
@@ -178,6 +181,16 @@ import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exerci
       ],
     },
     {
+      provide: ATHLETE_INVITATION_CREATION,
+      useFactory: (
+        athleteRepo: IAthleteRepository,
+        athleteUserProfile: IAthleteUserProfile
+      ) => {
+        return new AthleteInvitationCreation(athleteRepo, athleteUserProfile);
+      },
+      inject: [ATHLETE_REPO, ATHLETE_USER_PROFILE],
+    },
+    {
       provide: ATHLETE_PERSONAL_RECORDS,
       useFactory: (
         personalRecordRepo: IPersonalRecordRepository,
@@ -249,6 +262,7 @@ import { TrainingExerciseCatalogAdapter } from './infrastructure/training-exerci
     PERSONAL_RECORD_REPO,
     PHYSICAL_METRIC_REPO,
     ATHLETE_PROFILES,
+    ATHLETE_INVITATION_CREATION,
     ATHLETE_PHYSICAL_METRICS,
   ],
 })
